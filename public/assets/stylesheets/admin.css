@@ -1,0 +1,75 @@
+#signout_button {
+  border: none;
+  width: 326px;
+  padding: 8px;
+  display: block;
+  background-color: #E12C26;
+  color: #fff;
+  font-weight: bold;
+  background-image: linear-gradient(0deg, #b8241f 0%, #b8241f 50%, rgba(255, 255, 255, 0) 51%);
+  cursor: pointer;
+  float: right;
+}
+
+.wrapper {
+  padding: 1em;
+  border: 1px solid white;
+  border-radius: 2px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+h3 {
+  color: white;
+  padding-bottom: 10px;
+  text-align: center;
+}
+
+h4 {
+  margin: 0px;
+  margin-bottom: 10px;
+  color: white;
+}
+
+#admin_container {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  margin-right: -50%;
+  transform: translate(-50%, -50%);
+}
+
+.approve_btn {
+border: none;
+width: 326px;
+padding: 8px;
+display: block;
+background-color: #45b452;
+color: #fff;
+font-weight: bold;
+background-image: linear-gradient(0deg, #1fb862 0%, #1fb836 50%, rgba(255, 255, 255, 0) 51%);
+cursor: pointer;
+text-decoration: none;
+text-align: center;
+}
+
+.reject_btn {
+border: none;
+width: 326px;
+padding: 8px;
+display: block;
+background-color: #E12C26;
+color: #fff;
+font-weight: bold;
+background-image: linear-gradient(0deg, #b8241f 0%, #b8241f 50%, rgba(255, 255, 255, 0) 51%);
+cursor: pointer;
+text-decoration: none;
+text-align: center;
+}
+
+.items {
+background: white;
+margin: 5px;
+padding: 5px;
+border-radius: 5px;
+}

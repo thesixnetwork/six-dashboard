@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Sample Six-dashboard</title>
+
+    <!-- update the version number as needed -->
+    <script defer src="/__/firebase/4.11.0/firebase-app.js"></script>
+    <script defer src="/__/firebase/4.11.0/firebase-auth.js"></script>
+    <script defer src="/__/firebase/4.11.0/firebase-database.js"></script>
+    <script defer src="/__/firebase/4.11.0/firebase-firestore.js"></script>
+    <script defer src="/__/firebase/4.11.0/firebase-messaging.js"></script>
+    <script defer src="/__/firebase/4.11.0/firebase-storage.js"></script>
+    <script defer src="/__/firebase/init.js"></script> 
+
+    <!-- Stylesheets -->
+    <link rel="stylesheet" media="screen" href="./assets/stylesheets/application.css">
+    <link rel="stylesheet" media="screen" href="./assets/stylesheets/admin.css">
+
+    <!-- Javascript -->
+    <script src="./assets/javascripts/jquery.js"></script>
+    <script src="./assets/javascripts/jquery_ujs.js"></script>
+    <script src="./assets/javascripts/application.js"></script>
+    <script src="./assets/javascripts/admin.js"></script>
+    <script defer src="./assets/javascripts/brands.js"></script>
+    <script defer src="./assets/javascripts/solid.js"></script>
+    <script defer src="./assets/javascripts/fontawesome.js"></script>
+  </head>
+  <body>
+    <div id='signout_container'>
+      <form action="javascript: signout();">
+        <input name="commit" value="Signout" id="signout_button" class="signout_button" tabindex="3" data-disable-with="Signout" type="submit">
+      </form>
+    </div>
+    <div id='admin_container'>
+      <div class='wrapper'>
+      
+      </div>
+    </div>
+    <div id="flash_displayer" class="error" style="top: -35px;">
+      <span><i id="bad_flash_icon" class="fa fa-ban"></i><i id="good_flash_icon" class="fa fa-check"></i> <span>Authenicating failed. Try again.</span></span>
+    </div>
+    <div id='scene'>
+      <i id='scene_loading' class="fa fa-cog fa-spin fa-3x fa-fw"></i>
+    </div>
+  </body>
+</html>
+
+
