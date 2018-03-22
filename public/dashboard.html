@@ -34,14 +34,30 @@
         <section>
             <div class="container">
                 <div class="step-form">
+                    <div class="loading">
+                        <p>
+                            <i class="fas fa-spinner fa-spin"></i>
+                            <span>Loading</span>
+                        </p>
+                    </div>
                     <div class="kyc-form show-detail">
                         <dl>
                             <dt>First name</dt>
-                            <dd><label class="text"><input type="text" placeholder="First name"></label></dd>
+                            <dd>
+                                <label class="text invalid">
+                                    <input type="text" placeholder="First name">
+                                    <p>Error</p>
+                                </label>
+                            </dd>
                         </dl>
                         <dl>
                             <dt>Last Name</dt>
-                            <dd><label class="text"><input type="text" placeholder="Last Name"></label></dd>
+                            <dd>
+                                <label class="text warning">
+                                    <input type="text" placeholder="Last Name">
+                                    <p>Warning</p>
+                                </label>
+                            </dd>
                         </dl>
                         <dl>
                             <dt>Phone number</dt>
@@ -94,7 +110,7 @@
                                             <p>Bitcoin ( BTC )</p>
                                         </label>
                                         <p>:</p>
-                                        <label class="text"><input type="text" placeholder=""></label>
+                                        <label class="text disable-label"><input type="text" disabled></label>
                                     </li>
                                     <li>
                                         <label class="option">
@@ -103,7 +119,7 @@
                                             <p>Ethereum ( ETH )</p>
                                         </label>
                                         <p>:</p>
-                                        <label class="text"><input type="text" placeholder=""></label>
+                                        <label class="text disable-label"><input type="text" disabled></label>
                                     </li>
                                     <li>
                                         <label class="option">
@@ -112,7 +128,7 @@
                                             <p>Stellar ( XLM )</p>
                                         </label>
                                         <p>:</p>
-                                        <label class="text"><input type="text" placeholder=""></label>
+                                        <label class="text disable-label"><input type="text" disabled></label>
                                     </li>
                                 </ul>
                             </dd>
@@ -123,8 +139,8 @@
                         </dl>
                     </div>
                     <div class="padding">
-                        <article class="apporved show-detail">
-                            <h1>Wait for Apporved</h1>
+                        <article class="approved show-detail">
+                            <h1>Wait for approved</h1>
                             <p>Lorem, ipsum dolor sit amet consectetur adipisicing elit.</p>
                             <p>Quia a et natus saepe explicabo tempore quasi, soluta porro dolor id dolores officiis optio vel sed unde odio? Minima, maiores atque.</p>
                             <a class="next-step">Next Step</a>
@@ -147,15 +163,15 @@
                     <div class="address-form">
                         <dl>
                             <dt>Bitcoin ( BTC )</dt>
-                            <dd><label class="text"><input type="text" placeholder=""></label></dd>
+                            <dd><label class="text"><input type="text"></label></dd>
                         </dl>
                         <dl>
                             <dt>Ethereum ( ETH )</dt>
-                            <dd><label class="text"><input type="text" placeholder=""></label></dd>
+                            <dd><label class="text"><input type="text"></label></dd>
                         </dl>
                         <dl>
                             <dt>Stellar ( XLM )</dt>
-                            <dd><label class="text"><input type="text" placeholder=""></label></dd>
+                            <dd><label class="text"><input type="text"></label></dd>
                         </dl>
                         <div class="alert-error"><p>Error</p><span>Lorem ipsum dolor sit amet consectetur adipisicing elit.</span></div>
                         <dl>
@@ -225,7 +241,7 @@
                             <p>Vachara Aemavat</p>
                         </div>
                         <p class="price-six">
-                            <span>123,124</span>
+                            <span>423,521</span>
                             <span>SIX</span>
                         </p>
                         <a class="open-transection-log">Transection log</a>
@@ -250,7 +266,7 @@
                     </div>
                     <div class="status">
                         <p>KYC Status</p>
-                        <p class="approved">passed</p>
+                        <p>First step</p>
                     </div>
                 </aside>
             </div>

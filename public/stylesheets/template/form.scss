@@ -107,6 +107,34 @@ label {
 			span { color: $font-color-secondary; font-size: $font-size-xs; margin-left: $space-s; }
 		}
     }
+
+	&.invalid, &.warning {
+		position: relative; margin-bottom: $space-s;
+
+		p { font-size: $font-size-xs; position: absolute; top: 100%; left: 0; width: 300px; line-height: 20px; }
+	}
+
+	&.invalid {
+		border-color: $red; background: rgba($red, 0.05);
+
+		p { color: $red !important; }
+    }
+
+	&.warning {
+		border-color: $yellow; background: rgba($yellow, 0.05);
+
+		p { color: $yellow !important; }
+    }
+    
+	&.disable-label {
+        background: $gray; cursor: default; overflow: hidden; opacity: 0.7;
+        
+        &.option { background: transparent; }
+
+		input, textarea, select { cursor: default; overflow: hidden; }
+
+        textarea { padding-top: 4px; }
+	}
 }
 
 button { height: 40px; background: $blue; color: $white; font-weight: bold; cursor: pointer; min-width: 150px; }

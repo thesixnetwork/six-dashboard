@@ -279,3 +279,15 @@ ul.countdown {
 	100% { background: $white; color: $textColor; }
 }
 // =================== //
+
+.loading {
+	display: none; justify-content: center; align-items: center; width: 100%; height: 100%;
+
+	p {
+		display: block;
+
+		i { margin-right: $space-s; }
+	}
+
+	&.show-loading { display: flex; }
+}
