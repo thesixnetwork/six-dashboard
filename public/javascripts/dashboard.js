@@ -1,3 +1,9 @@
+// Log out function using in Dashboard page to sign current user out
+function logOut() {
+	console.log("logout")
+	firebase.auth().signOut()
+}
+
 $(document).ready(function(){
 	// ===================== //
 	// ===== Countdown ===== //
@@ -147,4 +153,12 @@ $(document).ready(function(){
 			li.addClass("disable-label");
 		}
 	});
+
+	// Listening to auth state change
+	firebase.auth().onAuthStateChanged(function(user) {
+		if (!user) {
+			console.log('Go to login')
+			window.location.href = "/";
+		}
+	})
 });

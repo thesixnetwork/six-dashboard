@@ -3,6 +3,16 @@
 	<head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+        <!-- Include firebase : update the version number as needed -->
+        <script defer src="/__/firebase/4.11.0/firebase-app.js"></script>
+        <script defer src="/__/firebase/4.11.0/firebase-auth.js"></script>
+        <script defer src="/__/firebase/4.11.0/firebase-database.js"></script>
+        <script defer src="/__/firebase/4.11.0/firebase-firestore.js"></script>
+        <script defer src="/__/firebase/4.11.0/firebase-messaging.js"></script>
+        <script defer src="/__/firebase/4.11.0/firebase-storage.js"></script>
+        <script defer src="/__/firebase/init.js"></script>
+
         <meta http-equiv="X-UA-Compatible" content="ie=edge">
         <title>SIX | Reinventing the digital economy</title>
         <link rel="shortcut icon" href="images/logo/fav.ico" type="image/x-icon">
@@ -16,7 +26,7 @@
 			<ul class="menu">
 				<li><a>Dashboard</a></li>
             </ul>
-            <a href="login.html" class="logout">Logout&nbsp;<i class="fas fa-sign-out-alt"></i></a>
+            <a href="javascript:;" onclick="logOut()" class="logout">Logout&nbsp;<i class="fas fa-sign-out-alt"></i></a>
 		</header>
 	</body>
 
