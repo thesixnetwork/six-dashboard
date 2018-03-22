@@ -1,12 +1,26 @@
 // Forgot password function using in Login page for recovering user's account
 function forgotPassword () {
-	const email = document.getElementById('forgotPasswordEmail').value
+	if ($("#forgotPasswordText").css("display") == 'block') {
+		$("#forgotPasswordText").slideToggle()
+	}
+        let emailDOM = document.getElementById('forgotPasswordEmail')
+	let btnDOM = document.getElementById('forgotPasswordBtn')
+	const email = emailDOM.value
+	setDisable([emailDOM, btnDOM])
 	return firebase.auth().sendPasswordResetEmail(email)
 		.then(() => {
-			console.log('Forgot password : success')
+			$("#forgotPasswordText").html("Email sent to inbox")
+			if ($("#forgotPasswordText").css("display") == 'none') {
+				$("#forgotPasswordText").slideToggle()
+			}
+			setEnable([emailDOM, btnDOM])
 		})
 		.catch(err => {
-			console.log('Forgot password : error : ', err)
+                        $("#forgotPasswordText").html("Email sent to inbox")
+                        if ($("#forgotPasswordText").css("display") == 'none') {
+                                $("#forgotPasswordText").slideToggle()
+                        }
+			setEnable([emailDOM, btnDOM])
 		})
 }
 
