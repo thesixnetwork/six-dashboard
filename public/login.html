@@ -37,10 +37,10 @@
 					<form id="signInForm">
 						<label class="text"><input id="signInEmail" type="email" placeholder="Email" required></label>
 						<label class="text"><input id="signInPassword" type="password" placeholder="Password" required></label>
-						<div class="alert-error">
-							<p>Error</p>
+						<div id='signInAlert' class="alert-error">
+							<p id='signInAlertText'>Error</p>
 						</div>
-						<button>Sign in</button>
+						<button id='signInBtn'>Sign in</button>
 						<a class="open-forgot btn-link">Forgot password</a>
 					</form>
 					<ul class="list">
@@ -64,6 +64,7 @@
 				<div class="forgot">
 					<h1>forgot password</h1>
 					<form id='forgotPasswordForm'>
+						<p class="alert-text">Lorem ipsum, dolor sit amet consectetur</p>
 						<label class="text"><input id="forgotPasswordEmail" type="email" placeholder="Email" required></label>
 						<button>Submit</button>
 						<a class="open-sign-in btn-link">Sign in</a>
