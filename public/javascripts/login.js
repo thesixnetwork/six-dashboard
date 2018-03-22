@@ -104,6 +104,7 @@ function signUp() {
 	return firebase.auth().createUserWithEmailAndPassword(email, password)
 		.then(res => {
 			const {uid} = res
+			res.sendEmailVerification()
 			return firebase.firestore().collection("users").doc(uid).set({
 				email,
 				firstName,
