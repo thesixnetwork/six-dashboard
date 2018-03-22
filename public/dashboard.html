@@ -8,25 +8,252 @@
         <link rel="shortcut icon" href="images/logo/fav.ico" type="image/x-icon">
         <link rel="stylesheet" href="stylesheets/style.css">
         <script src="javascripts/jquery-3.2.1.min.js"></script>
-        <!-- <script src="javascripts/dashboard.js"></script> -->
+        <script src="javascripts/dashboard.js"></script>
 	</head>
 	<body>
 		<header class="header">
 			<a href="" class="logo"><img src="images/logo/six-logo.png"></a>
 			<ul class="menu">
 				<li><a>Dashboard</a></li>
-			</ul>
-			<div class="user">
-				<p>Vachara Aemavat</p>
-				<span class="avatar"><img src="images/avatar/avatar-01.jpg"></span>
-				<a class="open-user"><i class="fas fa-angle-down"></i></a>
-			</div>
+            </ul>
+            <a href="login.html" class="logout">Logout&nbsp;<i class="fas fa-sign-out-alt"></i></a>
 		</header>
 	</body>
 
     <main class="dashboard">
-        <div class="container">
-    
-        </div>
+        <section>
+            <div class="container">
+                <ul class="step">
+                    <li class="current"><div class="circle"></div><p>KYC form</p></li>
+                    <li><div class="circle"></div><p>KYC pending</p></li>
+                    <li><div class="circle"></div><p>Submit address form</p></li>
+                    <li><div class="circle"></div><p>Waiting ICO</p></li>
+                </ul>
+            </div>
+        </section>
+        <section>
+            <div class="container">
+                <div class="step-form">
+                    <div class="kyc-form show-detail">
+                        <dl>
+                            <dt>First name</dt>
+                            <dd><label class="text"><input type="text" placeholder="First name"></label></dd>
+                        </dl>
+                        <dl>
+                            <dt>Last Name</dt>
+                            <dd><label class="text"><input type="text" placeholder="Last Name"></label></dd>
+                        </dl>
+                        <dl>
+                            <dt>Phone number</dt>
+                            <dd><label class="text"><input type="text" placeholder="Phone number"></label></dd>
+                        </dl>
+                        <dl>
+                            <dt>Nationality</dt>
+                            <dd>
+                                <label class="dropdown">
+                                    <select name="value" id="value">
+                                        <option value="">Thai</option>
+                                        <option value="">Korean</option>
+                                    </select>
+                                    <i class="fas fa-angle-down"></i>
+                                </label>
+                            </dd>
+                        </dl>
+                        <dl>
+                            <dt>Address</dt>
+                            <dd><label class="textarea"><textarea placeholder="Address"></textarea></label></dd>
+                        </dl>
+                        <dl>
+                            <dt>Upload photo of ID / Passport with signture</dt>
+                            <dd>
+                                <label class="file">
+                                    <input type="file">
+                                    <p>Choose File</p>
+                                    <i class="fas fa-upload"></i>
+                                </label>
+                            </dd>
+                        </dl>
+                        <dl>
+                            <dt>Upload photo of utitlity bill to verify address with signture</dt>
+                            <dd>
+                                <label class="file">
+                                    <input type="file">
+                                    <p>Choose File</p>
+                                    <i class="fas fa-upload"></i>
+                                </label>
+                            </dd>
+                        </dl>
+                        <dl>
+                            <dt>Estimate price</dt>
+                            <dd>
+                                <ul class="option-list">
+                                    <li>
+                                        <label class="option">
+                                            <input type="checkbox">
+                                            <span class="check-mark"></span>
+                                            <p>Bitcoin ( BTC )</p>
+                                        </label>
+                                        <p>:</p>
+                                        <label class="text"><input type="text" placeholder=""></label>
+                                    </li>
+                                    <li>
+                                        <label class="option">
+                                            <input type="checkbox">
+                                            <span class="check-mark"></span>
+                                            <p>Ethereum ( ETH )</p>
+                                        </label>
+                                        <p>:</p>
+                                        <label class="text"><input type="text" placeholder=""></label>
+                                    </li>
+                                    <li>
+                                        <label class="option">
+                                            <input type="checkbox">
+                                            <span class="check-mark"></span>
+                                            <p>Stellar ( XLM )</p>
+                                        </label>
+                                        <p>:</p>
+                                        <label class="text"><input type="text" placeholder=""></label>
+                                    </li>
+                                </ul>
+                            </dd>
+                        </dl>
+                        <dl>
+                            <dt></dt>
+                            <dd><button>Submit</button></dd>
+                        </dl>
+                    </div>
+                    <div class="padding">
+                        <article class="apporved show-detail">
+                            <h1>Wait for Apporved</h1>
+                            <p>Lorem, ipsum dolor sit amet consectetur adipisicing elit.</p>
+                            <p>Quia a et natus saepe explicabo tempore quasi, soluta porro dolor id dolores officiis optio vel sed unde odio? Minima, maiores atque.</p>
+                            <a class="next-step">Next Step</a>
+                        </article>
+                        <article class="rejected">
+                            <h1>Rejected</h1>
+                            <p>Lorem, ipsum dolor sit amet consectetur adipisicing elit.</p>
+                            <p>Quia a et natus saepe explicabo tempore quasi</p>
+                            <ul class="list">
+                                <li><i class="fas fa-circle"></i><p>Lorem ipsum dolor, sit amet consectetur adipisicing elit</p></li>
+                                <li><i class="fas fa-circle"></i><p>Et saepe quibusdam quidem veritatis fuga ratione mollitia sit consequuntur</p></li>
+                                <li><i class="fas fa-circle"></i><p>Ut dolorem consectetur aperiam ducimus veniam reprehenderit in repudiandae omnis numquam deleniti.</p></li>
+                            </ul>
+                            <div class="btn">
+                                <button>Back to KYC form</button>
+                            </div>
+                            <a class="next-step">Next Step</a>
+                        </article>
+                    </div>
+                    <div class="address-form">
+                        <dl>
+                            <dt>Bitcoin ( BTC )</dt>
+                            <dd><label class="text"><input type="text" placeholder=""></label></dd>
+                        </dl>
+                        <dl>
+                            <dt>Ethereum ( ETH )</dt>
+                            <dd><label class="text"><input type="text" placeholder=""></label></dd>
+                        </dl>
+                        <dl>
+                            <dt>Stellar ( XLM )</dt>
+                            <dd><label class="text"><input type="text" placeholder=""></label></dd>
+                        </dl>
+                        <div class="alert-error"><p>Error</p><span>Lorem ipsum dolor sit amet consectetur adipisicing elit.</span></div>
+                        <dl>
+                            <dt></dt>
+                            <dd><button>Submit</button></dd>
+                        </dl>
+                    </div>
+                    <div class="waiting-ico">
+                        <article class="waiting show-detail">
+                            <h1>Wait for ICO</h1>
+                            <ul class="countdown">
+                                <p>See you at our public event on 27th March 2018</p>
+                                <li class="days">
+                                    <p class="digit">
+                                        <span class="base"></span>
+                                        <span class="flap over front"></span>
+                                        <span class="flap over back"></span>
+                                        <span class="flap under"></span>
+                                    </p>
+                                    <p>Days</p>
+                                </li>
+                                <li class="hrs">
+                                    <p class="digit">
+                                        <span class="base"></span>
+                                        <span class="flap over front"></span>
+                                        <span class="flap over back"></span>
+                                        <span class="flap under"></span>
+                                    </p>
+                                    <p>Hrs</p>
+                                </li>
+                                <li class="mins">
+                                    <p class="digit">
+                                        <span class="base"></span>
+                                        <span class="flap over front"></span>
+                                        <span class="flap over back"></span>
+                                        <span class="flap under"></span>
+                                    </p>
+                                    <p>Mins</p>
+                                </li>
+                                <li class="secs">
+                                    <p class="digit">
+                                        <span class="base"></span>
+                                        <span class="flap over front"></span>
+                                        <span class="flap over back"></span>
+                                        <span class="flap under"></span>
+                                    </p>
+                                    <p>Secs</p>
+                                </li>
+                            </ul>
+                            <a class="next-step">Next Step</a>
+                        </article>
+                        <article class="ico">
+                            <ul>
+                                <li><strong>Bitcoin ( BTC )</strong><p>ASADFXVJ2151234APUI214</p></li>
+                                <li><strong>Ethereum ( ETH )</strong><p>ASADFXVJ2151234APUI214</p></li>
+                                <li><strong>Stellar ( XLM )</strong><p>ASADFXVJ2151234APUI214</p></li>
+                            </ul>
+                        </article>
+                    </div>
+                </div>
+                <aside>
+                    <div class="user-detail">
+                        <div class="user">
+                            <span class="avatar">
+                                <img src="images/avatar/avatar-01.jpg">
+                            </span>
+                            <p>Vachara Aemavat</p>
+                        </div>
+                        <p class="price-six">
+                            <span>123,124</span>
+                            <span>SIX</span>
+                        </p>
+                        <a class="open-transection-log">Transection log</a>
+                        <ul class="transection-log list">
+                            <li>
+                                <i class="fas fa-circle"></i>
+                                <p>Lorem ipsum dolor sit amet consectetur</p>
+                            </li>
+                            <li>
+                                <i class="fas fa-circle"></i>
+                                <p>Lorem ipsum dolor sit amet consectetur</p>
+                            </li>
+                            <li>
+                                <i class="fas fa-circle"></i>
+                                <p>Lorem ipsum dolor sit amet consectetur</p>
+                            </li>
+                            <li>
+                                <i class="fas fa-circle"></i>
+                                <p>Lorem ipsum dolor sit amet consectetur</p>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="status">
+                        <p>KYC Status</p>
+                        <p class="approved">passed</p>
+                    </div>
+                </aside>
+            </div>
+        </section>
     </main>
 </html>

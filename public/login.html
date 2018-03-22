@@ -35,8 +35,11 @@
 					<h1><span>welcome to</span>six.network</h1>
 					<p>More than just a wallet for cryptocurrencies, but a single point of entry for your contents, media, IP loyalty and more</p>
 					<form id="signInForm">
-						<label class="text"><input id="signInEmail" type="email" placeholder="Email"></label>
-						<label class="text"><input id="signInPassword" type="password" placeholder="Password"></label>
+						<label class="text"><input id="signInEmail" type="email" placeholder="Email" required></label>
+						<label class="text"><input id="signInPassword" type="password" placeholder="Password" required></label>
+						<div class="alert-error">
+							<p>Error</p>
+						</div>
 						<button>Sign in</button>
 						<a class="open-forgot btn-link">Forgot password</a>
 					</form>
@@ -50,16 +53,18 @@
 					<h1>Sign up</h1>
 					<p>It is a long established face that a reader will be distracted by the readable content of a page.</p>
 					<form>
-						<label class="text"><input type="text" placeholder="First name"></label>
-						<label class="text"><input type="email" placeholder="Email"></label>
-						<label class="text"><input type="text" placeholder="Tel"></label>
+						<label class="text"><input type="email" placeholder="Email" required></label>
+						<label class="text"><input type="text" placeholder="First name" required></label>
+						<label class="text"><input type="text" placeholder="Last name" required></label>
+						<label class="text"><input type="text" placeholder="Phone number" required></label>
+						<label class="text"><input type="password" placeholder="Password" required></label>
 						<button>Sign up</button>
 					</form>
 				</div>
 				<div class="forgot">
 					<h1>forgot password</h1>
 					<form id='forgotPasswordForm'>
-						<label class="text"><input id="forgotPasswordEmail" type="email" placeholder="Email"></label>
+						<label class="text"><input id="forgotPasswordEmail" type="email" placeholder="Email" required></label>
 						<button>Submit</button>
 					</form>
 				</div>
