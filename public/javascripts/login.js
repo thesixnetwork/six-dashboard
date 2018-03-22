@@ -1,3 +1,14 @@
+// Forgot password function using in Login page for recovering user's account
+function forgotPassword () {
+  const email = document.getElementById('forgotPasswordEmail').value
+  return firebase.auth().sendPasswordResetEmail(email)
+    .then(() => {
+      console.log("Forgot password : success")
+    })
+    .catch(err => {
+      console.log('Forgot password : error : ', err)
+    })
+}
 
 $(document).ready(function(){
 	// Sign up, Sign in
@@ -73,4 +84,10 @@ $(document).ready(function(){
 	}
 	
 	autoSlide = setInterval(slideShow, 3000);
+
+	// Override submit on forgot password form
+	$('#forgotPasswordForm').submit(function(e) {
+		e.preventDefault()
+		forgotPassword()
+	})
 });
