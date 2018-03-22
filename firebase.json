@@ -25,6 +25,10 @@
         "destination": "/login.html"
       },
       {
+        "source": "/kyc_manager",
+        "destination": "/admin-list.html"
+      },
+      {
         "source": "/dashboard",
         "destination": "/dashboard.html"
       }

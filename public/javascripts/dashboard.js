@@ -159,6 +159,8 @@ $(document).ready(function(){
 		if (!user) {
 			console.log('Go to login')
 			window.location.href = "/";
+		} else {
+			$("#preLoader").fadeToggle()
 		}
 	})
 });
