@@ -117,9 +117,7 @@ $(document).ready(function(){
 	firebase.auth().onAuthStateChanged(function(user) {
 		if (user && user.uid) {
 			console.log('Go to Dashboard')
-			setTimeout(function(){
-				window.location.href = "dashboard";
-			},1000);
+			window.location.href = "dashboard";
 		}
 	})
 
