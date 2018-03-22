@@ -10,16 +10,39 @@ function forgotPassword () {
 		})
 }
 
+// Set disbled to dom
+function setDisable(doms) {
+	doms.forEach(function(dom) {
+		dom.disabled = true
+	})
+}
+
+// Remove disabled from dom
+function setEnable(doms) {
+	doms.forEach(function(dom) {
+		dom.disabled = false
+	})
+}
+
 // Login function using in Login page to authorize user with email and password and also check verified status
 function login() {
-	const email = document.getElementById('signInEmail').value
-	const password = document.getElementById('signInPassword').value
+	$('#signInAlert').removeClass('show-alert');
+        let emailDOM = document.getElementById('signInEmail')
+        let passwordDOM = document.getElementById('signInPassword')
+	let btnDOM = document.getElementById('signInBtn')
+        const password = passwordDOM.value
+        const email = emailDOM.value
+	setDisable([emailDOM, passwordDOM, btnDOM])
 	return firebase.auth().signInWithEmailAndPassword(email, password)
-		.then(() => {
-			console.log('Signin : success')
-		})
 		.catch(err => {
-			console.log('Signin : error : ', err)
+			console.log(err)
+			if (err.code == 'auth/wrong-password' || err.code == 'auth/user-not-found') {
+				$('#signInAlertText').html('Invalid email or password');
+			} else {
+				$('#signInAlertText').html(err.message);
+			}
+			$('#signInAlert').addClass('show-alert');
+			setEnable([emailDOM, passwordDOM, btnDOM])
 		})
 }
 
@@ -74,6 +97,12 @@ $(document).ready(function(){
 	$('body').on('click', '.login a.open-forgot', function(){
 		$(this).parents('section').find('.sign-in, .sign-up').removeClass('show-detail')
 		$(this).parents('section').find('.forgot').addClass('show-detail');
+	});
+
+	// Sign
+	$("body").on("click", ".login a.open-sign-in", function(){
+		$(this).parents("section").find(".forgot, .sign-up").removeClass("show-detail");
+		$(this).parents("section").find(".sign-in").addClass("show-detail");
 	});
 
 	$('body').keydown(function(e) {

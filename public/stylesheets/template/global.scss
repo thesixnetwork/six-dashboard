@@ -100,6 +100,12 @@ main.login {
 			label { margin-bottom: $space-m; }
 
 			a { display: block; text-align: center; margin-top: $space-s; color: $font-color-secondary; font-size: $font-size-s; }
+
+			p.alert-text {
+				display: block; color: $green; margin-bottom: $space-m;
+
+				&.error { color: $red; }
+			}
 		}
 
 		.list {
@@ -166,14 +172,15 @@ main.login {
 }
 
 .alert-error {
-	transition: 0.2s; display: flex; min-width: 300px; padding: 0 $space-s; background: $red; height: 0; line-height: 30px; border-radius: $border-radius; visibility: hidden; overflow: hidden;
+	transition: 0.2s; min-width: 300px; padding: 0 $space-s; background: $red; height: 0; line-height: 30px; border-radius: $border-radius; visibility: hidden; overflow: hidden; text-align: center;
 
-	p { color: $white !important; text-align: center; font-weight: bold; }
+	p { color: $white !important; text-align: center; font-weight: bold; display: inline-block; }
 
-	span { color: $white; margin-left: $space-s; }
+	span { color: $white; margin-left: $space-s; display: inline-block; }
 
 	&.show-alert { margin: $space-m auto; height: 30px; overflow: visible; visibility: visible; }
 }
+
 // ====== Countdown ====== //
 $flipColorDark: $gray;
 $textColor: $blue;
