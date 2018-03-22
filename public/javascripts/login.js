@@ -15,11 +15,28 @@ function login() {
 	const email = document.getElementById('signInEmail').value
 	const password = document.getElementById('signInPassword').value
 	return firebase.auth().signInWithEmailAndPassword(email, password)
-		.then(user => {
+		.then(() => {
 			console.log('Signin : success')
 		})
 		.catch(err => {
 			console.log('Signin : error : ', err)
+		})
+}
+
+// AuthFacebook function using in Login page for authorize user's facebook account
+function authFacebook() {
+	let provider = new firebase.auth.FacebookAuthProvider()
+	provider.addScope('email')
+	firebase.auth().languageCode = 'en_EN'
+	provider.setCustomParameters({
+		'display': 'popup'
+	})
+	return firebase.auth().signInWithPopup(provider)
+		.then(() => {
+			console.log('Authorize Facebook : success')
+		})
+		.catch(err => {
+			console.log('Authorize Facebook : error : ', err)
 		})
 }
 
