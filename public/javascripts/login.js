@@ -241,6 +241,8 @@ function checkLoginState(user = undefined) {
 	if (user && user.uid && stopRedirection == false) {
 		console.log('Go to Dashboard')
 		window.location.href = "dashboard";
+	} else {
+		$("#preLoader").fadeToggle()
 	}
 }
 
