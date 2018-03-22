@@ -1,0 +1,26 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: crm-six-network
+  namespace: graphic
+  labels:
+    app: crm-six-network
+spec:
+  revisionHistoryLimit: 0
+  replicas: 1
+  selector:
+    matchLabels:
+      app: crm-six-network
+  template:
+    metadata:
+      labels:
+        app: crm-six-network
+    spec:
+      containers:
+      - name: crm-six-network
+        image: asia.gcr.io/socialenable4/graphic/crm-six-network:TO_BE_REPLACE_TAG
+        imagePullPolicy: Always
+        ports:
+        - name: crm-six-network
+          containerPort: 80
