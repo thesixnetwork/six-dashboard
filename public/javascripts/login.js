@@ -115,6 +115,7 @@ function signUp() {
 				checkLoginState()
 			})
 			.catch((err) => {
+				firebase.auth().signOut()
 				stopRedirection = false
 				console.log(err)
 				$('#signUpAlertText').html(err.message);
@@ -123,6 +124,7 @@ function signUp() {
 			})
 		})
 		.catch(err => {
+			firebase.auth().signOut()
 			stopRedirection = false
 			console.log(err)
 			$('#signUpAlertText').html(err.message);
@@ -157,6 +159,7 @@ function authFacebook() {
 						checkLoginState()
 					})
 					.catch((err) => {
+						firebase.auth().signOut()
 						stopRedirection = false
 						unlockSigninForm()
 						console.log('Authorize Facebook : error : ', err)
@@ -167,12 +170,14 @@ function authFacebook() {
 				}
 			})
 			.catch((err) => {
+				firebase.auth().signOut()
 				stopRedirection = false
 				unlockSigninForm()
 				console.log('Authorize Facebook : error : ', err)
 			})
 		})
 		.catch(err => {
+			firebase.auth().signOut()
 			stopRedirection = false
 			unlockSigninForm()
 			console.log('Authorize Facebook : error : ', err)
@@ -202,6 +207,7 @@ function authGoogle() {
 						checkLoginState()
 					})
 					.catch((err) => {
+						firebase.auth().signOut()
 						stopRedirection = false
 						unlockSigninForm()
 						console.log('Authorize Google : error : ', err)
@@ -212,12 +218,14 @@ function authGoogle() {
 				}
 			})
 			.catch((err) => {
+				firebase.auth().signOut()
 				stopRedirection = false
 				unlockSigninForm()
 				console.log('Authorize Google : error : ', err)
 			})
                 })
                 .catch(err => {
+			firebase.auth().signOut()
 			stopRedirection = false
 			unlockSigninForm()
                         console.log('Authorize Google : error : ', err)
