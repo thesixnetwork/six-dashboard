@@ -40,6 +40,20 @@ function authFacebook() {
 		})
 }
 
+// AuthGoogle function using in Login page for authorize user's google account
+function authGoogle() {
+	let provider = new firebase.auth.GoogleAuthProvider()
+        provider.addScope('email')
+        firebase.auth().languageCode = 'en'
+        return firebase.auth().signInWithPopup(provider)
+                .then(() => {
+                        console.log('Authorize Google : success')
+                })
+                .catch(err => {
+                        console.log('Authorize Google : error : ', err)
+                })
+}
+
 $(document).ready(function(){
 	// Sign up, Sign in
 	$('body').on('click', '.login header .btn-tool a', function(){
