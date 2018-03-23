@@ -101,7 +101,7 @@ app.post("/purchase/:currency", (req, res) => {
     .set(Object.assign(data, { status: "success" }))
     .then(function(result) {
       insertUserTx(buyer_id, data);
-      res.send(result);
+      res.send(Object.assign(data, { status: "success" }));
     })
     .catch(err => {
       res.status(400).send(err);
