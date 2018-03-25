@@ -16,10 +16,9 @@ const BASE_URL = functions.config().campaign.base_url
 //   databaseURL: 'https://six-dashboard.firebaseio.com'
 // })
 
-const Ether = require('./ether')
-
 admin.initializeApp(functions.config().firebase)
 
+const EthereumService = require('./service-ethereum')
 const stellarService = require('./stellar-service')
 
 const fireStore = admin.firestore()
@@ -223,7 +222,7 @@ exports.getUniqueId = functions.https.onRequest((req, res) => {
 })
 
 exports.monitorETH = functions.pubsub.topic('monitor-eth').onPublish(() => {
-  return Ether.monitor('0x56b680aB2DD4aC72de49c1bb024964C7cbc56F0c')
+  return EthereumService.monitor('0x56b680aB2DD4aC72de49c1bb024964C7cbc56F0c')
 })
 
 exports.monitorXLM = functions.pubsub.topic('monitor-xlm').onPublish(stellarService)
