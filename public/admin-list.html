@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+        <!-- Include firebase : update the version number as needed -->
+        <script defer src="/__/firebase/4.11.0/firebase-app.js"></script>
+        <script defer src="/__/firebase/4.11.0/firebase-auth.js"></script>
+        <script defer src="/__/firebase/4.11.0/firebase-database.js"></script>
+        <script defer src="/__/firebase/4.11.0/firebase-firestore.js"></script>
+        <script defer src="/__/firebase/4.11.0/firebase-messaging.js"></script>
+        <script defer src="/__/firebase/4.11.0/firebase-storage.js"></script>
+        <script defer src="/__/firebase/init.js"></script>
+
+        <meta http-equiv="X-UA-Compatible" content="ie=edge">
+        <title>SIX | Reinventing the digital economy</title>
+        <link rel="shortcut icon" href="images/logo/fav.ico" type="image/x-icon">
+        <link rel="stylesheet" href="stylesheets/style.css">
+	<link rel="stylesheet" href="stylesheets/loading.css">
+        <script src="javascripts/jquery-3.2.1.min.js"></script>
+        <script src="javascripts/admin-list.js"></script>
+        <!-- <script src="javascripts/dashboard.js"></script> -->
+	</head>
+	<body>
+                <div id='preLoader'>
+                        <div id='preloadWrapper'>
+                                <img id='preloadImage'src="images/six_network.png">
+                                <div class="spinner">
+                                        <div class="bounce1"></div>
+                                        <div class="bounce2"></div>
+                                        <div class="bounce3"></div>
+                                </div>
+                        </div>
+                </div>
+		<header class="header">
+			<a href="" class="logo"><img src="images/logo/six-logo.png"></a>
+			<ul class="menu">
+				<li><a href="dashboard">Dashboard</a></li>
+				<li id='adminShortcut' style='display: none;'><a href="kyc_manager">Admin</a></li>
+			</ul>
+            <a href="javascript:;" onclick="logOut()" class="logout">Logout&nbsp;<i class="fas fa-sign-out-alt"></i></a>
+		</header>
+	</body>
+
+    <main class="admin" id='adminListMain'>
+        <div class="container">
+			<header>
+				<div class="search show-search">
+					<label class="text">
+						<i class="fas fa-search"></i>
+						<input type="text" placeholder="Search">
+					</label>
+					<i class="fas fa-times"></i>
+				</div>
+			</header>
+			<ul class="list-admin" id='adminList'>
+				<li class="title">
+						<div class="image"></div>
+						<div class="name">
+							<p>First Name</p>
+						</div>
+						<div class="last-name">
+							<p>Last name</p>
+						</div>
+						<div class="email">
+							<p>E-mail</p>
+						</div>
+				</li>
+				
+			</uadmin-detail.htmll>
+        </div>
+    </main>
+
+    <main class="admin-detail" style='display: none;' id='adminDetail'>
+		<div class="container">
+			<div class="detail">
+				<a href="javascript:;" onclick='goBack()' class="back-list"><i class="fas fa-long-arrow-alt-left"></i>&nbsp;back</a>
+				<span class="avatar">
+					<img src="images/avatar/avatar.jpg">
+				</span>
+				<dl>
+					<dt>First name</dt>
+					<dd>
+						<p id='detailFirstName'>Chanyanuch</p>
+					</dd>
+				</dl>
+				<dl>
+					<dt>Last name</dt>
+					<dd>
+						<p id='detailLastName'>Sitti</p>
+					</dd>
+				</dl>
+				<dl>
+					<dt>Email</dt>
+					<dd>
+						<p id='detailEmail'>chanyanuc@computerlogy.com</p>
+					</dd>
+				</dl>
+				<dl>
+					<dt>Phone number</dt>
+					<dd>
+						<p id='detailPhoneNumber'>091-2345678</p>
+					</dd>
+				</dl>
+				<dl>
+					<dt>Nationality (Country)</dt>
+					<dd>
+						<p id='detailCountry'>Thai</p>
+					</dd>
+				</dl>
+				<dl>
+					<dt>Address</dt>
+					<dd>
+						<p id='detailAddress'>124/434 Pattaya city Chonburi 20000</p>
+					</dd>
+				</dl>
+				<dl>
+					<dt>Photo of ID/Passport with signuture</dt>
+					<dd>
+						<span class="image">
+							<img id='detailPic1' src="images/content/detail-01.jpg">
+						</span>
+					</dd>
+				</dl>
+				<dl>
+					<dt>Photo of utility bill to rerify address wite signeture</dt>
+					<dd>
+						<span class="image">
+							<img id='detailPic2' src="images/content/detail-02.jpg">
+						</span>
+					</dd>
+				</dl>
+				<dl>
+					<dt>Estimate price</dt>
+					<dd>
+						<p>
+							<span>Bitcoin&nbsp;(BTC)</span>
+							<span>31</span>
+						</p>
+						<p>
+							<span>Ethereum&nbsp;(ETH)</span>
+							<span>1000</span>
+						</p>
+						<p>
+							<span>Stellar&nbsp;(XLM)</span>
+							<span>1000</span>
+						</p>
+					</dd>
+				</dl>
+			</div>
+			<div class="btn">
+				<button id='approveBtn'>Approve</button>
+				<button id='rejectBtn' class="yellow">Reject</button>
+			</div>
+		</div>
+    </main>
+</html>

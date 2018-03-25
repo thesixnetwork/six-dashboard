@@ -1,3 +1,6 @@
+// global variable for stopping register from redirect before insert to db
+var stopRedirection = false
+
 // Forgot password function using in Login page for recovering user's account
 function forgotPassword () {
 	if ($("#forgotPasswordText").css("display") == 'block') {
@@ -60,6 +63,77 @@ function login() {
 		})
 }
 
+// Lock signin form while authorize using socialmedia
+function lockSigninForm() {
+        let emailDOM = document.getElementById('signInEmail')
+        let passwordDOM = document.getElementById('signInPassword')
+	let btnDOM = document.getElementById('signInBtn')
+	setDisable([emailDOM, passwordDOM, btnDOM])
+}
+
+// Unlock signin form after authorize using socialmedia
+function unlockSigninForm() {
+        let emailDOM = document.getElementById('signInEmail')
+        let passwordDOM = document.getElementById('signInPassword')
+	let btnDOM = document.getElementById('signInBtn')
+	setEnable([emailDOM, passwordDOM, btnDOM])
+}
+
+// Sign up function using in Login page to register user with email and password
+function signUp() {
+	$('#signUpAlert').removeClass('show-alert');
+	let emailDOM = document.getElementById('signUpEmail')
+	let firstNameDOM = document.getElementById('signUpFirstName')
+	let lastNameDOM = document.getElementById('signUpLastName')
+	let phoneNumberDOM = document.getElementById('signUpPhoneNumber')
+	let passwordDOM = document.getElementById('signUpPassword')
+	let btnDOM = document.getElementById('signUpBtn')
+	const email = emailDOM.value
+	const firstName = firstNameDOM.value
+	const lastName = lastNameDOM.value
+	const phoneNumber = phoneNumberDOM.value
+	const password = passwordDOM.value
+	setDisable([emailDOM, firstNameDOM, lastNameDOM, phoneNumberDOM, passwordDOM, btnDOM])
+	if (/^\s*(?:\+?(\d{1,3}))?[-. (]*(\d{3})[-. )]*(\d{3})[-. ]*(\d{4})(?: *x(\d+))?\s*$/.test(phoneNumber) == false) {
+		$('#signUpAlertText').html('Invalid phone number format');
+		$('#signUpAlert').addClass('show-alert');
+		setEnable([emailDOM, firstNameDOM, lastNameDOM, phoneNumberDOM, passwordDOM, btnDOM])
+		return
+	}
+	stopRedirection = true
+	return firebase.auth().createUserWithEmailAndPassword(email, password)
+		.then(res => {
+			const {uid} = res
+			res.sendEmailVerification()
+			return firebase.firestore().collection("users").doc(uid).set({
+				email,
+				firstName,
+				lastName,
+				phoneNumber,
+			})
+			.then(() => {
+				stopRedirection = false
+				checkLoginState()
+			})
+			.catch((err) => {
+				firebase.auth().signOut()
+				stopRedirection = false
+				console.log(err)
+				$('#signUpAlertText').html(err.message);
+				$('#signUpAlert').addClass('show-alert');
+				setEnable([emailDOM, firstNameDOM, lastNameDOM, phoneNumberDOM, passwordDOM, btnDOM])
+			})
+		})
+		.catch(err => {
+			firebase.auth().signOut()
+			stopRedirection = false
+			console.log(err)
+			$('#signUpAlertText').html(err.message);
+			$('#signUpAlert').addClass('show-alert');
+			setEnable([emailDOM, firstNameDOM, lastNameDOM, phoneNumberDOM, passwordDOM, btnDOM])
+		})
+}
+
 // AuthFacebook function using in Login page for authorize user's facebook account
 function authFacebook() {
 	let provider = new firebase.auth.FacebookAuthProvider()
@@ -68,11 +142,45 @@ function authFacebook() {
 	provider.setCustomParameters({
 		'display': 'popup'
 	})
+	stopRedirection = true
+	lockSigninForm()
 	return firebase.auth().signInWithPopup(provider)
-		.then(() => {
-			console.log('Authorize Facebook : success')
+		.then(res => {
+			const {uid} = res.user
+			const {email} = res.user
+			let ref = firebase.firestore().collection("users").doc(uid)
+			return ref.get()
+			.then(docSnapshot => {
+				if (!docSnapshot.exists) {
+					ref.set({
+						email,
+					})
+					.then(() => {
+						stopRedirection = false
+						checkLoginState()
+					})
+					.catch((err) => {
+						firebase.auth().signOut()
+						stopRedirection = false
+						unlockSigninForm()
+						console.log('Authorize Facebook : error : ', err)
+					})
+				} else {
+					stopRedirection = false
+					checkLoginState()
+				}
+			})
+			.catch((err) => {
+				firebase.auth().signOut()
+				stopRedirection = false
+				unlockSigninForm()
+				console.log('Authorize Facebook : error : ', err)
+			})
 		})
 		.catch(err => {
+			firebase.auth().signOut()
+			stopRedirection = false
+			unlockSigninForm()
 			console.log('Authorize Facebook : error : ', err)
 		})
 }
@@ -82,13 +190,60 @@ function authGoogle() {
 	let provider = new firebase.auth.GoogleAuthProvider()
         provider.addScope('email')
         firebase.auth().languageCode = 'en'
+	stopRedirection = true
+	lockSigninForm()
         return firebase.auth().signInWithPopup(provider)
-                .then(() => {
-                        console.log('Authorize Google : success')
+                .then(res => {
+			const {uid} = res.user
+			const {email} = res.user
+			let ref = firebase.firestore().collection("users").doc(uid)
+			return ref.get()
+			.then(docSnapshot => {
+				if (!docSnapshot.exists) {
+					ref.set({
+						email,
+					})
+					.then(() => {
+						stopRedirection = false
+						checkLoginState()
+					})
+					.catch((err) => {
+						firebase.auth().signOut()
+						stopRedirection = false
+						unlockSigninForm()
+						console.log('Authorize Google : error : ', err)
+					})
+				} else {
+					stopRedirection = false
+					checkLoginState()
+				}
+			})
+			.catch((err) => {
+				firebase.auth().signOut()
+				stopRedirection = false
+				unlockSigninForm()
+				console.log('Authorize Google : error : ', err)
+			})
                 })
                 .catch(err => {
+			firebase.auth().signOut()
+			stopRedirection = false
+			unlockSigninForm()
                         console.log('Authorize Google : error : ', err)
                 })
+}
+
+// Check current login state the redirect
+function checkLoginState(user = undefined) {
+	if (user === undefined) {
+		user = firebase.auth().currentUser
+	}
+	if (user && user.uid && stopRedirection == false) {
+		console.log('Go to Dashboard')
+		window.location.href = "dashboard";
+	} else {
+		$("#preLoader").fadeToggle()
+	}
 }
 
 $(document).ready(function(){
@@ -158,10 +313,7 @@ $(document).ready(function(){
 
 	// Listening to auth state change
 	firebase.auth().onAuthStateChanged(function(user) {
-		if (user && user.uid) {
-			console.log('Go to Dashboard')
-			window.location.href = "dashboard";
-		}
+		checkLoginState(user)
 	})
 
 	// Override submit on forgot password form
@@ -174,5 +326,11 @@ $(document).ready(function(){
 	$('#signInForm').submit(function(e) {
 		e.preventDefault()
 		login()
+	})
+
+	// Override submit on signup form
+	$('#signUpForm').submit(function(e) {
+		e.preventDefault()
+		signUp()
 	})
 });

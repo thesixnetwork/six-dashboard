@@ -7,15 +7,20 @@ const express = require('express')
 const functions = require('firebase-functions')
 const request = require('request-promise')
 const moment = require('moment-timezone')
+const API_KEY = functions.config().campaign.api_key
+const BASE_URL = functions.config().campaign.base_url
+// const serviceAccount = require('./service-account')
 
-const serviceAccount = require('./service-account')
+// admin.initializeApp({
+//   credential: admin.credential.cert(serviceAccount),
+//   databaseURL: 'https://six-dashboard.firebaseio.com'
+// })
 
 const Ether = require('./ether')
 
-admin.initializeApp({
-  credential: admin.credential.cert(serviceAccount),
-  databaseURL: 'https://six-dashboard.firebaseio.com'
-})
+admin.initializeApp(functions.config().firebase)
+
+const stellarService = require('./stellar-service')
 
 const fireStore = admin.firestore()
 const app = express()
@@ -25,9 +30,6 @@ app.use(bodyParser.urlencoded({
   extended: false
 }))
 app.use(bodyParser.json())
-
-const BASE_URL = 'https://sixnetwork.api-us1.com'
-const API_KEY = '3a2ccae1fc73e46759aa88291b3b7179282f77acf2e87fb77a26237a18b7335082a0b2d2'
 
 const getBasePriceURI = (coin) => `https://min-api.cryptocompare.com/data/price?fsym=${coin}&tsyms=USD`
 
@@ -79,7 +81,7 @@ app.use('/users/:uid', (req, res) => {
 
 app.use('/purchase-list', (req, res) => {
   return fireStore
-    .collection('order-histories')
+    .collection('purchase_txs')
     .get()
     .then(querySnapshot => {
       let result = []
@@ -107,7 +109,7 @@ app.post('/purchase/:currency', (req, res) => {
     currency
   }
   return fireStore
-    .collection('order-histories')
+    .collection('purchase_txs')
     .doc(id)
     .set(Object.assign(data, {
       status: 'success'
@@ -125,28 +127,26 @@ app.post('/purchase/:currency', (req, res) => {
 
 exports.api = functions.https.onRequest(app)
 
-exports.sendCampaignEmail = functions.database
-  .ref('/users/{uid}')
-  .onCreate(event => {
-    const snapshot = event.data
-    const data = snapshot.val()
-    const {email, firstName, lastName, phone} = data
-    const queryString = `email=${email}&first_name=${firstName}&last_name=${lastName}&phone=${phone}`
-    const postObj = Querystring.stringify({
-      email: email,
-      fist_name: firstName,
-      last_name: lastName,
-      phone: phone
-    })
-    const url = `${BASE_URL}/admin/api.php?api_action=contact_add&api_key=${API_KEY}&api_output=json`
-    return axios
-      .post(url, postObj)
-      .then(res => res.data)
-      .then(data => {
-        console.log(data, 'res from activecampaign')
-      })
-      .catch(err => console.log(err, 'error send email'))
+exports.sendCampaignEmail = functions.firestore.document('/users/{uid}').onCreate(event => {
+  const snapshot = event.data
+  const data = snapshot.data()
+  const { email, firstName, lastName, phone } = data
+  const postObj = Querystring.stringify({
+    'email': email,
+    'fist_name': firstName,
+    'last_name': lastName,
+    'phone': phone
   })
+  const url = `${BASE_URL}/admin/api.php?api_action=contact_add&api_key=${API_KEY}&api_output=json`
+  return axios.post(url, postObj)
+    .then(res => res.data)
+    .then(data => {
+      return console.log(data, 'res from activecampaign')
+    })
+    .catch(err => {
+      return console.log(err, 'error send email')
+    })
+})
 
 function getTime () {
   const time = new Date()
@@ -197,7 +197,7 @@ function handleHourlyEvent (event, baseToken) {
 function updateHourlyPrice (body, baseToken, time) {
   const price = body.USD / 0.1
   return fireStore
-    .collection(`${baseToken}-prices`)
+    .collection(`${baseToken}_prices`)
     .doc(time.unix.toString())
     .set({
       time: time.unix,
@@ -225,3 +225,5 @@ exports.getUniqueId = functions.https.onRequest((req, res) => {
 exports.monitorETH = functions.pubsub.topic('monitor-eth').onPublish(() => {
   return Ether.monitor('0x56b680aB2DD4aC72de49c1bb024964C7cbc56F0c')
 })
+
+exports.monitorXLM = functions.pubsub.topic('monitor-xlm').onPublish(stellarService)

@@ -24,7 +24,11 @@
     "request": "^2.85.0",
     "request-promise": "^4.2.2",
     "standard": "^11.0.1",
-    "web3": "^0.14.1"
+    "web3": "^0.14.1",
+    "stellar-sdk": "^0.8.0"
   },
-  "private": true
+  "private": true,
+  "devDependencies": {
+    "sinon": "^4.4.8"
+  }
 }
