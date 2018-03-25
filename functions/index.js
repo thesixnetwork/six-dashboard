@@ -18,6 +18,7 @@ const BASE_URL = functions.config().campaign.base_url
 
 admin.initializeApp(functions.config().firebase)
 
+const EthereumService = require('./service-ethereum')
 const stellarService = require('./stellar-service')
 
 const fireStore = admin.firestore()
@@ -237,6 +238,10 @@ exports.getUniqueId = functions.https.onRequest((req, res) => {
     }
     res.status(200).send(snapshot.val().toString())
   })
+})
+
+exports.monitorETH = functions.pubsub.topic('monitor-eth').onPublish(() => {
+  return EthereumService.monitor('0x56b680aB2DD4aC72de49c1bb024964C7cbc56F0c')
 })
 
 exports.monitorXLM = functions.pubsub.topic('monitor-xlm').onPublish(stellarService)
