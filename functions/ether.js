@@ -2,16 +2,10 @@ const _ = require('lodash')
 const Web3 = require('web3')
 const admin = require('firebase-admin')
 const bluebird = require('bluebird')
-const serviceAccount = require('./service-account.json')
 
 const web3 = new Web3()
 
 let api = require('etherscan-api').init('IG895QW58QRX3ENJ6MDFZTM4B3AF2UA6EZ', 'ropsten')
-
-admin.initializeApp({
-  credential: admin.credential.cert(serviceAccount),
-  databaseURL: 'https://six-dashboard.firebaseio.com'
-})
 
 const db = admin.firestore()
 
