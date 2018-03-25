@@ -27,42 +27,22 @@ fireStore
 function StellarService(event) {
   console.log('cursor', cursor)
   this.stellarUrl = 'https://horizon-testnet.stellar.org'
-  this.address = 'GBRPMGOMWCWJUQIH4SPULAX5GA3UATN6UPJ522LKNYRHIIGJIW4UZLRK'
+  this.address = 'GDJGQJHY3FNOP7P3BBSUHDKP5NMZL7FABPCBFE7W3OTDVEHEQMVX6B32'
   //this.stellarUrl = functions.config().campaign.is_production === 'true' ? 'https://horizon.stellar.org' : 'https://horizon-testnet.stellar.org'
   //this.address = functions.config().xlm.address
 
   return server.payments().forAccount(this.address).order("desc").call().then((payments) => {
+    const records = [];
     for (let i = 0; i < payments.records.length; i++) {
       if (new Date(payments.records[i].created_at).getTime() <= new Date(cursor).getTime()) {
         break;
       }
 
-
-      payments.records[i].transaction().then(function(tx) {
-        if (!tx.hasOwnProperty('memo')) {
-          return {
-              tx
-          }
-        }
-        return fireStore
-          .collection('users')
-          .where('xlm_memo', '==', tx.memo)
-          .get()
-          .then((snapshot) => {
-            const users = [];
-            snapshot.forEach((user) => {
-              let _user = user.data()
-              _user.id = user.id
-              users.push(_user)
-            })
-            return {
-                tx,
-                user: users[0]
-            }
-          })
-      }).then((body) => {
+      records.push(payments.records[i].transaction().then(findUser).then(findPrice).then((body) => {
         const tx = body.tx
         const user = body.user
+        const price = body.price
+        const timeZero = body.timeZero
 
         tx.operations().then((operations) => {
           const records = operations._embedded.records
@@ -74,41 +54,20 @@ function StellarService(event) {
             if (records[j].to !== this.address) {
               continue
             }
-
-            const time = new Date()
-            const timeZero = time.setMinutes(0, 0, 0)
-
-            fireStore
-              .collection('xlm_prices')
-              .doc(timeZero.toString())
-              .get()
-              .then(snapshot => snapshot.data())
-              .then((price) => {
-                if (!price.price) {
-                  time.setHours(time.getHours() - 1, 0, 0, 0)
-                  fireStore
-                    .collection('xlm_prices')
-                    .doc(timeZero.toString())
-                    .get()
-                    .then(snapshot => snapshot.data())
-                    .then((price) => {
-                      return handleOperation(tx, records[j], j, price, timeZero)
-                    })
-                }
-
-                return handleOperation(user, tx, records[j], j, price, timeZero)
-              }).then((update) => {
-
-              if (new Date(payments.records[i].created_at).getTime() <= cursor) {
-                return update
-              }
-
-              return updateCursor(payments, i)
-            })
+            return handleOperation(user, tx, records[j], j, price, timeZero)
           }
+
+        }).then((update) => {
+          if (new Date(payments.records[i].created_at).getTime() <= cursor) {
+            return update
+          }
+
+          return updateCursor(payments, i)
         })
       })
+      )
     }
+    return Promise.all(records)
   })
 }
 
@@ -158,6 +117,7 @@ function handleOperation(user, tx, operation, n, price, priceTime) {
       .set(body)
   }
 
+
   const user_id = user.id
   body.user_id = user_id
 
@@ -165,5 +125,68 @@ function handleOperation(user, tx, operation, n, price, priceTime) {
     .collection('purchase_txs')
     .doc(`${hash}_${operation.id}`)
     .set(body)
+}
+
+function findUser(tx) {
+  if (!tx.hasOwnProperty('memo')) {
+    return {
+      tx
+    }
+  }
+  return fireStore
+    .collection('users')
+    .where('xlm_memo', '==', tx.memo)
+    .get()
+    .then((snapshot) => {
+      const users = [];
+      snapshot.forEach((user) => {
+        let _user = user.data()
+        _user.id = user.id
+        users.push(_user)
+      })
+      return {
+        tx,
+        user: users[0]
+      }
+    })
+}
+
+function findPrice(body) {
+  const tx = body.tx
+  const user = body.user
+  const time = new Date()
+  let timeZero = time.setMinutes(0, 0, 0)
+
+  return fireStore
+    .collection('xlm_prices')
+    .doc(timeZero.toString())
+    .get()
+    .then(snapshot => snapshot.data())
+    .then((price) => {
+      if (!price.price) {
+        timeZero = time.setHours(time.getHours() - 1, 0, 0, 0)
+        fireStore
+          .collection('xlm_prices')
+          .doc(timeZero.toString())
+          .get()
+          .then(snapshot => snapshot.data())
+          .then((price) => {
+            return {
+              tx,
+              user,
+              timeZero,
+              price
+            }
+          })
+      }
+
+      return {
+        tx,
+        user,
+        timeZero,
+        price
+      }
+    })
+
 }
 module.exports = StellarService;
