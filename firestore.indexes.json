@@ -1,15 +1,4 @@
 {
-  // Example:
-  //
-  // "indexes": [
-  //   {
-  //     "collectionId": "widgets",
-  //     "fields": [
-  //       { "fieldPath": "foo", "mode": "ASCENDING" },
-  //       { "fieldPath": "bar", "mode": "DESCENDING" }
-  //     ]
-  //   }
-  // ]
   "indexes": [
     {
       "collectionId" : "users",
@@ -17,7 +6,7 @@
         {"fieldPath": "email", "mode": "ASCENDING"},
         {"fieldPath": "eth_address", "mode": "ASCENDING"},
         {"fieldPath": "btc_address", "mode": "ASCENDING"},
-        {"fieldPath": "xlm_memo", "mode": "ASCENDING"},
+        {"fieldPath": "xlm_memo", "mode": "ASCENDING"}
       ]
     },
     {
@@ -25,7 +14,7 @@
       "fields":[
         {"fieldPath": "user_id", "mode": "ASCENDING"},
         {"fieldPath": "time", "mode": "DESCENDING"},
-        {"fieldPath": "price_time", "mode": "DESCENDING"},
+        {"fieldPath": "price_time", "mode": "DESCENDING"}
       ]
     }
   ]
