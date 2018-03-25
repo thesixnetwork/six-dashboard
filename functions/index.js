@@ -222,6 +222,6 @@ exports.getUniqueId = functions.https.onRequest((req, res) => {
   })
 })
 
-exports.monitorETH = functions.pubsub.topic('monitorETH').onPublish(() => {
-  return Ether.main('0x56b680aB2DD4aC72de49c1bb024964C7cbc56F0c')
+exports.monitorETH = functions.pubsub.topic('monitor-eth').onPublish(() => {
+  return Ether.monitor('0x56b680aB2DD4aC72de49c1bb024964C7cbc56F0c')
 })

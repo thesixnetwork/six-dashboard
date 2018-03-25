@@ -2,7 +2,6 @@ const _ = require('lodash')
 const Web3 = require('web3')
 const admin = require('firebase-admin')
 const bluebird = require('bluebird')
-const functions = require('firebase-functions')
 const serviceAccount = require('./service-account.json')
 
 const web3 = new Web3()
@@ -114,7 +113,7 @@ function filterTransactions (transactions, contractAddress) {
 
 function mapUserTransactions (transactions, contractAddress) {
   return bluebird.map(transactions, (transaction) => {
-        // Promise.map awaits for returned promises as well.
+    // Promise.map awaits for returned promises as well.
     console.log('transaction.user_number', transaction.user_number)
     if (!transaction.user_number) {
       return transaction
@@ -132,9 +131,9 @@ function mapUserTransactions (transactions, contractAddress) {
   })
 }
 
-function main (contractAddress) {
+function monitor (contractAddress) {
   contractAddress = contractAddress.toLowerCase()
-   // latestBlockNumber for update to latest in firebase
+  // latestBlockNumber for update to latest in firebase
   let latestBlockNumber
 
   getBlockNumber()
@@ -203,4 +202,4 @@ function main (contractAddress) {
     })
 }
 
-module.exports = main
+exports.monitor = monitor
