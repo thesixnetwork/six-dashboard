@@ -4,79 +4,68 @@ const admin = require('firebase-admin') //delet
 const server = new StellarSdk.Server('https://horizon-testnet.stellar.org');
 const Promise = require('bluebird')
 
-let cursor = "2018-03-25T13:41:12Z"
+let cursor = "2018-03-25T13:41:12Z" //init
 
 const serviceAccount = require('./service-account')
 
-admin.initializeApp({
-  credential: admin.credential.cert(serviceAccount),
-  databaseURL: 'https://six-dashboard.firebaseio.com'
-})
-
 const fireStore = admin.firestore() //detelete
 
-fireStore
-  .collection('latest_block_sync')
-  .doc('xlm')
-  .get()
-  .then(snapshot => snapshot.data())
-  .then(doc => {
-    cursor = doc.ts
-  })
-
 function StellarService(event) {
-  console.log('cursor', cursor)
-  this.stellarUrl = 'https://horizon-testnet.stellar.org'
-  this.address = 'GDJGQJHY3FNOP7P3BBSUHDKP5NMZL7FABPCBFE7W3OTDVEHEQMVX6B32'
-  //this.stellarUrl = functions.config().campaign.is_production === 'true' ? 'https://horizon.stellar.org' : 'https://horizon-testnet.stellar.org'
-  //this.address = functions.config().xlm.address
+  this.stellarUrl = functions.config().campaign.is_production === 'true' ? 'https://horizon.stellar.org' : 'https://horizon-testnet.stellar.org'
+  this.address = functions.config().xlm.address
 
-  return server.payments().forAccount(this.address).order("desc").call().then((payments) => {
-    const records = [];
-    for (let i = 0; i < payments.records.length; i++) {
-      if (new Date(payments.records[i].created_at).getTime() <= new Date(cursor).getTime()) {
-        break;
-      }
+  return getCursor().then((cursor) => {
+    console.log("cursor = ", JSON.stringify(cursor, null, 4));
+    return server.payments().forAccount(this.address).order("desc").limit(200).call().then((payments) => {
+      const records = [];
+      for (let i = 0; i < payments.records.length; i++) {
+        if (new Date(payments.records[i].created_at).getTime() <= new Date(cursor).getTime()) {
+          break;
+        }
 
-      records.push(payments.records[i].transaction().then(findUser).then(findPrice).then((body) => {
-        const tx = body.tx
-        const user = body.user
-        const price = body.price
-        const timeZero = body.timeZero
+        records.push(payments.records[i].transaction().then(findUser).then(findPrice).then((body) => {
+          const tx = body.tx
+          const user = body.user
+          const price = body.price
+          const timeZero = body.timeZero
 
-        tx.operations().then((operations) => {
-          const records = operations._embedded.records
-          const operationLength = operations._embedded.records.length
-          for (let j = 0; j < operationLength; j++) {
-            if (records[j].type !== 'payment') {
-              continue
+          tx.operations().then((operations) => {
+            const records = operations._embedded.records
+            const operationLength = operations._embedded.records.length
+            for (let j = 0; j < operationLength; j++) {
+              if (records[j].type !== 'payment') {
+                continue
+              }
+              if (records[j].to !== this.address) {
+                continue
+              }
+              return handleOperation(user, tx, records[j], j, price, timeZero)
             }
-            if (records[j].to !== this.address) {
-              continue
+
+          }).then((update) => {
+            const newTime = new Date(payments.records[i].created_at).getTime()
+
+            if (newTime <= cursor) {
+              return update
             }
-            return handleOperation(user, tx, records[j], j, price, timeZero)
-          }
 
-        }).then((update) => {
-          if (new Date(payments.records[i].created_at).getTime() <= cursor) {
-            return update
-          }
-
-          return updateCursor(payments, i)
+            return updateCursor(newTime)
+          })
         })
-      })
-      )
-    }
-    return Promise.all(records)
+        )
+      }
+      return Promise.all(records)
+    })
   })
 }
 
-function updateCursor(payments, i) {
+function updateCursor(newTime) {
+  console.log("cursor updating  = ", JSON.stringify(newTime, null, 4));
   return fireStore
     .collection('latest_block_sync')
     .doc('xlm')
-    .get({
-      ts: payments.records[i].created_at
+    .set({
+      ts: newTime
     })
 }
 
@@ -188,5 +177,16 @@ function findPrice(body) {
       }
     })
 
+}
+
+function getCursor() {
+  return fireStore
+    .collection('latest_block_sync')
+    .doc('xlm')
+    .get()
+    .then(snapshot => snapshot.data())
+    .then(doc => {
+      return doc.ts
+    })
 }
 module.exports = StellarService;

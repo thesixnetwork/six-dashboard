@@ -9,12 +9,13 @@ const request = require('request-promise')
 const moment = require('moment-timezone')
 
 const serviceAccount = require('./service-account')
-const stellarService = require('./stellar-service')
 
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
   databaseURL: 'https://six-dashboard.firebaseio.com'
 })
+
+const stellarService = require('./stellar-service')
 
 const fireStore = admin.firestore()
 const app = express()
