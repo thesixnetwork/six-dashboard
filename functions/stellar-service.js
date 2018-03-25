@@ -4,8 +4,6 @@ const admin = require('firebase-admin') //delet
 const server = new StellarSdk.Server('https://horizon-testnet.stellar.org');
 const Promise = require('bluebird')
 
-let cursor = "2018-03-25T13:41:12Z" //init
-
 const serviceAccount = require('./service-account')
 
 const fireStore = admin.firestore() //detelete
@@ -15,11 +13,10 @@ function StellarService(event) {
   this.address = functions.config().xlm.address
 
   return getCursor().then((cursor) => {
-    console.log("cursor = ", JSON.stringify(cursor, null, 4));
     return server.payments().forAccount(this.address).order("desc").limit(200).call().then((payments) => {
       const records = [];
       for (let i = 0; i < payments.records.length; i++) {
-        if (new Date(payments.records[i].created_at).getTime() <= new Date(cursor).getTime()) {
+        if (new Date(payments.records[i].created_at).getTime() <= cursor) {
           break;
         }
 
@@ -32,6 +29,7 @@ function StellarService(event) {
           tx.operations().then((operations) => {
             const records = operations._embedded.records
             const operationLength = operations._embedded.records.length
+            const operationTxs = []
             for (let j = 0; j < operationLength; j++) {
               if (records[j].type !== 'payment') {
                 continue
@@ -39,9 +37,10 @@ function StellarService(event) {
               if (records[j].to !== this.address) {
                 continue
               }
-              return handleOperation(user, tx, records[j], j, price, timeZero)
+              operationTxs.push(handleOperation(user, tx, records[j], j, price, timeZero))
             }
 
+            return Promise.all(operationTxs)
           }).then((update) => {
             const newTime = new Date(payments.records[i].created_at).getTime()
 
@@ -77,7 +76,7 @@ function handleOperation(user, tx, operation, n, price, priceTime) {
   const six_amount = +(operation.amount * price.six_per_xlm).toFixed(7)
   const receive_account = tx.source_account
   const type = 'xlm'
-  const total_usd_price = price.price
+  const total_usd_price = price.price * (+operation.amount)
   const price_time = priceTime;
   const time = new Date(tx.created_at).getTime()
   const xlm_meta = {
