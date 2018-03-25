@@ -17,6 +17,7 @@
 	<title>SIX | Reinventing the digital economy</title>
 	<link rel="shortcut icon" href="images/logo/fav.ico" type="image/x-icon">
 	<link rel="stylesheet" href="stylesheets/style.css">
+	<link rel="stylesheet" href="stylesheets/loading.css">
 	<script src="javascripts/jquery-3.2.1.min.js"></script>
 	<script src="javascripts/login.js"></script>
 </head>
@@ -52,13 +53,16 @@
 				<div class="sign-up">
 					<h1>Sign up</h1>
 					<p>It is a long established face that a reader will be distracted by the readable content of a page.</p>
-					<form>
-						<label class="text"><input type="email" placeholder="Email" required></label>
-						<label class="text"><input type="text" placeholder="First name" required></label>
-						<label class="text"><input type="text" placeholder="Last name" required></label>
-						<label class="text"><input type="text" placeholder="Phone number" required></label>
-						<label class="text"><input type="password" placeholder="Password" required></label>
-						<button>Sign up</button>
+					<form id="signUpForm">
+						<label class="text"><input id="signUpEmail" type="email" placeholder="Email" required></label>
+						<label class="text"><input id="signUpFirstName" type="text" placeholder="First name" required></label>
+						<label class="text"><input id="signUpLastName" type="text" placeholder="Last name" required></label>
+						<label class="text"><input id="signUpPhoneNumber" type="text" placeholder="Phone number" required></label>
+						<label class="text"><input id="signUpPassword" type="password" placeholder="Password" required></label>
+						<div id='signUpAlert' class="alert-error">
+							<p id='signUpAlertText'>Error</p>
+						</div>
+						<button id='signUpBtn'>Sign up</button>
 					</form>
 				</div>
 				<div class="forgot">
@@ -73,7 +77,7 @@
 			</div>
 			<footer>
 				<p>&copy; 2018 SIX Corporation</p>
-				<p>Terms & Policy</p>
+				<p>Terms &amp; Policy</p>
 			</footer>
 		</section>
 		<section>
@@ -90,6 +94,16 @@
 				<li><i class="fas fa-circle"></i></li>
 			</ul>
 		</section>
+		<div id='preLoader'>
+			<div id='preloadWrapper'>
+				<img id='preloadImage'src="images/six_network.png">
+				<div class="spinner">
+					<div class="bounce1"></div>
+					<div class="bounce2"></div>
+					<div class="bounce3"></div>
+				</div>
+			</div>
+		</div>
 	</main>
 </body>
 </html>

@@ -7,13 +7,18 @@ const express = require('express')
 const functions = require('firebase-functions')
 const request = require('request-promise')
 const moment = require('moment-timezone')
+const API_KEY = functions.config().campaign.api_key
+const BASE_URL = functions.config().campaign.base_url
+// const serviceAccount = require('./service-account')
 
-const serviceAccount = require('./service-account')
+// admin.initializeApp({
+//   credential: admin.credential.cert(serviceAccount),
+//   databaseURL: 'https://six-dashboard.firebaseio.com'
+// })
 
-admin.initializeApp({
-  credential: admin.credential.cert(serviceAccount),
-  databaseURL: 'https://six-dashboard.firebaseio.com'
-})
+admin.initializeApp(functions.config().firebase)
+
+const stellarService = require('./stellar-service')
 
 const fireStore = admin.firestore()
 const app = express()
@@ -23,9 +28,6 @@ app.use(bodyParser.urlencoded({
   extended: false
 }))
 app.use(bodyParser.json())
-
-const BASE_URL = 'https://sixnetwork.api-us1.com'
-const API_KEY = '3a2ccae1fc73e46759aa88291b3b7179282f77acf2e87fb77a26237a18b7335082a0b2d2'
 
 const getBasePriceURI = (coin) => `https://min-api.cryptocompare.com/data/price?fsym=${coin}&tsyms=USD`
 
@@ -77,7 +79,7 @@ app.use('/users/:uid', (req, res) => {
 
 app.use('/purchase-list', (req, res) => {
   return fireStore
-    .collection('order-histories')
+    .collection('purchase_txs')
     .get()
     .then(querySnapshot => {
       let result = []
@@ -105,7 +107,7 @@ app.post('/purchase/:currency', (req, res) => {
     currency
   }
   return fireStore
-    .collection('order-histories')
+    .collection('purchase_txs')
     .doc(id)
     .set(Object.assign(data, {
       status: 'success'
@@ -212,7 +214,7 @@ function handleHourlyEvent (event, baseToken) {
 function updateHourlyPrice (body, baseToken, time) {
   const price = body.USD / 0.1
   return fireStore
-    .collection(`${baseToken}-prices`)
+    .collection(`${baseToken}_prices`)
     .doc(time.unix.toString())
     .set({
       time: time.unix,
@@ -236,3 +238,5 @@ exports.getUniqueId = functions.https.onRequest((req, res) => {
     res.status(200).send(snapshot.val().toString())
   })
 })
+
+exports.monitorXLM = functions.pubsub.topic('monitor-xlm').onPublish(stellarService)

@@ -4,6 +4,20 @@ function logOut() {
 	firebase.auth().signOut()
 }
 
+function initializeAdmin() {
+	let promise = new Promise(function(resolve, reject) {
+		let db = firebase.firestore()
+		db.collection('admins').get()
+		.then(() => {
+			resolve()
+		})
+		.catch(() => {
+			reject()
+		})
+	})
+	return promise
+}
+
 $(document).ready(function(){
 	// ===================== //
 	// ===== Countdown ===== //
@@ -159,6 +173,12 @@ $(document).ready(function(){
 		if (!user) {
 			console.log('Go to login')
 			window.location.href = "/";
+		} else {
+			initializeAdmin().then(() => {
+				$("#adminShortcut").css("display", "block")
+			}).finally(() => {
+				$("#preLoader").fadeToggle()
+			})
 		}
 	})
 });

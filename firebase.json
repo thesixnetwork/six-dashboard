@@ -17,8 +17,8 @@
         "destination": "/login.html"
       },
       {
-        "source": "/login",
-        "destination": "/login.html"
+        "source": "/kyc_manager",
+        "destination": "/admin-list.html"
       },
       {
         "source": "/dashboard",
@@ -28,5 +28,8 @@
   },
   "storage": {
     "rules": "storage.rules"
+  },
+  "database":{
+    "rules": "database-rules.json"
   }
 }
