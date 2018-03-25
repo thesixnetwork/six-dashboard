@@ -9,6 +9,7 @@ const request = require('request-promise')
 const moment = require('moment-timezone')
 
 const serviceAccount = require('./service-account')
+const stellarService = require('./stellar-service')
 
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
@@ -195,7 +196,7 @@ function handleHourlyEvent (event, baseToken) {
 function updateHourlyPrice (body, baseToken, time) {
   const price = body.USD / 0.1
   return fireStore
-    .collection(`${baseToken}-prices`)
+    .collection(`${baseToken}_prices`)
     .doc(time.unix.toString())
     .set({
       time: time.unix,
@@ -219,3 +220,5 @@ exports.getUniqueId = functions.https.onRequest((req, res) => {
     res.status(200).send(snapshot.val().toString())
   })
 })
+
+exports.monitorXLM = functions.pubsub.topic('monitor-xlm').onPublish(stellarService)
