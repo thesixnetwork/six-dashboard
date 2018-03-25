@@ -18,6 +18,8 @@ const BASE_URL = functions.config().campaign.base_url
 
 admin.initializeApp(functions.config().firebase)
 
+const stellarService = require('./stellar-service')
+
 const fireStore = admin.firestore()
 const app = express()
 
@@ -193,7 +195,7 @@ function handleHourlyEvent (event, baseToken) {
 function updateHourlyPrice (body, baseToken, time) {
   const price = body.USD / 0.1
   return fireStore
-    .collection(`${baseToken}-prices`)
+    .collection(`${baseToken}_prices`)
     .doc(time.unix.toString())
     .set({
       time: time.unix,
@@ -217,3 +219,5 @@ exports.getUniqueId = functions.https.onRequest((req, res) => {
     res.status(200).send(snapshot.val().toString())
   })
 })
+
+exports.monitorXLM = functions.pubsub.topic('monitor-xlm').onPublish(stellarService)
