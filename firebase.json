@@ -25,6 +25,10 @@
         "destination": "/admin-list.html"
       },
       {
+        "source": "/wizard",
+        "destination": "/wizard.html"
+      },
+      {
         "source": "/dashboard",
         "destination": "/dashboard.html"
       }
