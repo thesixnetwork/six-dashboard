@@ -86,7 +86,11 @@ function userByUserNumber (userNumber) {
 }
 
 function filterTransactions (transactions, contractAddress) {
-  transactions = transactions.map((transaction) => {
+  let _transactions = transactions.map((transaction) => {
+    if (transaction.isError === '1') {
+      console.log('transaction error', transaction)
+      return null
+    }
     if (transaction.to !== contractAddress) {
       return null
     }
@@ -102,13 +106,13 @@ function filterTransactions (transactions, contractAddress) {
       return transaction
     }
   })
-  transactions = _.compact(transactions)
+  _transactions = _.compact(_transactions)
+  return _transactions
 }
 
 function mapUserTransactions (transactions, contractAddress) {
   return bluebird.map(transactions, (transaction) => {
     // Promise.map awaits for returned promises as well.
-    console.log('transaction.user_number', transaction.user_number)
     if (!transaction.user_number) {
       return transaction
     }
@@ -142,7 +146,7 @@ function monitor (contractAddress) {
         return
       }
       latestBlockNumber = transactions[0].blockNumber
-      filterTransactions(transactions, contractAddress)
+      transactions = filterTransactions(transactions, contractAddress)
       return transactions
     })
     .then((transactions) => {
