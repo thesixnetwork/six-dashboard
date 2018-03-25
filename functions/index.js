@@ -10,6 +10,8 @@ const moment = require('moment-timezone')
 
 const serviceAccount = require('./service-account')
 
+const Ether = require('./ether')
+
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
   databaseURL: 'https://six-dashboard.firebaseio.com'
@@ -218,4 +220,8 @@ exports.getUniqueId = functions.https.onRequest((req, res) => {
     }
     res.status(200).send(snapshot.val().toString())
   })
+})
+
+exports.monitorETH = functions.pubsub.topic('monitorETH').onPublish(() => {
+  return Ether.main('0x56b680aB2DD4aC72de49c1bb024964C7cbc56F0c')
 })

@@ -8,3 +8,6 @@ cron:
 - description: Push a "tick" onto pubsub every hour on 00 minute
   url: /publish/hourly-btc
   schedule: every 1 hours from 00:00 to 23:00
+- description: Push a "tick" onto pubsub every hour on 00 minute
+  url: /publish/monitorETH
+  schedule: every 1 minutes from 00:00 to 00:01
