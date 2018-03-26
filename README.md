@@ -7,3 +7,9 @@ Or
 ```bash
  ./deploy_config/development.sh
 ```
+
+2. Run test cloud functions locally
+```bash
+firebase functions:config:get > .runtimeconfig.json
+firebase serve --only functions
+```
