@@ -2,6 +2,7 @@ const emailTemplate = require('./emailHtmlTemplate')
 const Querystring = require('query-string')
 const nodemailer = require('nodemailer')
 const axios = require('axios')
+const web3 = require('web3')
 const path = '/users/{uid}'
 
 module.exports = function (functions, fireStore) {
@@ -85,7 +86,7 @@ function addUserNumber (event, functions, fireStore) {
       return Promise.reject(new Error('user number generator path does not exists.'))
     }
     const newLatestNumber = doc.data().latest_number + 1
-    const memo = JSON.stringify({n: newLatestNumber})
+    const memo = web3.utils.stringToHex(JSON.stringify({n: newLatestNumber}))
     return Promise.all([tx.update(userRef, {user_number: newLatestNumber, memo, uid}), tx.update(userNumberRef, {latest_number: newLatestNumber})])
   })
   )
