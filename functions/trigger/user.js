@@ -70,9 +70,9 @@ function checkPresaleDiscount (event, functions, fireStore) {
     }
     return tx.get(totalEthRef).then(doc => {
       const totalETH = doc.data().total_eth
-      const latestTotalETH = totalETH + (userData.reserve_eth || 0)
+      const latestTotalETH = totalETH + estimate
       if (latestTotalETH > 15000) return Promise.reject(new Error('Presale is soldout.'))
-      return Promise.all([tx.update(totalEthRef, {total_eth: latestTotalETH}), tx.set(presaleUserRef, {total_eth: latestTotalETH})])
+      return Promise.all([tx.update(totalEthRef, {total_eth: latestTotalETH}), tx.set(presaleUserRef, {total_eth: estimate})])
     })
   }))
 }
