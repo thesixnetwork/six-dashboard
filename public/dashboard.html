@@ -1,297 +1,210 @@
 <!DOCTYPE html>
 <html lang="en">
 	<head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-        <!-- Include firebase : update the version number as needed -->
-        <script defer src="/__/firebase/4.11.0/firebase-app.js"></script>
-        <script defer src="/__/firebase/4.11.0/firebase-auth.js"></script>
-        <script defer src="/__/firebase/4.11.0/firebase-database.js"></script>
-        <script defer src="/__/firebase/4.11.0/firebase-firestore.js"></script>
-        <script defer src="/__/firebase/4.11.0/firebase-messaging.js"></script>
-        <script defer src="/__/firebase/4.11.0/firebase-storage.js"></script>
-        <script defer src="/__/firebase/init.js"></script>
-
-        <meta http-equiv="X-UA-Compatible" content="ie=edge">
-        <title>SIX | Reinventing the digital economy</title>
-        <link rel="shortcut icon" href="images/logo/fav.ico" type="image/x-icon">
-        <link rel="stylesheet" href="stylesheets/style.css">
-	<link rel="stylesheet" href="stylesheets/loading.css">
-        <script src="javascripts/jquery-3.2.1.min.js"></script>
-        <script src="javascripts/dashboard.js"></script>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<meta http-equiv="X-UA-Compatible" content="ie=edge">
+		<title>SIX | Reinventing the digital economy</title>
+		<link rel="shortcut icon" href="images/logo/fav.ico" type="image/x-icon">
+		<link rel="stylesheet" href="stylesheets/style.css">
+		<script src="javascripts/jquery-3.2.1.min.js"></script>
+		<!-- <script src="javascripts/dashboard.js"></script> -->
 	</head>
 	<body>
-		<div id='preLoader'>
-			<div id='preloadWrapper'>
-				<img id='preloadImage'src="images/six_network.png">
-				<div class="spinner">
-					<div class="bounce1"></div>
-					<div class="bounce2"></div>
-					<div class="bounce3"></div>
-				</div>
-			</div>
-		</div>
 		<header class="header">
 			<a href="" class="logo"><img src="images/logo/six-logo.png"></a>
 			<ul class="menu">
-                <li><a href="dashboard">Dashboard</a></li>
-                <li id='adminShortcut' style='display: none;'><a href="kyc_manager">Admin</a></li>
-            </ul>
-            <a href="javascript:;" onclick="logOut()" class="logout">Logout&nbsp;<i class="fas fa-sign-out-alt"></i></a>
+				<li><a href="wizard.html">Wizard</a></li>
+				<li><a href="dashboard.html">Dashboard</a></li>
+				<li><a href="admin-list.html">Admin</a></li>
+			</ul>
+			<a href="login.html" class="logout">Logout&nbsp;<i class="fas fa-sign-out-alt"></i></a>
 		</header>
 	</body>
+	<main class="dashboard">
+			<div class="container">
+				<div class="twin">
+					<section class="user-detail">
+						<article>
+							<p>Hello&nbsp;<span>Vachara A.</span></p>
+						</article>
+						<article>
+							<!-- <p>Your total SIX</p>
+							<p>123,412 SIX</p> -->
+							<p>Your total SIX&nbsp;<span>123,412 SIX</span></p>
+						</article>
+					</section>
+					<section class="progress">
+						<p>Progress</p>
+						<div class="bar">
+							<p>Pass</p>
+							<p>Max</p>
+							<span class="available"></span>
+						</div>
+					</section>
+					
+				</div>
+				<section class="transaction-history with-table">
+					<header>
+						<h2>Transaction History</h2>
+					</header>
+					<table>
+						<thead>
+							<tr>
+								<th width="150">From</th>
+								<th width="150">To</th>
+								<th>Transaction ID</th>
+								<th width="150">Date</th>
+								<th width="200">Time</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr>
+								<td>0.05 BTC</td>
+								<td>41254.7 SIX</td>
+								<td>MN91LKF93O41829JHWEDWDKWDJKWHUK</td>
+								<td>2018-03-15</td>
+								<td>14:22:11 +07:00</td>
+							</tr>
+							<tr>
+								<td>0.05 BTC</td>
+								<td>41254.7 SIX</td>
+								<td>MN91LKF93O41829JHWEDWDKWDJKWHUK</td>
+								<td>2018-03-15</td>
+								<td>14:22:11 +07:00</td>
+							</tr>
+							<tr>
+								<td>0.05 BTC</td>
+								<td>41254.7 SIX</td>
+								<td>MN91LKF93O41829JHWEDWDKWDJKWHUK</td>
+								<td>2018-03-15</td>
+								<td>14:22:11 +07:00</td>
+							</tr>
+							<tr>
+								<td>0.05 BTC</td>
+								<td>41254.7 SIX</td>
+								<td>MN91LKF93O41829JHWEDWDKWDJKWHUK</td>
+								<td>2018-03-15</td>
+								<td>14:22:11 +07:00</td>
+							</tr>
+							<tr>
+								<td>0.05 BTC</td>
+								<td>41254.7 SIX</td>
+								<td>MN91LKF93O41829JHWEDWDKWDJKWHUK</td>
+								<td>2018-03-15</td>
+								<td>14:22:11 +07:00</td>
+							</tr>
+						</tbody>
+					</table>
+					<div class="loader-more">
+							<a href="#">More</a>
+					</div>
+					
+					<table style="display: none;">
+						<tbody>
+							<tr>
+								<td>0.05 BTC</td>
+								<td>41254.7 SIX</td>
+								<td>MN91LKF93O41829JHWEDWDKWDJKWHUK</td>
+								<td>2018-03-15</td>
+								<td>14:22:11 +07:00</td>
+							</tr>
+							<tr>
+								<td>0.05 BTC</td>
+								<td>41254.7 SIX</td>
+								<td>MN91LKF93O41829JHWEDWDKWDJKWHUK</td>
+								<td>2018-03-15</td>
+								<td>14:22:11 +07:00</td>
+							</tr>
+							<tr>
+								<td>0.05 BTC</td>
+								<td>41254.7 SIX</td>
+								<td>MN91LKF93O41829JHWEDWDKWDJKWHUK</td>
+								<td>2018-03-15</td>
+								<td>14:22:11 +07:00</td>
+							</tr>
+							<tr>
+								<td>0.05 BTC</td>
+								<td>41254.7 SIX</td>
+								<td>MN91LKF93O41829JHWEDWDKWDJKWHUK</td>
+								<td>2018-03-15</td>
+								<td>14:22:11 +07:00</td>
+							</tr>
+							<tr>
+								<td>0.05 BTC</td>
+								<td>41254.7 SIX</td>
+								<td>MN91LKF93O41829JHWEDWDKWDJKWHUK</td>
+								<td>2018-03-15</td>
+								<td>14:22:11 +07:00</td>
+							</tr>
+						</tbody>
+					</table>
+				</section>
 
-    <main class="dashboard">
-        <section>
-            <div class="container">
-                <ul class="step">
-                    <li class="current"><div class="circle"></div><p>Verify Email</p></li>
-                    <li class="current"><div class="circle"></div><p>KYC</p></li>
-                    <li><div class="circle"></div><p>Wallet Address</p></li>
-                    <li><div class="circle"></div><p>ICO</p></li>
-                </ul>
-            </div>
-        </section>
-        <section>
-            <div class="container">
-                <div class="step-form">
-                    <div class="loading">
-                        <p>
-                            <i class="fas fa-spinner fa-spin"></i>
-                            <span>Loading</span>
-                        </p>
-                    </div>
-                    <div class="kyc-form show-detail">
-                        <dl>
-                            <dt>First name</dt>
-                            <dd>
-                                <label class="text invalid">
-                                    <input type="text" placeholder="First name">
-                                    <p>Error</p>
-                                </label>
-                            </dd>
-                        </dl>
-                        <dl>
-                            <dt>Last Name</dt>
-                            <dd>
-                                <label class="text warning">
-                                    <input type="text" placeholder="Last Name">
-                                    <p>Warning</p>
-                                </label>
-                            </dd>
-                        </dl>
-                        <dl>
-                            <dt>Phone number</dt>
-                            <dd><label class="text"><input type="text" placeholder="Phone number"></label></dd>
-                        </dl>
-                        <dl>
-                            <dt>Nationality</dt>
-                            <dd>
-                                <label class="dropdown">
-                                    <select name="value" id="value">
-                                        <option value="">Thai</option>
-                                        <option value="">Korean</option>
-                                    </select>
-                                    <i class="fas fa-angle-down"></i>
-                                </label>
-                            </dd>
-                        </dl>
-                        <dl>
-                            <dt>Address</dt>
-                            <dd><label class="textarea"><textarea placeholder="Address"></textarea></label></dd>
-                        </dl>
-                        <dl>
-                            <dt>Upload photo of ID / Passport with signture</dt>
-                            <dd>
-                                <label class="file">
-                                    <input type="file">
-                                    <p>Choose File</p>
-                                    <i class="fas fa-upload"></i>
-                                </label>
-                            </dd>
-                        </dl>
-                        <dl>
-                            <dt>Upload photo of utitlity bill to verify address with signture</dt>
-                            <dd>
-                                <label class="file">
-                                    <input type="file">
-                                    <p>Choose File</p>
-                                    <i class="fas fa-upload"></i>
-                                </label>
-                            </dd>
-                        </dl>
-                        <dl>
-                            <dt>Estimate price</dt>
-                            <dd>
-                                <ul class="option-list">
-                                    <li>
-                                        <label class="option">
-                                            <input type="checkbox">
-                                            <span class="check-mark"></span>
-                                            <p>Bitcoin ( BTC )</p>
-                                        </label>
-                                        <p>:</p>
-                                        <label class="text disable-label"><input type="text" disabled></label>
-                                    </li>
-                                    <li>
-                                        <label class="option">
-                                            <input type="checkbox">
-                                            <span class="check-mark"></span>
-                                            <p>Ethereum ( ETH )</p>
-                                        </label>
-                                        <p>:</p>
-                                        <label class="text disable-label"><input type="text" disabled></label>
-                                    </li>
-                                    <li>
-                                        <label class="option">
-                                            <input type="checkbox">
-                                            <span class="check-mark"></span>
-                                            <p>Stellar ( XLM )</p>
-                                        </label>
-                                        <p>:</p>
-                                        <label class="text disable-label"><input type="text" disabled></label>
-                                    </li>
-                                </ul>
-                            </dd>
-                        </dl>
-                        <dl>
-                            <dt></dt>
-                            <dd><button>Submit</button></dd>
-                        </dl>
-                    </div>
-                    <div class="padding">
-                        <article class="approved show-detail">
-                            <h1>Wait for approved</h1>
-                            <p>Lorem, ipsum dolor sit amet consectetur adipisicing elit.</p>
-                            <p>Quia a et natus saepe explicabo tempore quasi, soluta porro dolor id dolores officiis optio vel sed unde odio? Minima, maiores atque.</p>
-                            <a class="next-step">Next Step</a>
-                        </article>
-                        <article class="rejected">
-                            <h1>Rejected</h1>
-                            <p>Lorem, ipsum dolor sit amet consectetur adipisicing elit.</p>
-                            <p>Quia a et natus saepe explicabo tempore quasi</p>
-                            <ul class="list">
-                                <li><i class="fas fa-circle"></i><p>Lorem ipsum dolor, sit amet consectetur adipisicing elit</p></li>
-                                <li><i class="fas fa-circle"></i><p>Et saepe quibusdam quidem veritatis fuga ratione mollitia sit consequuntur</p></li>
-                                <li><i class="fas fa-circle"></i><p>Ut dolorem consectetur aperiam ducimus veniam reprehenderit in repudiandae omnis numquam deleniti.</p></li>
-                            </ul>
-                            <div class="btn">
-                                <button>Back to KYC form</button>
-                            </div>
-                            <a class="next-step">Next Step</a>
-                        </article>
-                    </div>
-                    <div class="address-form">
-                        <dl>
-                            <dt>Bitcoin ( BTC )</dt>
-                            <dd><label class="text"><input type="text"></label></dd>
-                        </dl>
-                        <dl>
-                            <dt>Ethereum ( ETH )</dt>
-                            <dd><label class="text"><input type="text"></label></dd>
-                        </dl>
-                        <dl>
-                            <dt>Stellar ( XLM )</dt>
-                            <dd><label class="text"><input type="text"></label></dd>
-                        </dl>
-                        <div class="alert-error"><p>Error</p><span>Lorem ipsum dolor sit amet consectetur adipisicing elit.</span></div>
-                        <dl>
-                            <dt></dt>
-                            <dd><button>Submit</button></dd>
-                        </dl>
-                    </div>
-                    <div class="waiting-ico">
-                        <article class="waiting show-detail">
-                            <h1>Wait for ICO</h1>
-                            <ul class="countdown">
-                                <p>See you at our public event on 27th March 2018</p>
-                                <li class="days">
-                                    <p class="digit">
-                                        <span class="base"></span>
-                                        <span class="flap over front"></span>
-                                        <span class="flap over back"></span>
-                                        <span class="flap under"></span>
-                                    </p>
-                                    <p>Days</p>
-                                </li>
-                                <li class="hrs">
-                                    <p class="digit">
-                                        <span class="base"></span>
-                                        <span class="flap over front"></span>
-                                        <span class="flap over back"></span>
-                                        <span class="flap under"></span>
-                                    </p>
-                                    <p>Hrs</p>
-                                </li>
-                                <li class="mins">
-                                    <p class="digit">
-                                        <span class="base"></span>
-                                        <span class="flap over front"></span>
-                                        <span class="flap over back"></span>
-                                        <span class="flap under"></span>
-                                    </p>
-                                    <p>Mins</p>
-                                </li>
-                                <li class="secs">
-                                    <p class="digit">
-                                        <span class="base"></span>
-                                        <span class="flap over front"></span>
-                                        <span class="flap over back"></span>
-                                        <span class="flap under"></span>
-                                    </p>
-                                    <p>Secs</p>
-                                </li>
-                            </ul>
-                            <a class="next-step">Next Step</a>
-                        </article>
-                        <article class="ico">
-                            <ul>
-                                <li><strong>Bitcoin ( BTC )</strong><p>ASADFXVJ2151234APUI214</p></li>
-                                <li><strong>Ethereum ( ETH )</strong><p>ASADFXVJ2151234APUI214</p></li>
-                                <li><strong>Stellar ( XLM )</strong><p>ASADFXVJ2151234APUI214</p></li>
-                            </ul>
-                        </article>
-                    </div>
-                </div>
-                <aside>
-                    <div class="user-detail">
-                        <div class="user">
-                            <span class="avatar">
-                                <img src="images/avatar/avatar-01.jpg">
-                            </span>
-                            <p>Vachara Aemavat</p>
-                        </div>
-                        <p class="price-six">
-                            <span>423,521</span>
-                            <span>SIX</span>
-                        </p>
-                        <a class="open-transection-log">Transection log</a>
-                        <ul class="transection-log list">
-                            <li>
-                                <i class="fas fa-circle"></i>
-                                <p>Lorem ipsum dolor sit amet consectetur</p>
-                            </li>
-                            <li>
-                                <i class="fas fa-circle"></i>
-                                <p>Lorem ipsum dolor sit amet consectetur</p>
-                            </li>
-                            <li>
-                                <i class="fas fa-circle"></i>
-                                <p>Lorem ipsum dolor sit amet consectetur</p>
-                            </li>
-                            <li>
-                                <i class="fas fa-circle"></i>
-                                <p>Lorem ipsum dolor sit amet consectetur</p>
-                            </li>
-                        </ul>
-                    </div>
-                    <div class="status">
-                        <p>KYC Status</p>
-                        <p>First step</p>
-                    </div>
-                </aside>
-            </div>
-        </section>
-    </main>
+				<div class="twin">
+					<section class="payment">
+						<dl>
+							<dt>BTC ( Bitcoin )</dt>
+							<dd>MN91LKF93O41829JHWEDWDKWDJKWHUK</dd>
+						</dl>
+						<dl>
+							<dt>ETH ( Ethereum )</dt>
+							<dd>MN91LKF93O41829JHWEDWDKWDJKWHUK</dd>
+						</dl>
+						<dl>
+							<dt>XLM ( Stellar )</dt>
+							<dd>MN91LKF93O41829JHWEDWDKWDJKWHUK</dd>
+						</dl>
+					</section>
+					<section class="alert">
+						<h2>Warning</h2>
+						<p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Velit aliquam nam dolores modi unde, accusantium voluptatibus, numquam error at nihil autem, libero sint? Dolores rerum odit soluta. Earum, impedit doloribus.</p>
+						<dl><button>Accept</button></dl>
+					</section>
+				</div>
+					
+				<section class="exchange with-table">
+					<header>
+						<h2>Exchange</h2>
+					</header>
+					<table>
+						<thead>
+							<tr>
+								<th>Type</th>
+								<th width="150">Coin price</th>
+								<th width="150">SIX price</th>
+								<th width="200">date</th>
+								<th width="200">time</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr>
+								<td>BTC ( Bitcoin )</td>
+								<td>1$</td>
+								<td>0.1$</td>
+								<td>2018-03-15</td>
+								<td>14:22:11 +07:00</td>
+							</tr>
+							<tr>
+								<td>ETH ( Ethereum )</td>
+								<td>1$</td>
+								<td>0.1$</td>
+								<td>2018-03-15</td>
+								<td>14:22:11 +07:00</td>
+							</tr>
+							<tr>
+								<td>XLM ( Stellar )</td>
+								<td>1$</td>
+								<td>0.1$</td>
+								<td>2018-03-15</td>
+								<td>14:22:11 +07:00</td>
+						</tbody>
+					</table>
+				</section>
+
+				<aside class="video">
+					<iframe width="640" height="360" src="https://www.youtube.com/embed/BtMGF6WoYts?rel=0&amp;controls=0&amp;showinfo=0" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen=""></iframe>
+				</aside>
+			</div>
+	</main>
 </html>
