@@ -1,14 +1,10 @@
-const Querystring = require('query-string')
 const admin = require('firebase-admin')
-const axios = require('axios')
 const bodyParser = require('body-parser')
 const cors = require('cors')
 const express = require('express')
 const functions = require('firebase-functions')
 const request = require('request-promise')
 const moment = require('moment-timezone')
-const API_KEY = functions.config().campaign.api_key
-const BASE_URL = functions.config().campaign.base_url
 // const serviceAccount = require('./service-account')
 
 // admin.initializeApp({
@@ -23,6 +19,11 @@ const stellarService = require('./stellar-service')
 
 const fireStore = admin.firestore()
 const app = express()
+
+const triggers = require('./trigger')(functions, fireStore)
+for (let trigger of triggers) {
+  exports[trigger.name] = trigger.module
+}
 
 app.use(cors())
 app.use(bodyParser.urlencoded({
@@ -143,36 +144,36 @@ exports.incrementTotalAsset = functions.firestore.document('/purchase_txs/{txId}
     )
   })
 
-function generatePhoneVerificationCode(phone_number) {
+function generatePhoneVerificationCode (phone_number) {
   let refCode = Math.random().toString(36).replace(/[^a-z]+/g, '').substr(0, 5).toUpperCase()
   let code = Math.random().toString().substr(2, 6)
-  let validUntil = Math.round((new Date()).getTime() / 1000)+180
-  var http = require("https");
+  let validUntil = Math.round((new Date()).getTime() / 1000) + 180
+  var http = require('https')
   var options = {
-    "method": "POST",
-    "hostname": "tm3swoarp5.execute-api.ap-southeast-1.amazonaws.com",
-    "port": null,
-    "path": "/production/sms",
-    "headers": {
-      "content-type": "application/x-www-form-urlencoded",
-      "cache-control": "no-cache",
+    'method': 'POST',
+    'hostname': 'tm3swoarp5.execute-api.ap-southeast-1.amazonaws.com',
+    'port': null,
+    'path': '/production/sms',
+    'headers': {
+      'content-type': 'application/x-www-form-urlencoded',
+      'cache-control': 'no-cache'
     }
-  };
+  }
 
   var req = http.request(options, res => {
-    var chunks = [];
+    var chunks = []
 
-    res.on("data", chunk => {
-      chunks.push(chunk);
-    });
+    res.on('data', chunk => {
+      chunks.push(chunk)
+    })
 
-    res.on("end", () => {
-      var body = Buffer.concat(chunks);
-      console.log(body.toString());
-    });
-  });
-  req.write("{\"message\": \"Your code is "+ code +" (Ref: "+refCode+")\", \"phone_number\": \""+phone_number+"\"}");
-  req.end();
+    res.on('end', () => {
+      var body = Buffer.concat(chunks)
+      console.log(body.toString())
+    })
+  })
+  req.write('{"message": "Your code is ' + code + ' (Ref: ' + refCode + ')", "phone_number": "' + phone_number + '"}')
+  req.end()
   let ref = admin.firestore().collection('phone-verifications')
   return ref.doc(phone_number).set({ ref_code: refCode, code: code, valid_until: validUntil }).then(() => {
     return { success: true, refCode: refCode, validUntil: validUntil }
@@ -218,7 +219,7 @@ exports.phoneVerificationRequest = functions.https.onCall((data, context) => {
     console.log(err)
     return { success: false, error_message: err.message }
   })
-});
+})
 
 exports.phoneVerificationSubmit = functions.https.onCall((data, context) => {
   let ref = admin.firestore().collection('phone-verifications')
@@ -237,7 +238,7 @@ exports.phoneVerificationSubmit = functions.https.onCall((data, context) => {
           if (doc.data().ref_code === ref_code && doc.data().code === code) {
             let batch = admin.firestore().batch()
             batch.set(ref.doc(phone_number), {is_verified: true})
-            batch.update(userRef.doc(uid), {"phone_number": phone_number, "phone_verified": true, 'country': country})
+            batch.update(userRef.doc(uid), {'phone_number': phone_number, 'phone_verified': true, 'country': country})
             return batch.commit().then(() => {
               return { success: true }
             }).catch(err => {
@@ -257,28 +258,89 @@ exports.phoneVerificationSubmit = functions.https.onCall((data, context) => {
     console.log(err)
     return { success: false, error_message: err.message }
   })
-});
+})
 
-exports.sendCampaignEmail = functions.firestore.document('/users/{uid}').onCreate(event => {
-  const snapshot = event.data
-  const data = snapshot.data()
-  const { email, firstName, lastName, phone } = data
-  const postObj = Querystring.stringify({
-    'email': email,
-    'fist_name': firstName,
-    'last_name': lastName,
-    'phone': phone
+function updateUser (uid, data) {
+  return new Promise((resolve, reject) => {
+    fireStore
+      .collection('users')
+      .doc(uid)
+      .set(data, {
+        merge: true
+      })
+      .then(snapshot => snapshot.data())
+      .then(result => resolve(result))
+      .catch(err => reject(err))
   })
-  const url = `${BASE_URL}/admin/api.php?api_action=contact_add&api_key=${API_KEY}&api_output=json`
-  return axios.post(url, postObj)
-    .then(res => res.data)
-    .then(data => {
-      return console.log(data, 'res from activecampaign')
+}
+
+function insertUserTx (uid, data) {
+  return getUser(uid)
+    .then(result => {
+      const {xlm_tx} = result
+      let txs = xlm_tx || []
+      txs = txs.concat([data])
+      return updateUser(uid, {
+        xlm_tx: txs
+      })
     })
+    .catch(err => err)
+}
+
+app.use('/users/:uid', (req, res) => {
+  const {uid} = req.params
+  getUser(uid)
+    .then(result => res.send(result))
+    .catch(err => res.status(400).send(err))
+})
+
+app.use('/purchase-list', (req, res) => {
+  return fireStore
+    .collection('purchase_txs')
+    .get()
+    .then(querySnapshot => {
+      let result = []
+      querySnapshot.forEach(function (doc) {
+        const data = doc.data()
+        result = result.concat([data])
+      })
+      return result
+    })
+    .then(result => res.send(result))
     .catch(err => {
-      return console.log(err, 'error send email')
+      res.status(400).send(err)
     })
 })
+
+app.post('/purchase/:currency', (req, res) => {
+  const {currency} = req.params
+  const {buyer_id, amount, time, total_six, id} = req.body
+  const data = {
+    buyer_id,
+    id,
+    amount,
+    time,
+    total_six,
+    currency
+  }
+  return fireStore
+    .collection('purchase_txs')
+    .doc(id)
+    .set(Object.assign(data, {
+      status: 'success'
+    }))
+    .then(function (result) {
+      insertUserTx(buyer_id, data)
+      res.send(Object.assign(data, {
+        status: 'success'
+      }))
+    })
+    .catch(err => {
+      res.status(400).send(err)
+    })
+})
+
+exports.api = functions.https.onRequest(app)
 
 function getTime () {
   const time = new Date()
@@ -338,21 +400,6 @@ function updateHourlyPrice (body, baseToken, time) {
       time_string: time.string
     })
 }
-
-exports.getUniqueId = functions.https.onRequest((req, res) => {
-  var ref = admin.database().ref('/users/lastUserId')
-  ref.transaction(function (current) {
-    return (current || 0) + 1
-  }, function (error, committed, snapshot) {
-    if (error || !committed || !snapshot) {
-      console.error('Transaction failed abnormally!', error || '')
-      res.status(400).send(error)
-    } else {
-      console.log('Generated ID: ', snapshot.val())
-    }
-    res.status(200).send(snapshot.val().toString())
-  })
-})
 
 exports.monitorETH = functions.pubsub.topic('monitor-eth').onPublish(() => {
   return EthereumService.monitor('0x56b680aB2DD4aC72de49c1bb024964C7cbc56F0c')

@@ -1,7 +1,6 @@
 const functions = require('firebase-functions');
 const StellarSdk = require('stellar-sdk')
 const admin = require('firebase-admin') //delet
-const server = new StellarSdk.Server('https://horizon-testnet.stellar.org');
 const Promise = require('bluebird')
 
 const serviceAccount = require('./service-account')
@@ -9,52 +8,66 @@ const serviceAccount = require('./service-account')
 const fireStore = admin.firestore() //detelete
 
 function StellarService(event) {
-  this.stellarUrl = functions.config().campaign.is_production === 'true' ? 'https://horizon.stellar.org' : 'https://horizon-testnet.stellar.org'
+  this.stellarUrl = functions.config().campaign.is_production === 'true'
+    ? 'https://horizon.stellar.org'
+    : 'https://horizon-testnet.stellar.org'
   this.address = functions.config().xlm.address
 
+  const server = new StellarSdk.Server(this.stellarUrl);
+
   return getCursor().then((cursor) => {
-    return server.payments().forAccount(this.address).order("desc").limit(200).call().then((payments) => {
-      const records = [];
-      for (let i = 0; i < payments.records.length; i++) {
-        if (new Date(payments.records[i].created_at).getTime() <= cursor) {
-          break;
+    return server.payments()
+      .forAccount(this.address)
+      .order("desc")
+      .limit(200)
+      .call()
+      .then((payments) => {
+        const recordPromise = [];
+        for (let i = 0; i < payments.records.length; i++) {
+          if (new Date(payments.records[i].created_at).getTime() <= cursor) {
+            break;
+          }
+
+          recordPromise.push(payments.records[i].transaction()
+            .then(findUser)
+            .then(findPrice)
+            .then((body) => {
+              const tx = body.tx
+              const user = body.user
+              const price = body.price
+              const timeZero = body.timeZero
+
+              tx.operations()
+                .then((operations) => {
+                  const records = operations._embedded.records
+                  const operationLength = operations._embedded.records.length
+                  const operationTxs = []
+
+                  for (let j = 0; j < operationLength; j++) {
+                    if (records[j].type !== 'payment') {
+                      continue
+                    }
+                    if (records[j].to !== this.address) {
+                      continue
+                    }
+                    operationTxs.push(handleOperation(user, tx, records[j], j, price, timeZero))
+                  }
+
+                  return Promise.all(operationTxs)
+                }).then((update) => {
+                const newTime = new Date(payments.records[i].created_at).getTime()
+
+                if (newTime <= cursor) {
+                  return update
+                }
+
+                return updateCursor(newTime)
+              })
+            })
+          )
         }
-
-        records.push(payments.records[i].transaction().then(findUser).then(findPrice).then((body) => {
-          const tx = body.tx
-          const user = body.user
-          const price = body.price
-          const timeZero = body.timeZero
-
-          tx.operations().then((operations) => {
-            const records = operations._embedded.records
-            const operationLength = operations._embedded.records.length
-            const operationTxs = []
-            for (let j = 0; j < operationLength; j++) {
-              if (records[j].type !== 'payment') {
-                continue
-              }
-              if (records[j].to !== this.address) {
-                continue
-              }
-              operationTxs.push(handleOperation(user, tx, records[j], j, price, timeZero))
-            }
-
-            return Promise.all(operationTxs)
-          }).then((update) => {
-            const newTime = new Date(payments.records[i].created_at).getTime()
-
-            if (newTime <= cursor) {
-              return update
-            }
-
-            return updateCursor(newTime)
-          })
-        })
-        )
-      }
-      return Promise.all(records)
-    })
+        return Promise.all(recordPromise)
+      })
   })
 }
 
@@ -74,10 +87,11 @@ function handleOperation(user, tx, operation, n, price, priceTime) {
   const memo = tx.memo || ''
   const native_amount = +operation.amount
   const six_amount = +(operation.amount * price.six_per_xlm).toFixed(7)
-  const receive_account = tx.source_account
+  const from = tx.source_account
+  const to = operation.to
   const type = 'xlm'
   const total_usd_price = price.price * (+operation.amount)
-  const price_time = priceTime;
+  const price_time = priceTime
   const time = new Date(tx.created_at).getTime()
   const xlm_meta = {
     tx_id: hash,
@@ -90,7 +104,8 @@ function handleOperation(user, tx, operation, n, price, priceTime) {
     time,
     price_time,
     total_usd_price,
-    receive_account,
+    to,
+    from,
     native_amount,
     six_amount,
     type,
