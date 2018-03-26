@@ -1,14 +1,10 @@
-const Querystring = require('query-string')
 const admin = require('firebase-admin')
-const axios = require('axios')
 const bodyParser = require('body-parser')
 const cors = require('cors')
 const express = require('express')
 const functions = require('firebase-functions')
 const request = require('request-promise')
 const moment = require('moment-timezone')
-const API_KEY = functions.config().campaign.api_key
-const BASE_URL = functions.config().campaign.base_url
 // const serviceAccount = require('./service-account')
 
 // admin.initializeApp({
@@ -23,6 +19,11 @@ const stellarService = require('./stellar-service')
 
 const fireStore = admin.firestore()
 const app = express()
+
+const triggers = require('./trigger')(functions, fireStore)
+for (let trigger of triggers) {
+  exports[trigger.name] = trigger.module
+}
 
 app.use(cors())
 app.use(bodyParser.urlencoded({
@@ -126,44 +127,6 @@ app.post('/purchase/:currency', (req, res) => {
 
 exports.api = functions.https.onRequest(app)
 
-exports.incrementTotalAsset = functions.firestore.document('/purchase_txs/{txId}')
-  .onCreate(event => {
-    const data = event.data.data()
-    console.log('Create Transaction:', event.params.txId, data.type, data.native_amount)
-    const assetCol = fireStore.collection('total_asset')
-    return fireStore.runTransaction(tx => Promise.all([
-      {type: data.type, key: 'native_amount'},
-      {type: 'usd', key: 'total_usd_price'},
-      {type: 'six', key: 'six_amount'}
-    ].map(asset => {
-      const ref = assetCol.doc(asset.type)
-      return tx.get(ref).then(assetDoc => tx.update(ref, {total: assetDoc.data().total + data[asset.key]}))
-    })
-    )
-    )
-  })
-
-exports.sendCampaignEmail = functions.firestore.document('/users/{uid}').onCreate(event => {
-  const snapshot = event.data
-  const data = snapshot.data()
-  const { email, firstName, lastName, phone } = data
-  const postObj = Querystring.stringify({
-    'email': email,
-    'fist_name': firstName,
-    'last_name': lastName,
-    'phone': phone
-  })
-  const url = `${BASE_URL}/admin/api.php?api_action=contact_add&api_key=${API_KEY}&api_output=json`
-  return axios.post(url, postObj)
-    .then(res => res.data)
-    .then(data => {
-      return console.log(data, 'res from activecampaign')
-    })
-    .catch(err => {
-      return console.log(err, 'error send email')
-    })
-})
-
 function getTime () {
   const time = new Date()
 
@@ -222,21 +185,6 @@ function updateHourlyPrice (body, baseToken, time) {
       time_string: time.string
     })
 }
-
-exports.getUniqueId = functions.https.onRequest((req, res) => {
-  var ref = admin.database().ref('/users/lastUserId')
-  ref.transaction(function (current) {
-    return (current || 0) + 1
-  }, function (error, committed, snapshot) {
-    if (error || !committed || !snapshot) {
-      console.error('Transaction failed abnormally!', error || '')
-      res.status(400).send(error)
-    } else {
-      console.log('Generated ID: ', snapshot.val())
-    }
-    res.status(200).send(snapshot.val().toString())
-  })
-})
 
 exports.monitorETH = functions.pubsub.topic('monitor-eth').onPublish(() => {
   return EthereumService.monitor('0x56b680aB2DD4aC72de49c1bb024964C7cbc56F0c')
