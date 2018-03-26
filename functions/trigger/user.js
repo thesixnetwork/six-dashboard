@@ -110,6 +110,7 @@ function sendCampaignEmailRegistration (event, functions, fireStore) {
   }
   param[regListIdParam] = regListId
   const postObj = Querystring.stringify(param, {arrayFormat: 'index'})
+  console.log('postObj : ' + postObj)
   const url = `${BASE_URL}/admin/api.php?api_action=contact_add&api_key=${API_KEY}&api_output=json`
   return axios.post(url, postObj)
     .then(res => res.data)
