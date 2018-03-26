@@ -116,7 +116,7 @@ function signUp () {
         last_name,
         phone_number,
         country
-      })
+      }, { merge: true})
         .then(() => {
           stopRedirection = false
           checkLoginState()
@@ -160,7 +160,7 @@ function authFacebook () {
           if (!docSnapshot.exists) {
             ref.set({
               email
-            })
+            },{ merge: true})
               .then(() => {
                 stopRedirection = false
                 checkLoginState()
@@ -208,7 +208,7 @@ function authGoogle () {
           if (!docSnapshot.exists) {
             ref.set({
               email
-            })
+            }, { merge: true})
               .then(() => {
                 stopRedirection = false
                 checkLoginState()
