@@ -138,7 +138,13 @@ function reject() {
   let db = firebase.firestore()
   let rejecttype = document.getElementById('rejectSelect').value
   let rejectnote = document.getElementById('rejectNote').value
-  db.collection('users').doc(thisFocus).update({ kyc_status: 'rejected', reject_type: rejecttype, reject_note: rejectnote }).then(() => {
+  let updateData = {
+    kyc_status: 'rejected', reject_type: rejecttype
+  }
+  if (rejectnote !== undefined) {
+    reject_note: rejectnote
+  }
+  db.collection('users').doc(thisFocus).update(updateData).then(() => {
     goBack()
     $('#'+thisFocus).remove()
     unlockAll()

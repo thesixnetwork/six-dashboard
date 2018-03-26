@@ -401,7 +401,7 @@ function submitKyc() {
     $("#kycPassportNumberError").css('display', 'block')
   }
   if (address == '' || address == undefined) { $('#kycAddressAlert').addClass('invalid'); validate = false }
-  if (/^[a-zA-Z!”$%&’()*\+, \/;\[\\\]\^_`{|}~]+$/.test(address) === false) {
+  if (/^[a-zA-Z0-9!”$%&’()*\+, \/;\[\\\]\^_`{|}~]+$/.test(address) === false) {
     $('#kycAddressAlert').addClass('invalid')
     validate = false
     $("#kycAddressError").html('Address should contain only alphabetic characters, digits, and special characters')
