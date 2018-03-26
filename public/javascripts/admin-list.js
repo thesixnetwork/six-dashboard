@@ -67,10 +67,20 @@ function openUser (uid) {
   $('#detailEmail').html(userData[uid].email)
   $('#detailPhoneNumber').html(userData[uid].phone_number)
   $('#detailCountry').html(countries[userData[uid].country])
+  if (userData[uid].country === "TH") {
+    $("#citizenIdContainer").css('display', 'block')
+    $("#citizenIdPhotoContainer").css('display', 'block')
+    $("#detailCitizenId").html(userData[uid].citizen_id)
+  } else {
+    $("#citizenIdContainer").css('display', 'none')
+    $("#citizenIdPhotoContainer").css('display', 'none')
+  }
+  $("#detailPassportNumber").html(userData[uid].passport_number)
   $('#detailAddress').html(userData[uid].address)
   $('#detailPic1').attr("src", userData[uid].pic1)
   $('#detailPic2').attr("src", userData[uid].pic2)
   $('#detailPic3').attr("src", userData[uid].pic3)
+  $('#detailPic4').attr("src", userData[uid].pic4)
   $('#detailEstimate').html(estimates[userData[uid].estimate])
   $('#adminDetail').css('display', 'block')
   currentFocus = uid
@@ -86,22 +96,56 @@ function goBack () {
   currentFocus = ""
 }
 
+function lockAll() {
+  let btn = document.getElementById('approveBtn')
+  let btn2 = document.getElementById('rejectBtn')
+  let rejecttype = document.getElementById('rejectSelect')
+  let rejectnote = document.getElementById('rejectNote')
+  btn.disabled = true
+  btn2.disabled = true
+  rejecttype.disabled = true
+  rejectnote.disabled = true
+}
+
+function unlockAll() {
+  let btn = document.getElementById('approveBtn')
+  let btn2 = document.getElementById('rejectBtn')
+  let rejecttype = document.getElementById('rejectSelect')
+  let rejectnote = document.getElementById('rejectNote')
+  btn.disabled = false
+  btn2.disabled = false
+  rejecttype.disabled = false
+  rejectnote.disabled = false
+}
+
 function approve() {
   let thisFocus = currentFocus
-  goBack()
+  lockAll()
   let db = firebase.firestore()
-  let userRef = db.collection('users').doc(thisFocus).update({ kyc_status: 'approved' })
-  $('#'+thisFocus).remove()
+  db.collection('users').doc(thisFocus).update({ kyc_status: 'approved' }).then(() => {
+    goBack()
+    $('#'+thisFocus).remove()
+    unlockAll()
+  }).catch(err => {
+    alert(err.message)
+    unlockAll()
+  })
 }
 
 function reject() {
   let thisFocus = currentFocus
-  goBack()
+  lockAll()
   let db = firebase.firestore()
   let rejecttype = document.getElementById('rejectSelect').value
   let rejectnote = document.getElementById('rejectNote').value
-  let userRef = db.collection('users').doc(thisFocus).update({ kyc_status: 'rejected', reject_type: rejecttype, reject_note: rejectnote })
-  $('#'+thisFocus).remove()
+  db.collection('users').doc(thisFocus).update({ kyc_status: 'rejected', reject_type: rejecttype, reject_note: rejectnote }).then(() => {
+    goBack()
+    $('#'+thisFocus).remove()
+    unlockAll()
+  }).catch(err => {
+    alert(err.message)
+    unlockAll()
+  })
 }
 
 // Initialize database to query data and draw to view

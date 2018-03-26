@@ -95,14 +95,26 @@
               <p id='detailCountry'>Thai</p>
             </dd>
           </dl>
+          <dl id='citizenIdContainer'>
+            <dt>Citizen ID</dt>
+            <dd>
+              <p id='detailCitizenId'></p>
+            </dd>
+          </dl>
           <dl>
-            <dt>Address accourding to ID or Passport</dt>
+            <dt>Passport number</dt>
+            <dd>
+              <p id='detailPassportNumber'></p>
+            </dd>
+          </dl>
+          <dl>
+            <dt>Address according to Passport</dt>
             <dd>
               <p id='detailAddress'>124/434 Pattaya city Chonburi 20000</p>
             </dd>
           </dl>
-          <dl>
-            <dt>Photo of ID / Passport with signture</dt>
+          <dl id='citizenIdPhotoContainer'>
+            <dt>Photo of ID with signture</dt>
             <dd>
               <span class="image">
                 <img id='detailPic1'>
@@ -110,9 +122,17 @@
             </dd>
           </dl>
           <dl>
+            <dt>Photo of Passport with signture</dt>
+            <dd>
+              <span class="image">
+                <img id='detailPic4'>
+              </span>
+            </dd>
+          </dl>
+          <dl>
             <dt>
-              Photo of you holding a copy of ID / Passport
-              <span>A photo of you holding a copy of ID / Passport with a word 'SIX.NETWORK' and current date written on it.</span>
+              Photo of you holding a Passport
+              <span>A photo of you holding a Passport with a word 'SIX.network' and current date written on it.</span>
             </dt>
             <dd>
               <span class="image">
@@ -135,11 +155,8 @@
           <legend>Estimate ICO investment budget</legend>
           <p id='detailEstimate'>1K USD - 2K USD</p>
         </fieldset>
-        <dl>
-          <dd><button onclick='approve()'>Approve</button></dd>
-        </dl>
       </section>
-      <section class="reject-template">
+      <section class="reject-template detail">
         <fieldset>
           <legend>Reject template</legend>
           <dl>
@@ -161,7 +178,12 @@
             </dd>
           </dl>
         </fieldset>
-        <dl><dd><button class="yellow" onclick='reject()'>Reject</button></dd></dl>
+        <dl><dd><button class="yellow" id='rejectBtn' style='background: #ef5555; color: white;' onclick='reject()'>Reject</button></dd></dl>
+      </section>
+      <section class=''>
+        <dl>
+          <dd><button id='approveBtn' onclick='approve()'>Approve</button></dd>
+        </dl>
       </section>
     </div>
     </main>
