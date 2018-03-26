@@ -1,4 +1,6 @@
+const emailTemplate = require('./emailHtmlTemplate')
 const Querystring = require('query-string')
+const nodemailer = require('nodemailer')
 const axios = require('axios')
 const path = '/users/{uid}'
 
@@ -16,15 +18,51 @@ module.exports = function (functions, fireStore) {
   }, {
     'name': 'checkPresaleDiscount',
     'module': events.onUpdate(event => checkPresaleDiscount(event, functions, fireStore))
+  }, {
+    'name': 'checkKYCStatus',
+    'module': events.onUpdate(event => checkKYCStatus(event, functions, fireStore))
   }]
+}
+
+function checkKYCStatus (event, functions, fireStore) {
+  const mailTransport = nodemailer.createTransport({
+    host: functions.config().email.host,
+    port: functions.config().email.port,
+    secure: true, // true for 465, false for other ports
+    auth: {
+      user: functions.config().email.user, // generated ethereal user
+      pass: functions.config().email.password // generated ethereal password
+    }
+  })
+  const userData = event.data.data()
+  const previousUserData = event.data.previous.data()
+  const mailOptions = {
+    from: '"Six network ICO." <noreply@firebase.com>',
+    to: userData.email
+  }
+  if (userData.kyc_status === 'pending' && previousUserData.kyc_status !== 'pending') {
+    mailOptions.subject = 'KYC pending for approval.'
+    mailOptions.html = emailTemplate.pending
+  } else if (userData.kyc_status === 'approved' && previousUserData.kyc_status !== 'approved') {
+    mailOptions.subject = 'KYC already approved.'
+    mailOptions.html = emailTemplate.approved
+  } else if (userData.kyc_status === 'rejected' && previousUserData.kyc_status !== 'rejected') {
+    mailOptions.subject = 'KYC rejected.'
+    mailOptions.html = emailTemplate.rejected
+  } else {
+    return Promise.resolve() // do nothing
+  }
+  console.log(`Send Email to ${userData.email} kyc_status: ${userData.kyc_status}`)
+  return mailTransport.sendMail(mailOptions)
 }
 
 function checkPresaleDiscount (event, functions, fireStore) {
   const uid = event.params.uid
   const userData = event.data.data()
+  const previousUserData = event.data.previous.data()
+  if (userData.kyc_status !== 'approved' || previousUserData.kyc_status === 'approved' || !userData.reserve_eth) return Promise.resolve() // do nothing
   const presaleUserRef = fireStore.collection('presale').doc('supply').collection('reserve').doc(uid)
   const totalEthRef = fireStore.collection('presale').doc('supply')
-  if (userData.kyc_status !== 'approved' || !userData.reserve_eth) return Promise.resolve() // do nothing
   return fireStore.runTransaction(tx => tx.get(presaleUserRef).then(userReserve => {
     if (userReserve.exists) {
       return Promise.reject(new Error(`uid:${uid} already reserved`))
@@ -40,7 +78,7 @@ function checkPresaleDiscount (event, functions, fireStore) {
 
 function addUserNumber (event, functions, fireStore) {
   const uid = event.params.uid
-  const userRef = fireStore.collection('user').doc(uid)
+  const userRef = fireStore.collection('users').doc(uid)
   const userNumberRef = fireStore.collection('generator').doc('user')
   return fireStore.runTransaction(tx => tx.get(userNumberRef).then(doc => {
     if (!doc.exists) {
