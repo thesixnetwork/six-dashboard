@@ -61,7 +61,8 @@ function checkPresaleDiscount (event, functions, fireStore) {
   const uid = event.params.uid
   const userData = event.data.data()
   const previousUserData = event.data.previous.data()
-  if (userData.kyc_status !== 'approved' || previousUserData.kyc_status === 'approved' || !userData.reserve_eth) return Promise.resolve() // do nothing
+  const estimate = (+userData.estimate || 0) // force estimate from string to number (default 0)
+  if (userData.kyc_status !== 'approved' || previousUserData.kyc_status === 'approved' || estimate <= 0) return Promise.resolve() // do nothing
   const presaleUserRef = fireStore.collection('presale').doc('supply').collection('reserve').doc(uid)
   const totalEthRef = fireStore.collection('presale').doc('supply')
   return fireStore.runTransaction(tx => tx.get(presaleUserRef).then(userReserve => {
@@ -70,9 +71,9 @@ function checkPresaleDiscount (event, functions, fireStore) {
     }
     return tx.get(totalEthRef).then(doc => {
       const totalETH = doc.data().total_eth
-      const latestTotalETH = totalETH + (userData.reserve_eth || 0)
+      const latestTotalETH = totalETH + estimate
       if (latestTotalETH > 15000) return Promise.reject(new Error('Presale is soldout.'))
-      return Promise.all([tx.update(totalEthRef, {total_eth: latestTotalETH}), tx.set(presaleUserRef, {total_eth: latestTotalETH})])
+      return Promise.all([tx.update(totalEthRef, {total_eth: latestTotalETH}), tx.set(presaleUserRef, {total_eth: estimate})])
     })
   }))
 }
@@ -86,7 +87,8 @@ function addUserNumber (event, functions, fireStore) {
       return Promise.reject(new Error('user number generator path does not exists.'))
     }
     const newLatestNumber = doc.data().latest_number + 1
-    const memo = JSON.stringify({n: newLatestNumber})
+    const buf = Buffer.from(JSON.stringify({n: newLatestNumber}))
+    const memo = '0x' + buf.toString('hex')
     return Promise.all([tx.update(userRef, {user_number: newLatestNumber, memo, uid}), tx.update(userNumberRef, {latest_number: newLatestNumber})])
   })
   )
