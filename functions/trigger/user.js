@@ -1,4 +1,4 @@
-const emailTemplate = require('./emailHtmlTemplate')
+const emailTemplate = require('./static')
 const Querystring = require('query-string')
 const nodemailer = require('nodemailer')
 const axios = require('axios')
@@ -42,13 +42,13 @@ function checkKYCStatus (event, functions, fireStore) {
   }
   if (userData.kyc_status === 'pending' && previousUserData.kyc_status !== 'pending') {
     mailOptions.subject = 'KYC pending for approval.'
-    mailOptions.html = emailTemplate.pending
+    mailOptions.html = emailTemplate.pending({name: userData.first_name, lastname: userData.last_name})
   } else if (userData.kyc_status === 'approved' && previousUserData.kyc_status !== 'approved') {
     mailOptions.subject = 'KYC already approved.'
-    mailOptions.html = emailTemplate.approved
+    mailOptions.html = emailTemplate.approved({})
   } else if (userData.kyc_status === 'rejected' && previousUserData.kyc_status !== 'rejected') {
     mailOptions.subject = 'KYC rejected.'
-    mailOptions.html = emailTemplate.rejected
+    mailOptions.html = emailTemplate.rejected({})
   } else {
     return Promise.resolve() // do nothing
   }
