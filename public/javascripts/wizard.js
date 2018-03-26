@@ -277,7 +277,7 @@ function setupUserData() {
     $("#sampleImage4").toggle()
   }
   if (userData.kyc_status === 'rejected') {
-    $("#rejectReason").html(userData.reject_note)
+    $("#rejectReason").html(String(userData.reject_note).replace("\n", "<br>"))
   }
 }
 

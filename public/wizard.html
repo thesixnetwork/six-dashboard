@@ -354,7 +354,7 @@
         <section id='kycContent' class="information">
           <article id='kycContentForm' class="profile-form show-detail">
             <fieldset>
-              <legend>Information</legend>
+              <legend>Information (Please fill in English only)</legend>
               <dl>
                 <dt>Name</dt>
                 <dd class="combine">
@@ -697,7 +697,7 @@
               <dl>
                 <dt>
                   Photo of you holding a Passport
-                  <span>A photo of you holding a copy of Passport with a word 'SIX.network' and current date written on it.</span>
+                  <span>A selfie of you holding your official passport showing the passport photo page and a paper with the word "for SIX.network on the date of registration"</span>
                 </dt>
                 <dd>
                   <label class="file kycinput" id="kycPic2Alert">
@@ -720,6 +720,7 @@
               </dl>
               <dl>
                 <dt>Photo of utility bill to verify address</dt>
+                <span>Upload proof of address (e.g. water bill, electricity bill, internet bill, cable tv bill, credit card slip, bank statement, brokerage bill, etc.)</span>
                 <dd>
                   <label class="file kycinput" id="kycPic3Alert">
                     <input type="file" id='kycPic3'>
@@ -756,14 +757,14 @@
 
           <article class="approved" id='kycContentPending'>
             <h1>Waiting for approval</h1>
-            <p>The approval process takes 1-2 business days, but sometimes it might be faster. After we review your account - you will get another email to let you know that your kyc application is approved or not.</p>
+            <p>The approval process takes up to 72 business hours. After we review your account information and KYC/ AML documents, you will receive an email confirmation on your KYC/ AML result.</p>
             <img id='headerEmailSample'src="images/header_email_sample.png">
             <img id='bodyEmailSample'src="images/body_email_sample.png">
           </article>
 
           <article class="rejected" id='kycContentRejected'>
             <h1>Your submission has been rejected</h1>
-            <p>Reason: <span id='rejectReason'></span></p>
+            <p><span id='rejectReason'></span></p>
             <a href='javascript:;' onclick='resubmission()' class="back" id='resubmission' >Resubmission</a>
           </article>
         </section>
