@@ -25,7 +25,8 @@
     "request-promise": "^4.2.2",
     "standard": "^11.0.1",
     "web3": "^0.14.1",
-    "stellar-sdk": "^0.8.0"
+    "stellar-sdk": "^0.8.0",
+    "nodemailer": "^4.6.3"
   },
   "private": true,
   "devDependencies": {

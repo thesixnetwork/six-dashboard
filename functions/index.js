@@ -20,6 +20,7 @@ admin.initializeApp(functions.config().firebase)
 
 const EthereumService = require('./service-ethereum')
 const stellarService = require('./stellar-service')
+const sendEmail = require('./email')
 
 const fireStore = admin.firestore()
 const app = express()
@@ -359,3 +360,6 @@ exports.monitorETH = functions.pubsub.topic('monitor-eth').onPublish(() => {
 })
 
 exports.monitorXLM = functions.pubsub.topic('monitor-xlm').onPublish(stellarService)
+
+exports.sendEmailApproved = sendEmail.sendEmailApproved
+exports.sendEmailReject = sendEmail.sendEmailReject
