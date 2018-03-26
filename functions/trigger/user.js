@@ -9,8 +9,26 @@ module.exports = function (functions, fireStore) {
     'module': events.onCreate(event => sendCampaignEmail(event, functions, fireStore))
   }, {
     'name': 'logNewUser',
-    'module': events.onCreate(event => console.log(event.data.data(), event.params.uid))
+    'module': events.onCreate(event => Promise.resolve(console.log(event.data.data(), event.params.uid)))
+  }, {
+    'name': 'addUserNumber',
+    'module': events.onCreate(event => addUserNumber(event, functions, fireStore))
   }]
+}
+
+function addUserNumber (event, functions, fireStore) {
+  const uid = event.params.uid
+  const userRef = fireStore.collection('user').doc(uid)
+  const userNumberRef = fireStore.collection('generator').doc('user')
+  return fireStore.runTransaction(tx => tx.get(userNumberRef).then(doc => {
+    if (!doc.exists) {
+      return new Error('user number generator path does not exists.')
+    }
+    const newLatestNumber = doc.data().latest_number + 1
+    const memo = JSON.stringify({n: newLatestNumber})
+    return Promise.all([tx.update(userRef, {user_number: newLatestNumber, memo, uid}), tx.update(userNumberRef, {latest_number: newLatestNumber})])
+  })
+  )
 }
 
 function sendCampaignEmail (event, functions, fireStore) {
