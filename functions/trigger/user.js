@@ -24,15 +24,16 @@ function checkPresaleDiscount (event, functions, fireStore) {
   const userData = event.data.data()
   const presaleUserRef = fireStore.collection('presale').doc('supply').collection('reserve').doc(uid)
   const totalEthRef = fireStore.collection('presale').doc('supply')
-  if (userData.kyc_status !== 'approved') return Promise.resolve() // do nothing
+  if (userData.kyc_status !== 'approved' || !userData.reserve_eth) return Promise.resolve() // do nothing
   return fireStore.runTransaction(tx => tx.get(presaleUserRef).then(userReserve => {
     if (userReserve.exists) {
       return Promise.reject(new Error(`uid:${uid} already reserved`))
     }
     return tx.get(totalEthRef).then(doc => {
       const totalETH = doc.data().total_eth
-      const latestTotalETH = totalETH + userData.reserve_eth
-      return Promise.all([tx.update(totalEthRef, {total_eth: latestTotalETH}), tx.update(presaleUserRef, {total_eth: latestTotalETH})])
+      const latestTotalETH = totalETH + (userData.reserve_eth || 0)
+      if (latestTotalETH > 15000) return Promise.reject(new Error('Presale is soldout.'))
+      return Promise.all([tx.update(totalEthRef, {total_eth: latestTotalETH}), tx.set(presaleUserRef, {total_eth: latestTotalETH})])
     })
   }))
 }
