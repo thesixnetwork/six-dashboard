@@ -5,6 +5,38 @@ countries = {"AF":"Afghanistan","AX":"Åland Islands","AL":"Albania","DZ":"Alger
 
 estimates = {"1-2": "1K USD - 2K USD", "2-5": "2K USD - 5K USD", "5-15": "5K USD - 15K USD", "15-100": "15K USD - 100K USD", "100+": "100K USD - More" }
 
+rejectNote = {
+  "need_more": `We appreciate that you took the time for the registration. However, we received insufficient information regarding your KYC/ AML documents and/ or information. 
+
+We would highly appreciate if you could resubmit the documents and/ or information through the link below. 
+
+Thank you for your interest in our ICO. 
+
+SIX.network`,
+  "restricted": `We highly appreciate that you took the time for the registration. After reviewing your submitted application materials, the KYC/AML result does not match with our requirements.
+
+We highly appreciate that you are interested in our ICO. Please do support us in the secondary market soon.
+
+Thank you for your interest in SIX.network and our ICO.
+
+SIX.network`,
+  "incorrect": `We appreciate that you took the time for the registration. However, we received insufficient information regarding your KYC/ AML documents and/ or information. 
+
+We would highly appreciate if you could resubmit the documents and/ or information through the link below. 
+
+Thank you for your interest in our ICO. 
+
+SIX.network`,
+  "photo_corrupted": `We appreciate that you took the time for the registration. However, we received incorrect or unclear information regarding your selfie picture.
+
+We would highly appreciate if you could resubmit your selfie through the link below. 
+
+Thank you for your interest in our ICO. 
+
+SIX.network`,
+  "other": ""
+}
+
 currentFocus = ""
 // Logout function to sign user out
 function logOut () {
@@ -138,7 +170,15 @@ function reject() {
   let db = firebase.firestore()
   let rejecttype = document.getElementById('rejectSelect').value
   let rejectnote = document.getElementById('rejectNote').value
-  db.collection('users').doc(thisFocus).update({ kyc_status: 'rejected', reject_type: rejecttype, reject_note: rejectnote }).then(() => {
+  let updateData = {
+    kyc_status: 'rejected', reject_type: rejecttype
+  }
+  if (rejectnote !== undefined && rejecttype === 'other') {
+    updateData.reject_note = rejectnote
+  } else {
+    updateData.reject_note = rejectNote[rejectnote]
+  }
+  db.collection('users').doc(thisFocus).update(updateData).then(() => {
     goBack()
     $('#'+thisFocus).remove()
     unlockAll()

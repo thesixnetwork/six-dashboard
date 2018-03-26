@@ -1,0 +1,49 @@
+@media only screen and (max-width: 1170px) {
+  #loginSlidePanel {
+    display: none;
+  }
+
+  #loginLoginPanel {
+    width: 100%;
+  }
+
+  #loginSignUpContainer {
+    flex-direction: column;
+    margin: auto;
+  }
+}
+
+@media only screen and (max-width: 530px) {
+  #loginLoginContainer {
+    padding: 35px;
+  }
+  main.login .container {
+    display: block;
+  }
+
+  #loginLoginContainer {
+    height: unset;
+  }
+}
+
+@media only screen and (max-width: 400px) {
+  #loginLoginContainer {
+    padding: 20px;
+  }
+  main.login .container form {
+    width: 270px;
+    margin: 12px auto;
+  }
+  :root {
+    font-size: 13px;
+  }
+  h1 { 
+    font-size: 24px;
+  }
+  label.text, label.dropdown, label.file {
+    height: 38px;
+  }
+  .alert-error {
+    min-width: unset;
+  }
+}

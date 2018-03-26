@@ -176,6 +176,15 @@ exports.phoneVerificationSubmit = functions.https.onCall((data, context) => {
   })
 })
 
+exports.initializeUserDoc = functions.auth.user().onCreate((event) => {
+  const user = event.data
+  const email = user.email
+  let ref = admin.firestore().collection('users').doc(user.uid)
+  return ref.set({ email: email }, { merge: true }).then(() => {
+    return true
+  })
+})
+
 function getTime () {
   const time = new Date()
 

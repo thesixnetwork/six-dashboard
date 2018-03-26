@@ -19,6 +19,7 @@
     <link rel="shortcut icon" href="images/logo/fav.ico" type="image/x-icon">
     <link rel="stylesheet" href="stylesheets/style.css">
     <link rel="stylesheet" href="stylesheets/loading.css">
+    <link rel="stylesheet" href="stylesheets/responsive2.css">
     <script src="javascripts/jquery-3.2.1.min.js"></script>
     <script src="javascripts/libphonenumber-js.min.js"></script>
     <script src="javascripts/wizard.js"></script>
@@ -353,7 +354,7 @@
         <section id='kycContent' class="information">
           <article id='kycContentForm' class="profile-form show-detail">
             <fieldset>
-              <legend>Information</legend>
+              <legend>Information (Please fill in English only)</legend>
               <dl>
                 <dt>Name</dt>
                 <dd class="combine">
@@ -636,7 +637,7 @@
 
               <dl id='passportNumber'>
                 <dt>Passport number
-                  <span>* พาสปอร์ตต้องใช้เพราะสิงคโปรไรสักอย่าง</span>
+                  <span>Due to Singaporean regulation</span>
                 </dt>
                 <dd><label class="text kycinput" id="kycPassportNumberAlert">
                   <input type="text" id='kycPassportNumber' placeholder="Passport number">
@@ -645,9 +646,9 @@
               </dl>
               
               <dl>
-                <dt>Address according to Passport</dt>
+                <dt>Local address</dt>
                 <dd><label class="textarea kycinput" id="kycAddressAlert">
-                  <textarea id='kycAddress' placeholder="Address according to Passport"></textarea>
+                  <textarea id='kycAddress' placeholder="Local address"></textarea>
                   <p id='kycAddressError' style='display: none;'></p>
                 </label></dd>
               </dl>
@@ -696,7 +697,7 @@
               <dl>
                 <dt>
                   Photo of you holding a Passport
-                  <span>A photo of you holding a copy of Passport with a word 'SIX.network' and current date written on it.</span>
+                  <span>A selfie of you holding your official passport showing the passport photo page and a paper with the word "for SIX.network on the date of registration"</span>
                 </dt>
                 <dd>
                   <label class="file kycinput" id="kycPic2Alert">
@@ -718,7 +719,8 @@
                 </dd>
               </dl>
               <dl>
-                <dt>Photo of utitlity bill to verify address</dt>
+                <dt>Photo of utility bill to verify address</dt>
+                <span>Upload proof of address (e.g. water bill, electricity bill, internet bill, cable tv bill, credit card slip, bank statement, brokerage bill, etc.)</span>
                 <dd>
                   <label class="file kycinput" id="kycPic3Alert">
                     <input type="file" id='kycPic3'>
@@ -740,7 +742,7 @@
               </dl>
             </fieldset>
             <fieldset>
-              <legend>Investment amount (USD)</legend>
+              <legend>Investment amount (ETH)</legend>
               <dl>
                 <dd><label class="text kycinput" id="kycEstimateAlert">
                   <input type="text" id='kycEstimate' placeholder="1000"></label>
@@ -754,13 +756,15 @@
           </article>
 
           <article class="approved" id='kycContentPending'>
-            <h1>Wait for approved</h1>
-            <p>Usually the approval takes 15 minutes up to 4 hours, but sometimes it might take longer – up to 1 day. After we review your account – a notification email is sent to all administrators of the account.</p>
+            <h1>Waiting for approval</h1>
+            <p>The approval process takes up to 72 business hours. After we review your account information and KYC/ AML documents, you will receive an email confirmation on your KYC/ AML result.</p>
+            <img id='headerEmailSample'src="images/header_email_sample.png">
+            <img id='bodyEmailSample'src="images/body_email_sample.png">
           </article>
 
           <article class="rejected" id='kycContentRejected'>
             <h1>Your submission has been rejected</h1>
-            <p>Reason: <span id='rejectReason'></span></p>
+            <p><span id='rejectReason'></span></p>
             <a href='javascript:;' onclick='resubmission()' class="back" id='resubmission' >Resubmission</a>
           </article>
         </section>
