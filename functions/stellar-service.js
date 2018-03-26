@@ -1,11 +1,8 @@
-const functions = require('firebase-functions');
+const functions = require('firebase-functions')
 const StellarSdk = require('stellar-sdk')
-const admin = require('firebase-admin') //delet
+const admin = require('firebase-admin')
 const Promise = require('bluebird')
-
-const serviceAccount = require('./service-account')
-
-const fireStore = admin.firestore() //detelete
+const fireStore = admin.firestore()
 
 function StellarService(event) {
   this.stellarUrl = functions.config().campaign.is_production === 'true'

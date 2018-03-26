@@ -1,16 +1,7 @@
 const admin = require('firebase-admin')
-const bodyParser = require('body-parser')
-const cors = require('cors')
-const express = require('express')
 const functions = require('firebase-functions')
 const request = require('request-promise')
 const moment = require('moment-timezone')
-// const serviceAccount = require('./service-account')
-
-// admin.initializeApp({
-//   credential: admin.credential.cert(serviceAccount),
-//   databaseURL: 'https://six-dashboard.firebaseio.com'
-// })
 
 admin.initializeApp(functions.config().firebase)
 
@@ -18,18 +9,11 @@ const EthereumService = require('./service-ethereum')
 const stellarService = require('./stellar-service')
 
 const fireStore = admin.firestore()
-const app = express()
 
 const triggers = require('./trigger')(functions, fireStore)
 for (let trigger of triggers) {
   exports[trigger.name] = trigger.module
 }
-
-app.use(cors())
-app.use(bodyParser.urlencoded({
-  extended: false
-}))
-app.use(bodyParser.json())
 
 const getBasePriceURI = (coin) => `https://min-api.cryptocompare.com/data/price?fsym=${coin}&tsyms=USD`
 
@@ -58,74 +42,6 @@ function updateUser (uid, data) {
       .catch(err => reject(err))
   })
 }
-
-function insertUserTx (uid, data) {
-  return getUser(uid)
-    .then(result => {
-      const {xlm_tx} = result
-      let txs = xlm_tx || []
-      txs = txs.concat([data])
-      return updateUser(uid, {
-        xlm_tx: txs
-      })
-    })
-    .catch(err => err)
-}
-
-app.use('/users/:uid', (req, res) => {
-  const {uid} = req.params
-  getUser(uid)
-    .then(result => res.send(result))
-    .catch(err => res.status(400).send(err))
-})
-
-app.use('/purchase-list', (req, res) => {
-  return fireStore
-    .collection('purchase_txs')
-    .get()
-    .then(querySnapshot => {
-      let result = []
-      querySnapshot.forEach(function (doc) {
-        const data = doc.data()
-        result = result.concat([data])
-      })
-      return result
-    })
-    .then(result => res.send(result))
-    .catch(err => {
-      res.status(400).send(err)
-    })
-})
-
-app.post('/purchase/:currency', (req, res) => {
-  const {currency} = req.params
-  const {buyer_id, amount, time, total_six, id} = req.body
-  const data = {
-    buyer_id,
-    id,
-    amount,
-    time,
-    total_six,
-    currency
-  }
-  return fireStore
-    .collection('purchase_txs')
-    .doc(id)
-    .set(Object.assign(data, {
-      status: 'success'
-    }))
-    .then(function (result) {
-      insertUserTx(buyer_id, data)
-      res.send(Object.assign(data, {
-        status: 'success'
-      }))
-    })
-    .catch(err => {
-      res.status(400).send(err)
-    })
-})
-
-exports.api = functions.https.onRequest(app)
 
 exports.incrementTotalAsset = functions.firestore.document('/purchase_txs/{txId}')
   .onCreate(event => {
@@ -268,88 +184,6 @@ exports.initializeUserDoc = functions.auth.user().onCreate((event) => {
     return true
   })
 })
-
-function updateUser (uid, data) {
-  return new Promise((resolve, reject) => {
-    fireStore
-      .collection('users')
-      .doc(uid)
-      .set(data, {
-        merge: true
-      })
-      .then(snapshot => snapshot.data())
-      .then(result => resolve(result))
-      .catch(err => reject(err))
-  })
-}
-
-function insertUserTx (uid, data) {
-  return getUser(uid)
-    .then(result => {
-      const {xlm_tx} = result
-      let txs = xlm_tx || []
-      txs = txs.concat([data])
-      return updateUser(uid, {
-        xlm_tx: txs
-      })
-    })
-    .catch(err => err)
-}
-
-app.use('/users/:uid', (req, res) => {
-  const {uid} = req.params
-  getUser(uid)
-    .then(result => res.send(result))
-    .catch(err => res.status(400).send(err))
-})
-
-app.use('/purchase-list', (req, res) => {
-  return fireStore
-    .collection('purchase_txs')
-    .get()
-    .then(querySnapshot => {
-      let result = []
-      querySnapshot.forEach(function (doc) {
-        const data = doc.data()
-        result = result.concat([data])
-      })
-      return result
-    })
-    .then(result => res.send(result))
-    .catch(err => {
-      res.status(400).send(err)
-    })
-})
-
-app.post('/purchase/:currency', (req, res) => {
-  const {currency} = req.params
-  const {buyer_id, amount, time, total_six, id} = req.body
-  const data = {
-    buyer_id,
-    id,
-    amount,
-    time,
-    total_six,
-    currency
-  }
-  return fireStore
-    .collection('purchase_txs')
-    .doc(id)
-    .set(Object.assign(data, {
-      status: 'success'
-    }))
-    .then(function (result) {
-      insertUserTx(buyer_id, data)
-      res.send(Object.assign(data, {
-        status: 'success'
-      }))
-    })
-    .catch(err => {
-      res.status(400).send(err)
-    })
-})
-
-exports.api = functions.https.onRequest(app)
 
 function getTime () {
   const time = new Date()
