@@ -143,28 +143,26 @@ exports.incrementTotalAsset = functions.firestore.document('/purchase_txs/{txId}
     )
   })
 
-exports.sendCampaignEmail = functions.database
-  .ref('/users/{uid}')
-  .onCreate(event => {
-    const snapshot = event.data
-    const data = snapshot.val()
-    const {email, firstName, lastName, phone} = data
-    const queryString = `email=${email}&first_name=${firstName}&last_name=${lastName}&phone=${phone}`
-    const postObj = Querystring.stringify({
-      email: email,
-      fist_name: firstName,
-      last_name: lastName,
-      phone: phone
-    })
-    const url = `${BASE_URL}/admin/api.php?api_action=contact_add&api_key=${API_KEY}&api_output=json`
-    return axios
-      .post(url, postObj)
-      .then(res => res.data)
-      .then(data => {
-        console.log(data, 'res from activecampaign')
-      })
-      .catch(err => console.log(err, 'error send email'))
+exports.sendCampaignEmail = functions.firestore.document('/users/{uid}').onCreate(event => {
+  const snapshot = event.data
+  const data = snapshot.data()
+  const { email, firstName, lastName, phone } = data
+  const postObj = Querystring.stringify({
+    'email': email,
+    'fist_name': firstName,
+    'last_name': lastName,
+    'phone': phone
   })
+  const url = `${BASE_URL}/admin/api.php?api_action=contact_add&api_key=${API_KEY}&api_output=json`
+  return axios.post(url, postObj)
+    .then(res => res.data)
+    .then(data => {
+      return console.log(data, 'res from activecampaign')
+    })
+    .catch(err => {
+      return console.log(err, 'error send email')
+    })
+})
 
 function getTime () {
   const time = new Date()
