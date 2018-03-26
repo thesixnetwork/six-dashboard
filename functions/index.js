@@ -2,12 +2,6 @@ const admin = require('firebase-admin')
 const functions = require('firebase-functions')
 const request = require('request-promise')
 const moment = require('moment-timezone')
-// const serviceAccount = require('./service-account')
-
-// admin.initializeApp({
-//   credential: admin.credential.cert(serviceAccount),
-//   databaseURL: 'https://six-dashboard.firebaseio.com'
-// })
 
 admin.initializeApp(functions.config().firebase)
 
