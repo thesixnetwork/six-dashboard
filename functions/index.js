@@ -145,36 +145,36 @@ exports.incrementTotalAsset = functions.firestore.document('/purchase_txs/{txId}
     )
   })
 
-function generatePhoneVerificationCode(phone_number) {
+function generatePhoneVerificationCode (phone_number) {
   let refCode = Math.random().toString(36).replace(/[^a-z]+/g, '').substr(0, 5).toUpperCase()
   let code = Math.random().toString().substr(2, 6)
-  let validUntil = Math.round((new Date()).getTime() / 1000)+180
-  var http = require("https");
+  let validUntil = Math.round((new Date()).getTime() / 1000) + 180
+  var http = require('https')
   var options = {
-    "method": "POST",
-    "hostname": "tm3swoarp5.execute-api.ap-southeast-1.amazonaws.com",
-    "port": null,
-    "path": "/production/sms",
-    "headers": {
-      "content-type": "application/x-www-form-urlencoded",
-      "cache-control": "no-cache",
+    'method': 'POST',
+    'hostname': 'tm3swoarp5.execute-api.ap-southeast-1.amazonaws.com',
+    'port': null,
+    'path': '/production/sms',
+    'headers': {
+      'content-type': 'application/x-www-form-urlencoded',
+      'cache-control': 'no-cache'
     }
-  };
+  }
 
   var req = http.request(options, res => {
-    var chunks = [];
+    var chunks = []
 
-    res.on("data", chunk => {
-      chunks.push(chunk);
-    });
+    res.on('data', chunk => {
+      chunks.push(chunk)
+    })
 
-    res.on("end", () => {
-      var body = Buffer.concat(chunks);
-      console.log(body.toString());
-    });
-  });
-  req.write("{\"message\": \"Your code is "+ code +" (Ref: "+refCode+")\", \"phone_number\": \""+phone_number+"\"}");
-  req.end();
+    res.on('end', () => {
+      var body = Buffer.concat(chunks)
+      console.log(body.toString())
+    })
+  })
+  req.write('{"message": "Your code is ' + code + ' (Ref: ' + refCode + ')", "phone_number": "' + phone_number + '"}')
+  req.end()
   let ref = admin.firestore().collection('phone-verifications')
   return ref.doc(phone_number).set({ ref_code: refCode, code: code, valid_until: validUntil }).then(() => {
     return { success: true, refCode: refCode, validUntil: validUntil }
@@ -220,7 +220,7 @@ exports.phoneVerificationRequest = functions.https.onCall((data, context) => {
     console.log(err)
     return { success: false, error_message: err.message }
   })
-});
+})
 
 exports.phoneVerificationSubmit = functions.https.onCall((data, context) => {
   let ref = admin.firestore().collection('phone-verifications')
@@ -239,7 +239,7 @@ exports.phoneVerificationSubmit = functions.https.onCall((data, context) => {
           if (doc.data().ref_code === ref_code && doc.data().code === code) {
             let batch = admin.firestore().batch()
             batch.set(ref.doc(phone_number), {is_verified: true})
-            batch.update(userRef.doc(uid), {"phone_number": phone_number, "phone_verified": true, 'country': country})
+            batch.update(userRef.doc(uid), {'phone_number': phone_number, 'phone_verified': true, 'country': country})
             return batch.commit().then(() => {
               return { success: true }
             }).catch(err => {
@@ -259,19 +259,7 @@ exports.phoneVerificationSubmit = functions.https.onCall((data, context) => {
     console.log(err)
     return { success: false, error_message: err.message }
   })
-});
-
-exports.sendCampaignEmail = functions.firestore.document('/users/{uid}').onCreate(event => {
-  const snapshot = event.data
-  const data = snapshot.data()
-  const { email, firstName, lastName, phone } = data
-  const postObj = Querystring.stringify({
-    'email': email,
-    'fist_name': firstName,
-    'last_name': lastName,
-    'phone': phone
-  })
-}
+})
 
 function updateUser (uid, data) {
   return new Promise((resolve, reject) => {
