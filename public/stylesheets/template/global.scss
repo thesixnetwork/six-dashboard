@@ -1,11 +1,12 @@
-// sass --watch --sourcemap=none --n _style.scss:style.css --style compressed
+// sass --watch --sourcemap=none --n style.scss:style.css --style compressed
 
 // Font
 @import url('https://fonts.googleapis.com/css?family=Quicksand:300,400,500,700');
+@import url('https://fonts.googleapis.com/css?family=Roboto:100,100i,300,300i,400,400i,500,500i,700,700i,900,900i');
 
-:root { font-size: $font-size-m; }
+:root { font-size: 16px; }
 
-body { line-height: 1.625; color: $font-color-primary; background: $white; font-weight: normal; font-family: 'Quicksand', sans-serif; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
+body { line-height: 1.825; color: #6f7583; background: $white; font-weight: normal; font-family: 'Roboto', sans-serif; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
 
 // Heading
 h1, h2, h3 { font-weight: bold; }
@@ -13,172 +14,63 @@ h1 { font-size: $font-size-4xl; }
 h2 { font-size: $font-size-3xl; }
 h3 { font-size: $font-size-xl; }
 
-a {
-	transition: 0.2s; color: inherit; outline: none; cursor: pointer;
-
+a { transition: 0.2s; color: inherit; outline: none; cursor: pointer;
 	&.btn-link:hover { text-decoration: underline; }
 }
 
 .description { font-size: $font-size-s; color: $font-color-secondary; }
 
-.container { position: relative; margin-left: auto; margin-right: auto; max-width: 1280px; }
+.container { position: relative; margin-left: auto; margin-right: auto; max-width: 640px; }
 
-.avatar {
-	display: block;	width: 35px; height: 35px; border-radius: $border-radius; border: 1px solid $border;
-
+.avatar { display: block;	width: 35px; height: 35px; border-radius: $border-radius; border: 1px solid $border;
 	img { width: 100%; height: 100%; }
 }
 
-header.header {
-	display: flex; align-items: center; width: 100%; padding: $space-m; height: 80px; border-bottom: 1px solid $border;
+.header { position: relative; display: flex; justify-content: flex-end; width: 100%; padding: 0 40px; border-bottom: 1px solid #d8dde1;
 
-	.logo {
-		display: block; height: 35px; flex-shrink: 0;
-
-		img { height: 100%; }
+	.logo { position: absolute; left: 40px; top: 10px; display: block; height: 30px; flex-shrink: 0;
+		img { height: 100%; width: auto; }
 	}
 
-	ul.menu {
-		display: flex; width: 100%; height: 100%; padding: 0 $space-l;
+	a.logout { display: block; flex-shrink: 0; padding: 0 20px; line-height: 60px;
+		i { margin-left: 10px;}
+	}
+
+	.menu {
+		display: flex;
 
 		li {
-			margin: 0 $space-s;
-
 			a {
-				display: block; line-height: 35px;
+				line-height: 60px; padding: 0 20px;
 
 				&:hover { text-decoration: underline; }
 			}
 		}
 	}
-
-	a.logout {
-		display: block; flex-shrink: 0;
-
-		i { display: inline-block; font-size: $font-size-s; }
-
-		&:hover { text-decoration: underline; }
-	}
 }
 
 footer { height: 60px; width: 100%; display: flex; justify-content: space-between; padding: $space-m; font-size: $font-size-s; }
 
-main.login {
-	display: flex; height: 100vh;
 
-	section {
-		&:nth-of-type(01) { width: 550px; }
-		&:nth-of-type(02) { display: flex; align-items: center; flex-wrap: wrap; justify-content: center; width: calc(100% - 550px); background: $gray; }
-	}
+p.alert-text {
+	display: block; color: $green; margin-bottom: $space-m; text-align: center;
 
-	header {
-		justify-content: space-between;
+	&:last-child { margin: $space-m 0 0 0; }
 
-		.btn-tool {
-			display: flex;
-
-			a { color: $blue; text-decoration: underline; margin-left: $space-s; }
-		}
-	}
-
-	.container {
-		display: flex; align-items: center; height: calc(100% - 140px); padding: $space-2xl;
-
-		h1 {
-			color: $blue; margin-bottom: $space-s; text-align: center; text-transform: uppercase;
-
-			span { color: $font-color-primary; display: inline-block; margin-right: $space-s; }
-		}
-
-		p { text-align: center; color: $font-color-secondary; }
-
-		form {
-			width: 300px; margin: $space-m auto;
-
-			label, button { width: 100%; }
-
-			label { margin-bottom: $space-m; }
-
-			a { display: block; text-align: center; margin-top: $space-s; color: $font-color-secondary; font-size: $font-size-s; }
-
-			p.alert-text {
-				display: block; color: $green; margin-bottom: $space-m;
-
-				&.error { color: $red; }
-			}
-		}
-
-		.list {
-			width: 100%; display: flex; justify-content: center; position: relative; color: $font-color-secondary; font-size: $font-size-l; padding-top: $space-m;
-
-			&:before { content: ""; width: 70%; height: 1px; background: $border; position: absolute; top: 0; left: 15%; }
-
-			li {
-				margin: 0 $space-s;
-
-				a {
-					display: block; width: 25px; height: 25px; line-height: 25px; text-align: center; opacity: 0.7;
-
-					&:hover { opacity: 1; }
-				}
-			}
-		}
-
-		.sign-in, .sign-up, .forgot {
-			opacity: 0; display: none; flex-wrap: wrap; justify-content: center; align-items: center;
-
-			&.show-detail { animation: fade-in-up 1s forwards; display: flex; -webkit-animation: fade-in-up 1s forwards; display: flex; -moz-animation: fade-in-up 1s forwards; display: flex; -o-animation: fade-in-up 1s forwards; display: flex; }
-			
-			@keyframes fade-in-up {
-				from { transform: translate3d(0, 30%, 0); }
-				to { opacity: 1; transform: none; }
-			}
-			@-webkit-keyframes fade-in-up {
-				from { transform: translate3d(0, 30%, 0); }
-				to { opacity: 1; transform: none; }
-			}
-			@-moz-keyframes fade-in-up {
-				from { transform: translate3d(0, 30%, 0); }
-				to { opacity: 1; transform: none; }
-			}
-			@-o-keyframes fade-in-up {
-				from { transform: translate3d(0, 30%, 0); }
-				to { opacity: 1; transform: none; }
-			}
-		}
-
-		.forgot h1 { margin: 0; }
-	}
-
-	ul.slider-img {
-		overflow: hidden; width: 600px;
-
-		.slide { display: flex; position: relative; }
-
-		li { display: flex; align-items: flex-end; }
-
-		img { width: 600px; }
-	}
-
-	ul.slider-nav {
-		display: flex; width: 100%; justify-content: center;
-
-		li {
-			display: block; font-size: 8px; color: $font-color-secondary; width: 15px; height: 15px; line-height: 15px; cursor: pointer; text-align: center; opacity: 0.75;
-
-			&.current, &:hover { color: $blue; }
-		}
-	}
+	&.error { color: $red; }
 }
 
-.alert-error {
-	transition: 0.2s; min-width: 300px; padding: 0 $space-s; background: $red; height: 0; line-height: 30px; border-radius: $border-radius; visibility: hidden; overflow: hidden; text-align: center;
+a.next-step, a.back { display: block; text-align: center; margin-top: $space-l; text-decoration: underline; }
 
-	p { color: $white !important; text-align: center; font-weight: bold; display: inline-block; }
+.loading { display: none; justify-content: center; align-items: center; width: 100%; height: 100%;
 
-	span { color: $white; margin-left: $space-s; display: inline-block; }
+	p {
+		display: block;
 
-	&.show-alert { margin: $space-m auto; height: 30px; overflow: visible; visibility: visible; }
+		i { margin-right: $space-s; }
+	}
+
+	&.show-loading { display: flex; }
 }
 
 // ====== Countdown ====== //
@@ -187,7 +79,7 @@ $textColor: $blue;
 $textColorDark: darken($textColor, 30%);
 
 ul.countdown {
-	display: flex; flex-wrap: wrap; justify-content: center; width: 600px; padding: 25px 20px; margin: 0 auto;
+	display: flex; flex-wrap: wrap; justify-content: center; padding: 25px 20px; margin: 0 auto;
 
 	> p { width: 100%; text-align: center; margin-bottom: $space-m; }
 
@@ -286,15 +178,3 @@ ul.countdown {
 	100% { background: $white; color: $textColor; }
 }
 // =================== //
-
-.loading {
-	display: none; justify-content: center; align-items: center; width: 100%; height: 100%;
-
-	p {
-		display: block;
-
-		i { margin-right: $space-s; }
-	}
-
-	&.show-loading { display: flex; }
-}
