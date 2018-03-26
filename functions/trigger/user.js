@@ -60,7 +60,8 @@ function checkPresaleDiscount (event, functions, fireStore) {
   const uid = event.params.uid
   const userData = event.data.data()
   const previousUserData = event.data.previous.data()
-  if (userData.kyc_status !== 'approved' || previousUserData.kyc_status === 'approved' || !userData.reserve_eth) return Promise.resolve() // do nothing
+  const estimate = (+userData.estimate || 0) // force estimate from string to number (default 0)
+  if (userData.kyc_status !== 'approved' || previousUserData.kyc_status === 'approved' || estimate <= 0) return Promise.resolve() // do nothing
   const presaleUserRef = fireStore.collection('presale').doc('supply').collection('reserve').doc(uid)
   const totalEthRef = fireStore.collection('presale').doc('supply')
   return fireStore.runTransaction(tx => tx.get(presaleUserRef).then(userReserve => {
