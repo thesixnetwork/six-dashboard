@@ -98,8 +98,8 @@ function filterTransactions (transactions, contractAddress) {
     console.log('inputText = ', inputText)
     try {
       const _memo = JSON.parse(inputText)
-      if (_memo.user_number) {
-        transaction.user_number = _memo.user_number
+      if (_memo.n) {
+        transaction.user_number = _memo.n
       }
       return transaction
     } catch (err) {
@@ -169,7 +169,8 @@ function monitor (contractAddress) {
         let result = {
           'id': transaction.hash,
           'native_amount': +value,
-          'receive_account': transaction.from, // from
+          'to': transaction.to,
+          'from': transaction.from,
           'price_time': budget.time,
           'six_amount': value * budget.six_per_eth,
           'time': new Date().getTime(),
