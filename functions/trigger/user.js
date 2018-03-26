@@ -13,7 +13,28 @@ module.exports = function (functions, fireStore) {
   }, {
     'name': 'addUserNumber',
     'module': events.onCreate(event => addUserNumber(event, functions, fireStore))
+  }, {
+    'name': 'checkPresaleDiscount',
+    'module': events.onUpdate(event => checkPresaleDiscount(event, functions, fireStore))
   }]
+}
+
+function checkPresaleDiscount (event, functions, fireStore) {
+  const uid = event.params.uid
+  const userData = event.data.data()
+  const presaleUserRef = fireStore.collection('presale').doc('supply').collection('reserve').doc(uid)
+  const totalEthRef = fireStore.collection('presale').doc('supply')
+  if (userData.kyc_status !== 'approved') return Promise.resolve() // do nothing
+  return fireStore.runTransaction(tx => tx.get(presaleUserRef).then(userReserve => {
+    if (userReserve.exists) {
+      return Promise.reject(new Error(`uid:${uid} already reserved`))
+    }
+    return tx.get(totalEthRef).then(doc => {
+      const totalETH = doc.data().total_eth
+      const latestTotalETH = totalETH + userData.reserve_eth
+      return Promise.all([tx.update(totalEthRef, {total_eth: latestTotalETH}), tx.update(presaleUserRef, {total_eth: latestTotalETH})])
+    })
+  }))
 }
 
 function addUserNumber (event, functions, fireStore) {
@@ -22,7 +43,7 @@ function addUserNumber (event, functions, fireStore) {
   const userNumberRef = fireStore.collection('generator').doc('user')
   return fireStore.runTransaction(tx => tx.get(userNumberRef).then(doc => {
     if (!doc.exists) {
-      return new Error('user number generator path does not exists.')
+      return Promise.reject(new Error('user number generator path does not exists.'))
     }
     const newLatestNumber = doc.data().latest_number + 1
     const memo = JSON.stringify({n: newLatestNumber})
