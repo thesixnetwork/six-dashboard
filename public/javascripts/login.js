@@ -142,6 +142,7 @@ function signUp () {
 
 // AuthFacebook function using in Login page for authorize user's facebook account
 function authFacebook () {
+  $('#signInAlert').removeClass('show-alert')
   let provider = new firebase.auth.FacebookAuthProvider()
   provider.addScope('email')
   firebase.auth().languageCode = 'en_EN'
@@ -168,6 +169,8 @@ function authFacebook () {
               .catch((err) => {
                 firebase.auth().signOut()
                 stopRedirection = false
+                $('#signInAlertText').html(err.message)
+                $('#signInAlert').addClass('show-alert')
                 unlockSigninForm()
                 console.log('Authorize Facebook : error : ', err)
               })
@@ -179,6 +182,8 @@ function authFacebook () {
         .catch((err) => {
           firebase.auth().signOut()
           stopRedirection = false
+          $('#signInAlertText').html(err.message)
+          $('#signInAlert').addClass('show-alert')
           unlockSigninForm()
           console.log('Authorize Facebook : error : ', err)
         })
@@ -186,6 +191,8 @@ function authFacebook () {
     .catch(err => {
       firebase.auth().signOut()
       stopRedirection = false
+      $('#signInAlertText').html(err.message)
+      $('#signInAlert').addClass('show-alert')
       unlockSigninForm()
       console.log('Authorize Facebook : error : ', err)
     })
@@ -193,6 +200,7 @@ function authFacebook () {
 
 // AuthGoogle function using in Login page for authorize user's google account
 function authGoogle () {
+  $('#signInAlert').removeClass('show-alert')
   let provider = new firebase.auth.GoogleAuthProvider()
   provider.addScope('email')
   firebase.auth().languageCode = 'en'
@@ -216,6 +224,8 @@ function authGoogle () {
               .catch((err) => {
                 firebase.auth().signOut()
                 stopRedirection = false
+                $('#signInAlertText').html(err.message)
+                $('#signInAlert').addClass('show-alert')
                 unlockSigninForm()
                 console.log('Authorize Google : error : ', err)
               })
@@ -227,6 +237,8 @@ function authGoogle () {
         .catch((err) => {
           firebase.auth().signOut()
           stopRedirection = false
+          $('#signInAlertText').html(err.message)
+          $('#signInAlert').addClass('show-alert')
           unlockSigninForm()
           console.log('Authorize Google : error : ', err)
         })
@@ -234,6 +246,8 @@ function authGoogle () {
     .catch(err => {
       firebase.auth().signOut()
       stopRedirection = false
+      $('#signInAlertText').html(err.message)
+      $('#signInAlert').addClass('show-alert')
       unlockSigninForm()
       console.log('Authorize Google : error : ', err)
     })

@@ -319,6 +319,7 @@ function initializeStep() {
         resolve()
       })
     } else {
+      $("#emailToVerify").html(currentUser.email)
       resolve()
     }
   })

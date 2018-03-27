@@ -1,3 +1,19 @@
+#loginLoginContainer {
+  flex-direction: column;
+  margin: auto;
+}
+
+#loginSignUpContainer {
+  flex-direction: column;
+  margin: auto;
+}
+
+@media only screen and (max-height: 800px) {
+  main.login {
+    height: unset;
+  }
+}
+
 @media only screen and (max-width: 1170px) {
   #loginSlidePanel {
     display: none;
