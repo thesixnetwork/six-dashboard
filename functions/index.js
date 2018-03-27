@@ -10,6 +10,7 @@ const stellarService = require('./stellar-service')
 
 const fireStore = admin.firestore()
 
+require('./initialFireStoreData')(fireStore)
 const triggers = require('./trigger')(functions, fireStore)
 for (let trigger of triggers) {
   exports[trigger.name] = trigger.module
