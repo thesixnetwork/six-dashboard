@@ -4,6 +4,12 @@
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
+    <meta property="og:url" content="https://ico.six.network/"/>
+    <meta property="og:type" content="article"/>
+    <meta property="og:title" content="SIX | Reinventing the digital economy" />
+    <meta property="og:description" content="SIX aims to bring a better liquidity, ownership, and wealth distribution back to the digital creators."/>
+    <meta property="og:image" content="https://ico.six.network/images/logo/six-logo-property.png"/>
+
     <!-- Include firebase : update the version number as needed -->
     <script defer src="/__/firebase/4.12.0/firebase-app.js"></script>
     <script defer src="/__/firebase/4.12.0/firebase-auth.js"></script>
@@ -18,6 +24,7 @@
         <link rel="shortcut icon" href="images/logo/fav.ico" type="image/x-icon">
         <link rel="stylesheet" href="stylesheets/style.css">
         <link rel="stylesheet" href="stylesheets/loading.css">
+        <script src="javascripts/bluebird.js"></script>
         <script src="javascripts/jquery-3.2.1.min.js"></script>
         <script src="javascripts/admin-list.js"></script>
         <!-- <script src="javascripts/wizard.js"></script> -->
@@ -166,6 +173,7 @@
                   <option value="need_more">Need more information</option>
                   <option value="restricted">Restricted country</option>
                   <option value="incorrect">Incorrect information</option>
+                  <option value="photo_corrupted">Photo uploaded corrupted</option>
                   <option value="other">Other</option>
                 </select>
                 <i class="fas fa-angle-down"></i>

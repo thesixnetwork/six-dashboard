@@ -68,7 +68,9 @@ function generatePhoneVerificationCode (phone_number) {
   var http = require('https')
   var options = {
     'method': 'POST',
-    'hostname': 'tm3swoarp5.execute-api.ap-southeast-1.amazonaws.com',
+//    'hostname': 'tm3swoarp5.execute-api.ap-southeast-1.amazonaws.com',
+    'hostname': 'xisth3qe4e.execute-api.ap-southeast-1.amazonaws.com',
+//    'hostname': '2ij1lsi2cd.execute-api.ap-southeast-1.amazonaws.com',
     'port': null,
     'path': '/production/sms',
     'headers': {
@@ -174,6 +176,15 @@ exports.phoneVerificationSubmit = functions.https.onCall((data, context) => {
   }).catch(err => {
     console.log(err)
     return { success: false, error_message: err.message }
+  })
+})
+
+exports.initializeUserDoc = functions.auth.user().onCreate((event) => {
+  const user = event.data
+  const email = user.email
+  let ref = admin.firestore().collection('users').doc(user.uid)
+  return ref.set({ email: email }, { merge: true }).then(() => {
+    return true
   })
 })
 

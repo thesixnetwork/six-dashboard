@@ -8,12 +8,7 @@ service cloud.firestore {
     }
     match /phone-numbers/{phoneNumber}{
       allow create, read, update: if request.auth.token.admin == true;
-    }
-    match /order-histories/{orderId}{
-      allow read, update: if request.auth.uid == resource.data.uid
-      										|| exists(/databases/$(database)/documents/admins/$(request.auth.uid));
-      allow create: if request.auth.uid == orderId;
-    }
+    }    
     match /admins/{userId}{
     	allow read: if exists(/databases/$(database)/documents/admins/$(request.auth.uid));
     }

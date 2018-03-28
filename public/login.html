@@ -4,6 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
+    <meta property="og:url" content="https://ico.six.network/"/>
+    <meta property="og:type" content="article"/>
+    <meta property="og:title" content="SIX | Reinventing the digital economy" />
+    <meta property="og:description" content="SIX aims to bring a better liquidity, ownership, and wealth distribution back to the digital creators."/>
+    <meta property="og:image" content="https://ico.six.network/images/logo/six-logo-property.png"/>
+
     <!-- Include firebase : update the version number as needed -->
     <script defer src="/__/firebase/4.12.0/firebase-app.js"></script>
     <script defer src="/__/firebase/4.12.0/firebase-auth.js"></script>
@@ -18,6 +24,8 @@
     <link rel="shortcut icon" href="images/logo/fav.ico" type="image/x-icon">
     <link rel="stylesheet" href="stylesheets/style.css">
     <link rel="stylesheet" href="stylesheets/loading.css">
+    <link rel="stylesheet" href="stylesheets/responsive.css">
+    <script src="javascripts/bluebird.js"></script>
     <script src="javascripts/jquery-3.2.1.min.js"></script>
     <script src="javascripts/libphonenumber-js.min.js"></script>
     <script src="javascripts/login.js"></script>
@@ -34,7 +42,7 @@
       </div>
     </div>
     <main class="login">
-      <section>
+      <section id='loginLoginPanel'>
         <header class="header">
           <a href="" class="logo"><img src="images/logo/six-logo.png"></a>
           <div class="btn-tool">
@@ -42,9 +50,10 @@
             <a class="open-sign-up">Sign up</a>
           </div>
         </header>
-        <div class="container">
+        <div class="container" id='loginLoginContainer'>
+          <h2 style='text-align: center; border-bottom: 1px solid #EEEEEE; margin-bottom: 20px; font-size: 19px; padding-bottom: 20px;'>PRE-ICO REGISTRATION</h2>
           <div class="sign-in show-detail">
-            <h1><span>welcome to</span>six.network</h1>
+            <h1 style='text-transform: unset;'><span>WELCOME TO</span>SIX.network</h1>
             <p>More than just a wallet for cryptocurrencies, but a single point of entry for your contents, media, IP loyalty and more</p>
             <form id="signInForm">
               <label class="text"><input id="signInEmail" type="email" placeholder="Email" required></label>
@@ -61,9 +70,8 @@
               <li><a href="javascript:;" onclick='authGoogle()'><i class="fab fa-google"></i></a></li>
             </ul>
           </div>
-          <div class="sign-up">
+          <div class="sign-up" id='loginSignUpContainer'>
             <h1>Sign up</h1>
-            <p>It is a long established face that a reader will be distracted by the readable content of a page.</p>
             <form id="signUpForm">
               <label class="text"><input id="signUpEmail" type="email" placeholder="Email" required></label>
               <label class="text"><input id="signUpFirstName" type="text" placeholder="First name" required></label>
@@ -347,10 +355,10 @@
         </div>
         <footer>
           <p>&copy; 2018 SIX Corporation</p>
-          <p>Terms &amp; Policy</p>
+          <p><a href='content/term_policy.pdf' id='term_policy'>Terms &amp; Policy</a></p>
         </footer>
       </section>
-      <section>
+      <section id='loginSlidePanel'>
         <ul class="slider-img">
           <div class="slide">
             <li class="current"><img src="images/content/six-road.png"></li>
