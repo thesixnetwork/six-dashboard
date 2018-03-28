@@ -271,6 +271,13 @@ function setupUserData() {
   if (userData.estimate !== undefined) {
     document.getElementById("kycEstimate").value = userData.estimate
   }
+  if (userData.is_presale === true) {
+    $("#presale_congrat").css('display', 'block')
+    $("#normal_congrat").css('display', 'none')
+  } else {
+    $("#presale_congrat").css('display', 'none')
+    $("#normal_congrat").css('display', 'block')
+  }
   pic1Url = userData.pic1
   pic2Url = userData.pic2
   pic3Url = userData.pic3
@@ -292,7 +299,14 @@ function setupUserData() {
     $("#sampleImage4").toggle()
   }
   if (userData.kyc_status === 'rejected') {
-    $("#rejectReason").html(String(userData.reject_note).replace("\n", "<br>"))
+    $("#rejectReason").html(String(userData.reject_note).split("\n").join("<br>"))
+    if (userData.reject_note_extend !== null && userData.reject_note_extend !== '' && userData.reject_note_extend !== undefined) {
+      $("#rejectReasonExtend").html(String(userData.reject_note_extend))
+      $("#extendRejectNote").css("display", "block")
+    }
+  }
+  if (userData.is_restricted === true) {
+    $("#resubmission").css("display", "none")
   }
 }
 
@@ -346,8 +360,10 @@ function resubmission() {
   $("#kycContentRejected").removeClass("show-detail")
   let uid = firebase.auth().currentUser.uid
   firebase.firestore().collection('users').doc(uid).update({
-    kyc_status: null
+    kyc_status: null,
+    reject_note_extend: null,
   })
+  $("#extendRejectNote").css("display", "none")
 }
 
 function proceedToIco() {
@@ -431,7 +447,13 @@ function submitKyc() {
   if (/^[0-9\.]+$/.test(estimate) === false) {
     $('#kycEstimateAlert').addClass('invalid')
     validate = false
-    $("#kycEstimateError").html('Investment amount should contain only digits and period')
+    $("#kycEstimateError").html('Contribution amount should contain only digits and period')
+    $("#kycEstimateError").css('display', 'block')
+  }
+  if (parseFloat(estimate) < 0.2) {
+    $('#kycEstimateAlert').addClass('invalid')
+    validate = false
+    $("#kycEstimateError").html('Contribution amount must be at least 0.2 ETH to get the minimum of SIX token')
     $("#kycEstimateError").css('display', 'block')
   }
   if (validate === false) {
