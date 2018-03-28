@@ -42,6 +42,15 @@
         </div>
       </div>
     </div>
+    <div id='sampleFader' style='display: none;'>
+      <a href='javascript:;' onclick='closeSample()'>
+        <div id='sampleWrapper'>
+          <img id='sample1' style='display:none;' class='sampleImg' src='images/content/ID-card.jpg'></img>
+          <img id='sample2' style='display:none;' class='sampleImg' src='images/content/passport.jpg'></img>
+          <img id='sample3' style='display:none;' class='sampleImg' src='images/content/selfie.jpg'></img>
+        </div>
+      </a>
+    </div>
     <header class="header">
       <a href="" class="logo"><img src="images/logo/six-logo.png"></a>
       <ul class="menu">
@@ -660,7 +669,7 @@
                 </label></dd>
               </dl>
               <dl id='citizenIdPhoto'>
-                <dt>Photo of ID card with signature and a paper with the word for "SIX.network"</dt>
+                <dt><i class="animate-flicker fas fa-question-circle" style='cursor: pointer; color: #555555; font-size: 17px;' onclick='showSample1()'></i> &nbsp;&nbsp;Photo of ID card with signature and a paper with the word for "SIX.network"</dt>
                 <dd>
                   <label class="file kycinput" id="kycPic1Alert">
                     <input type="file" id='kycPic1'>
@@ -681,7 +690,7 @@
                 </dd>
               </dl>
               <dl>
-                <dt>Photo of Passport with signature and a paper with the word for "SIX.network"</dt>
+                <dt><i class="animate-flicker fas fa-question-circle" style='cursor: pointer; color: #555555; font-size: 17px;' onclick='showSample2()'></i> &nbsp;&nbsp;Photo of Passport with signature and a paper with the word for "SIX.network"</dt>
                 <dd>
                   <label class="file kycinput" id="kycPic4Alert">
                     <input type="file" id='kycPic4'>
@@ -703,7 +712,7 @@
               </dl>
               <dl>
                 <dt>
-                  Photo of you holding a Passport
+                  <i class="animate-flicker fas fa-question-circle" style='cursor: pointer; color: #555555; font-size: 17px;' onclick='showSample3()'></i> &nbsp;&nbsp;Photo of you holding a Passport
                   <span>A selfie of you holding your official passport showing the passport photo page and a paper with the word "for SIX.network on the date of registration"</span>
                 </dt>
                 <dd>

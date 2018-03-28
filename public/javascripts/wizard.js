@@ -4,6 +4,40 @@ function logOut () {
   firebase.auth().signOut()
 }
 
+function closeSample() {
+  if ($("#sampleFader").css('display') !== 'none') {
+    $("#sampleFader").fadeToggle()
+  }
+}
+
+function showSample1() {
+  if ($("#sampleFader").css('display') === 'none') {
+    $('#sample1').css('display', 'block')
+    $('#sample2').css('display', 'none')
+    $('#sample3').css('display', 'none')
+    $("#sampleFader").fadeToggle()
+  }
+}
+
+function showSample2() {
+  if ($("#sampleFader").css('display') === 'none') {
+    $('#sample1').css('display', 'none')
+    $('#sample2').css('display', 'block')
+    $('#sample3').css('display', 'none')
+    $("#sampleFader").fadeToggle()
+  }
+}
+
+function showSample3() {
+  if ($("#sampleFader").css('display') === 'none') {
+    $('#sample1').css('display', 'none')
+    $('#sample2').css('display', 'none')
+    $('#sample3').css('display', 'block')
+    $("#sampleFader").fadeToggle()
+  }
+}
+
+
 // Chack if admin or not
 function initializeAdmin () {
   let promise = new Promise(function (resolve, reject) {
