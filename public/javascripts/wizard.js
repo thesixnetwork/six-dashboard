@@ -63,6 +63,20 @@ function submitPhoneNumber() {
   }
   const phone_number = '+'+parseData.countryCallingCode+parseData.phone
   phoneNumberDOM.value = phone_number
+  let currentUser = firebase.auth().currentUser
+  let db = firebase.firestore().collection('users').doc(currentUser.uid)
+  db.update({phone_number: phone_number, phone_verified: true}).then(() => {
+    document.getElementById("kycCountry").value = countryPhone
+    goToKYCStep()
+    setEnable([phoneNumberDOM, btnDOM, countryPhoneDOM])
+  }).catch(() => {
+    $("#verifyPhoneError").html("Unexpected error, please try again")
+    if ($("#verifyPhoneError").css("display", "none")) {
+      $("#verifyPhoneError").slideToggle()
+    }
+    setEnable([phoneNumberDOM, btnDOM, countryPhoneDOM])
+  })
+/*
   let requestFunction = firebase.functions().httpsCallable('phoneVerificationRequest')
   requestFunction({phone_number: phone_number}).then(response => {
     if (response.data.success === true) {
@@ -115,6 +129,7 @@ function submitPhoneNumber() {
     }
     setEnable([phoneNumberDOM, btnDOM, countryPhoneDOM])
   })
+*/
 }
 
 function kycCountryChange() {

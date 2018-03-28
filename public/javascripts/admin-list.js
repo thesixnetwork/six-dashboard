@@ -113,7 +113,7 @@ function openUser (uid) {
   $('#detailPic2').attr("src", userData[uid].pic2)
   $('#detailPic3').attr("src", userData[uid].pic3)
   $('#detailPic4').attr("src", userData[uid].pic4)
-  $('#detailEstimate').html(estimates[userData[uid].estimate])
+  $('#detailEstimate').html(userData[uid].estimate+" ETH")
   $('#adminDetail').css('display', 'block')
   currentFocus = uid
 }
