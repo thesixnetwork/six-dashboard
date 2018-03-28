@@ -46,6 +46,7 @@ function checkKYCStatus (event, functions, fireStore) {
   } else if (userData.kyc_status === 'approved' && previousUserData.kyc_status !== 'approved') {
     mailOptions.subject = 'KYC already approved.'
     mailOptions.html = emailTemplate.approved({})
+    setNullToRejectType(event, fireStore)
     sendCampaignEmailApprove(event, functions)
   } else if (userData.kyc_status === 'rejected' && previousUserData.kyc_status !== 'rejected') {
     mailOptions.subject = 'KYC rejected.'
@@ -55,6 +56,16 @@ function checkKYCStatus (event, functions, fireStore) {
   }
   console.log(`Send Email to ${userData.email} kyc_status: ${userData.kyc_status}`)
   return mailTransport.sendMail(mailOptions)
+}
+
+function setNullToRejectType (event, fireStore) {
+  const uid = event.params.uid
+  const userData = event.data.data()
+  if (userData.reject_type === null) {
+    return Promise.resolve() // do nothing
+  }
+  const userRef = fireStore.collection('users').doc(uid)
+  return fireStore.runTransaction(tx => tx.get(userRef).then(user => tx.update(userRef, {reject_type: null})))
 }
 
 function checkPresaleDiscount (event, functions, fireStore) {
@@ -72,7 +83,7 @@ function checkPresaleDiscount (event, functions, fireStore) {
     return tx.get(totalEthRef).then(doc => {
       const totalETH = doc.data().total_eth
       const latestTotalETH = totalETH + estimate
-      if (latestTotalETH > 15000) return Promise.reject(new Error('Presale is soldout.'))
+      if (totalETH > 15000) return Promise.reject(new Error('Presale is soldout.'))
       return Promise.all([tx.update(totalEthRef, {total_eth: latestTotalETH}), tx.set(presaleUserRef, {total_eth: estimate})])
     })
   }))
