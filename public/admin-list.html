@@ -4,35 +4,36 @@
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <meta property="og:url" content="https://ico.six.network/"/>
-    <meta property="og:type" content="article"/>
-    <meta property="og:title" content="SIX | Reinventing the digital economy" />
-    <meta property="og:description" content="SIX aims to bring a better liquidity, ownership, and wealth distribution back to the digital creators."/>
-    <meta property="og:image" content="https://ico.six.network/images/logo/six-logo-property.png"/>
+    <meta property="og:url" content="https://ico.six.network/">
+    <meta property="og:type" content="article">
+    <meta property="og:title" content="SIX | Reinventing the digital economy">
+    <meta property="og:description" content="SIX aims to bring a better liquidity, ownership, and wealth distribution back to the digital creators.">
+    <meta property="og:image" content="https://ico.six.network/images/logo/six-logo-property.png">
 
     <!-- Include firebase : update the version number as needed -->
-    <script defer src="/__/firebase/4.12.0/firebase-app.js"></script>
-    <script defer src="/__/firebase/4.12.0/firebase-auth.js"></script>
-    <script defer src="/__/firebase/4.12.0/firebase-database.js"></script>
-    <script defer src="/__/firebase/4.12.0/firebase-firestore.js"></script>
-    <script defer src="/__/firebase/4.12.0/firebase-messaging.js"></script>
-    <script defer src="/__/firebase/4.12.0/firebase-storage.js"></script>
-    <script defer src="/__/firebase/init.js"></script>
+    <script src="/__/firebase/4.12.0/firebase-app.js" defer></script>
+    <script src="/__/firebase/4.12.0/firebase-auth.js" defer></script>
+    <script src="/__/firebase/4.12.0/firebase-database.js" defer></script>
+    <script src="/__/firebase/4.12.0/firebase-firestore.js" defer></script>
+    <script src="/__/firebase/4.12.0/firebase-messaging.js" defer></script>
+    <script src="/__/firebase/4.12.0/firebase-storage.js" defer></script>
+    <script src="/__/firebase/init.js" defer></script>
   
         <meta http-equiv="X-UA-Compatible" content="ie=edge">
         <title>SIX | Reinventing the digital economy</title>
-        <link rel="shortcut icon" href="images/logo/fav.ico" type="image/x-icon">
-        <link rel="stylesheet" href="stylesheets/style.css">
-        <link rel="stylesheet" href="stylesheets/loading.css">
+        <link type="image/x-icon" href="images/logo/fav.ico" rel="shortcut icon">
+        <link href="stylesheets/style.css" rel="stylesheet">
+        <link href="stylesheets/loading.css" rel="stylesheet">
         <script src="javascripts/bluebird.js"></script>
         <script src="javascripts/jquery-3.2.1.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/lodash@4.17.5/lodash.min.js"></script>
         <script src="javascripts/admin-list.js"></script>
         <!-- <script src="javascripts/wizard.js"></script> -->
   </head>
   <body>
-    <div id='preLoader'>
-      <div id='preloadWrapper'>
-        <img id='preloadImage'src="images/six_network.png">
+    <div id="preLoader">
+      <div id="preloadWrapper">
+        <img id="preloadImage" src="images/six_network.png">
         <div class="spinner">
           <div class="bounce1"></div>
           <div class="bounce2"></div>
@@ -41,14 +42,14 @@
       </div>
     </div>
     <header class="header">
-      <a href="" class="logo"><img src="images/logo/six-logo.png"></a>
+      <a class="logo" href><img src="images/logo/six-logo.png"></a>
       <ul class="menu">
       </ul>
-            <a href="login.html" class="logout">Logout&nbsp;<i class="fas fa-sign-out-alt"></i></a>
+            <a class="logout" href="login.html">Logout&nbsp;<i class="fas fa-sign-out-alt"></i></a>
     </header>
   </body>
 
-    <main class="admin" id='adminListMain'>
+    <main class="admin" id="adminListMain">
         <div class="container">
       <div class="search">
         <label class="text">
@@ -63,68 +64,69 @@
               <th>Name</th>
               <th width="150">Date</th>
               <th width="200">Time</th>
+              <th width="100">Watcher</th>
             </tr>
           </thead>
-          <tbody id='adminList'>
+          <tbody id="adminList">
           </tbody>
         </table>
       </section>
         </div>
     </main>
-    <main class="admin-detail" id='adminDetail' style='display: none;'>
+    <main class="admin-detail" id="adminDetail" style="display: none;">
     <div class="container">
-      <a href="javascript:;" class="back" onclick='goBack()'>Back</a>
+      <a class="back" href="javascript:;" onclick="goBack()">Back</a>
       <section class="detail">
         <fieldset>
           <legend>Information</legend>
           <dl>
             <dt>Name</dt>
             <dd class="combine">
-              <p id='detailFirstName'>Chanyanuch</p>
-              <p id='detailLastName'>Sitti</p>
+              <p id="detailFirstName">Chanyanuch</p>
+              <p id="detailLastName">Sitti</p>
             </dd>
           </dl>
           <dl>
             <dt>Email</dt>
             <dd>
-              <p id='detailEmail'>chanyanuc@computerlogy.com</p>
+              <p id="detailEmail">chanyanuc@computerlogy.com</p>
             </dd>
           </dl>
           <dl>
             <dt>Phone number</dt>
             <dd>
-              <p id='detailPhoneNumber'>091-2345678</p>
+              <p id="detailPhoneNumber">091-2345678</p>
             </dd>
           </dl>
           <dl>
             <dt>Nationality</dt>
             <dd>
-              <p id='detailCountry'>Thai</p>
+              <p id="detailCountry">Thai</p>
             </dd>
           </dl>
-          <dl id='citizenIdContainer'>
+          <dl id="citizenIdContainer">
             <dt>Citizen ID</dt>
             <dd>
-              <p id='detailCitizenId'></p>
+              <p id="detailCitizenId"></p>
             </dd>
           </dl>
           <dl>
             <dt>Passport number</dt>
             <dd>
-              <p id='detailPassportNumber'></p>
+              <p id="detailPassportNumber"></p>
             </dd>
           </dl>
           <dl>
             <dt>Address according to Passport</dt>
             <dd>
-              <p id='detailAddress'>124/434 Pattaya city Chonburi 20000</p>
+              <p id="detailAddress">124/434 Pattaya city Chonburi 20000</p>
             </dd>
           </dl>
-          <dl id='citizenIdPhotoContainer'>
+          <dl id="citizenIdPhotoContainer">
             <dt>Photo of ID with signture</dt>
             <dd>
               <span class="image">
-                <img id='detailPic1'>
+                <img id="detailPic1">
               </span>
             </dd>
           </dl>
@@ -132,7 +134,7 @@
             <dt>Photo of Passport with signture</dt>
             <dd>
               <span class="image">
-                <img id='detailPic4'>
+                <img id="detailPic4">
               </span>
             </dd>
           </dl>
@@ -143,7 +145,7 @@
             </dt>
             <dd>
               <span class="image">
-                <img id='detailPic2'>
+                <img id="detailPic2">
               </span>
             </dd>
           </dl>
@@ -153,14 +155,14 @@
             </dt>
             <dd>
               <span class="image">
-                <img id='detailPic3'>
+                <img id="detailPic3">
               </span>
             </dd>
           </dl>
         </fieldset>
         <fieldset>
           <legend>Estimate ICO investment budget</legend>
-          <p id='detailEstimate'>1K USD - 2K USD</p>
+          <p id="detailEstimate">1K USD - 2K USD</p>
         </fieldset>
       </section>
       <section class="reject-template detail">
@@ -169,7 +171,7 @@
           <dl>
             <dd>
               <label class="dropdown">
-                <select id='rejectSelect' name="value" id="value">
+                <select id="rejectSelect" name="value">
                   <option value="need_more">Need more information</option>
                   <option value="restricted">Restricted country</option>
                   <option value="incorrect">Incorrect information</option>
@@ -179,18 +181,18 @@
                 <i class="fas fa-angle-down"></i>
               </label>
 
-                <li style='list-style: none; margin-top: 5px;'>
-                  <label class="textarea" id='rejectNote'><textarea placeholder="Message"></textarea></label>
+                <li style="list-style: none; margin-top: 5px;">
+                  <label class="textarea" id="rejectNote"><textarea placeholder="Message"></textarea></label>
                 </li>
-              </ul>
+              
             </dd>
           </dl>
         </fieldset>
-        <dl><dd><button class="yellow" id='rejectBtn' style='background: #ef5555; color: white;' onclick='reject()'>Reject</button></dd></dl>
+        <dl><dd><button class="yellow" id="rejectBtn" style="background: #ef5555; color: white;" onclick="reject()">Reject</button></dd></dl>
       </section>
-      <section class=''>
+      <section class="">
         <dl>
-          <dd><button id='approveBtn' onclick='approve()'>Approve</button></dd>
+          <dd><button id="approveBtn" onclick="approve()">Approve</button></dd>
         </dl>
       </section>
     </div>
