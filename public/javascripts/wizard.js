@@ -15,6 +15,8 @@ function showSample1() {
     $('#sample1').css('display', 'block')
     $('#sample2').css('display', 'none')
     $('#sample3').css('display', 'none')
+    $('#sample5').css('display', 'none')
+    $('#sample6').css('display', 'none')
     $("#sampleFader").fadeToggle()
   }
 }
@@ -24,6 +26,8 @@ function showSample2() {
     $('#sample1').css('display', 'none')
     $('#sample2').css('display', 'block')
     $('#sample3').css('display', 'none')
+    $('#sample5').css('display', 'none')
+    $('#sample6').css('display', 'none')
     $("#sampleFader").fadeToggle()
   }
 }
@@ -33,10 +37,33 @@ function showSample3() {
     $('#sample1').css('display', 'none')
     $('#sample2').css('display', 'none')
     $('#sample3').css('display', 'block')
+    $('#sample5').css('display', 'none')
+    $('#sample6').css('display', 'none')
     $("#sampleFader").fadeToggle()
   }
 }
 
+function showSample5() {
+  if ($("#sampleFader").css('display') === 'none') {
+    $('#sample1').css('display', 'none')
+    $('#sample2').css('display', 'none')
+    $('#sample3').css('display', 'none')
+    $('#sample5').css('display', 'block')
+    $('#sample6').css('display', 'none')
+    $("#sampleFader").fadeToggle()
+  }
+}
+
+function showSample6() {
+  if ($("#sampleFader").css('display') === 'none') {
+    $('#sample1').css('display', 'none')
+    $('#sample2').css('display', 'none')
+    $('#sample3').css('display', 'none')
+    $('#sample5').css('display', 'none')
+    $('#sample6').css('display', 'block')
+    $("#sampleFader").fadeToggle()
+  }
+}
 
 // Chack if admin or not
 function initializeAdmin () {
@@ -173,10 +200,22 @@ function kycCountryChange() {
     $("#citizenId").css("display", "block")
     $("#citizenIdPhoto").css("display", "block")
     $("#citizenIdPhotoBack").css("display", "block")
+    $("#passportNumberPhoto").css("display", "none")
+    $("#passportNumber").css("display", "none")
+    $("#itemHoldingHead").html("ID-card")
+    $("#itemHolding").html("ID-card")
+    $("#samplePassportSelfie").css('display', 'none')
+    $("#sampleIDSelfie").css('display', 'block')
   } else {
     $("#citizenId").css("display", "none")
     $("#citizenIdPhoto").css("display", "none")
     $("#citizenIdPhotoBack").css("display", "none")
+    $("#passportNumberPhoto").css("display", "block")
+    $("#passportNumber").css("display", "block")
+    $("#itemHoldingHead").html("Passport")
+    $("#itemHolding").html("passport showing the passport photo page")
+    $("#samplePassportSelfie").css('display', 'block')
+    $("#sampleIDSelfie").css('display', 'none')
   }
 }
 
@@ -317,7 +356,7 @@ function setupUserData() {
   pic1Url = userData.pic1
   pic2Url = userData.pic2
   pic4Url = userData.pic4
-  pic5Url = userData.pic1
+  pic5Url = userData.pic5
   if (pic1Url !== undefined) {
     $("#sampleImage1").attr("src", pic1Url)
     $("#sampleImage1").toggle()
@@ -331,7 +370,7 @@ function setupUserData() {
     $("#sampleImage4").toggle()
   }
   if (pic5Url !== undefined) {
-    $("#sampleImage5").attr("src", pic1Url)
+    $("#sampleImage5").attr("src", pic5Url)
     $("#sampleImage5").toggle()
   }
   if (userData.kyc_status === 'rejected') {
@@ -471,8 +510,8 @@ function submitKyc() {
     $("#kycCitizenIdError").html('Citizen ID should contain only alphabetic characters and digits')
     $("#kycCitizenIdError").css('display', 'block')
   }
-  if (passport_number == '' || passport_number == undefined) { $('#kycPassportNumberAlert').addClass('invalid'); validate = false }
-  if (/^[a-zA-Z0-9 ]+$/.test(passport_number) === false) {
+  if ((passport_number == '' || passport_number == undefined) && country !== 'TH') { $('#kycPassportNumberAlert').addClass('invalid'); validate = false }
+  if (/^[a-zA-Z0-9 ]+$/.test(passport_number) === false && country !== 'TH') {
     $('#kycPassportNumberAlert').addClass('invalid')
     validate = false
     $("#kycPassportNumberError").html('Citizen ID should contain only alphabetic characters and digits')
@@ -487,7 +526,7 @@ function submitKyc() {
   }
   if ((pic1 == '' || pic1 == undefined) && pic1Url === undefined && country === 'TH') { $('#kycPic1Alert').addClass('invalid'); validate = false }
   if ((pic2 == '' || pic2 == undefined) && pic2Url === undefined) { $('#kycPic2Alert').addClass('invalid'); validate = false }
-  if ((pic4 == '' || pic4 == undefined) && pic4Url === undefined) { $('#kycPic4Alert').addClass('invalid'); validate = false }
+  if ((pic4 == '' || pic4 == undefined) && pic4Url === undefined && country !== 'TH') { $('#kycPic4Alert').addClass('invalid'); validate = false }
   if ((pic5 == '' || pic5 == undefined) && pic5Url === undefined && country === 'TH') { $('#kycPic5Alert').addClass('invalid'); validate = false }
   if (estimate == '' || estimate == undefined) { $('#kycEstimateAlert').addClass('invalid'); validate = false }
   if (/^[0-9\.]+$/.test(estimate) === false) {
@@ -510,10 +549,8 @@ function submitKyc() {
       first_name: first_name,
       last_name: last_name,
       country: country,
-      passport_number: passport_number,
       address: address,
       pic2: pic2Url,
-      pic4: pic4Url,
       estimate: estimate,
       kyc_status: 'pending',
       kyc_submit_time: Math.round((new Date()).getTime() / 1000)
@@ -522,6 +559,9 @@ function submitKyc() {
       dataToUpdate.pic1 = pic1Url
       dataToUpdate.pic5 = pic5Url
       dataToUpdate.citizen_id = citizen_id
+    } else {
+      dataToUpdate.pic4 = pic4Url
+      dataToUpdate.passport_number = passport_number
     }
     firebase.firestore().collection('users').doc(uid).update(dataToUpdate).then(() => {
       $("#kycContentForm").removeClass("show-detail")

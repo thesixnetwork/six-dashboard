@@ -48,6 +48,8 @@
           <img id='sample1' style='display:none;' class='sampleImg' src='images/content/ID-card.jpg'></img>
           <img id='sample2' style='display:none;' class='sampleImg' src='images/content/passport.jpg'></img>
           <img id='sample3' style='display:none;' class='sampleImg' src='images/content/selfie.jpg'></img>
+          <img id='sample5' style='display:none;' class='sampleImg' src='images/content/id-card-back.jpeg'></img>
+          <img id='sample6' style='display:none;' class='sampleImg' src='images/content/selfie-id-card.jpg'></img>
         </div>
       </a>
     </div>
@@ -715,12 +717,12 @@
                       <img class='sample_image' id='sampleImage5' style='display: none;'>
                     </div>
                     <div style='width: 100%;'>
-                      <img class='sample_image' src='images/content/exam-ID-card.jpg' style='display: block; cursor: pointer;' onclick='showSample1()'>
+                      <img class='sample_image' src='images/content/lasor-code.jpg' style='display: block; cursor: pointer;' onclick='showSample5()'>
                     </div>
                   </span>
                 </dd>
               </dl>
-              <dl>
+              <dl id='passportNumberPhoto'>
                 <dt><i class="animate-flicker fas fa-question-circle" style='cursor: pointer; color: #555555; font-size: 17px;' onclick='showSample2()'></i> &nbsp;&nbsp;Photo of Passport with signature and a paper with the word for "SIX.network"</dt>
                 <dd>
                   <label class="file kycinput" id="kycPic4Alert">
@@ -748,8 +750,8 @@
               </dl>
               <dl>
                 <dt>
-                  <i class="animate-flicker fas fa-question-circle" style='cursor: pointer; color: #555555; font-size: 17px;' onclick='showSample3()'></i> &nbsp;&nbsp;Photo of you holding a Passport
-                  <span>A selfie of you holding your official passport showing the passport photo page and a paper with the word "for SIX.network on the date of registration"</span>
+                  <i class="animate-flicker fas fa-question-circle" style='cursor: pointer; color: #555555; font-size: 17px;' onclick='showSample3()'></i> &nbsp;&nbsp;Photo of you holding a <holding id='itemHoldingHead'>Passport</holding>
+                  <span>A selfie of you holding your official <holding id='itemHolding'>passport showing the passport photo page</holding> and a paper with the word "for SIX.network on the date of registration"</span>
                 </dt>
                 <dd>
                   <label class="file kycinput" id="kycPic2Alert">
@@ -770,7 +772,8 @@
                       <img class='sample_image' id='sampleImage2' style='display: none;'>
                     </div>
                     <div style='width: 100%;'>
-                      <img class='sample_image' src='images/content/exam-selfie.jpg' style='display: block; cursor: pointer;' onclick='showSample3()'>
+                      <img class='sample_image' id='samplePassportSelfie' src='images/content/exam-selfie.jpg' style='display: block; cursor: pointer;' onclick='showSample3()'>
+                      <img class='sample_image' id='sampleIDSelfie' src='images/content/exam-selfie-id-card.jpg' style='display: block; cursor: pointer;' onclick='showSample6()'>
                     </div>
                   </span>
                 </dd>

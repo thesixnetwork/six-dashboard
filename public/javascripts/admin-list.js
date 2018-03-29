@@ -99,12 +99,16 @@ function openUser (uid) {
     $("#citizenIdPhotoContainer").css('display', 'block')
     $("#citizenIdPhotoBackContainer").css('display', 'block')
     $("#detailCitizenId").html(userData[uid].citizen_id)
+    $("#passportNumber").css("display", "none")
+    $("#passportPhoto").css("display", "none")
   } else {
     $("#citizenIdContainer").css('display', 'none')
     $("#citizenIdPhotoContainer").css('display', 'none')
     $("#citizenIdPhotoBackContainer").css('display', 'none')
+    $("#passportNumber").css("display", "block")
+    $("#passportPhoto").css("display", "block")
+    $("#detailPassportNumber").html(userData[uid].passport_number)
   }
-  $("#detailPassportNumber").html(userData[uid].passport_number)
   $('#detailAddress').html(userData[uid].address)
   $('#detailPic1').attr("src", userData[uid].pic1)
   $('#detailPic2').attr("src", userData[uid].pic2)

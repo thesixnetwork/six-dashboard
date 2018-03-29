@@ -46,13 +46,13 @@
         <header class="header">
           <a href="" class="logo"><img src="images/logo/six-logo.png"></a>
           <div class="btn-tool">
-            <p>Don't have an account?</p>
-            <a class="open-sign-up">Sign up</a>
+            <p>Have an account?</p>
+            <a class="open-sign-in">Sign in</a>
           </div>
         </header>
         <div class="container" id='loginLoginContainer'>
           <h2 style='text-align: center; border-bottom: 1px solid #EEEEEE; margin-bottom: 20px; font-size: 19px; padding-bottom: 20px;'>PRE-ICO REGISTRATION</h2>
-          <div class="sign-in show-detail">
+          <div class="sign-in">
             <h1 style='text-transform: unset;'><span>WELCOME TO</span>SIX.network</h1>
             <p>More than just a wallet for cryptocurrencies, but a single point of entry for your contents, media, IP loyalty and more</p>
             <form id="signInForm">
@@ -70,7 +70,7 @@
               <li><a href="javascript:;" onclick='authGoogle()'><i class="fab fa-google"></i></a></li>
             </ul>
           </div>
-          <div class="sign-up" id='loginSignUpContainer'>
+          <div class="sign-up show-detail" id='loginSignUpContainer'>
             <h1>Sign up</h1>
             <form id="signUpForm">
               <label class="text"><input id="signUpEmail" type="email" placeholder="Email" required></label>
@@ -342,6 +342,11 @@
               </div>
               <button id='signUpBtn'>Sign up</button>
             </form>
+            <ul class="list">
+              <li><p>Sign up with</p></li>
+              <li><a href="javascript:;" onclick='authFacebook()'><i class="fab fa-facebook-f"></i></a></li>
+              <li><a href="javascript:;" onclick='authGoogle()'><i class="fab fa-google"></i></a></li>
+            </ul>
           </div>
           <div class="forgot">
             <h1>forgot password</h1>
