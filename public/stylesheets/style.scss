@@ -4,9 +4,20 @@
 @import "fontawesome-free-5.0.3/scss/fa-regular.scss";
 @import "fontawesome-free-5.0.3/scss/fa-brands.scss";
 @import "template/variable";
-@import "template/form";
-@import "template/global";
-@import "template/login";
-@import "template/wizard";
-@import "template/dashboard";
-@import "template/admin";
+
+// Font
+@import url('https://fonts.googleapis.com/css?family=Quicksand:300,400,500,700');
+
+@media (min-width: $desktop) {
+    @import "template/global";
+    @import "template/login";
+    @import "template/wizard";
+    @import "template/dashboard";
+    @import "template/dashboard-2";
+    @import "template/admin";
+    @import "template/form";
+}
+
+@media (max-width: $mobile) {
+    @import "template/moblie";
+}

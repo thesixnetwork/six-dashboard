@@ -35,15 +35,12 @@ $font-color-primary:	#4a4a48;
 $font-color-secondary: 	#848c99;
 
 // Space
-$space-xs:              5px;
-$space-s:               10px;
-$space-m:               20px;
-$space-l:               40px;
-$space-xl:              60px;
+$space-xs:              4px;
+$space-s:               8px;
+$space-m:               16px;
+$space-l:               24px;
+$space-xl:              32px;
 $space-2xl:             80px;
-$space-3xl:             100px;
-$space-4xl:             120px;
-$space-5xl:             160px;
 
 // Social
 $facebook:				#3B5998;
@@ -52,3 +49,9 @@ $instagram:				#517FA4;
 $youtube:				#BB0000;
 $reddit:                #ff4401;
 $medium:                #00ab6c;
+$google:				#D34836;
+
+// Responsive
+$mobile:                1024px;
+$desktop:               1025px;
+$ipad:                  640px;
