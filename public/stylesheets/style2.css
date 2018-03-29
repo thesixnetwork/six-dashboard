@@ -1,0 +1,24 @@
+.filter-row {
+	display: flex;
+	flex-direction: row;
+	justify-content: space-around;
+	margin-bottom: 40px;
+}
+
+.tab-button {
+    background: #FFF !important;
+    color: black !important;
+    border: 0.5px solid #dbdbdb;
+}
+
+.tab-button:hover {
+    background:#4a5ab5 !important;
+    color: #FFF !important;
+    border: 0.5px solid #4a5ab5;
+}
+
+.is-active {
+    background:#4a5ab5 !important;
+    color: #FFF !important;
+    border: 0.5px solid #4a5ab5;
+}

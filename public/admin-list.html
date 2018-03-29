@@ -23,10 +23,12 @@
         <title>SIX | Reinventing the digital economy</title>
         <link type="image/x-icon" href="images/logo/fav.ico" rel="shortcut icon">
         <link href="stylesheets/style.css" rel="stylesheet">
+        <link href="stylesheets/style2.css" rel="stylesheet">
         <link href="stylesheets/loading.css" rel="stylesheet">
         <script src="javascripts/bluebird.js"></script>
         <script src="javascripts/jquery-3.2.1.min.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/lodash@4.17.5/lodash.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.18.1/moment.js"></script>
         <script src="javascripts/admin-list.js"></script>
         <!-- <script src="javascripts/wizard.js"></script> -->
   </head>
@@ -57,6 +59,13 @@
           <input type="text" placeholder="Search">
         </label>
       </div>
+      <section class="row filter-row">
+        <button id="all" onclick="handleFilter('all')" class="tab-button is-active">All</button>
+        <button id="approved" onclick="handleFilter('approved')" class="tab-button">Approved</button>
+        <button id="rejected" onclick="handleFilter('rejected')" class="tab-button">Rejected</button>
+        <button id="pending" onclick="handleFilter('pending')" class="tab-button">Pending</button>
+        <button id="notComplete" onclick="handleFilter('notComplete')" class="tab-button">Not complete</button>
+      </section>
       <section class="list-user with-table">
         <table>
           <thead>
@@ -64,7 +73,7 @@
               <th>Name</th>
               <th width="150">Date</th>
               <th width="200">Time</th>
-              <th width="100">Watcher</th>
+              <th width="100" id="remarkColumn">Status</th>
             </tr>
           </thead>
           <tbody id="adminList">
@@ -181,13 +190,13 @@
               </label>
 
                 <li style="list-style: none; margin-top: 5px;">
-                  <label class="textarea" id="rejectNote"><textarea placeholder="Message"></textarea></label>
+                  <label class="textarea"><textarea placeholder="Message" id="rejectNote"></textarea></label>
                 </li>
               
             </dd>
           </dl>
         </fieldset>
-        <dl><dd><button class="yellow" id="rejectBtn" style="background: #ef5555; color: white;" onclick="reject()">Reject</button></dd></dl>
+        <dl><dd><button class="yellow" id="rejectBtn" style="background: #ef5555; color: white;" onclick="rejectUser()">Reject</button></dd></dl>
       </section>
       <section class="">
         <dl>

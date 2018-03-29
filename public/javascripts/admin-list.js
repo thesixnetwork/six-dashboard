@@ -290,6 +290,7 @@ SIX.network`,
 
 currentFocus = "";
 var currentIp = "";
+var currentStatus = 'all'
 // Logout function to sign user out
 function logOut() {
   firebase.auth().signOut();
@@ -321,13 +322,19 @@ function createElementFromHTML(htmlString) {
 
 // Build kyc user list element
 function buildListUser(doc) {
-  var date = new Date((doc.data().kyc_submit_time + 3600 * 7) * 1000);
-  var hours = date.getHours();
-  var minutes = "0" + date.getMinutes();
-  var seconds = "0" + date.getSeconds();
-  var formattedTime =
-    hours + ":" + minutes.substr(-2) + ":" + seconds.substr(-2);
-  var formatted_date = date.toISOString().substr(0, 10);
+  var date = ''
+  if (doc.data().kyc_submit_time && doc.data().kyc_submit_time !== null) {
+    date = new Date((doc.data().kyc_submit_time + 3600 * 7) * 1000);
+  }
+  var hours = date !== '' ? date.getHours() : '';
+  var minutes =  date !== '' ? '0' + date.getMinutes() : '';
+  var seconds =  date !== '' ? '0' + date.getSeconds() : '';
+  var formattedTime = ''
+  var formatted_date = ''
+  if (date && date !== '') {
+    formattedTime = hours + ":" + minutes.substr(-2) + ":" + seconds.substr(-2);
+    formatted_date = date.toISOString().substr(0, 10);
+  } 
   var tr = document.createElement("tr");
   var td1 = document.createElement("td");
   var txt1 = document.createTextNode(
@@ -338,9 +345,10 @@ function buildListUser(doc) {
   var txt2 = document.createTextNode(formatted_date);
   td2.appendChild(txt2);
   var td3 = document.createElement("td");
-  var txt3 = document.createTextNode(formattedTime + " +07:00");
+  var txt3 = document.createTextNode(formattedTime !== '' ? formattedTime + ' +07:00' : '-');
   var td4 = document.createElement("td");
   var txt4 = document.createTextNode("-");
+  td4.setAttribute("id", `remarkText(${doc.id})`)
   td4.appendChild(txt4);
   td3.appendChild(txt3);
   tr.appendChild(td1);
@@ -351,7 +359,7 @@ function buildListUser(doc) {
     openUser(doc.id);
   };
   tr.id = doc.id;
-  return tr;
+  return tr
 }
 
 // Open user detail
@@ -392,7 +400,8 @@ function openUser(uid) {
           .set({
             time: Date.now(),
             ip,
-            uid: user.uid
+            uid: user.uid,
+            email: user.email
           });
       }
     });
@@ -405,8 +414,8 @@ function goBack() {
   $("#detailPic1").attr("src", "");
   $("#detailPic2").attr("src", "");
   $("#detailPic3").attr("src", "");
-  currentFocus = "";
   removeWatching();
+  currentFocus = "";
 }
 
 function lockAll() {
@@ -433,6 +442,7 @@ function unlockAll() {
 
 function approve() {
   let thisFocus = currentFocus;
+  const user = firebase.auth().currentUser
   lockAll();
   let db = firebase.firestore();
   db
@@ -445,20 +455,23 @@ function approve() {
       update_time: Date.now()
     })
     .then(() => {
-      goBack();
-      $("#" + thisFocus).remove();
-      unlockAll();
+      // $("#" + thisFocus).remove();
+      // unlockAll();
+      // return goBack();
+      location.reload();
     })
     .catch(err => {
       alert(err.message);
       unlockAll();
+      return
     });
 }
 
-function reject() {
+function rejectUser() {
   let thisFocus = currentFocus;
   lockAll();
   let db = firebase.firestore();
+  const user = firebase.auth().currentUser
   let rejecttype = document.getElementById("rejectSelect").value;
   let rejectnote = document.getElementById("rejectNote").value;
   let updateData = {
@@ -471,69 +484,175 @@ function reject() {
   if (rejectnote !== undefined && rejecttype === "other") {
     updateData.reject_note = rejectnote;
   } else {
-    updateData.reject_note = rejectNote[rejectnote];
+    updateData.reject_note = rejectNote[rejecttype];
   }
   db
     .collection("users")
     .doc(thisFocus)
     .update(updateData)
     .then(() => {
-      goBack();
-      $("#" + thisFocus).remove();
-      unlockAll();
+      // $("#" + thisFocus).remove();
+      // unlockAll();
+      // return goBack();
+      location.reload();
     })
     .catch(err => {
       alert(err.message);
       unlockAll();
+      return
     });
 }
 
+function updateWatcherText (id) {
+  firebase
+  .database()
+  .ref(`watch-list/${id}`)
+  .on("value", snapshot => {
+    const value = snapshot.val();
+    if (value && value !== null) {
+      const { uid, ip, email } = value;
+      const user = firebase.auth().currentUser;
+      $(`#${id} td:last`).text(`Watching by ${email}, ip: ${ip}`);
+      if (uid !== user.uid && ip !== currentIp) {
+        $("#hasWatchingText").text(`${uid} watching this user `);
+      }
+    } else {
+      let db = firebase.firestore();
+      let userRef = db.collection("users").doc(id)
+      userRef.get()
+        .then(data => data.data())
+        .then(data => {
+          const { kyc_status } = data
+          if (kyc_status === 'pending') {
+            $(`#${id} td:last`).text("Pending");
+            $("#hasWatchingText").text(``);
+          }
+        })
+    }
+  });
+}
+
+function renderStatus (id, data) {
+  const { updater } = data
+  switch(data.kyc_status) {
+    case 'approved':
+      $(`#${id} td:last`).text(`Approved by ${updater ? updater : '-'}`);
+      break
+    case 'rejected':
+      $(`#${id} td:last`).text(`Rejected by ${updater ? updater : '-'}`);
+      break
+    case 'pending':
+      updateWatcherText(id)
+      break
+    default:
+      $(`#${id} td:last`).text(`Not completed KYC`);
+      break
+  } 
+}
+
 // Initialize database to query data and draw to view
-function initializeDatabase() {
+function initializeDatabase(status) {
   let promise = new Promise(function(resolve, reject) {
+    $("#adminList").empty()
     let db = firebase.firestore();
     let userRef = db.collection("users");
-    let query = userRef.where("kyc_status", "==", "pending");
+    let query = userRef
+    switch(status) {
+      case 'approved':
+        query = userRef.where("kyc_status", "==", "approved");
+        break
+      case 'rejected':
+        query = userRef.where("kyc_status", "==", "rejected");
+        break
+      case 'pending':
+        query = userRef.where("kyc_status", "==", "pending");
+        break
+      case 'notComplete':
+        query = userRef.where("kyc_status", "==", null);
+        break       
+      default:
+        break
+    }
     query
-      .get()
-      .then(docs => {
+      .onSnapshot(docs => {
+        $("#adminList").empty()
         docs.forEach(function(doc, index) {
-          userData[doc.id] = doc.data();
+          const data = doc.data()
+          userData[doc.id] = data
           let elem = buildListUser(doc);
           $("#adminList")[0].appendChild(elem);
-          firebase
-            .database()
-            .ref(`watch-list/${doc.id}`)
-            .on("value", snapshot => {
-              const value = snapshot.val();
-              if (value && value !== null) {
-                const { uid, ip } = value;
-                const user = firebase.auth().currentUser;
-                $(`#${doc.id} td:last`).text(`uid: ${uid}, ip: ${ip}`);
-                if (uid !== user.uid && ip !== currentIp) {
-                  $("#hasWatchingText").text(`${uid} watching this user `);
+          const { updater, kyc_status } = data
+          switch(status) {
+            case 'all':
+              renderStatus(doc.id, data)
+              break
+            case 'approved':
+              if (updater) {
+                $(`#${doc.id} td:last`).text(`${updater}`);
+              }     
+              break
+            case 'rejected':
+              $(`#${doc.id} td:last`).text(`${updater}`);
+              break
+            case 'pending':
+              firebase
+              .database()
+              .ref(`watch-list/${doc.id}`)
+              .on("value", snapshot => {
+                const value = snapshot.val();
+                if (value && value !== null) {
+                  const { uid, ip, email } = value;
+                  const user = firebase.auth().currentUser;
+                  $(`#${doc.id} td:last`).text(`${email}, ip: ${ip}`);
+                  if (uid !== user.uid && ip !== currentIp) {
+                    $("#hasWatchingText").text(`${uid} watching this user `);
+                  }
+                } else {
+                  $(`#${doc.id} td:last`).text("-");
+                  $("#hasWatchingText").text(``);
                 }
-              } else {
-                $(`#${doc.id} td:last`).text("-");
-                $("#hasWatchingText").text(``);
-              }
-            });
+              });
+              break
+            case 'notComplete':
+              $('#remarkColumn').text('')
+              break
+          }
         });
         resolve();
       })
-      .catch(err => {
-        console.log(err);
-        reject(err);
-      });
   });
   return promise;
 }
 
-function removeWatching() {
+function removeWatching(uid) {
   firebase
     .database()
-    .ref(`watch-list/${currentFocus}`)
+    .ref(`watch-list/${uid}`)
     .remove();
+}
+
+function handleFilter (type) {
+  $(`#${currentStatus}`).removeClass('is-active')
+  $(`#${type}`).addClass('is-active')
+  currentStatus = type
+  initializeDatabase(type)
+  switch(type) {
+    case 'all':
+      $('#remarkColumn').text('Status')
+      break
+    case 'approved':
+      $('#remarkColumn').text('Approved By')
+      break
+    case 'rejected':
+      $('#remarkColumn').text('Rejected By')
+      break
+    case 'pending':
+      $('#remarkColumn').text('Watcher')
+      break
+    case 'notComplete':
+      $('#remarkColumn').text('')
+      break
+  }
 }
 
 $(document).ready(function() {
@@ -551,13 +670,12 @@ $(document).ready(function() {
   });
 
   window.addEventListener("beforeunload", function(e) {
-    return removeWatching();
+    return removeWatching(currentFocus);
   });
 
   // Listening to auth state change
   firebase.auth().onAuthStateChanged(function(user) {
     if (!user) {
-      console.log("Go to login");
       window.location.href = "/";
     } else {
       initializeAdmin()
@@ -568,7 +686,7 @@ $(document).ready(function() {
           window.location.href = "/wizard";
         })
         .finally(() => {
-          initializeDatabase().finally(() => {
+          initializeDatabase('all').then(() => {
             $("#preLoader").fadeToggle();
           });
         });
