@@ -37,7 +37,7 @@ function checkKYCStatus (event, functions, fireStore) {
   const userData = event.data.data()
   const previousUserData = event.data.previous.data()
   const mailOptions = {
-    from: '"Six network ICO." <noreply@firebase.com>',
+    from: `Six network ICO." <${functions.config().email.user}>`,
     to: userData.email
   }
   if (userData.kyc_status === 'pending' && previousUserData.kyc_status !== 'pending') {

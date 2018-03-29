@@ -19,6 +19,11 @@ function initializeAdmin () {
   return promise
 }
 
+// Update User
+function updateUser (data) {
+  var updateUserOncall = firebase.functions().httpsCallable('updateUser')
+  return updateUserOncall(data)
+}
 // Set disbled to dom
 function setDisable (doms) {
   doms.forEach(function (dom) {
@@ -53,19 +58,18 @@ function submitPhoneNumber() {
   const parseData = libphonenumber.parse(phoneNumberDOM.value, countryPhone, {extended: true })
   let btnDOM = document.getElementById('verifyPhoneBtn')
   setDisable([phoneNumberDOM, btnDOM, countryPhoneDOM])
-  if (parseData.valid === false) {  
+  if (parseData.valid === false) {
     $("#verifyPhoneError").html("Invalid phone number format")
     if ($("#verifyPhoneError").css("display", "none")) {
       $("#verifyPhoneError").slideToggle()
     }
-    setEnable([phoneNumberDOM, btnDOM, countryPhoneDOM]) 
+    setEnable([phoneNumberDOM, btnDOM, countryPhoneDOM])
     return false
   }
   const phone_number = '+'+parseData.countryCallingCode+parseData.phone
   phoneNumberDOM.value = phone_number
   let currentUser = firebase.auth().currentUser
-  let db = firebase.firestore().collection('users').doc(currentUser.uid)
-  db.update({phone_number: phone_number, phone_verified: true}).then(() => {
+  updateUser({phone_number: phone_number, phone_verified: true}).then(() => {
     document.getElementById("kycCountry").value = countryPhone
     goToKYCStep()
     setEnable([phoneNumberDOM, btnDOM, countryPhoneDOM])
@@ -227,7 +231,7 @@ function resendVerifyEmail() {
   let promise = new Promise(function (resolve, reject) {
     let resendDOM = document.getElementById('verifyResendBtn')
     let currentUser = firebase.auth().currentUser
-    currentUser.sendEmailVerification().then(() => { 
+    currentUser.sendEmailVerification().then(() => {
       if ($("#verifyNotice").css("display") == "none") {
         $("#verifyNotice").html("Email successfully sent to your inbox.")
         setEnable([resendDOM])
@@ -345,9 +349,10 @@ function resubmission() {
   $("#kycContentForm").addClass("show-detail")
   $("#kycContentRejected").removeClass("show-detail")
   let uid = firebase.auth().currentUser.uid
-  firebase.firestore().collection('users').doc(uid).update({
+  updateUser({
     kyc_status: null
   })
+
 }
 
 function proceedToIco() {
@@ -355,9 +360,7 @@ function proceedToIco() {
   $('#icoStep').addClass('current')
   $("#congratulationPage").removeClass("show-detail")
   let uid = firebase.auth().currentUser.uid
-  firebase.firestore().collection('users').doc(uid).update({
-    all_done: true
-  })
+  updateUser({all_done: true})
 }
 
 function submitKyc() {
@@ -455,7 +458,7 @@ function submitKyc() {
       dataToUpdate.pic1 = pic1Url
       dataToUpdate.citizen_id = citizen_id
     }
-    firebase.firestore().collection('users').doc(uid).update(dataToUpdate).then(() => {
+    updateUser(dataToUpdate).then(() => {
       $("#kycContentForm").removeClass("show-detail")
       $("#kycContentPending").addClass("show-detail")
       setEnable([btnDOM, firstNameDOM, lastNameDOM, countryDOM, citizenIdDOM, passportNumberDOM, addressDOM, pic1DOM, pic2DOM, pic3DOM, pic4DOM, estimateDOM])
@@ -535,7 +538,7 @@ $(document).ready(function () {
     $("#kycFirstNameError").html('')
     $("#kycFirstNameError").css('display', 'none')
   }
-  document.getElementById('kycLastName').onkeydown = function() { 
+  document.getElementById('kycLastName').onkeydown = function() {
     $('#kycLastNameAlert').removeClass("invalid")
     $("#kycLastNameError").html('')
     $("#kycLastNameError").css('display', 'none')
@@ -667,7 +670,7 @@ $(document).ready(function () {
         $('#adminShortcut').css('display', 'block')
       }).finally(() => {
         initializeStep().then(() => {
-          
+
         }).finally(() => {
           $('#preLoader').fadeToggle()
         })
