@@ -97,10 +97,12 @@ function openUser (uid) {
   if (userData[uid].country === "TH") {
     $("#citizenIdContainer").css('display', 'block')
     $("#citizenIdPhotoContainer").css('display', 'block')
+    $("#citizenIdPhotoBackContainer").css('display', 'block')
     $("#detailCitizenId").html(userData[uid].citizen_id)
   } else {
     $("#citizenIdContainer").css('display', 'none')
     $("#citizenIdPhotoContainer").css('display', 'none')
+    $("#citizenIdPhotoBackContainer").css('display', 'none')
   }
   $("#detailPassportNumber").html(userData[uid].passport_number)
   $('#detailAddress').html(userData[uid].address)
@@ -108,6 +110,7 @@ function openUser (uid) {
   $('#detailPic2').attr("src", userData[uid].pic2)
   $('#detailPic3').attr("src", userData[uid].pic3)
   $('#detailPic4').attr("src", userData[uid].pic4)
+  $('#detailPic5').attr("src", userData[uid].pic5)
   $('#detailEstimate').html(userData[uid].estimate+" ETH")
   $('#adminDetail').css('display', 'block')
   currentFocus = uid
@@ -120,6 +123,9 @@ function goBack () {
   $('#detailPic1').attr("src", '')
   $('#detailPic2').attr("src", '')
   $('#detailPic3').attr("src", '')
+  $('#detailPic4').attr("src", '')
+  $('#detailPic5').attr("src", '')
+  $('#detailEstimate').html("-")
   currentFocus = ""
 }
 

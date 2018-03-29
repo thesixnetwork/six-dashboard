@@ -694,6 +694,32 @@
                   </span>
                 </dd>
               </dl>
+              <dl id='citizenIdPhotoBack'>
+                <dt><i class="animate-flicker fas fa-question-circle" style='cursor: pointer; color: #555555; font-size: 17px;' onclick='showSample1()'></i> &nbsp;&nbsp;Photo of the back side of ID card with signature and a paper with the word for "SIX.network"</dt>
+                <dd>
+                  <label class="file kycinput" id="kycPic5Alert">
+                    <input type="file" id='kycPic5'>
+                    <p id='kycPicName5'>Choose File</p>
+                    <i class="fas fa-upload"></i>
+                  </label>
+                </dd>
+                <dd>
+                  <div class="kycProgressBar" id="pgbarPic5">
+                    <div class="kycProgressBarContent" id='pgbarCPic5'>
+                    </div>
+                  </div>
+                </dd>
+                <dd id='sampleImage5Container'>
+                  <span class="image" style='display: flex;'>
+                    <div style='width: 100%;'>
+                      <img class='sample_image' id='sampleImage5' style='display: none;'>
+                    </div>
+                    <div style='width: 100%;'>
+                      <img class='sample_image' src='images/content/exam-ID-card.jpg' style='display: block; cursor: pointer;' onclick='showSample1()'>
+                    </div>
+                  </span>
+                </dd>
+              </dl>
               <dl>
                 <dt><i class="animate-flicker fas fa-question-circle" style='cursor: pointer; color: #555555; font-size: 17px;' onclick='showSample2()'></i> &nbsp;&nbsp;Photo of Passport with signature and a paper with the word for "SIX.network"</dt>
                 <dd>
@@ -749,30 +775,6 @@
                   </span>
                 </dd>
               </dl>
-              <dl>
-                <dt>
-                  Photo of utility bill to verify address
-                  <span>Upload proof of address (e.g. water bill, electricity bill, internet bill, cable tv bill, credit card slip, bank statement, brokerage bill, etc.)</span>
-                </dt>
-                <dd>
-                  <label class="file kycinput" id="kycPic3Alert">
-                    <input type="file" id='kycPic3'>
-                    <p id='kycPicName3'>Choose File</p>
-                    <i class="fas fa-upload"></i>
-                  </label>
-                </dd>
-                <dd>
-                  <div class="kycProgressBar" id="pgbarPic3">
-                    <div class="kycProgressBarContent" id='pgbarCPic3'>
-                    </div>
-                  </div>
-                </dd>
-                <dd id='sampleImage3Container'>
-                  <span class="image">
-                    <img class='sample_image' id='sampleImage3' style='display: none;'>
-                  </span>
-                </dd>
-              </dl>
             </fieldset>
             <fieldset>
               <legend>Contribution amount (ETH)</legend>
@@ -788,6 +790,9 @@
                 </dd>
               </dl>
             </fieldset>
+            <div id='kycFormAlert' class="alert-error">
+              <p id='kycFormAlertText'>Sorry, Civils in the jurisdiction of the US, China, and Singapore are not able to join this ICO contribution according to the laws. Apologize for inconvenience this may cause.</p>
+            </div>
             <dl>
               <dd><button id='kycSubmitBtn' onclick='submitKyc()'>Submit</button></dd>
             </dl>

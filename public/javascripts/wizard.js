@@ -71,8 +71,8 @@ let intervalFunction
 let userData
 let pic1Url
 let pic2Url
-let pic3Url
 let pic4Url
+let pic5Url
 
 function submitPhoneNumber() {
   if ($("#verifyPhoneError").css("display", "block")) {
@@ -172,9 +172,11 @@ function kycCountryChange() {
   if (country === "TH") {
     $("#citizenId").css("display", "block")
     $("#citizenIdPhoto").css("display", "block")
+    $("#citizenIdPhotoBack").css("display", "block")
   } else {
     $("#citizenId").css("display", "none")
     $("#citizenIdPhoto").css("display", "none")
+    $("#citizenIdPhotoBack").css("display", "none")
   }
 }
 
@@ -314,8 +316,8 @@ function setupUserData() {
   }
   pic1Url = userData.pic1
   pic2Url = userData.pic2
-  pic3Url = userData.pic3
   pic4Url = userData.pic4
+  pic5Url = userData.pic1
   if (pic1Url !== undefined) {
     $("#sampleImage1").attr("src", pic1Url)
     $("#sampleImage1").toggle()
@@ -324,13 +326,13 @@ function setupUserData() {
     $("#sampleImage2").attr("src", pic2Url)
     $("#sampleImage2").toggle()
   }
-  if (pic3Url !== undefined) {
-    $("#sampleImage3").attr("src", pic3Url)
-    $("#sampleImage3").toggle()
-  }
   if (pic4Url !== undefined) {
     $("#sampleImage4").attr("src", pic4Url)
     $("#sampleImage4").toggle()
+  }
+  if (pic5Url !== undefined) {
+    $("#sampleImage5").attr("src", pic1Url)
+    $("#sampleImage5").toggle()
   }
   if (userData.kyc_status === 'rejected') {
     $("#rejectReason").html(String(userData.reject_note).split("\n").join("<br>"))
@@ -411,6 +413,9 @@ function proceedToIco() {
 }
 
 function submitKyc() {
+  if ($("#kycFormAlert").css('display') == 'block') {
+    $("#kycFormAlert").slideToggle()
+  }
   $(".kycinput").removeClass('invalid')
   let btnDOM = document.getElementById('kycSubmitBtn')
   let firstNameDOM = document.getElementById('kycFirstName')
@@ -421,10 +426,10 @@ function submitKyc() {
   let addressDOM = document.getElementById('kycAddress')
   let pic1DOM = document.getElementById('kycPic1')
   let pic2DOM = document.getElementById('kycPic2')
-  let pic3DOM = document.getElementById('kycPic3')
   let pic4DOM = document.getElementById('kycPic4')
+  let pic5DOM = document.getElementById('kycPic5')
   let estimateDOM = document.getElementById('kycEstimate')
-  setDisable([btnDOM, firstNameDOM, lastNameDOM, countryDOM, citizenIdDOM, passportNumberDOM, addressDOM, pic1DOM, pic2DOM, pic3DOM, pic4DOM, estimateDOM])
+  setDisable([btnDOM, firstNameDOM, lastNameDOM, countryDOM, citizenIdDOM, passportNumberDOM, addressDOM, pic1DOM, pic2DOM, pic4DOM, pic5DOM, estimateDOM])
   const first_name = firstNameDOM.value
   const last_name = lastNameDOM.value
   const country = countryDOM.value
@@ -433,8 +438,8 @@ function submitKyc() {
   const address = addressDOM.value
   const pic1 = pic1DOM.files[0]
   const pic2 = pic2DOM.files[0]
-  const pic3 = pic3DOM.files[0]
   const pic4 = pic4DOM.files[0]
+  const pic5 = pic5DOM.files[0]
   const estimate = estimateDOM.value
   let validate = true
   if (first_name == '' || first_name == undefined) { $('#kycFirstNameAlert').addClass('invalid'); validate = false }
@@ -452,6 +457,13 @@ function submitKyc() {
     $("#kycLastNameError").css('display', 'block')
   }
   if (country == '' || country == undefined) { $('#kycCountryAlert').addClass('invalid'); validate = false }
+  if (country === 'SG' || country === 'CN' || country === 'US') {
+    if ($("#kycFormAlert").css('display') == 'none') {
+      $("#kycFormAlert").slideToggle()
+    }
+    $("#kycFormAlertText").html("Sorry, Civils in the jurisdiction of the US, China, and Singapore are not able to join this ICO contribution according to the laws. Apologize for inconvenience this may cause.")
+    validate = false
+  }
   if ((citizen_id == '' || citizen_id == undefined) && country === 'TH') { $('#kycCitizenIdAlert').addClass('invalid'); validate = false }
   if (/^[a-zA-Z0-9 ]+$/.test(citizen_id) === false && country === 'TH') {
     $('#kycCitizenIdAlert').addClass('invalid')
@@ -475,8 +487,8 @@ function submitKyc() {
   }
   if ((pic1 == '' || pic1 == undefined) && pic1Url === undefined && country === 'TH') { $('#kycPic1Alert').addClass('invalid'); validate = false }
   if ((pic2 == '' || pic2 == undefined) && pic2Url === undefined) { $('#kycPic2Alert').addClass('invalid'); validate = false }
-  if ((pic3 == '' || pic3 == undefined) && pic3Url === undefined) { $('#kycPic3Alert').addClass('invalid'); validate = false }
   if ((pic4 == '' || pic4 == undefined) && pic4Url === undefined) { $('#kycPic4Alert').addClass('invalid'); validate = false }
+  if ((pic5 == '' || pic5 == undefined) && pic5Url === undefined && country === 'TH') { $('#kycPic5Alert').addClass('invalid'); validate = false }
   if (estimate == '' || estimate == undefined) { $('#kycEstimateAlert').addClass('invalid'); validate = false }
   if (/^[0-9\.]+$/.test(estimate) === false) {
     $('#kycEstimateAlert').addClass('invalid')
@@ -491,7 +503,7 @@ function submitKyc() {
     $("#kycEstimateError").css('display', 'block')
   }
   if (validate === false) {
-    setEnable([btnDOM, firstNameDOM, lastNameDOM, countryDOM, citizenIdDOM, passportNumberDOM, addressDOM, pic1DOM, pic2DOM, pic3DOM, pic4DOM, estimateDOM])
+    setEnable([btnDOM, firstNameDOM, lastNameDOM, countryDOM, citizenIdDOM, passportNumberDOM, addressDOM, pic1DOM, pic2DOM, pic4DOM, pic5DOM, estimateDOM])
   } else {
     let uid = firebase.auth().currentUser.uid
     let dataToUpdate = {
@@ -501,7 +513,6 @@ function submitKyc() {
       passport_number: passport_number,
       address: address,
       pic2: pic2Url,
-      pic3: pic3Url,
       pic4: pic4Url,
       estimate: estimate,
       kyc_status: 'pending',
@@ -509,15 +520,16 @@ function submitKyc() {
     }
     if (country === 'TH') {
       dataToUpdate.pic1 = pic1Url
+      dataToUpdate.pic5 = pic5Url
       dataToUpdate.citizen_id = citizen_id
     }
     firebase.firestore().collection('users').doc(uid).update(dataToUpdate).then(() => {
       $("#kycContentForm").removeClass("show-detail")
       $("#kycContentPending").addClass("show-detail")
-      setEnable([btnDOM, firstNameDOM, lastNameDOM, countryDOM, citizenIdDOM, passportNumberDOM, addressDOM, pic1DOM, pic2DOM, pic3DOM, pic4DOM, estimateDOM])
+      setEnable([btnDOM, firstNameDOM, lastNameDOM, countryDOM, citizenIdDOM, passportNumberDOM, addressDOM, pic1DOM, pic2DOM, pic4DOM, pic5DOM, estimateDOM])
     }).catch(err => {
       console.log(err.message)
-      setEnable([btnDOM, firstNameDOM, lastNameDOM, countryDOM, citizenIdDOM, passportNumberDOM, addressDOM, pic1DOM, pic2DOM, pic3DOM, pic4DOM, estimateDOM])
+      setEnable([btnDOM, firstNameDOM, lastNameDOM, countryDOM, citizenIdDOM, passportNumberDOM, addressDOM, pic1DOM, pic2DOM, pic4DOM, pic5DOM, estimateDOM])
     })
   }
 }
@@ -566,8 +578,8 @@ function uploadFile(fileNumber, file) {
       pic1Url = downloadURL
     } else if (fileNumber == 2) {
       pic2Url = downloadURL
-    } else if (fileNumber == 3) {
-      pic3Url = downloadURL
+    } else if (fileNumber == 5) {
+      pic5Url = downloadURL
     } else {
       pic4Url = downloadURL
     }
@@ -622,11 +634,11 @@ $(document).ready(function () {
   $('#kycPic2').change(function () {
     uploadFile(2, this.files[0])
   })
-  $('#kycPic3').change(function () {
-    uploadFile(3, this.files[0])
-  })
   $('#kycPic4').change(function () {
     uploadFile(4, this.files[0])
+  })
+  $('#kycPic5').change(function () {
+    uploadFile(5, this.files[0])
   })
   // ===================== //
   // ===== Countdown ===== //
