@@ -338,10 +338,14 @@ function buildListUser(doc) {
   td2.appendChild(txt2);
   var td3 = document.createElement("td");
   var txt3 = document.createTextNode(formattedTime + " +07:00");
+  var td4 = document.createElement("td");
+  var txt4 = document.createTextNode("-");
+  td4.appendChild(txt4);
   td3.appendChild(txt3);
   tr.appendChild(td1);
   tr.appendChild(td2);
   tr.appendChild(td3);
+  tr.appendChild(td4);
   tr.onclick = function() {
     openUser(doc.id);
   };
