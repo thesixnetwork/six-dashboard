@@ -54,6 +54,8 @@ function checkKYCStatus (event, functions, fireStore) {
       mailOptions.html = emailTemplate.rejected_restricted({})
     } else if (userData.reject_type === 'photo_corrupted') {
       mailOptions.html = emailTemplate.rejected_photo_corrupted({})
+    } else if (userData.reject_type === 'other') {
+      mailOptions.html = emailTemplate.rejected_other({note_text: userData.reject_note_extend})
     } else {
       mailOptions.html = emailTemplate.rejected_need_more({})
     }
