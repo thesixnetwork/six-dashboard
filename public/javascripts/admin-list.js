@@ -115,7 +115,11 @@ function openUser (uid) {
   $('#detailPic3').attr("src", userData[uid].pic3)
   $('#detailPic4').attr("src", userData[uid].pic4)
   $('#detailPic5').attr("src", userData[uid].pic5)
-  $('#detailEstimate').html(userData[uid].estimate+" ETH")
+  let estimateprice = parseFloat(userData[uid].estimate)
+  if (userData[uid].estimate_currency === 'XLM') {
+    estimateprice = estimateprice*2050
+  }
+  $('#detailEstimate').html(estimateprice+" "+(userData[uid].estimate_currency || "ETH"))
   $('#adminDetail').css('display', 'block')
   currentFocus = uid
 }
