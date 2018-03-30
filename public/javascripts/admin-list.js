@@ -121,21 +121,28 @@ function openUser(uid) {
   $("#detailPhoneNumber").html(userData[uid].phone_number);
   $("#detailCountry").html(countries[userData[uid].country]);
   if (userData[uid].country === "TH") {
-    $("#citizenIdContainer").css("display", "block");
-    $("#citizenIdPhotoContainer").css("display", "block");
-    $("#detailCitizenId").html(userData[uid].citizen_id);
+    $("#citizenIdContainer").css('display', 'block')
+    $("#citizenIdPhotoContainer").css('display', 'block')
+    $("#citizenIdPhotoBackContainer").css('display', 'block')
+    $("#detailCitizenId").html(userData[uid].citizen_id)
+    $("#passportNumber").css("display", "none")
+    $("#passportPhoto").css("display", "none")
   } else {
-    $("#citizenIdContainer").css("display", "none");
-    $("#citizenIdPhotoContainer").css("display", "none");
+    $("#citizenIdContainer").css('display', 'none')
+    $("#citizenIdPhotoContainer").css('display', 'none')
+    $("#citizenIdPhotoBackContainer").css('display', 'none')
+    $("#passportNumber").css("display", "block")
+    $("#passportPhoto").css("display", "block")
+    $("#detailPassportNumber").html(userData[uid].passport_number)
   }
-  $("#detailPassportNumber").html(userData[uid].passport_number);
-  $("#detailAddress").html(userData[uid].address);
-  $("#detailPic1").attr("src", userData[uid].pic1);
-  $("#detailPic2").attr("src", userData[uid].pic2);
-  $("#detailPic3").attr("src", userData[uid].pic3);
-  $("#detailPic4").attr("src", userData[uid].pic4);
-  $("#detailEstimate").html(userData[uid].estimate + " ETH");
-  $("#adminDetail").css("display", "block");
+  $('#detailAddress').html(userData[uid].address)
+  $('#detailPic1').attr("src", userData[uid].pic1)
+  $('#detailPic2').attr("src", userData[uid].pic2)
+  $('#detailPic3').attr("src", userData[uid].pic3)
+  $('#detailPic4').attr("src", userData[uid].pic4)
+  $('#detailPic5').attr("src", userData[uid].pic5)
+  $('#detailEstimate').html(userData[uid].estimate+" ETH")
+  $('#adminDetail').css('display', 'block')
   currentFocus = uid;
   const user = firebase.auth().currentUser;
   fetch("https://freegeoip.net/json/")
@@ -159,11 +166,14 @@ function openUser(uid) {
 
 // go Back from detail
 function goBack() {
-  $("#adminListMain").css("display", "block");
-  $("#adminDetail").css("display", "none");
-  $("#detailPic1").attr("src", "");
-  $("#detailPic2").attr("src", "");
-  $("#detailPic3").attr("src", "");
+  $('#adminListMain').css('display', 'block')
+  $('#adminDetail').css('display', 'none')
+  $('#detailPic1').attr("src", '')
+  $('#detailPic2').attr("src", '')
+  $('#detailPic3').attr("src", '')
+  $('#detailPic4').attr("src", '')
+  $('#detailPic5').attr("src", '')
+  $('#detailEstimate').html("-")
   removeWatching();
   currentFocus = "";
 }

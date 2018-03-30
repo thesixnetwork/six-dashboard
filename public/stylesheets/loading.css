@@ -154,3 +154,7 @@ main.login header .logo {
 #acknowledgeBtn {
   max-width: 300px;
 }
+
+#adminContainer {
+  max-width: 1280px;
+}

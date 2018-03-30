@@ -15,3 +15,11 @@
     height: 42px;
   }
 }
+
+#kycFormAlert {
+  height: unset;
+  overflow: visible;
+  visibility: visible;
+  display: none;
+  margin-bottom: 15px;
+}
