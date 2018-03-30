@@ -22,9 +22,9 @@ estimates = {
 rejectNote = {
   "need_more": `We appreciate that you took the time for the registration. However, we received insufficient information regarding your KYC/ AML documents and/ or information.
 
-We would highly appreciate if you could resubmit the documents and/ or information through the link below. 
+We would highly appreciate if you could resubmit the documents and/ or information through the link below.
 
-Thank you for your interest in our ICO. 
+Thank you for your interest in our ICO.
 
 SIX.network`,
   "restricted": `We highly appreciate that you took the time for the registration. After reviewing your submitted application materials, the KYC/AML result does not match with our requirements.
@@ -34,9 +34,9 @@ We highly appreciate that you are interested in our ICO. Please do support us in
 Thank you for your interest in SIX.network and our ICO.
 
 SIX.network`,
-  incorrect: `We appreciate that you took the time for the registration. However, we received insufficient information regarding your KYC/ AML documents and/ or information. 
+  incorrect: `We appreciate that you took the time for the registration. However, we received insufficient information regarding your KYC/ AML documents and/ or information.
 
-We would highly appreciate if you could resubmit the documents and/ or information through the link below. 
+We would highly appreciate if you could resubmit the documents and/ or information through the link below.
 
 Thank you for your interest in our ICO.
 
@@ -47,9 +47,9 @@ We would highly appreciate if you could resubmit your selfie through the link be
   "other": `We appreciate that you took the time for the registration. However, we received insufficient information regarding your KYC/ AML documents and/ or information.
 
 Thank you for your interest in our ICO. `
-
-currentFocus = "";
-var currentIp = "";
+}
+currentFocus = ""
+var currentIp = ""
 var currentStatus = 'all'
 // Logout function to sign user out
 function logOut() {
