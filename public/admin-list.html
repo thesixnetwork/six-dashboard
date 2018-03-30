@@ -71,7 +71,7 @@
           <thead>
             <tr>
               <th>Name</th>
-              <th width="200">Datetime</th>
+              <th width="200">KYC Submit Datetime</th>
               <th width="200">Contribute (ETH)</th>
               <th width="300" id="remarkColumn">Status</th>
             </tr>
@@ -89,50 +89,50 @@
         <fieldset>
           <legend>Information</legend>
           <dl>
-            <dt>Name</dt>
+            <dt><u>Name</u></dt>
             <dd class="combine">
               <p id='detailFirstName'></p>
               <p id='detailLastName'></p>
             </dd>
           </dl>
           <dl>
-            <dt>Email</dt>
+            <dt><u>Email</u></dt>
             <dd>
               <p id='detailEmail'></p>
             </dd>
           </dl>
           <dl>
-            <dt>Phone number</dt>
+            <dt><u>Phone number</u></dt>
             <dd>
               <p id='detailPhoneNumber'></p>
             </dd>
           </dl>
           <dl>
-            <dt>Nationality</dt>
+            <dt><u>Nationality</u></dt>
             <dd>
               <p id='detailCountry'></p>
             </dd>
           </dl>
           <dl id="citizenIdContainer">
-            <dt>Citizen ID</dt>
+            <dt><u>Citizen ID</u></dt>
             <dd>
               <p id="detailCitizenId"></p>
             </dd>
           </dl>
           <dl id='passportNumber'>
-            <dt>Passport number</dt>
+            <dt><u>Passport number</u></dt>
             <dd>
               <p id="detailPassportNumber"></p>
             </dd>
           </dl>
           <dl>
-            <dt>Local address</dt>
+            <dt><u>Local address</u></dt>
             <dd>
               <p id='detailAddress'></p>
             </dd>
           </dl>
           <dl id='citizenIdPhotoContainer'>
-            <dt>Photo of ID with signature</dt>
+            <dt><u>Photo of ID with signature</u></dt>
             <dd>
               <span class="image">
                 <img id="detailPic1">
@@ -140,7 +140,7 @@
             </dd>
           </dl>
           <dl id='citizenIdPhotoBackContainer'>
-            <dt>Photo of the back of ID with signature</dt>
+            <dt><u>Photo of the back of ID with signature</u></dt>
             <dd>
               <span class="image">
                 <img id='detailPic5'>
@@ -148,7 +148,7 @@
             </dd>
           </dl>
           <dl id='passportPhoto'>
-            <dt>Photo of Passport with signature</dt>
+            <dt><u>Photo of Passport with signature</u></dt>
             <dd>
               <span class="image">
                 <img id='detailPic4'>
@@ -157,7 +157,7 @@
           </dl>
           <dl>
             <dt>
-              Selfie with id or passport photo
+              <u>Selfie with id or passport photo</u>
             </dt>
             <dd>
               <span class="image">
@@ -167,11 +167,11 @@
           </dl>
         </fieldset>
         <fieldset>
-          <legend>Estimate ICO investment budget</legend>
+          <legend><u>Estimate ICO investment budget</u></legend>
           <p id='detailEstimate'></p>
         </fieldset>
       </section>
-      <section class="reject-template detail">
+      <section id='rejctBox' class="reject-template detail">
         <fieldset>
           <legend>Reject template</legend>
           <dl>
@@ -195,7 +195,7 @@
         </fieldset>
         <dl><dd><button class="yellow" id="rejectBtn" style="background: #ef5555; color: white;" onclick="rejectUser()">Reject</button></dd></dl>
       </section>
-      <section class="">
+      <section class="" id='approveBox'>
         <dl>
           <dd><button id="approveBtn" onclick="approve()">Approve</button></dd>
         </dl>

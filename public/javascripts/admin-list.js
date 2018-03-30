@@ -97,9 +97,11 @@ function buildListUser(doc) {
   }
   var tr = document.createElement("tr");
   var td1 = document.createElement("td");
-  var txt1 = document.createTextNode(
-    doc.data().first_name + " " + doc.data().last_name
-  );
+  let name_text = doc.data().first_name + " " + doc.data().last_name
+  if (doc.data().first_name === undefined || doc.data().last_name === undefined) {
+    name_text = '-'
+  }
+  var txt1 = document.createTextNode(name_text)
   td1.appendChild(txt1);
   var td2 = document.createElement("td");
   var txt2 = document.createTextNode(formatted_date+' '+formattedTime);
@@ -135,16 +137,16 @@ function buildListUser(doc) {
 // Open user detail
 function openUser(uid) {
   $("#adminListMain").css("display", "none");
-  $("#detailFirstName").html(userData[uid].first_name);
-  $("#detailLastName").html(userData[uid].last_name);
-  $("#detailEmail").html(userData[uid].email);
-  $("#detailPhoneNumber").html(userData[uid].phone_number);
-  $("#detailCountry").html(countries[userData[uid].country]);
+  $("#detailFirstName").html(userData[uid].first_name || '-');
+  $("#detailLastName").html(userData[uid].last_name || '-');
+  $("#detailEmail").html(userData[uid].email || '-');
+  $("#detailPhoneNumber").html(userData[uid].phone_number || '-');
+  $("#detailCountry").html(countries[userData[uid].country] || '-');
   if (userData[uid].country === "TH") {
     $("#citizenIdContainer").css('display', 'block')
     $("#citizenIdPhotoContainer").css('display', 'block')
     $("#citizenIdPhotoBackContainer").css('display', 'block')
-    $("#detailCitizenId").html(userData[uid].citizen_id)
+    $("#detailCitizenId").html(userData[uid].citizen_id || '-')
     $("#passportNumber").css("display", "none")
     $("#passportPhoto").css("display", "none")
   } else {
@@ -153,20 +155,33 @@ function openUser(uid) {
     $("#citizenIdPhotoBackContainer").css('display', 'none')
     $("#passportNumber").css("display", "block")
     $("#passportPhoto").css("display", "block")
-    $("#detailPassportNumber").html(userData[uid].passport_number)
+    $("#detailPassportNumber").html(userData[uid].passport_number || '-')
   }
-  $('#detailAddress').html(userData[uid].address)
+  $('#detailAddress').html(userData[uid].address || '-')
   $('#detailPic1').attr("src", userData[uid].pic1)
   $('#detailPic2').attr("src", userData[uid].pic2)
   $('#detailPic3').attr("src", userData[uid].pic3)
   $('#detailPic4').attr("src", userData[uid].pic4)
   $('#detailPic5').attr("src", userData[uid].pic5)
-  let estimateprice = parseFloat(userData[uid].estimate)
-  if (userData[uid].estimate_currency === 'XLM') {
-    estimateprice = estimateprice*2050
+  let estimate = userData[uid].estimate
+  if (userData[uid].estimate_currency == "XLM") {
+    estimate = estimate*2050
   }
-  $('#detailEstimate').html(estimateprice+" "+(userData[uid].estimate_currency || "ETH"))
+  let estimate_text = ""
+  if (estimate === undefined) {
+    estimate_text = "-"
+  } else {
+    estimate_text = estimate+" "+(userData[uid].estimate_currency || "ETH")
+  }
+  $('#detailEstimate').html(estimate_text)
   $('#adminDetail').css('display', 'block')
+  if (userData[uid] === 'pending') {
+    $("#rejctBox").css("display", "block")
+    $("#approveBox").css("display", "block")
+  } else {
+    $("#rejctBox").css("display", "none")
+    $("#approveBox").css("display", "none")
+  }
   currentFocus = uid;
   const user = firebase.auth().currentUser;
   fetch("https://freegeoip.net/json/")
@@ -197,7 +212,15 @@ function goBack() {
   $('#detailPic3').attr("src", '')
   $('#detailPic4').attr("src", '')
   $('#detailPic5').attr("src", '')
+  $("#detailFirstName").html("-");
+  $("#detailLastName").html("-");
+  $("#detailEmail").html("-");
+  $("#detailPhoneNumber").html("-");
+  $("#detailCountry").html("-");
   $('#detailEstimate').html("-")
+  $('#detailAddress').html("-")
+  $('#detailCitizenId').html("-")
+  $("#detailPassportNumber").html('-')
   removeWatching();
   currentFocus = "";
 }
