@@ -129,19 +129,6 @@ function submitPhoneNumber() {
   }
   const phone_number = '+'+parseData.countryCallingCode+parseData.phone
   phoneNumberDOM.value = phone_number
-  let currentUser = firebase.auth().currentUser
-  updateUser({phone_number: phone_number, phone_verified: true}).then(() => {
-    document.getElementById("kycCountry").value = countryPhone
-    goToKYCStep()
-    setEnable([phoneNumberDOM, btnDOM, countryPhoneDOM])
-  }).catch(() => {
-    $("#verifyPhoneError").html("Unexpected error, please try again")
-    if ($("#verifyPhoneError").css("display", "none")) {
-      $("#verifyPhoneError").slideToggle()
-    }
-    setEnable([phoneNumberDOM, btnDOM, countryPhoneDOM])
-  })
-/*
   let requestFunction = firebase.functions().httpsCallable('phoneVerificationRequest')
   requestFunction({phone_number: phone_number}).then(response => {
     if (response.data.success === true) {
@@ -194,7 +181,6 @@ function submitPhoneNumber() {
     }
     setEnable([phoneNumberDOM, btnDOM, countryPhoneDOM])
   })
-*/
 }
 
 function kycCountryChange() {
@@ -210,6 +196,8 @@ function kycCountryChange() {
     $("#itemHolding").html("ID-card")
     $("#samplePassportSelfie").css('display', 'none')
     $("#sampleIDSelfie").css('display', 'block')
+    $("#idHelper").css('display', 'inline-block')
+    $("#passportHelper").css('display', 'none')
   } else {
     $("#citizenId").css("display", "none")
     $("#citizenIdPhoto").css("display", "none")
@@ -220,6 +208,8 @@ function kycCountryChange() {
     $("#itemHolding").html("passport showing the passport photo page")
     $("#samplePassportSelfie").css('display', 'block')
     $("#sampleIDSelfie").css('display', 'none')
+    $("#idHelper").css('display', 'none')
+    $("#passportHelper").css('display', 'inline-block')
   }
 }
 
