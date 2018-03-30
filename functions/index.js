@@ -16,44 +16,41 @@ for (let trigger of triggers) {
   exports[trigger.name] = trigger.module
 }
 
+const userModels = require('./model/user')(functions, fireStore)
+for (let trigger of userModels) {
+  exports[trigger.name] = trigger.module
+}
+
 const getBasePriceURI = (coin) => `https://min-api.cryptocompare.com/data/price?fsym=${coin}&tsyms=USD`
 
-function getUser (uid) {
-  return new Promise((resolve, reject) => {
-    fireStore
-      .collection('users')
-      .doc(uid)
-      .get()
-      .then(snapshot => snapshot.data())
-      .then(result => resolve(result))
-      .catch(err => reject(err))
-  })
-}
 
-function updateUser (uid, data) {
-  return new Promise((resolve, reject) => {
-    fireStore
-      .collection('users')
-      .doc(uid)
-      .set(data, {
-        merge: true
-      })
-      .then(snapshot => snapshot.data())
-      .then(result => resolve(result))
-      .catch(err => reject(err))
+exports.incrementTotalAsset = functions.firestore.document('/purchase_txs/{txId}')
+  .onCreate(event => {
+    const data = event.data.data()
+    console.log('Create Transaction:', event.params.txId, data.type, data.native_amount)
+    const assetCol = fireStore.collection('total_asset')
+    return fireStore.runTransaction(tx => Promise.all([
+      {type: data.type, key: 'native_amount'},
+      {type: 'usd', key: 'total_usd_price'},
+      {type: 'six', key: 'six_amount'}
+    ].map(asset => {
+      const ref = assetCol.doc(asset.type)
+      return tx.get(ref).then(assetDoc => tx.update(ref, {total: assetDoc.data().total + data[asset.key]}))
+    })
+    )
+    )
   })
-}
 
-function generatePhoneVerificationCode (phone_number) {
+function generatePhoneVerificationCode (phoneNumber) {
   let refCode = Math.random().toString(36).replace(/[^a-z]+/g, '').substr(0, 5).toUpperCase()
   let code = Math.random().toString().substr(2, 6)
   let validUntil = Math.round((new Date()).getTime() / 1000) + 180
   var http = require('https')
   var options = {
     'method': 'POST',
-//    'hostname': 'tm3swoarp5.execute-api.ap-southeast-1.amazonaws.com',
+    // 'hostname': 'tm3swoarp5.execute-api.ap-southeast-1.amazonaws.com',
     'hostname': 'xisth3qe4e.execute-api.ap-southeast-1.amazonaws.com',
-//    'hostname': '2ij1lsi2cd.execute-api.ap-southeast-1.amazonaws.com',
+    // 'hostname': '2ij1lsi2cd.execute-api.ap-southeast-1.amazonaws.com',
     'port': null,
     'path': '/production/sms',
     'headers': {
@@ -74,10 +71,10 @@ function generatePhoneVerificationCode (phone_number) {
       console.log(body.toString())
     })
   })
-  req.write('{"message": "Your code is ' + code + ' (Ref: ' + refCode + ')", "phone_number": "' + phone_number + '"}')
+  req.write('{"message": "Your code is ' + code + ' (Ref: ' + refCode + ')", "phone_number": "' + phoneNumber + '"}')
   req.end()
   let ref = admin.firestore().collection('phone-verifications')
-  return ref.doc(phone_number).set({ ref_code: refCode, code: code, valid_until: validUntil }).then(() => {
+  return ref.doc(phoneNumber).set({ ref_code: refCode, code: code, valid_until: validUntil }).then(() => {
     return { success: true, refCode: refCode, validUntil: validUntil }
   }).catch(err => {
     return { success: false, message: err.message }
@@ -86,13 +83,13 @@ function generatePhoneVerificationCode (phone_number) {
 
 exports.phoneVerificationRequest = functions.https.onCall((data, context) => {
   let ref = admin.firestore().collection('phone-verifications')
-  let phone_number = data.phone_number
-  return ref.doc(phone_number).get().then(doc => {
+  let phoneNumber = data.phone_number
+  return ref.doc(phoneNumber).get().then(doc => {
     if (doc.exists) {
       if (doc.data().is_verified === true) {
         return { success: false, error_message: 'Phone number has already been used' }
       } else {
-        return generatePhoneVerificationCode(phone_number).then(data => {
+        return generatePhoneVerificationCode(phoneNumber).then(data => {
           if (data.success === true) {
             let refCode = data.refCode
             let validUntil = data.validUntil
@@ -105,7 +102,7 @@ exports.phoneVerificationRequest = functions.https.onCall((data, context) => {
         })
       }
     } else {
-      return generatePhoneVerificationCode(phone_number).then(data => {
+      return generatePhoneVerificationCode(phoneNumber).then(data => {
         if (data.success === true) {
           let refCode = data.refCode
           let validUntil = data.validUntil
@@ -126,21 +123,21 @@ exports.phoneVerificationRequest = functions.https.onCall((data, context) => {
 exports.phoneVerificationSubmit = functions.https.onCall((data, context) => {
   let ref = admin.firestore().collection('phone-verifications')
   let userRef = admin.firestore().collection('users')
-  let phone_number = data.phone_number
+  let phoneNumber = data.phone_number
   let country = data.country
-  let ref_code = data.ref_code
+  let refCode = data.ref_code
   let code = data.code
   const uid = context.auth.uid
-  return ref.doc(phone_number).get().then(doc => {
+  return ref.doc(phoneNumber).get().then(doc => {
     if (doc.exists) {
       if (doc.data().is_verified === true) {
         return { success: false, error_message: 'Phone number has already been used' }
       } else {
         if (doc.data().valid_until > Math.round((new Date()).getTime() / 1000)) {
-          if (doc.data().ref_code === ref_code && doc.data().code === code) {
+          if (doc.data().ref_code === refCode && doc.data().code === code) {
             let batch = admin.firestore().batch()
-            batch.set(ref.doc(phone_number), {is_verified: true})
-            batch.update(userRef.doc(uid), {'phone_number': phone_number, 'phone_verified': true, 'country': country})
+            batch.set(ref.doc(phoneNumber), {is_verified: true})
+            batch.update(userRef.doc(uid), {'phone_number': phoneNumber, 'phone_verified': true, 'country': country})
             return batch.commit().then(() => {
               return { success: true }
             }).catch(err => {

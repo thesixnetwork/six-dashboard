@@ -54,6 +54,8 @@ function checkKYCStatus (event, functions, fireStore) {
       mailOptions.html = emailTemplate.rejected_restricted({})
     } else if (userData.reject_type === 'photo_corrupted') {
       mailOptions.html = emailTemplate.rejected_photo_corrupted({})
+    } else if (userData.reject_type === 'other') {
+      mailOptions.html = emailTemplate.rejected_other({note_text: userData.reject_note_extend})
     } else {
       mailOptions.html = emailTemplate.rejected_need_more({})
     }
@@ -90,7 +92,7 @@ function checkPresaleDiscount (event, functions, fireStore) {
     return tx.get(totalEthRef).then(doc => {
       const totalETH = doc.data().total_eth
       const latestTotalETH = totalETH + estimate
-      if (totalETH > 15000) return Promise.reject(new Error('Presale is soldout.'))
+      if (totalETH > 1000000) return Promise.reject(new Error('Presale is soldout.'))
       return Promise.all([tx.update(totalEthRef, {total_eth: latestTotalETH}), tx.set(presaleUserRef, {total_eth: estimate}), tx.update(userRef, {is_presale: true})])
     })
   }))
