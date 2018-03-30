@@ -38,7 +38,7 @@ SIX.network`,
 
 We would highly appreciate if you could resubmit the documents and/ or information through the link below. 
 
-Thank you for your interest in our ICO. 
+Thank you for your interest in our ICO.
 
 SIX.network`,
   photo_corrupted: `We appreciate that you took the time for the registration. However, we received incorrect or unclear information regarding your selfie picture.
@@ -46,7 +46,7 @@ SIX.network`,
 We would highly appreciate if you could resubmit your selfie through the link below.`,
   "other": `We appreciate that you took the time for the registration. However, we received insufficient information regarding your KYC/ AML documents and/ or information.
 
-Thank you for your interest in our ICO. 
+Thank you for your interest in our ICO. `
 
 currentFocus = "";
 var currentIp = "";
