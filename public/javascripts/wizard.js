@@ -529,7 +529,7 @@ function uploadFile(fileNumber, file) {
     $("#pgbarPic"+fileNumber).slideToggle()
   }
   if ($("#sampleImage"+fileNumber).css('display') == 'block') {
-    $("#sampleImage"+fileNumber).slideToggle(400, function() { $("#sampleImage"+fileNumber).attr("src", "") })
+    $("#sampleImage"+fileNumber).fadeToggle(400, function() { $("#sampleImage"+fileNumber).attr("src", "") })
   }
   $("#kycPicName"+fileNumber).html(file.name)
   $("#kycPic"+fileNumber+"Alert").removeClass("invalid")

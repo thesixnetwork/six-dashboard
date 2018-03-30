@@ -7,6 +7,7 @@
     <title>SIX | Reinventing the digital economy</title>
     <link rel="shortcut icon" href="images/logo/fav.ico" type="image/x-icon">
     <link rel="stylesheet" href="stylesheets/style.css">
+    <link rel="stylesheet" href="stylesheets/loading.css">
     <script src="javascripts/jquery-3.2.1.min.js"></script>
     <script src="javascripts/dashboard.js"></script>
   </head>
@@ -14,10 +15,10 @@
     <header class="header">
       <a href="" class="logo"><img src="images/logo/six-logo-white.png"></a>
       <ul class="exchange">
-        <li><p>SIX / USD</p><p>0.1</p></li>
-        <li><p>BTC / USD</p><p>0.1</p></li>
-        <li><p>ETH / USD</p><p>0.1</p></li>
-        <li><p>XLM / USD</p><p>0.1</p></li>
+        <li><p>SIX / USD</p><p>Loading</p></li>
+        <li><p>BTC / USD</p><p>Loading</p></li>
+        <li><p>ETH / USD</p><p>Loading</p></li>
+        <li><p>XLM / USD</p><p>Loading</p></li>
       </ul>
       <a href="login.html" class="logout">Logout&nbsp;<i class="fas fa-sign-out-alt"></i></a>
     </header>
@@ -59,7 +60,34 @@
         </section>
       </aside>
       <div class="content">
-        <section class="payment-box show-detail">
+        <section class="warninging-box show-detail">
+          <h2>WARNING</h2>
+          <ul class="option-list">
+            <li>
+              <label class="option width-full warning-label">
+                <input onchange="checkWarning()" id='warning1' class='warning-check-box' type="checkbox">
+                <span class="check-mark"></span>
+                <p><strong>I WILL NOT </strong>change my wallet address that I've transferred to buy SIX tokens, and I acknowledge that I <strong>CANNOT</strong> receive any token transferred from SIX network permanently if any change occured.</p>
+              </label>
+            </li>
+            <li>
+              <label class="option width-full warning-label">
+                <input onchange="checkWarning()" id='warning2' class='warning-check-box' type="checkbox">
+                <span class="check-mark"></span>
+                <p>I acknowledge that using an exchange-address may result in a permanent loss all of my SIX tokens since I may not be able to withdraw SIX tokens from the exchange wallet address after the contribution.</p>
+              </label>
+            </li>
+            <li>
+              <label class="option width-full warning-label">
+                <input onchange="checkWarning()" id='warning3' class='warning-check-box' type="checkbox">
+                <span class="check-mark"></span>
+                <p>I agree to <a><strong>Terms and Conditions</strong></a>.</p>
+              </label>
+            </li>
+          </ul>
+          <div class="btn"><button disabled id="acknowledgeBtn" onclick='submitAcknowledge()'>Submit</button></div>
+        </section>
+        <section class="payment-box">
           <h2>Contribute to SIX</h2>
           <ul class="option-list">
             <li>

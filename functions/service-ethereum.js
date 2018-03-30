@@ -1,11 +1,15 @@
+const functions = require('firebase-functions')
 const _ = require('lodash')
 const Web3 = require('web3')
 const admin = require('firebase-admin')
 const bluebird = require('bluebird')
 
 const web3 = new Web3()
+const etherscan = require('etherscan-api')
 
-let api = require('etherscan-api').init('IG895QW58QRX3ENJ6MDFZTM4B3AF2UA6EZ', 'ropsten')
+const isProduction = functions.config().campaign.is_production === 'true'
+const ethAddress = functions.config().eth.address
+let api = isProduction ? etherscan.init(ethAddress) : etherscan.init(ethAddress, 'ropsten')
 
 const db = admin.firestore()
 
