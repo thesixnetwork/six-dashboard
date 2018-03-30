@@ -175,7 +175,7 @@ function openUser(uid) {
   }
   $('#detailEstimate').html(estimate_text)
   $('#adminDetail').css('display', 'block')
-  if (userData[uid] === 'pending') {
+  if (userData[uid].kyc_status === 'pending') {
     $("#rejctBox").css("display", "block")
     $("#approveBox").css("display", "block")
   } else {
