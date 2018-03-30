@@ -37,7 +37,7 @@ function checkKYCStatus (event, functions, fireStore) {
   const userData = event.data.data()
   const previousUserData = event.data.previous.data()
   const mailOptions = {
-    from: '"Six network ICO." <noreply@firebase.com>',
+    from: functions.config().email.from,
     to: userData.email
   }
   if (userData.kyc_status === 'pending' && previousUserData.kyc_status !== 'pending') {
@@ -50,7 +50,15 @@ function checkKYCStatus (event, functions, fireStore) {
     sendCampaignEmailApprove(event, functions)
   } else if (userData.kyc_status === 'rejected' && previousUserData.kyc_status !== 'rejected') {
     mailOptions.subject = 'KYC rejected.'
-    mailOptions.html = emailTemplate.rejected({})
+    if (userData.reject_type === 'restricted') {
+      mailOptions.html = emailTemplate.rejected_restricted({})
+    } else if (userData.reject_type === 'photo_corrupted') {
+      mailOptions.html = emailTemplate.rejected_photo_corrupted({})
+    } else if (userData.reject_type === 'other') {
+      mailOptions.html = emailTemplate.rejected_other({note_text: userData.reject_note_extend})
+    } else {
+      mailOptions.html = emailTemplate.rejected_need_more({})
+    }
   } else {
     return Promise.resolve() // do nothing
   }
@@ -74,6 +82,7 @@ function checkPresaleDiscount (event, functions, fireStore) {
   const previousUserData = event.data.previous.data()
   const estimate = (+userData.estimate || 0) // force estimate from string to number (default 0)
   if (userData.kyc_status !== 'approved' || previousUserData.kyc_status === 'approved' || estimate <= 0) return Promise.resolve() // do nothing
+  const userRef = fireStore.collection('users').doc(uid)
   const presaleUserRef = fireStore.collection('presale').doc('supply').collection('reserve').doc(uid)
   const totalEthRef = fireStore.collection('presale').doc('supply')
   return fireStore.runTransaction(tx => tx.get(presaleUserRef).then(userReserve => {
@@ -83,8 +92,8 @@ function checkPresaleDiscount (event, functions, fireStore) {
     return tx.get(totalEthRef).then(doc => {
       const totalETH = doc.data().total_eth
       const latestTotalETH = totalETH + estimate
-      if (totalETH > 15000) return Promise.reject(new Error('Presale is soldout.'))
-      return Promise.all([tx.update(totalEthRef, {total_eth: latestTotalETH}), tx.set(presaleUserRef, {total_eth: estimate})])
+      if (totalETH > 1000000) return Promise.reject(new Error('Presale is soldout.'))
+      return Promise.all([tx.update(totalEthRef, {total_eth: latestTotalETH}), tx.set(presaleUserRef, {total_eth: estimate}), tx.update(userRef, {is_presale: true})])
     })
   }))
 }

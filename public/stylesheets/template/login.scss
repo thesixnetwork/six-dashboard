@@ -8,6 +8,12 @@ main.login {
 	}
 
 	header {
+		position: relative; display: flex; justify-content: flex-end; width: 100%; padding: 0 40px; min-height: 60px;
+
+		.logo { position: absolute; left: 40px; top: 10px; display: block; height: 30px; flex-shrink: 0;
+			img { height: 100%; width: auto; }
+		}
+
 		.btn-tool {
 			display: flex; line-height: 60px;
 
@@ -51,7 +57,7 @@ main.login {
 						opacity: 1;
 
 						&.facebook { color: $facebook; }
-						&.twitter { color: $twitter; }
+						&.google { color: $google; }
 					}
 				}
 			}
@@ -61,7 +67,7 @@ main.login {
 			opacity: 0; display: none; flex-wrap: wrap; justify-content: center; align-items: center;
 
 			&.show-detail { animation: fade-in-up 1s forwards; display: flex; -webkit-animation: fade-in-up 1s forwards; display: flex; -moz-animation: fade-in-up 1s forwards; display: flex; -o-animation: fade-in-up 1s forwards; display: flex; }
-			
+
 			@keyframes fade-in-up {
 				from { transform: translate3d(0, 30%, 0); }
 				to { opacity: 1; transform: none; }

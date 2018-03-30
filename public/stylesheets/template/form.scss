@@ -1,10 +1,10 @@
-input, button, select, textarea { display: block; font-size: 14px; border: none; outline: none; padding: 0 $space-s; 
-	border-radius: 3px; -webkit-appearance: none; -moz-appearance: none; -o-appearance: none; -ms-appearance: none; 
+input, button, select, textarea { display: block; font-size: 14px; border: none; outline: none; padding: 0 $space-s;
+	border-radius: 3px; -webkit-appearance: none; -moz-appearance: none; -o-appearance: none; -ms-appearance: none;
 	color: $font-color-primary; background: transparent; font-family: 'Roboto', sans-serif; }
 
 label {
-	&.text, &.dropdown, &.textarea, &.file { display: block; border: 1px solid #E4E4E4; border-radius: 3px; background: #F9F9F9; 
-		position: relative; // box-shadow: inset 0 1px 2px $border, 0 -1px 1px $white, 0 1px 0 $white; 
+	&.text, &.dropdown, &.textarea, &.file { display: block; border: 1px solid #E4E4E4; border-radius: 3px; background: #f2f4fa8f;
+		position: relative; // box-shadow: inset 0 1px 2px $border, 0 -1px 1px $white, 0 1px 0 $white;
 	}
 
 	&.text, &.dropdown, &.file { height: 45px; width: 100%; }
@@ -19,37 +19,39 @@ label {
             &:-o-placeholder { color: $font-color-secondary; }
         }
     }
-    
+
     &.textarea {  width: 100%; height: auto;
 
         textarea {
             resize: none; min-height: 80px; padding: $space-s; width: 100%;
 
-            &::-webkit-input-placeholder { line-height: inherit; }
-            &::-moz-placeholder { line-height: inherit; }
-            &:-ms-input-placeholder { line-height: inherit; }
-            &:-o-placeholder { line-height: inherit; }
+            &::-webkit-input-placeholder { color: $font-color-secondary; }
+            &::-moz-placeholder { color: $font-color-secondary; }
+            &:-ms-input-placeholder { color: $font-color-secondary; }
+            &:-o-placeholder { color: $font-color-secondary; }
         }
     }
 
     &.dropdown, &.file { position: relative; box-shadow: inset 0 1px 0 0 $white; // background: linear-gradient(to bottom, $white 5%, $gray 100%);
 
 		i { position: absolute; width: 45px; top: 0; right: 0; line-height: 45px; height: 45px; text-align: center; color: $font-color-secondary; font-size: $font-size-xs; opacity: 0.7; }
+
+		p { color: $font-color-secondary !important; }
     }
 
 	&.dropdown {
 		select { cursor: pointer; position: relative; padding-right: $space-l; width: 100%; height: 100%; }
     }
-    
+
 	&.file { display: block; cursor: pointer; border: 1px solid $border; border-radius: $border-radius;
 
 		input { display: none; padding-right: $space-l; }
 
-        p { white-space: nowrap; text-overflow: ellipsis; overflow: hidden; font-size: $font-size-m; color: inherit; line-height: 43px; padding: 0 $space-s; }
+        p { white-space: nowrap; text-overflow: ellipsis; overflow: hidden; color: inherit; line-height: 43px; padding: 0 $space-s; }
 	}
-    
+
     &.option {
-		display: flex; height: 45px; align-items: center; cursor: pointer; position: relative; padding: 0 $space-s 0 35px; box-shadow: none;
+		display: flex; align-items: center; cursor: pointer; position: relative; padding: 0 $space-s 0 40px; box-shadow: none;
 
 		input {
 			width: 0; height: 0; opacity: 0; padding: 0;
@@ -94,7 +96,7 @@ label {
 			&.round {
 				border-radius: 50%;
 
-				&:before { opacity: 0; background: $blue; left: 3px; top: 3px; width: 12px; height: 12px; border-radius: 50%; }
+				&:before { opacity: 0; background: $blue; left: 4px; top: 4px; width: 15px; height: 15px; border-radius: 50%; }
 			}
 
 			&.avatar { margin-right: 8px; flex-shrink: 0; }
@@ -104,9 +106,11 @@ label {
 			line-height: 25px; flex-grow: 1;
 
             i { margin-right: $space-s; }
-            
+
 			span { color: $font-color-secondary; font-size: $font-size-xs; margin-left: $space-s; }
 		}
+
+		&.width-full { width: 100%; }
     }
 
 	&.invalid, &.warning {
@@ -126,9 +130,9 @@ label {
 
 		p { color: $yellow !important; }
     }
-    
-	&.disable-label { background-color: #F1F1F1; cursor: default; overflow: hidden; opacity: 0.7;
-        
+
+	&.disable-label { background: #F1F1F1; cursor: default; overflow: hidden; opacity: 0.7;
+
         &.option { background: transparent; }
 
 		input, textarea, select { cursor: default; overflow: hidden; }
@@ -139,7 +143,7 @@ label {
 
 button {     width: 100%;
     height: 50px;
-    background: #4a5ab5;
+    background: $blue;
     color: #FFFFFF;
     cursor: pointer;
     letter-spacing: 1px;
@@ -159,7 +163,7 @@ dl { display: flex;
 	}
 
     dd { display: block; word-break: break-word;
-		width: 100%; 
+		width: 100%;
 		&.combine { display: flex; justify-content: space-between;
 			label.text, p { width: 49%; }
 		}
@@ -168,7 +172,7 @@ dl { display: flex;
     &:not(:last-of-type) { margin-bottom: 40px; }
 }
 
-.option-list { 
+.option-list {
 	li { display: flex; margin-bottom: 15px;
 		label.text { width: calc(100% - 200px); }
 
@@ -177,24 +181,26 @@ dl { display: flex;
 }
 
 fieldset { width: 100%; margin-bottom: 40px;
-	legend { display: block; width: 100%; font-size: 18px; font-weight: 500; color: #4a5ab5; margin-bottom: 20px; }
+	legend { display: block; width: 100%; font-size: 18px; font-weight: 500; color: $blue; margin-bottom: 20px; }
 }
 
 .btn { display: flex; justify-content: center; margin-top: $space-m; width: 100%; }
 
 // TABLE
 
-table { width: 100%;
-	th, td { padding: 20px; }
+table {
+	width: 100%;
+
+	th, td { padding: $space-s; }
+
 	thead {
-		tr { border-bottom: 1px solid $border; 
+		tr {
+			background: $gray;
+
 			th { font-weight: 500; text-transform: uppercase; opacity: 0.5; }
 		}
 	}
 	tbody {
-		tr { border-bottom: 1px solid #F1F1F1; 
-			&:hover { background-color: #F1F1F1; }
-			td {}
-		}
+		tr:hover { background: rgba($gray, 0.5); }
 	}
 }

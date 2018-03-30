@@ -1,12 +1,10 @@
 // sass --watch --sourcemap=none --n style.scss:style.css --style compressed
 
-// Font
-@import url('https://fonts.googleapis.com/css?family=Quicksand:300,400,500,700');
-@import url('https://fonts.googleapis.com/css?family=Roboto:100,100i,300,300i,400,400i,500,500i,700,700i,900,900i');
+// @import url('https://fonts.googleapis.com/css?family=Roboto:100,100i,300,300i,400,400i,500,500i,700,700i,900,900i');
 
-:root { font-size: 16px; }
+:root { font-size: 14px; }
 
-body { line-height: 1.825; color: #6f7583; background: $white; font-weight: normal; font-family: 'Roboto', sans-serif; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
+body { line-height: 1.825; color: $font-color-primary; background: $white; font-weight: normal; /*font-family: 'Roboto', sans-serif; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale;*/ font-family: 'Quicksand', sans-serif; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
 
 // Heading
 h1, h2, h3 { font-weight: bold; }
@@ -22,18 +20,22 @@ a { transition: 0.2s; color: inherit; outline: none; cursor: pointer;
 
 .container { position: relative; margin-left: auto; margin-right: auto; max-width: 640px; }
 
-.avatar { display: block;	width: 35px; height: 35px; border-radius: $border-radius; border: 1px solid $border;
+.avatar {
+	display: block; width: 50px; height: 50px; line-height: 50px; text-align: center; border-radius: 50%; background: $blue; color: $white; font-weight: 500; font-size: $font-size-4xl;
 	img { width: 100%; height: 100%; }
 }
 
-.header { position: relative; display: flex; justify-content: flex-end; width: 100%; padding: 0 40px; border-bottom: 1px solid #d8dde1;
+.header {
+	position: relative; display: flex; justify-content: space-between; align-items: center; width: 100%; padding: 0 $space-l; min-height: 60px; background: $blue; color: $white;
 
-	.logo { position: absolute; left: 40px; top: 10px; display: block; height: 30px; flex-shrink: 0;
-		img { height: 100%; width: auto; }
+	.logo, .logout { display: block; flex-shrink: 0; line-height: 60px; }
+
+	.logo {
+		img { height: 30px; position: relative; top: -5px; }
 	}
 
-	a.logout { display: block; flex-shrink: 0; padding: 0 20px; line-height: 60px;
-		i { margin-left: 10px;}
+	.logout {
+		i { margin-left: $space-s;}
 	}
 
 	.menu {
@@ -45,6 +47,22 @@ a { transition: 0.2s; color: inherit; outline: none; cursor: pointer;
 
 				&:hover { text-decoration: underline; }
 			}
+		}
+	}
+
+	.exchange {
+		display: flex; position: absolute; top: 10px; left: 120px;
+
+		li {
+			padding: 0 $space-xl;
+
+			p {
+				display: block; line-height: 20px;
+
+				&:last-of-type { font-weight: 500; }
+			}
+
+			&:not(:last-of-type) { border-right: 1px solid rgba($white, 0.2); }
 		}
 	}
 }
@@ -178,3 +196,54 @@ ul.countdown {
 	100% { background: $white; color: $textColor; }
 }
 // =================== //
+
+// Dialog //
+[class^="dialog-"] { display: flex; justify-content: center; align-items: center; position: fixed; top: 0; left: 0; width: 100%; height: 0; overflow: hidden;
+
+	&:before { content: ""; display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.75); }
+
+	dialog {
+		transition: 0.2s; border-radius: $border-radius; background: $white;  position: relative; display: none;
+
+		a.close {
+			display: block; transition: 0.2s; opacity: 0.5; text-align: center; cursor: pointer;
+
+			i { margin-right: 0; }
+
+			&:hover { opacity: 1; }
+		}
+	}
+
+	&.show-dialog { height: 100%; z-index: 1000; overflow: visible;
+		&:before { display: block; }
+
+		dialog { display: block; animation-name: animate; animation-duration: 0.5s; animation-fill-mode: both; -webkit-animation-name: animate; -webkit-animation-duration: 0.5s; -webkit-animation-fill-mode: both; -moz-animation-name: animate; -moz-animation-duration: 0.5s; -moz-animation-fill-mode: both; -o-animation-name: animate; -o-animation-duration: 0.5s; -o-animation-fill-mode: both;
+
+			@keyframes animate {
+				from { visibility: hidden; opacity: 0; transform: translate3d(0, 30%, 0); }
+				to { visibility: visible; opacity: 1; transform: none; }
+			}
+			@-webkit-keyframes animate {
+				from { visibility: hidden; opacity: 0; transform: translate3d(0, 30%, 0); }
+				to { visibility: visible; opacity: 1; transform: none; }
+			}
+			@-moz-keyframes animate {
+				from { visibility: hidden; opacity: 0; transform: translate3d(0, 30%, 0); }
+				to { visibility: visible; opacity: 1; transform: none; }
+			}
+			@-o-keyframes animate {
+				from { visibility: hidden; opacity: 0; transform: translate3d(0, 30%, 0); }
+				to { visibility: visible; opacity: 1; transform: none; }
+			}
+		}
+
+	}
+}
+
+.dialog-video {
+	dialog {
+		display: flex !important; flex-wrap: wrap; background: $black; position: relative;
+
+		a.close { font-size: $font-size-m; text-decoration: underline; width: 130px; height: 35px; line-height: 30px; margin: 0 auto; position: absolute; bottom: -50px; color: $white; opacity: 1; left: calc(50% - 65px); }
+	}
+}

@@ -18,7 +18,7 @@
     <script src="/__/firebase/4.12.0/firebase-messaging.js" defer></script>
     <script src="/__/firebase/4.12.0/firebase-storage.js" defer></script>
     <script src="/__/firebase/init.js" defer></script>
-  
+
         <meta http-equiv="X-UA-Compatible" content="ie=edge">
         <title>SIX | Reinventing the digital economy</title>
         <link type="image/x-icon" href="images/logo/fav.ico" rel="shortcut icon">
@@ -74,6 +74,8 @@
               <th width="150">Date</th>
               <th width="200">Time</th>
               <th width="100" id="remarkColumn">Status</th>
+              <th width="200">Datetime</th>
+              <th width="200">Contribute (ETH)</th>
             </tr>
           </thead>
           <tbody id="adminList">
@@ -180,20 +182,19 @@
           <dl>
             <dd>
               <label class="dropdown">
-                <select id="rejectSelect" name="value">
-                  <option value="need_more">Need more information</option>
+                <select id='rejectSelect' name="value" id="value">
+                  <option value="need_more">Need more or incorrect information</option>
                   <option value="restricted">Restricted country</option>
-                  <option value="incorrect">Incorrect information</option>
                   <option value="photo_corrupted">Photo uploaded corrupted</option>
                   <option value="other">Other</option>
                 </select>
                 <i class="fas fa-angle-down"></i>
               </label>
 
-                <li style="list-style: none; margin-top: 5px;">
-                  <label class="textarea"><textarea placeholder="Message" id="rejectNote"></textarea></label>
+                <li style='list-style: none; margin-top: 5px;'>
+                  <label class="textarea"><textarea placeholder="Message" id='rejectNote'></textarea></label>
                 </li>
-              
+
             </dd>
           </dl>
         </fieldset>
