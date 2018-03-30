@@ -43,7 +43,9 @@ function setEnable (doms) {
 
 // Login function using in Login page to authorize user with email and password and also check verified status
 function login () {
-  $('#signInAlert').removeClass('show-alert')
+  if ($('#signInAlert').css('display') == 'block') {
+    $('#signInAlert').slideToggle()
+  }
   let emailDOM = document.getElementById('signInEmail')
   let passwordDOM = document.getElementById('signInPassword')
   let btnDOM = document.getElementById('signInBtn')
@@ -58,7 +60,9 @@ function login () {
       } else {
         $('#signInAlertText').html(err.message)
       }
-      $('#signInAlert').addClass('show-alert')
+      if ($('#signInAlert').css('display') == 'none') {
+        $('#signInAlert').slideToggle()
+      }
       setEnable([emailDOM, passwordDOM, btnDOM])
     })
 }
@@ -71,6 +75,17 @@ function lockSigninForm () {
   setDisable([emailDOM, passwordDOM, btnDOM])
 }
 
+function lockSignupForm () {
+  let emailDOM = document.getElementById('signUpEmail')
+  let firstNameDOM = document.getElementById('signUpFirstName')
+  let lastNameDOM = document.getElementById('signUpLastName')
+  let phoneNumberDOM = document.getElementById('signUpPhoneNumber')
+  let passwordDOM = document.getElementById('signUpPassword')
+  let countryDOM = document.getElementById('signUpCountry')
+  let btnDOM = document.getElementById('signUpBtn')
+  setDisable([emailDOM, firstNameDOM, lastNameDOM, phoneNumberDOM, passwordDOM, btnDOM, countryDOM])
+}
+
 // Unlock signin form after authorize using socialmedia
 function unlockSigninForm () {
   let emailDOM = document.getElementById('signInEmail')
@@ -79,9 +94,22 @@ function unlockSigninForm () {
   setEnable([emailDOM, passwordDOM, btnDOM])
 }
 
+function unlockSignupForm () {
+  let emailDOM = document.getElementById('signUpEmail')
+  let firstNameDOM = document.getElementById('signUpFirstName')
+  let lastNameDOM = document.getElementById('signUpLastName')
+  let phoneNumberDOM = document.getElementById('signUpPhoneNumber')
+  let passwordDOM = document.getElementById('signUpPassword')
+  let countryDOM = document.getElementById('signUpCountry')
+  let btnDOM = document.getElementById('signUpBtn')
+  setEnable([emailDOM, firstNameDOM, lastNameDOM, phoneNumberDOM, passwordDOM, btnDOM, countryDOM])
+}
+
 // Sign up function using in Login page to register user with email and password
 function signUp () {
-  $('#signUpAlert').removeClass('show-alert')
+  if ($('#signUpAlert').css('display') == 'block') {
+    $('#signUpAlert').slideToggle()
+  }
   let emailDOM = document.getElementById('signUpEmail')
   let firstNameDOM = document.getElementById('signUpFirstName')
   let lastNameDOM = document.getElementById('signUpLastName')
@@ -95,12 +123,14 @@ function signUp () {
   const phone_number_temp = phoneNumberDOM.value
   const password = passwordDOM.value
   const country = countryDOM.value
-  setDisable([emailDOM, firstNameDOM, lastNameDOM, phoneNumberDOM, passwordDOM, btnDOM, countryDOM])
+  lockSignupForm()
   const parseData = libphonenumber.parse(phone_number_temp, country, {extended: true })
   if (parseData.valid === false) {
     $('#signUpAlertText').html("Invalid phone number format")
-    $('#signUpAlert').addClass('show-alert')
-    setEnable([emailDOM, firstNameDOM, lastNameDOM, phoneNumberDOM, passwordDOM, btnDOM, countryDOM])
+    if ($('#signUpAlert').css('display') == 'none') {
+      $('#signUpAlert').slideToggle()
+    }
+    unlockSignupForm()
     return false
   }
   const phone_number = '+'+parseData.countryCallingCode+parseData.phone
@@ -126,8 +156,10 @@ function signUp () {
           stopRedirection = false
           console.log(err)
           $('#signUpAlertText').html(err.message)
-          $('#signUpAlert').addClass('show-alert')
-          setEnable([emailDOM, firstNameDOM, lastNameDOM, phoneNumberDOM, passwordDOM, btnDOM, countryDOM])
+          if ($('#signUpAlert').css('display') == 'none') {
+            $('#signUpAlert').slideToggle()
+          }
+          unlockSignupForm()
         })
     })
     .catch(err => {
@@ -135,14 +167,26 @@ function signUp () {
       stopRedirection = false
       console.log(err)
       $('#signUpAlertText').html(err.message)
-      $('#signUpAlert').addClass('show-alert')
-      setEnable([emailDOM, firstNameDOM, lastNameDOM, phoneNumberDOM, passwordDOM, btnDOM, countryDOM])
+      if ($('#signUpAlert').css('display') == 'none') {
+        $('#signUpAlert').slideToggle()
+      }
+      unlockSignupForm()
     })
 }
 
 // AuthFacebook function using in Login page for authorize user's facebook account
-function authFacebook () {
-  $('#signInAlert').removeClass('show-alert')
+function authFacebook() {
+  facebookLoginFunction($('#signInAlert'), $('#signInAlertText'), lockSigninForm, unlockSigninForm)
+}
+
+function authFacebookS() {
+  facebookLoginFunction($('#signUpAlert'), $('#signUpAlertText'), lockSignupForm, unlockSignupForm)
+}
+
+function facebookLoginFunction(alertObject, textObject, lockfunction, unlockfunction) {
+  if (alertObject.css('display') == 'block') {
+    alertObject.slideToggle()
+  }
   let provider = new firebase.auth.FacebookAuthProvider()
   provider.addScope('email')
   firebase.auth().languageCode = 'en_EN'
@@ -150,7 +194,7 @@ function authFacebook () {
     'display': 'popup'
   })
   stopRedirection = true
-  lockSigninForm()
+  lockfunction()
   return firebase.auth().signInWithPopup(provider)
     .then(res => {
       const {uid} = res.user
@@ -169,9 +213,11 @@ function authFacebook () {
               .catch((err) => {
                 firebase.auth().signOut()
                 stopRedirection = false
-                $('#signInAlertText').html(err.message)
-                $('#signInAlert').addClass('show-alert')
-                unlockSigninForm()
+                textObject.html(err.message)
+                if (alertObject.css('display') == 'none') {
+                  alertObject.slideToggle()
+                }
+                unlockfunction()
                 console.log('Authorize Facebook : error : ', err)
               })
           } else {
@@ -182,30 +228,44 @@ function authFacebook () {
         .catch((err) => {
           firebase.auth().signOut()
           stopRedirection = false
-          $('#signInAlertText').html(err.message)
-          $('#signInAlert').addClass('show-alert')
-          unlockSigninForm()
+          textObject.html(err.message)
+          if (alertObject.css('display') == 'none') {
+            alertObject.slideToggle()
+          }
+          unlockfunction()
           console.log('Authorize Facebook : error : ', err)
         })
     })
     .catch(err => {
       firebase.auth().signOut()
       stopRedirection = false
-      $('#signInAlertText').html(err.message)
-      $('#signInAlert').addClass('show-alert')
-      unlockSigninForm()
+      textObject.html(err.message)
+      if (alertObject.css('display') == 'none') {
+        alertObject.slideToggle()
+      }
+      unlockfunction()
       console.log('Authorize Facebook : error : ', err)
     })
 }
 
 // AuthGoogle function using in Login page for authorize user's google account
-function authGoogle () {
-  $('#signInAlert').removeClass('show-alert')
+function authGoogle() {
+  googleLoginFunction($('#signInAlert'), $('#signInAlertText'), lockSigninForm, unlockSigninForm)
+}
+
+function authGoogleS() {
+  googleLoginFunction($('#signUpAlert'), $('#signUpAlertText'), lockSignupForm, unlockSignupForm)
+}
+
+function googleLoginFunction(alertObject, textObject, lockfunction, unlockfunction) {
+  if (alertObject.css('display') == 'block') {
+    alertObject.slideToggle()
+  }
   let provider = new firebase.auth.GoogleAuthProvider()
   provider.addScope('email')
   firebase.auth().languageCode = 'en'
   stopRedirection = true
-  lockSigninForm()
+  lockfunction()
   return firebase.auth().signInWithPopup(provider)
     .then(res => {
       const {uid} = res.user
@@ -224,9 +284,11 @@ function authGoogle () {
               .catch((err) => {
                 firebase.auth().signOut()
                 stopRedirection = false
-                $('#signInAlertText').html(err.message)
-                $('#signInAlert').addClass('show-alert')
-                unlockSigninForm()
+                textObject.html(err.message)
+                if (alertObject.css('display') == 'none') {
+                  alertObject.slideToggle()
+                }
+                unlockfunction()
                 console.log('Authorize Google : error : ', err)
               })
           } else {
@@ -237,18 +299,22 @@ function authGoogle () {
         .catch((err) => {
           firebase.auth().signOut()
           stopRedirection = false
-          $('#signInAlertText').html(err.message)
-          $('#signInAlert').addClass('show-alert')
-          unlockSigninForm()
+          textObject.html(err.message)
+          if (alertObject.css('display') == 'none') {
+            alertObject.slideToggle()
+          }
+          unlockfunction()
           console.log('Authorize Google : error : ', err)
         })
     })
     .catch(err => {
       firebase.auth().signOut()
       stopRedirection = false
-      $('#signInAlertText').html(err.message)
-      $('#signInAlert').addClass('show-alert')
-      unlockSigninForm()
+      textObject.html(err.message)
+      if (alertObject.css('display') == 'none') {
+        alertObject.slideToggle()
+      }
+      unlockfunction()
       console.log('Authorize Google : error : ', err)
     })
 }

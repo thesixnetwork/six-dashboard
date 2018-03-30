@@ -158,3 +158,19 @@ main.login header .logo {
 #adminContainer {
   max-width: 1280px;
 }
+
+#signUpAlert {
+  height: auto;
+  display: none;
+  margin: 16px auto;
+  overflow: visible;
+  visibility: visible;
+}
+
+#signInAlert {
+  height: auto;
+  display: none;
+  margin: 16px auto;
+  overflow: visible;
+  visibility: visible;
+}

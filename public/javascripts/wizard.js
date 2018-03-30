@@ -206,6 +206,8 @@ function kycCountryChange() {
     $("#itemHolding").html("ID-card")
     $("#samplePassportSelfie").css('display', 'none')
     $("#sampleIDSelfie").css('display', 'block')
+    $("#idHelper").css('display', 'inline-block')
+    $("#passportHelper").css('display', 'none')
   } else {
     $("#citizenId").css("display", "none")
     $("#citizenIdPhoto").css("display", "none")
@@ -216,6 +218,8 @@ function kycCountryChange() {
     $("#itemHolding").html("passport showing the passport photo page")
     $("#samplePassportSelfie").css('display', 'block')
     $("#sampleIDSelfie").css('display', 'none')
+    $("#idHelper").css('display', 'none')
+    $("#passportHelper").css('display', 'inline-block')
   }
 }
 
