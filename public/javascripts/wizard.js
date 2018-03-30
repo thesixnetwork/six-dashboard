@@ -269,6 +269,7 @@ function goToKYCStep() {
   $('#verifyPhoneStep').addClass('current')
   $('#kycStep').addClass('current')
   $('#kycContent').addClass('show-detail')
+  kycCountryChange()
 }
 
 function goToFinishStep() {
