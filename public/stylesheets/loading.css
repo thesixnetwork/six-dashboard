@@ -150,3 +150,7 @@
 main.login header .logo {
   top: 0px;
 }
+
+#acknowledgeBtn {
+  max-width: 300px;
+}
