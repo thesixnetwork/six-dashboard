@@ -1,6 +1,12 @@
 // global variable for stopping register from redirect before insert to db
 var stopRedirection = false
 
+// Update User
+function signUpFunction (data) {
+  var signUpOncall = firebase.functions().httpsCallable('signUp')
+  return signUpOncall(data)
+}
+
 // Forgot password function using in Login page for recovering user's account
 function forgotPassword () {
   if ($('#forgotPasswordText').css('display') == 'block') {
@@ -110,19 +116,18 @@ function signUp () {
     .then(res => {
       const {uid} = res
       res.sendEmailVerification()
-      return firebase.firestore().collection('users').doc(uid).set({
+      return signUpFunction({
         email,
         first_name,
         last_name,
         phone_number,
         country
-      }, { merge: true})
-        .then(() => {
-          stopRedirection = false
-          checkLoginState()
-        })
+      }).then(() => {
+        stopRedirection = false
+        checkLoginState()
+      })
         .catch((err) => {
-          firebase.auth().signOut()
+        firebase.auth().signOut()
           stopRedirection = false
           console.log(err)
           $('#signUpAlertText').html(err.message)
@@ -159,9 +164,7 @@ function authFacebook () {
       return ref.get()
         .then(docSnapshot => {
           if (!docSnapshot.exists) {
-            ref.set({
-              email
-            },{ merge: true})
+            signUpFunction({email})
               .then(() => {
                 stopRedirection = false
                 checkLoginState()
@@ -213,11 +216,9 @@ function authGoogle () {
       let ref = firebase.firestore().collection('users').doc(uid)
       return ref.get()
         .then(docSnapshot => {
-          if (!docSnapshot.exists) {
-            ref.set({
-              email
-            }, { merge: true})
-              .then(() => {
+          if (!docSnapshot.exists) {            
+            signUpFunction({email})
+              .then((data) => {
                 stopRedirection = false
                 checkLoginState()
               })

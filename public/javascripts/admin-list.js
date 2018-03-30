@@ -20,7 +20,7 @@ estimates = {
 };
 
 rejectNote = {
-  need_more: `We appreciate that you took the time for the registration. However, we received insufficient information regarding your KYC/ AML documents and/ or information.
+  "need_more": `We appreciate that you took the time for the registration. However, we received insufficient information regarding your KYC/ AML documents and/ or information.
 
 We would highly appreciate if you could resubmit the documents and/ or information through the link below.`,
   "restricted": `We highly appreciate that you took the time for the registration. After reviewing your submitted application materials, the KYC/AML result does not match with our requirements.
