@@ -86,13 +86,13 @@ function buildListUser(doc) {
   if (doc.data().kyc_submit_time && doc.data().kyc_submit_time !== null) {
     date = new Date((doc.data().kyc_submit_time + 3600 * 7) * 1000);
   }
-  var hours = date !== '' ? date.getHours() : '';
+  var hours = date !== '' ? '0' + date.getHours() : '';
   var minutes =  date !== '' ? '0' + date.getMinutes() : '';
   var seconds =  date !== '' ? '0' + date.getSeconds() : '';
   var formattedTime = ''
   var formatted_date = ''
   if (date && date !== '') {
-    formattedTime = hours + ":" + minutes.substr(-2) + ":" + seconds.substr(-2);
+    formattedTime = hours.substr(-2) + ":" + minutes.substr(-2) + ":" + seconds.substr(-2);
     formatted_date = date.toISOString().substr(0, 10);
   }
   var tr = document.createElement("tr");
@@ -102,15 +102,25 @@ function buildListUser(doc) {
   );
   td1.appendChild(txt1);
   var td2 = document.createElement("td");
-  var txt2 = document.createTextNode(formatted_date);
+  var txt2 = document.createTextNode(formatted_date+' '+formattedTime);
   td2.appendChild(txt2);
   var td3 = document.createElement("td");
-  var txt3 = document.createTextNode(formattedTime !== '' ? formattedTime + ' +07:00' : '-');
+  let estimate = doc.data().estimate
+  if (doc.data().estimate_currency == "XLM") {
+    estimate = estimate*2050
+  }
+  let estimate_text = ""
+  if (estimate === undefined) {
+    estimate_text = "-"
+  } else {
+    estimate_text = estimate+" "+(doc.data().estimate_currency || "ETH")
+  }
+  var txt3 = document.createTextNode(estimate_text);
+  td3.appendChild(txt3);
   var td4 = document.createElement("td");
   var txt4 = document.createTextNode("-");
   td4.setAttribute("id", `remarkText(${doc.id})`)
   td4.appendChild(txt4);
-  td3.appendChild(txt3);
   tr.appendChild(td1);
   tr.appendChild(td2);
   tr.appendChild(td3);
@@ -352,7 +362,12 @@ function initializeDatabase(status) {
     query
       .onSnapshot(docs => {
         $("#adminList").empty()
-        docs.forEach(function(doc, index) {
+        let allDocs = []
+        docs.forEach(function (doc) {
+          allDocs.push(doc)
+        })
+        allDocs.sort(compare)
+        allDocs.forEach(function (doc, index) { 
           const data = doc.data()
           userData[doc.id] = data
           let elem = buildListUser(doc);
