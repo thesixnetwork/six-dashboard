@@ -86,31 +86,43 @@ function buildListUser(doc) {
   if (doc.data().kyc_submit_time && doc.data().kyc_submit_time !== null) {
     date = new Date((doc.data().kyc_submit_time + 3600 * 7) * 1000);
   }
-  var hours = date !== '' ? date.getHours() : '';
+  var hours = date !== '' ? '0' + date.getHours() : '';
   var minutes =  date !== '' ? '0' + date.getMinutes() : '';
   var seconds =  date !== '' ? '0' + date.getSeconds() : '';
   var formattedTime = ''
   var formatted_date = ''
   if (date && date !== '') {
-    formattedTime = hours + ":" + minutes.substr(-2) + ":" + seconds.substr(-2);
+    formattedTime = hours.substr(-2) + ":" + minutes.substr(-2) + ":" + seconds.substr(-2);
     formatted_date = date.toISOString().substr(0, 10);
   }
   var tr = document.createElement("tr");
   var td1 = document.createElement("td");
-  var txt1 = document.createTextNode(
-    doc.data().first_name + " " + doc.data().last_name
-  );
+  let name_text = doc.data().first_name + " " + doc.data().last_name
+  if (doc.data().first_name === undefined || doc.data().last_name === undefined) {
+    name_text = '-'
+  }
+  var txt1 = document.createTextNode(name_text)
   td1.appendChild(txt1);
   var td2 = document.createElement("td");
-  var txt2 = document.createTextNode(formatted_date);
+  var txt2 = document.createTextNode(formatted_date+' '+formattedTime);
   td2.appendChild(txt2);
   var td3 = document.createElement("td");
-  var txt3 = document.createTextNode(formattedTime !== '' ? formattedTime + ' +07:00' : '-');
+  let estimate = doc.data().estimate
+  if (doc.data().estimate_currency == "XLM") {
+    estimate = estimate*2050
+  }
+  let estimate_text = ""
+  if (estimate === undefined) {
+    estimate_text = "-"
+  } else {
+    estimate_text = estimate+" "+(doc.data().estimate_currency || "ETH")
+  }
+  var txt3 = document.createTextNode(estimate_text);
+  td3.appendChild(txt3);
   var td4 = document.createElement("td");
   var txt4 = document.createTextNode("-");
   td4.setAttribute("id", `remarkText(${doc.id})`)
   td4.appendChild(txt4);
-  td3.appendChild(txt3);
   tr.appendChild(td1);
   tr.appendChild(td2);
   tr.appendChild(td3);
@@ -125,16 +137,16 @@ function buildListUser(doc) {
 // Open user detail
 function openUser(uid) {
   $("#adminListMain").css("display", "none");
-  $("#detailFirstName").html(userData[uid].first_name);
-  $("#detailLastName").html(userData[uid].last_name);
-  $("#detailEmail").html(userData[uid].email);
-  $("#detailPhoneNumber").html(userData[uid].phone_number);
-  $("#detailCountry").html(countries[userData[uid].country]);
+  $("#detailFirstName").html(userData[uid].first_name || '-');
+  $("#detailLastName").html(userData[uid].last_name || '-');
+  $("#detailEmail").html(userData[uid].email || '-');
+  $("#detailPhoneNumber").html(userData[uid].phone_number || '-');
+  $("#detailCountry").html(countries[userData[uid].country] || '-');
   if (userData[uid].country === "TH") {
     $("#citizenIdContainer").css('display', 'block')
     $("#citizenIdPhotoContainer").css('display', 'block')
     $("#citizenIdPhotoBackContainer").css('display', 'block')
-    $("#detailCitizenId").html(userData[uid].citizen_id)
+    $("#detailCitizenId").html(userData[uid].citizen_id || '-')
     $("#passportNumber").css("display", "none")
     $("#passportPhoto").css("display", "none")
   } else {
@@ -143,16 +155,33 @@ function openUser(uid) {
     $("#citizenIdPhotoBackContainer").css('display', 'none')
     $("#passportNumber").css("display", "block")
     $("#passportPhoto").css("display", "block")
-    $("#detailPassportNumber").html(userData[uid].passport_number)
+    $("#detailPassportNumber").html(userData[uid].passport_number || '-')
   }
-  $('#detailAddress').html(userData[uid].address)
+  $('#detailAddress').html(userData[uid].address || '-')
   $('#detailPic1').attr("src", userData[uid].pic1)
   $('#detailPic2').attr("src", userData[uid].pic2)
   $('#detailPic3').attr("src", userData[uid].pic3)
   $('#detailPic4').attr("src", userData[uid].pic4)
   $('#detailPic5').attr("src", userData[uid].pic5)
-  $('#detailEstimate').html(userData[uid].estimate+" ETH")
+  let estimate = userData[uid].estimate
+  if (userData[uid].estimate_currency == "XLM") {
+    estimate = estimate*2050
+  }
+  let estimate_text = ""
+  if (estimate === undefined) {
+    estimate_text = "-"
+  } else {
+    estimate_text = estimate+" "+(userData[uid].estimate_currency || "ETH")
+  }
+  $('#detailEstimate').html(estimate_text)
   $('#adminDetail').css('display', 'block')
+  if (userData[uid].kyc_status === 'pending') {
+    $("#rejctBox").css("display", "block")
+    $("#approveBox").css("display", "block")
+  } else {
+    $("#rejctBox").css("display", "none")
+    $("#approveBox").css("display", "none")
+  }
   currentFocus = uid;
   const user = firebase.auth().currentUser;
   fetch("https://freegeoip.net/json/")
@@ -183,7 +212,15 @@ function goBack() {
   $('#detailPic3').attr("src", '')
   $('#detailPic4').attr("src", '')
   $('#detailPic5').attr("src", '')
+  $("#detailFirstName").html("-");
+  $("#detailLastName").html("-");
+  $("#detailEmail").html("-");
+  $("#detailPhoneNumber").html("-");
+  $("#detailCountry").html("-");
   $('#detailEstimate').html("-")
+  $('#detailAddress').html("-")
+  $('#detailCitizenId').html("-")
+  $("#detailPassportNumber").html('-')
   removeWatching();
   currentFocus = "";
 }
@@ -340,7 +377,7 @@ function initializeDatabase(status) {
         query = userRef.where("kyc_status", "==", "pending");
         break
       case 'notComplete':
-        query = userRef.where("kyc_status", "==", null);
+        query = userRef
         break
       default:
         break
@@ -348,7 +385,20 @@ function initializeDatabase(status) {
     query
       .onSnapshot(docs => {
         $("#adminList").empty()
-        docs.forEach(function(doc, index) {
+        let allDocs = []
+        docs.forEach(function (doc) {
+          if (status === 'notComplete') {
+            const data = doc.data()
+            const targetKey = data.kyc_status
+            if (!targetKey) {
+              allDocs.push(doc)
+            }
+          } else {
+            allDocs.push(doc)
+          }
+        })
+        allDocs.sort(compare)
+        allDocs.forEach(function (doc, index) {
           const data = doc.data()
           userData[doc.id] = data
           let elem = buildListUser(doc);

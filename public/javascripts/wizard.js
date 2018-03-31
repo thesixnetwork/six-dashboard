@@ -106,6 +106,17 @@ let pic2Url
 let pic4Url
 let pic5Url
 
+function currencyChange() {
+  let estimateCurrencyDOM = document.getElementById("kycCurrency")
+  $("#kycEstimateAlert").removeClass('invalid')
+  const estimate_currency = estimateCurrencyDOM.value
+  if (estimate_currency === "ETH") {
+    $("#estimateDescription").html("Please input your desire contribution amount in ETH currency, you should enter a least 0.2 ETH to get the minimum of SIX token")
+  } else if (estimate_currency === "XLM") {
+    $("#estimateDescription").html("Please input your desire contribution amount in XLM currency, you should enter a least 410 XLM to get the minimum of SIX token")
+  }  
+}
+
 function submitPhoneNumber() {
   if ($("#verifyPhoneError").css("display", "block")) {
     $("#verifyPhoneError").slideToggle()
@@ -258,6 +269,7 @@ function goToKYCStep() {
   $('#verifyPhoneStep').addClass('current')
   $('#kycStep').addClass('current')
   $('#kycContent').addClass('show-detail')
+  kycCountryChange()
 }
 
 function goToFinishStep() {
@@ -337,8 +349,15 @@ function setupUserData() {
   if (userData.address !== undefined) {
     document.getElementById("kycAddress").value = userData.address
   }
+  if (userData.estimate_currency !== undefined) {
+      document.getElementById("kycCurrency").value = userData.estimate_currency
+  }
   if (userData.estimate !== undefined) {
-    document.getElementById("kycEstimate").value = userData.estimate
+    if (userData.estimate_currency === 'XLM') {
+      document.getElementById("kycEstimate").value = parseFloat(userData.estimate)*2050
+    } else {
+      document.getElementById("kycEstimate").value = userData.estimate
+    }
   }
   if (userData.is_presale === true) {
     $("#presale_congrat").css('display', 'block')
@@ -377,6 +396,7 @@ function setupUserData() {
   if (userData.is_restricted === true) {
     $("#resubmission").css("display", "none")
   }
+  currencyChange()
 }
 
 // Steps
@@ -460,7 +480,8 @@ function submitKyc() {
   let pic4DOM = document.getElementById('kycPic4')
   let pic5DOM = document.getElementById('kycPic5')
   let estimateDOM = document.getElementById('kycEstimate')
-  setDisable([btnDOM, firstNameDOM, lastNameDOM, countryDOM, citizenIdDOM, passportNumberDOM, addressDOM, pic1DOM, pic2DOM, pic4DOM, pic5DOM, estimateDOM])
+  let estimateCurrencyDOM = document.getElementById("kycCurrency")
+  setDisable([btnDOM, firstNameDOM, lastNameDOM, countryDOM, citizenIdDOM, passportNumberDOM, addressDOM, pic1DOM, pic2DOM, pic4DOM, pic5DOM, estimateDOM, estimateCurrencyDOM])
   const first_name = firstNameDOM.value
   const last_name = lastNameDOM.value
   const country = countryDOM.value
@@ -471,7 +492,8 @@ function submitKyc() {
   const pic2 = pic2DOM.files[0]
   const pic4 = pic4DOM.files[0]
   const pic5 = pic5DOM.files[0]
-  const estimate = estimateDOM.value
+  let estimate = estimateDOM.value
+  const estimate_currency = estimateCurrencyDOM.value
   let validate = true
   if (first_name == '' || first_name == undefined) { $('#kycFirstNameAlert').addClass('invalid'); validate = false }
   if (/^[a-zA-Z ]+$/.test(first_name) === false) {
@@ -510,7 +532,7 @@ function submitKyc() {
     $("#kycPassportNumberError").css('display', 'block')
   }
   if (address == '' || address == undefined) { $('#kycAddressAlert').addClass('invalid'); validate = false }
-  if (/^[a-zA-Z0-9!”$%&’()*\+, \/;\[\\\]\^_`{|}~]+$/.test(address) === false) {
+  if (/^[a-zA-Z0-9!”$%&’()*\+, \/;\[\\\]\^_`{|}~\n]+$/.test(address) === false) {
     $('#kycAddressAlert').addClass('invalid')
     validate = false
     $("#kycAddressError").html('Address should contain only alphabetic characters, digits, and special characters')
@@ -527,15 +549,23 @@ function submitKyc() {
     $("#kycEstimateError").html('Contribution amount should contain only digits and period')
     $("#kycEstimateError").css('display', 'block')
   }
-  if (parseFloat(estimate) < 0.2) {
+  if (estimate_currency == '' || estimate_currency == undefined) { $('#kycCurrencyAlert').addClass('invalid'); validate = false }
+  if ((parseFloat(estimate) < 0.2 && estimate_currency === 'ETH') || (parseFloat(estimate) < 410 && estimate_currency === 'XLM')) {
     $('#kycEstimateAlert').addClass('invalid')
     validate = false
-    $("#kycEstimateError").html('Contribution amount must be at least 0.2 ETH to get the minimum of SIX token')
+    if (estimate_currency === 'ETH') {
+      $("#kycEstimateError").html('Contribution amount must be at least 0.2 ETH to get the minimum of SIX token')
+    } else if (estimate_currency === 'XLM') {
+      $("#kycEstimateError").html('Contribution amount must be at least 410 XLM to get the minimum of SIX token')
+    }
     $("#kycEstimateError").css('display', 'block')
   }
   if (validate === false) {
-    setEnable([btnDOM, firstNameDOM, lastNameDOM, countryDOM, citizenIdDOM, passportNumberDOM, addressDOM, pic1DOM, pic2DOM, pic4DOM, pic5DOM, estimateDOM])
+    setEnable([btnDOM, firstNameDOM, lastNameDOM, countryDOM, citizenIdDOM, passportNumberDOM, addressDOM, pic1DOM, pic2DOM, pic4DOM, pic5DOM, estimateDOM, estimateCurrencyDOM])
   } else {
+    if (estimate_currency === 'XLM') {
+      estimate = estimate/2050
+    }
     let uid = firebase.auth().currentUser.uid
     let dataToUpdate = {
       first_name: first_name,
@@ -544,6 +574,7 @@ function submitKyc() {
       address: address,
       pic2: pic2Url,
       estimate: estimate,
+      estimate_currency: estimate_currency,
       kyc_status: 'pending',
       kyc_submit_time: Math.round((new Date()).getTime() / 1000)
     }
@@ -558,10 +589,10 @@ function submitKyc() {
     updateUser(dataToUpdate).then(() => {
       $("#kycContentForm").removeClass("show-detail")
       $("#kycContentPending").addClass("show-detail")
-      setEnable([btnDOM, firstNameDOM, lastNameDOM, countryDOM, citizenIdDOM, passportNumberDOM, addressDOM, pic1DOM, pic2DOM, pic4DOM, pic5DOM, estimateDOM])
+      setEnable([btnDOM, firstNameDOM, lastNameDOM, countryDOM, citizenIdDOM, passportNumberDOM, addressDOM, pic1DOM, pic2DOM, pic4DOM, pic5DOM, estimateDOM, estimateCurrencyDOM])
     }).catch(err => {
       console.log(err.message)
-      setEnable([btnDOM, firstNameDOM, lastNameDOM, countryDOM, citizenIdDOM, passportNumberDOM, addressDOM, pic1DOM, pic2DOM, pic4DOM, pic5DOM, estimateDOM])
+      setEnable([btnDOM, firstNameDOM, lastNameDOM, countryDOM, citizenIdDOM, passportNumberDOM, addressDOM, pic1DOM, pic2DOM, pic4DOM, pic5DOM, estimateDOM, estimateCurrencyDOM])
     })
   }
 }

@@ -780,16 +780,25 @@
               </dl>
             </fieldset>
             <fieldset>
-              <legend>Contribution amount (ETH)</legend>
+              <legend>Contribution amount</legend>
               <dl>
                 <dd>
                   <dt>
-                    <span>Please input your desire contribution amount in ETH currency, you should enter a least 0.2 ETH to get the minimum of SIX token</span>
+                    <span id='estimateDescription'>Please input your desire contribution amount in ETH currency, you should enter a least 0.2 ETH to get the minimum of SIX token</span>
                   </dt>
-                  <label class="text kycinput" id="kycEstimateAlert">
-                    <input type="text" id='kycEstimate' placeholder="0.2">
-                    <p id='kycEstimateError' style='display: none;'></p>
-                  </label>
+                  <dd class="combine">
+                    <label class="text kycinput" id="kycEstimateAlert" style='width: 100%;'>
+                      <input type="text" id='kycEstimate' placeholder="0.2">
+                      <p id='kycEstimateError' style='display: none;'></p>
+                    </label>
+                    <label class="dropdown kycinput" id="kycCurrencyAlert" style="width: 30%;">
+                      <select id='kycCurrency' name="value" id="value" onchange="currencyChange()">
+                        <option value="ETH">ETH</option>
+                        <option value="XLM">XLM</option>
+                      </select>
+                      <i class="fas fa-angle-down"></i>
+                    </label>
+                  </dd>
                 </dd>
               </dl>
             </fieldset>
