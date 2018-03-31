@@ -377,7 +377,7 @@ function initializeDatabase(status) {
         query = userRef.where("kyc_status", "==", "pending");
         break
       case 'notComplete':
-        query = userRef.where("kyc_status", "==", null);
+        query = userRef
         break
       default:
         break
@@ -387,10 +387,18 @@ function initializeDatabase(status) {
         $("#adminList").empty()
         let allDocs = []
         docs.forEach(function (doc) {
-          allDocs.push(doc)
+          if (status === 'notComplete') {
+            const data = doc.data()
+            const targetKey = data.kyc_status
+            if (!targetKey) {
+              allDocs.push(doc)
+            }
+          } else {
+            allDocs.push(doc)
+          }
         })
         allDocs.sort(compare)
-        allDocs.forEach(function (doc, index) { 
+        allDocs.forEach(function (doc, index) {
           const data = doc.data()
           userData[doc.id] = data
           let elem = buildListUser(doc);
