@@ -1,3 +1,9 @@
+// Log out function using in Wizardd page to sign current user out
+function logOut () {
+  console.log('logout')
+  firebase.auth().signOut()
+}
+
 // Set disbled to dom
 function setDisable (doms) {
   doms.forEach(function (dom) {
@@ -10,6 +16,57 @@ function setEnable (doms) {
   doms.forEach(function (dom) {
     dom.disabled = false
   })
+}
+
+let xlmPrice
+let ethPrice
+
+function submitConfirm() {
+  let requestFunction = firebase.functions().httpsCallable('updateETHWallet')
+  const ethAddressDOM = document.getElementById('walletETHinput')
+  const btnDOM = document.getElementById('alertConfirmBtn')
+  const ethAddress = ethAddressDOM.value
+  setDisable([btnDOM])
+  requestFunction({eth_address: ethAddress}).then(response => {
+    if (response.data.success === true) {
+      setEnable([btnDOM])
+      $("#mainBox").css("display", "block")
+      $("#walletBox").css("display", "none")
+      $("#warnBox").css("display", "none")
+      cancelConfirm()
+    } else {
+      $("#submitWalletAlertText").html(response.data.error_message)
+      if ($("#submitWalletAlert").css("display") === 'none') {
+        $("#submitWalletAlert").slideToggle()
+      }
+      setEnable([btnDOM])
+      cancelConfirm()
+    }
+  })
+}
+
+function cancelConfirm() {
+  if ($("#alertModal").css("display") !== 'none') {
+    $("#alertModal").fadeToggle()
+  }
+}
+
+function startConfirmation() {
+  if ($("#submitWalletAlert").css("display") === 'block') {
+    $("#submitWalletAlert").slideToggle()
+  }
+  const ethAddressDOM = document.getElementById('walletETHinput')
+  const ethAddress = ethAddressDOM.value
+  if (ethAddress === undefined || ethAddress === null || ethAddress === '') {
+    $("#ethWalletAddressAlert").addClass("invalid")
+    $("#ethWalletAddressAlertText").html("ETH Address could not be blank")
+    $("#ethWalletAddressAlertText").css("display", "block")
+  } else {
+    $("#confirmETHAddress").html(ethAddress)
+    if ($("#alertModal").css("display") === 'none') {
+      $("#alertModal").fadeToggle()
+    }
+  }
 }
 
 function checkWarning() {
@@ -26,19 +83,142 @@ function checkWarning() {
 }
 
 function submitAcknowledge() {
-  const currentUser = firebase.auth().currentUser
   const warning1DOM = document.getElementById('warning1')
   const warning2DOM = document.getElementById('warning2')
   const warning3DOM = document.getElementById('warning3')
   const btnDOM = document.getElementById('acknowledgeBtn')
   setDisable([warning1DOM, warning2DOM, warning3DOM, btnDOM])
-  const dbRef = firebase.firestore().collection('user-dashboard').doc(currentUser.uid)
-  return dbRef.set({acknowledge: true}, {merge: true}).then({
-    
+  $("#walletBox").css("display", "block")
+  $("#acknowledgeBtn").css("display", "none")
+}
+
+function saveETHwallet() {
+  const currentUser = firebase.auth().currentUser
+  const ethWalletBtnDOM = document.getElementById('ethWalletBtn')
+  const ethWalletDOM = document.getElementById('walletETHinput')
+  setDisable([ethWalletDOM, ethWalletBtnDOM])
+  
+}
+
+function latestXLMprice() {
+  const time = new Date()
+  let timeZero = time.setMinutes(0, 0, 0)
+
+  return firebase.firestore()
+    .collection('xlm_prices')
+    .doc(timeZero.toString())
+    .get()
+    .then(snapshot => snapshot.data())
+    .then((price) => {
+      if (!price.price) {
+        timeZero = time.setHours(time.getHours() - 1, 0, 0, 0)
+        fireStore
+          .collection('xlm_prices')
+          .doc(timeZero.toString())
+          .get()
+          .then(snapshot => snapshot.data())
+          .then((price) => {
+            return {
+              timeZero,
+              price
+            }
+          })
+      }
+
+      return {
+        timeZero,
+        price
+      }
+    })
+}
+
+function latestETHprice() {
+  const time = new Date()
+  let timeZero = time.setMinutes(0, 0, 0)
+
+  return firebase.firestore()
+    .collection('eth_prices')
+    .doc(timeZero.toString())
+    .get()
+    .then(snapshot => snapshot.data())
+    .then((price) => {
+      if (!price.price) {
+        timeZero = time.setHours(time.getHours() - 1, 0, 0, 0)
+        fireStore
+          .collection('eth_prices')
+          .doc(timeZero.toString())
+          .get()
+          .then(snapshot => snapshot.data())
+          .then((price) => {
+            return {
+              timeZero,
+              price
+            }
+          })
+      }
+
+      return {
+        timeZero,
+        price
+      }
+    })
+}
+
+function updateXLMprice() {
+  latestXLMprice().then(data => {
+    $("#xlmPrice").html("1 / "+data.price.price)
+    xlmPrice = data.price
+    const elem = document.getElementById('xlmToSixInput')
+    setEnable([elem])
   })
 }
 
+function updateETHprice() {
+  latestETHprice().then(data => {
+    $("#ethPrice").html("1 / "+data.price.price)
+    ethPrice = data.price
+    const elem = document.getElementById('ethToSixInput')
+    setEnable([elem])
+  })
+}
+
+function updatePrice() {
+  updateXLMprice()
+  updateETHprice()
+}
+
+// Chack if admin or not
+function initializeAdmin () {
+  let promise = new Promise(function (resolve, reject) {
+    let db = firebase.firestore()
+    db.collection('admins').get()
+      .then(() => {
+        resolve()
+      })
+      .catch(() => {
+        reject()
+      })
+  })
+  return promise
+}
+
 $(document).ready(function(){
+  document.getElementById('walletETHinput').onkeydown = function() {
+    $('#ethWalletAddressAlert').removeClass("invalid")
+    $("#ethWalletAddressAlertText").html('')
+    $("#ethWalletAddressAlertText").css('display', 'none')
+  }
+
+  document.getElementById('xlmToSixInput').onkeyup = function() {
+    let number = parseFloat(this.value) || 0
+    $("#xlmToSix").html(Number((number*xlmPrice.six_per_xlm).toFixed(7)))
+  }
+
+  document.getElementById('ethToSixInput').onkeyup = function() {
+    let number = parseFloat(this.value) || 0
+    $("#ethToSix").html(Number((number*ethPrice.six_per_eth).toFixed(7)))
+  }
+
     // Dialog
     // Open
     $("body").on("click", ".open-dialog-video", function(){
@@ -57,13 +237,34 @@ $(document).ready(function(){
 			$(this).parents('[class^="dialog-"]').removeClass('show-dialog');
 		});
 
-		// payment
-    $('body').on('click', '.payment-box button', function(){
-			$(".payment-box").removeClass("show-detail")
-			$(".address-history").addClass("show-detail")
-		});
-
     $('body').on('click', '[class^="dialog-"] dialog a.close', function(){
 			$(this).parents('[class^="dialog-"]').removeClass('show-dialog');
 		});
+  // Listening to auth state change
+  firebase.auth().onAuthStateChanged(function (user) {
+    if (!user) {
+      console.log('Go to login')
+      window.location.href = '/'
+    } else {
+      initializeAdmin().then(() => {
+        return $('#adminShortcut').css('display', 'block')
+      }).then(() => {
+        return firebase.firestore().collection('users').doc(user.uid).get()
+      }).then(doc => {
+        let userData = doc.data()
+        let name = userData.first_name + " " + userData.last_name
+        $("#displayName").html(name)
+        $("#firstCharName").html(userData.first_name.substr(0,1).toUpperCase())
+        if (doc.data().submit_wallet === true) {
+          $("#mainBox").css("display", "block")
+          $("#walletBox").css("display", "none")
+          $("#warnBox").css("display", "none")
+          $("#xlmMemo").html(doc.data().memo)
+        }
+      }).then(() => {
+        $('#preLoader').fadeToggle()
+        updatePrice()
+      })
+    }
+  })
 });

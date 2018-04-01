@@ -3,6 +3,23 @@
   <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <meta property="og:url" content="https://ico.six.network/"/>
+    <meta property="og:type" content="article"/>
+    <meta property="og:title" content="SIX | Reinventing the digital economy" />
+    <meta property="og:description" content="SIX aims to bring a better liquidity, ownership, and wealth distribution back to the digital creators."/>
+    <meta property="og:image" content="https://ico.six.network/images/logo/six-logo-property.png"/>
+
+    <!-- Include firebase : update the version number as needed -->
+    <script defer src="/__/firebase/4.12.0/firebase-app.js"></script>
+    <script defer src="/__/firebase/4.12.0/firebase-auth.js"></script>
+    <script defer src="/__/firebase/4.12.0/firebase-database.js"></script>
+    <script defer src="/__/firebase/4.12.0/firebase-firestore.js"></script>
+    <script defer src="/__/firebase/4.12.0/firebase-messaging.js"></script>
+    <script defer src="/__/firebase/4.12.0/firebase-storage.js"></script>
+    <script defer src="/__/firebase/4.12.0/firebase-functions.js"></script>
+    <script defer src="/__/firebase/init.js"></script>
+
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>SIX | Reinventing the digital economy</title>
     <link rel="shortcut icon" href="images/logo/fav.ico" type="image/x-icon">
@@ -12,30 +29,55 @@
     <script src="javascripts/dashboard.js"></script>
   </head>
   <body>
+    <div id='alertModal' style='display: none;'>
+      <div id='alertModalWrapper'>
+        <div id='fixWidth'>
+          <div id='alertModalContainer'>
+            <h2>ARE YOU SURE?</h2>
+            <ul>
+              <li><p>After submitting the wallet address <strong>YOU WILL NOT </strong>be able to change the wallet. And, make sure that, you are not using an exchange-address which may result in a permanent loss all of your SIX tokens since you may not be able to withdraw SIX tokens from the exchange wallet address after the contribution.</p></li>
+              <li style='display:flex; margin-top: 20px;'><div id='leftBtn'><button id="cancelConfirmBtn" onclick='cancelConfirm()' class='confirmBtn'>Cancel</button></div><div id='rightBtn'><button class='confirmBtn' id="alertConfirmBtn" onclick='submitConfirm()'>Submit</button></div></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div id='preLoader'>
+      <div id='preloadWrapper'>
+        <img id='preloadImage'src="images/six_network.png">
+        <div class="spinner">
+          <div class="bounce1"></div>
+          <div class="bounce2"></div>
+          <div class="bounce3"></div>
+        </div>
+      </div>
+    </div>
     <header class="header">
       <a href="" class="logo"><img src="images/logo/six-logo-white.png"></a>
       <ul class="exchange">
-        <li><p>SIX / USD</p><p>Loading</p></li>
-        <li><p>BTC / USD</p><p>Loading</p></li>
-        <li><p>ETH / USD</p><p>Loading</p></li>
-        <li><p>XLM / USD</p><p>Loading</p></li>
+        <li><p>SIX / USD</p><p>1 / 0.1</p></li>
+        <li><p>ETH / USD</p><p id='ethPrice'>Loading</p></li>
+        <li><p>XLM / USD</p><p id='xlmPrice'>Loading</p></li>
       </ul>
-      <a href="login.html" class="logout">Logout&nbsp;<i class="fas fa-sign-out-alt"></i></a>
+      <ul class="menu">
+        <li id='adminShortcut' style='display: none;'><a href="/kyc_manager">Admin</a></li>
+      </ul>
+      <a href="javascript:;" onclick='logOut()' class="logout">Logout&nbsp;<i class="fas fa-sign-out-alt"></i></a>
     </header>
   </body>
   <main class="dashboard-2">
     <div class="container">
       <aside>
         <section class="user-detail">
-          <span class="avatar">V</span>
-          <p>Hello&nbsp;<span>Vachara A.</span></p>
-          <p>Your total SIX&nbsp;<span>123,412 SIX</span></p>
+          <span class="avatar" id='firstCharName'>V</span>
+          <p>Hello&nbsp;<span id='displayName'>Vachara A.</span></p>
+          <p>Balance :&nbsp;<span><span id='totalSix'>0 </span>SIX</span></p>
         </section>
         <section class="video">
           <a class="btn-play open-dialog-video">
             <i class="fas fa-play"></i>
           </a>
-          <p>Lorem ipsum, dolor sit amet consectetur adipisicing elit.</p>
+          <p>How to contribute SIX token</p>
         </section>
         <section class="progress">
           <div class="bar">
@@ -44,7 +86,7 @@
               <p>$15,000,000</p>
               <p>$42,905,579</p>
             </div>
-            <span class="available" style=" width: 30%;">
+            <span class="available" style=" width: 5%;" id='barPercentage'>
               <em>$122,112</em>
             </span>
             <div class="bottom">
@@ -60,7 +102,7 @@
         </section>
       </aside>
       <div class="content">
-        <section class="warninging-box show-detail">
+        <section class="warninging-box show-detail" id='warnBox'>
           <h2>WARNING</h2>
           <ul class="option-list">
             <li>
@@ -85,92 +127,49 @@
               </label>
             </li>
           </ul>
-          <div class="btn"><button disabled id="acknowledgeBtn" onclick='submitAcknowledge()'>Submit</button></div>
+          <div class="btn"><button disabled id="acknowledgeBtn" onclick='submitAcknowledge()'>Next</button></div>
         </section>
-        <section class="payment-box">
-          <h2>Contribute to SIX</h2>
+        <section class="payment-box" id='walletBox'>
           <ul class="option-list">
             <li>
               <label class="option">
-                <input type="checkbox">
-                <span class="check-mark"></span>
-                <p>Bitcoin ( BTC )</p>
-              </label>
-              <p>:</p>
-              <label class="text width-l">
-                <input type="text" placeholder="Address"/>
-              </label>
-              <label class="text">
-                <input type="text" placeholder="Amount"/>
-              </label>
-            </li>
-            <li>
-              <label class="option">
-                <input type="checkbox">
-                <span class="check-mark"></span>
                 <p>Ethereum ( ETH )</p>
               </label>
               <p>:</p>
-              <label class="text width-l">
-                <input type="text" placeholder="Address"/>
-              </label>
-              <label class="text">
-                <input type="text" placeholder="Amount"/>
+              <label class="text width-full" id='ethWalletAddressAlert' style='width: 100%;'>
+                <input id='walletETHinput' type="text" placeholder="Address"/>
+                <p id='ethWalletAddressAlertText' style='display: none;'></p>
               </label>
             </li>
             <li>
-              <label class="option">
-                <input type="checkbox">
-                <span class="check-mark"></span>
-                <p>Stellar ( XLM )</p>
-              </label>
-              <p>:</p>
-              <label class="text width-l">
-                <input type="text" placeholder="Address"/>
-              </label>
-              <label class="text">
-                <input type="text" placeholder="Amount"/>
-              </label>
-            </li>
-            <li>
-              <label class="option width-full">
-                <input type="checkbox">
-                <span class="check-mark"></span>
-                <p><strong>Warning</strong>&nbsp;Lorem ipsum dolor sit amet consectetur adipisicing elit. Magni soluta, totam quis iste ratione corrupti nulla minus aperiam aliquid sapiente.</p>
-              </label>
+              <div id="submitWalletAlert" class="alert-error">
+                <p id="submitWalletAlertText"></p>
+              </div>
             </li>
           </ul>
-          <div class="btn"><button>Submit</button></div>
+          <div class="btn"><button id='confirmAddressBtn' onclick='startConfirmation()'>Submit</button></div>
         </section>
-        <div class="address-history">
+        <div class="address-history" id='mainBox'>
           <section class="address">
             <h2>Address</h2>
             <ul class="address-list">
               <li>
-                <p><strong>Bitcoin ( BTC )</strong> : MN91LKF93O41829JHWEDWDKWDJKWHUK</p>
+                <p><strong>Ethereum ( ETH )</strong> : 0x47ef7027425426db85b70b67600a47490312431a</p>
                 <div class="exchange">
                   <label class="text">
-                    <input type="text" placeholder="Amount"/>
+                    <input type="text" placeholder="0" id='ethToSixInput' disabled/>
                   </label>
-                  <p>= 12342 SIX</p>
+                  <p>= <span id='ethToSix'>0</span> SIX</p>
                 </div>
               </li>
               <li>
-                <p><strong>Ethereum ( ETH )</strong> : MN91LKF93O41829JHWEDWDKWDJKWHUK</p>
+                <p><strong>Stellar ( XLM )</strong> : GDYALW6CVL6PRL6RZHJMQZ4VXGJXRKPZHJH6VKHW3J7USHBBPY52XHNO</p>
+                <p>memo : <span id='xlmMemo'></span></p>
                 <div class="exchange">
                   <label class="text">
-                    <input type="text" placeholder="Amount"/>
+                    <input type="text" placeholder="0" id='xlmToSixInput' disabled/>
                   </label>
-                  <p>= 12342 SIX</p>
-                </div>
-              </li>
-              <li>
-                <p><strong>Stellar ( XLM )</strong> : MN91LKF93O41829JHWEDWDKWDJKWHUK</p>
-                <div class="exchange">
-                  <label class="text">
-                    <input type="text" placeholder="Amount"/>
-                  </label>
-                  <p>= 12342 SIX</p>
+                  <p>= <span id='xlmToSix'>0</span> SIX</p>
                 </div>
               </li>
             </ul>

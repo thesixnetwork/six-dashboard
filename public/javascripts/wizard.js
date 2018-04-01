@@ -532,12 +532,12 @@ function submitKyc() {
     $("#kycPassportNumberError").css('display', 'block')
   }
   if (address == '' || address == undefined) { $('#kycAddressAlert').addClass('invalid'); validate = false }
-  if (/^[a-zA-Z0-9!”$%&’()*\+, \/;\[\\\]\^_`{|}~\n]+$/.test(address) === false) {
-    $('#kycAddressAlert').addClass('invalid')
-    validate = false
-    $("#kycAddressError").html('Address should contain only alphabetic characters, digits, and special characters')
-    $("#kycAddressError").css('display', 'block')
-  }
+//  if (/^[a-zA-Z0-9!”$%&’()*\+, \/;\[\\\]\^_`{|}~\n]+$/.test(address) === false) {
+//    $('#kycAddressAlert').addClass('invalid')
+//    validate = false
+//    $("#kycAddressError").html('Address should contain only alphabetic characters, digits, and special characters')
+//    $("#kycAddressError").css('display', 'block')
+//  }
   if ((pic1 == '' || pic1 == undefined) && pic1Url === undefined && country === 'TH') { $('#kycPic1Alert').addClass('invalid'); validate = false }
   if ((pic2 == '' || pic2 == undefined) && pic2Url === undefined) { $('#kycPic2Alert').addClass('invalid'); validate = false }
   if ((pic4 == '' || pic4 == undefined) && pic4Url === undefined && country !== 'TH') { $('#kycPic4Alert').addClass('invalid'); validate = false }
