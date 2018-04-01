@@ -230,3 +230,10 @@ exports.monitorETH = functions.pubsub.topic('monitor-eth').onPublish(() => {
 })
 
 exports.monitorXLM = functions.pubsub.topic('monitor-xlm').onPublish(stellarService)
+
+exports.logsUserTable = functions.firestore.document('users/{userId}').onWrite((event) => {
+  const document = event.data.exists ? event.data.data() : null;
+  const timestamp = Date.now()
+  const oldDocument = event.data.previous.data();
+  return admin.database().ref(`logs/${timestamp}`).set({document, oldDocument})
+})
