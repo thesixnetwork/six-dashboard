@@ -1,6 +1,5 @@
 const auditlogFunctions = [
-  {'name': 'auditlogUser', 'path': '/users/{uid}', 'collection': 'users'},
-  {'name': 'auditlogTest', 'path': '/tests/{id}', 'collection': 'tests'}
+  {'name': 'auditlogUser', 'path': '/users/{uid}', 'collection': 'users'}
 ]
 
 module.exports = function (functions, fireStore) {
