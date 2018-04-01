@@ -82,17 +82,17 @@
         <section class="progress">
           <div class="bar">
             <div class="top">
-              <p>0</p>
-              <p>$15,000,000</p>
-              <p>$42,905,579</p>
+              <p class='zeroStart'>0</p>
+              <p class='softCapText'>$15,000,000</p>
+              <p class='hardCapText'>$42,905,579</p>
             </div>
             <span class="available" style=" width: 5%;" id='barPercentage'>
-              <em>$122,112</em>
+              <em>$<span id='totalCurrentAsset'>0</span></em>
             </span>
             <div class="bottom">
-              <p>Start</p>
-              <p>Soft cap</p>
-              <p>Hard Cap</p>
+              <p class='zeroStart'>Start</p>
+              <p class='softCapText'>Soft cap</p>
+              <p class='hardCapText'>Hard Cap</p>
             </div>
           </div>
         </section>
@@ -178,7 +178,8 @@
             <header>
               <h2>Transaction History</h2>
             </header>
-            <table>
+            <p style="text-align: center;" id='noDataTx'>No previous transaction</p>
+            <table id='txHistoryTable' style='display: none;'>
               <thead>
                 <tr>
                   <th width="120">From</th>
@@ -226,46 +227,7 @@
                 </tr>
               </tbody>
             </table>
-            <table style="display: none;">
-              <tbody>
-                <tr>
-                  <td>0.05 BTC</td>
-                  <td>41254.7 SIX</td>
-                  <td>MN91LKF93O41829JHWEDWDKWDJKWHUK</td>
-                  <td>2018-03-15</td>
-                  <td>14:22:11 +07:00</td>
-                </tr>
-                <tr>
-                  <td>0.05 BTC</td>
-                  <td>41254.7 SIX</td>
-                  <td>MN91LKF93O41829JHWEDWDKWDJKWHUK</td>
-                  <td>2018-03-15</td>
-                  <td>14:22:11 +07:00</td>
-                </tr>
-                <tr>
-                  <td>0.05 BTC</td>
-                  <td>41254.7 SIX</td>
-                  <td>MN91LKF93O41829JHWEDWDKWDJKWHUK</td>
-                  <td>2018-03-15</td>
-                  <td>14:22:11 +07:00</td>
-                </tr>
-                <tr>
-                  <td>0.05 BTC</td>
-                  <td>41254.7 SIX</td>
-                  <td>MN91LKF93O41829JHWEDWDKWDJKWHUK</td>
-                  <td>2018-03-15</td>
-                  <td>14:22:11 +07:00</td>
-                </tr>
-                <tr>
-                  <td>0.05 BTC</td>
-                  <td>41254.7 SIX</td>
-                  <td>MN91LKF93O41829JHWEDWDKWDJKWHUK</td>
-                  <td>2018-03-15</td>
-                  <td>14:22:11 +07:00</td>
-                </tr>
-              </tbody>
-            </table>
-            <div class="loader-more"><a href="#">More</a></div>
+            <div id='loadmoreBtn' style='display: none;' class="loader-more"><a href="#">More</a></div>
           </section>
         </div>
       </div>

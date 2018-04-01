@@ -23,5 +23,8 @@ service cloud.firestore {
     match /eth_prices/{timeStamp}{
       allow read: if true;
     }
+    match /total_asset/{currencyType}{
+      allow read: if true;
+    }
   }
 }

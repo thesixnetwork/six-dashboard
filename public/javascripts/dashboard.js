@@ -202,6 +202,15 @@ function initializeAdmin () {
   return promise
 }
 
+function getCurrentTotal() {
+  return firebase.firestore().collection('total_asset').doc('usd').get().then(doc => {
+    const currentAsset = doc.data().total
+    const percentage = ((currentAsset/(doc.data().hard_cap_usd/100)) || 0)
+    $("#totalCurrentAsset").html(parseFloat(currentAsset).toLocaleString())
+    $("#barPercentage").css("width", Number(percentage.toFixed(1))+"%")
+  })
+}
+
 $(document).ready(function(){
   document.getElementById('walletETHinput').onkeydown = function() {
     $('#ethWalletAddressAlert').removeClass("invalid")
@@ -211,12 +220,12 @@ $(document).ready(function(){
 
   document.getElementById('xlmToSixInput').onkeyup = function() {
     let number = parseFloat(this.value) || 0
-    $("#xlmToSix").html(Number((number*xlmPrice.six_per_xlm).toFixed(7)))
+    $("#xlmToSix").html(Number((number*xlmPrice.six_per_xlm).toFixed(7)).toLocaleString())
   }
 
   document.getElementById('ethToSixInput').onkeyup = function() {
     let number = parseFloat(this.value) || 0
-    $("#ethToSix").html(Number((number*ethPrice.six_per_eth).toFixed(7)))
+    $("#ethToSix").html(Number((number*ethPrice.six_per_eth).toFixed(7)).toLocaleString())
   }
 
     // Dialog
@@ -248,22 +257,22 @@ $(document).ready(function(){
     } else {
       initializeAdmin().then(() => {
         return $('#adminShortcut').css('display', 'block')
-      }).then(() => {
-        return firebase.firestore().collection('users').doc(user.uid).get()
-      }).then(doc => {
-        let userData = doc.data()
-        let name = userData.first_name + " " + userData.last_name
-        $("#displayName").html(name)
-        $("#firstCharName").html(userData.first_name.substr(0,1).toUpperCase())
-        if (doc.data().submit_wallet === true) {
-          $("#mainBox").css("display", "block")
-          $("#walletBox").css("display", "none")
-          $("#warnBox").css("display", "none")
-          $("#xlmMemo").html(doc.data().memo)
-        }
-      }).then(() => {
-        $('#preLoader').fadeToggle()
-        updatePrice()
+      }).finally(() => {
+        return firebase.firestore().collection('users').doc(user.uid).get().then(doc => {
+          let userData = doc.data()
+          let name = (userData.first_name || "") + " " + (userData.last_name || "")
+          $("#displayName").html(name || "")
+          $("#firstCharName").html((userData.first_name || "").substr(0,1).toUpperCase())
+          if (doc.data().submit_wallet === true) {
+            $("#mainBox").css("display", "block")
+            $("#walletBox").css("display", "none")
+            $("#warnBox").css("display", "none")
+            $("#xlmMemo").html(doc.data().memo)
+          }
+        }).then(getCurrentTotal).then(() => {
+          $('#preLoader').fadeToggle()
+          updatePrice()
+        })
       })
     }
   })

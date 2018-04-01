@@ -240,3 +240,19 @@ label < input:disabled {
   min-width: 0px;
   text-shadow: -1px -1px 0 #4a5ab5, 1px -1px 0 #4a5ab5, -1px 1px 0 #4a5ab5, 1px 1px 0 #4a5ab5;
 }
+
+.dashboard-2 section.progress .bar::before {
+  left: 35%!important;
+}
+
+.zeroStart {
+  width: 20%!important;
+}
+
+.softCapText {
+  width: 33.3%!important;
+}
+
+.hardCapText {
+  width: 53.3%!important;
+}
