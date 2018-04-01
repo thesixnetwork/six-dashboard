@@ -53,7 +53,7 @@ class User {
         })
       } else {
         if (data.kyc_status === 'pending' ||
-          (data.kyc_status === null && currentUser.kyc_status === 'reject') ||
+          (data.kyc_status === null && currentUser.kyc_status === 'rejected') ||
            User.arrayContainsArray([
              'first_name',
              'last_name',
