@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <meta property="og:url" content="https://ico.six.network/">
+    <meta property="og:type" content="article">
+    <meta property="og:title" content="SIX | Reinventing the digital economy">
+    <meta property="og:description" content="SIX aims to bring a better liquidity, ownership, and wealth distribution back to the digital creators.">
+    <meta property="og:image" content="https://ico.six.network/images/logo/six-logo-property.png">
+
+    <!-- Include firebase : update the version number as needed -->
+    <script src="/__/firebase/4.12.0/firebase-app.js" defer></script>
+    <script src="/__/firebase/4.12.0/firebase-auth.js" defer></script>
+    <script src="/__/firebase/4.12.0/firebase-database.js" defer></script>
+    <script src="/__/firebase/4.12.0/firebase-firestore.js" defer></script>
+    <script src="/__/firebase/4.12.0/firebase-messaging.js" defer></script>
+    <script src="/__/firebase/4.12.0/firebase-storage.js" defer></script>
+    <script src="/__/firebase/init.js" defer></script>
+
+        <meta http-equiv="X-UA-Compatible" content="ie=edge">
+        <title>SIX | Reinventing the digital economy</title>
+        <link type="image/x-icon" href="images/logo/fav.ico" rel="shortcut icon">
+        <link href="stylesheets/style.css" rel="stylesheet">
+        <link href="stylesheets/style2.css" rel="stylesheet">
+        <link href="stylesheets/loading.css" rel="stylesheet">
+        <script src="javascripts/bluebird.js"></script>
+        <script src="javascripts/jquery-3.2.1.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/lodash@4.17.5/lodash.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.18.1/moment.js"></script>
+        <script src="javascripts/user-logs.js"></script>
+        <!-- <script src="javascripts/wizard.js"></script> -->
+  </head>
+  <body>
+    <div id="preLoader">
+      <div id="preloadWrapper">
+        <img id="preloadImage" src="images/six_network.png">
+        <div class="spinner">
+          <div class="bounce1"></div>
+          <div class="bounce2"></div>
+          <div class="bounce3"></div>
+        </div>
+      </div>
+    </div>
+    <header class="header">
+      <a class="logo" href><img src="images/logo/six-logo.png"></a>
+      <ul class="menu">
+      </ul>
+            <a class="logout" href="login.html">Logout&nbsp;<i class="fas fa-sign-out-alt"></i></a>
+    </header>
+  </body>
+
+    <main class="admin" id='adminListMain'>
+        <div id='adminContainer' class="container">
+      <div class="search">
+        <label class="text">
+          <i class="fas fa-search"></i>
+          <input type="text" placeholder="Search">
+        </label>
+      </div>
+      <section class="list-user with-table">
+        <table>
+          <thead>
+            <tr>
+              <th width="200">UID</th>
+              <th width="200">Email</th>
+              <th width="200">แก้ Field</th>
+              <th width="200">แก้​ Address</th>
+              <th width="200">วันที่/เวลา</th>
+            </tr>
+            <tr>
+
+            </tr>
+          </thead>
+          <tbody id="adminList">
+          </tbody>
+        </table>
+      </section>
+        </div>
+    </main>
+    <main class="admin-detail" id="adminDetail" style="display: none;">
+    <div class="container">
+      <a class="back" href="javascript:;" onclick="goBack()">Back</a>
+      <section class="detail">
+        <fieldset>
+          <legend>Information</legend>
+          <dl>
+            <dt><u>Name</u></dt>
+            <dd class="combine">
+              <p id='detailFirstName'></p>
+              <p id='detailLastName'></p>
+            </dd>
+          </dl>
+          <dl>
+            <dt><u>Email</u></dt>
+            <dd>
+              <p id='detailEmail'></p>
+            </dd>
+          </dl>
+          <dl>
+            <dt><u>Phone number</u></dt>
+            <dd>
+              <p id='detailPhoneNumber'></p>
+            </dd>
+          </dl>
+          <dl>
+            <dt><u>Nationality</u></dt>
+            <dd>
+              <p id='detailCountry'></p>
+            </dd>
+          </dl>
+          <dl id="citizenIdContainer">
+            <dt><u>Citizen ID</u></dt>
+            <dd>
+              <p id="detailCitizenId"></p>
+            </dd>
+          </dl>
+          <dl id='passportNumber'>
+            <dt><u>Passport number</u></dt>
+            <dd>
+              <p id="detailPassportNumber"></p>
+            </dd>
+          </dl>
+          <dl>
+            <dt><u>Local address</u></dt>
+            <dd>
+              <p id='detailAddress'></p>
+            </dd>
+          </dl>
+          <dl id='citizenIdPhotoContainer'>
+            <dt><u>Photo of ID with signature</u></dt>
+            <dd>
+              <span class="image">
+                <img id="detailPic1">
+              </span>
+            </dd>
+          </dl>
+          <dl id='citizenIdPhotoBackContainer'>
+            <dt><u>Photo of the back of ID with signature</u></dt>
+            <dd>
+              <span class="image">
+                <img id='detailPic5'>
+              </span>
+            </dd>
+          </dl>
+          <dl id='passportPhoto'>
+            <dt><u>Photo of Passport with signature</u></dt>
+            <dd>
+              <span class="image">
+                <img id='detailPic4'>
+              </span>
+            </dd>
+          </dl>
+          <dl>
+            <dt>
+              <u>Selfie with id or passport photo</u>
+            </dt>
+            <dd>
+              <span class="image">
+                <img id='detailPic2'>
+              </span>
+            </dd>
+          </dl>
+        </fieldset>
+        <fieldset>
+          <legend><u>Estimate ICO investment budget</u></legend>
+          <p id='detailEstimate'></p>
+        </fieldset>
+      </section>
+      <section id='rejctBox' class="reject-template detail">
+        <fieldset>
+          <legend>Reject template</legend>
+          <dl>
+            <dd>
+              <label class="dropdown">
+                <select id="rejectSelect" name="value">
+                  <option value="need_more">Need more information</option>
+                  <option value="restricted">Restricted country</option>
+                  <option value="photo_corrupted">Photo uploaded corrupted</option>
+                  <option value="other">Other</option>
+                </select>
+                <i class="fas fa-angle-down"></i>
+              </label>
+
+                <li style="list-style: none; margin-top: 5px;">
+                  <label class="textarea"><textarea placeholder="Message" id="rejectNote"></textarea></label>
+                </li>
+              </ul>
+            </dd>
+          </dl>
+        </fieldset>
+        <dl><dd><button class="yellow" id="rejectBtn" style="background: #ef5555; color: white;" onclick="rejectUser()">Reject</button></dd></dl>
+      </section>
+      <section class="" id='approveBox'>
+        <dl>
+          <dd><button id="approveBtn" onclick="approve()">Approve</button></dd>
+        </dl>
+      </section>
+    </div>
+    </main>
+    <style>
+      .blue {
+        color: blue;
+      }
+      .red {
+        color: red;
+      }
+      .green {
+        color: green;
+      }
+    </style>
+</html>
