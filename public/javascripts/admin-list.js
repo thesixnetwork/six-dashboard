@@ -377,7 +377,7 @@ function initializeDatabase(status) {
         query = userRef.where("kyc_status", "==", "pending");
         break
       case 'notComplete':
-        query = userRef.where("kyc_status", "==", null);
+        query = userRef.where("kyc_status", "==", "not_complete");
         break
       default:
         break
@@ -390,7 +390,7 @@ function initializeDatabase(status) {
           allDocs.push(doc)
         })
         allDocs.sort(compare)
-        allDocs.forEach(function (doc, index) { 
+        allDocs.forEach(function (doc, index) {
           const data = doc.data()
           userData[doc.id] = data
           let elem = buildListUser(doc);
