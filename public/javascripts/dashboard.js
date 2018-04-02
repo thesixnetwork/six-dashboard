@@ -20,17 +20,26 @@ function setEnable (doms) {
 
 let xlmPrice
 let ethPrice
+let userData
+
+// Update User
+function updateUser (data) {
+  var updateUserOncall = firebase.functions().httpsCallable('updateUser')
+  return updateUserOncall(data)
+}
 
 function submitConfirm() {
   let requestFunction = firebase.functions().httpsCallable('updateETHWallet')
   const ethAddressDOM = document.getElementById('walletETHinput')
   const btnDOM = document.getElementById('alertConfirmBtn')
+  const canDOM = document.getElementById('cancelConfirmBtn')
   const ethAddress = ethAddressDOM.value
-  setDisable([btnDOM])
+  setDisable([btnDOM, canDOM])
   requestFunction({eth_address: ethAddress}).then(response => {
     if (response.data.success === true) {
-      setEnable([btnDOM])
-      $("#mainBox").css("display", "block")
+      setEnable([btnDOM, canDOM])
+      $("#mainBox").css("display", "none")
+      $("#depositETHBox").css("display", "block")
       $("#walletBox").css("display", "none")
       $("#warnBox").css("display", "none")
       cancelConfirm()
@@ -39,7 +48,7 @@ function submitConfirm() {
       if ($("#submitWalletAlert").css("display") === 'none') {
         $("#submitWalletAlert").slideToggle()
       }
-      setEnable([btnDOM])
+      setEnable([btnDOM, canDOM])
       cancelConfirm()
     }
   })
@@ -166,7 +175,7 @@ function latestETHprice() {
 
 function updateXLMprice() {
   latestXLMprice().then(data => {
-    $("#xlmPrice").html("1 / "+data.price.price)
+    $(".xlmPrice").html("1 / "+data.price.price)
     xlmPrice = data.price
     const elem = document.getElementById('xlmToSixInput')
     setEnable([elem])
@@ -175,7 +184,7 @@ function updateXLMprice() {
 
 function updateETHprice() {
   latestETHprice().then(data => {
-    $("#ethPrice").html("1 / "+data.price.price)
+    $(".ethPrice").html("1 / "+data.price.price)
     ethPrice = data.price
     const elem = document.getElementById('ethToSixInput')
     setEnable([elem])
@@ -187,6 +196,17 @@ function updatePrice() {
   updateETHprice()
 }
 
+// count six amount
+function sumSixAmountToUser () {
+  firebase.firestore().collection('purchase_txs').where("user_id",'==',firebase.auth().currentUser.uid).get()
+    .then(snapshot => {
+      let sixAmount = 0
+      snapshot.forEach(doc => {
+        sixAmount = sixAmount + doc.data().six_amount
+      })
+      $('#totalSix').html(`${sixAmount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")} `)
+    })
+}
 // Chack if admin or not
 function initializeAdmin () {
   let promise = new Promise(function (resolve, reject) {
@@ -202,6 +222,64 @@ function initializeAdmin () {
   return promise
 }
 
+function submitWay() {
+  const waySelectDOM = document.getElementById('waySelect')
+  const way = waySelectDOM.value
+  if (way === 'xlm') {
+    $("#questionBox").css("display", "none")
+    $("#depositETHBox").css("display", "none")
+    $("#depositXLMBox").css("display", "block")
+    $("#mainBox").css("display", "none")
+    $("#walletBox").css("display", "none")
+    $("#warnBox").css("display", "none")
+  } else {
+    if (userData.submit_wallet !== true) {
+      $("#questionBox").css("display", "none")
+      $("#depositETHBox").css("display", "none")
+      $("#depositXLMBox").css("display", "none")
+      $("#mainBox").css("display", "none")
+      $("#walletBox").css("display", "none")
+      $("#warnBox").css("display", "block")
+    } else {
+      $("#questionBox").css("display", "none")
+      $("#depositETHBox").css("display", "block")
+      $("#depositXLMBox").css("display", "none")
+      $("#mainBox").css("display", "none")
+      $("#walletBox").css("display", "none")
+      $("#warnBox").css("display", "none")
+    }
+  }
+}
+
+function submitWelcome() {
+  $("#welcomeBox").css("display", "none")
+  $("#questionBox").css("display", "block")
+  $("#mainBox").css("display", "none")
+  $("#walletBox").css("display", "none")
+  $("#warnBox").css("display", "none")
+}
+
+function submitDepositXLM() {
+  const xlmToSixInput = document.getElementById("xlmToSixInput")
+  const xlm_value = (parseFloat(xlmToSixInput.value) || 0)
+  if (xlm_value > 0 && xlmToSixInput.value !== undefined && xlmToSixInput.value !== null && xlmToSixInput.value !== '') {
+    $("#depositXLMamount").html(xlm_value)
+    $("#depositXLMBox").css("display", "none")
+    $("#submitXLMBox").css("display", "block")
+  } else {
+    $("#xlmToSixInputAlert").addClass("invalid")
+    $("#xlmToSixInputAlertText").html("Value should be > 0")
+    $("#xlmToSixInputAlertText").css("display", "block")
+  }
+}
+
+function submitDepositETH() {
+  const ethToSixInput = document.getElementById("ethToSixInput")
+  $("#depositETHamount").html(parseFloat(ethToSixInput.value))
+  $("#depositETHBox").css("display", "none")
+  $("#submitETHBox").css("display", "block")
+}
+
 function getCurrentTotal() {
   return firebase.firestore().collection('total_asset').doc('usd').get().then(doc => {
     const currentAsset = doc.data().total
@@ -211,9 +289,81 @@ function getCurrentTotal() {
   })
 }
 
-$(document).ready(function () {
-  document.getElementById('walletETHinput').onkeydown = function () {
-    $('#ethWalletAddressAlert').removeClass('invalid')
+function submitDepositXLMTran() {
+  const btnDOM = document.getElementById("submitDepositXLMTran")
+  const xlmToSixInput = document.getElementById("xlmToSixInput")
+  const xlm_value = (parseFloat(xlmToSixInput.value) || 0)
+  setDisable([btnDOM])
+  updateUser({first_transaction: true, alloc_transaction: true, alloc_transaction_type: 'XLM', alloc_transaction_amount: xlm_value, alloc_time: Math.round((new Date()).getTime() / 1000)}).then(() => {
+    setEnable([btnDOM])
+    $("#questionBox").css("display", "none")
+    $("#submitXLMBox").css("display", "none")
+    $("#submitETHBox").css("display", "none")
+    $("#depositETHBox").css("display", "none")
+    $("#depositXLMBox").css("display", "none")
+    $("#mainBox").css("display", "none")
+    if (userData.seen_congrat === true) {
+      $("#mainBox").css("display", "block")
+    } else {
+      $("#congratulationBox").css("display", "block")
+    }
+    $("#walletBox").css("display", "none")
+    $("#warnBox").css("display", "none")
+  })
+}
+
+function submitDepositETHTran() {
+  const btnDOM = document.getElementById("submitDepositETHTran")
+  const ethToSixInput = document.getElementById("ethToSixInput")
+  const eth_value = (parseFloat(ethToSixInput.value) || 0)
+  setDisable([btnDOM])
+  updateUser({first_transaction: true, alloc_transaction: true, alloc_transaction_type: 'ETH', alloc_transaction_amount: eth_value, alloc_time: Math.round((new Date()).getTime() / 1000)}).then(() => {
+    setEnable([btnDOM])
+    $("#questionBox").css("display", "none")
+    $("#submitXLMBox").css("display", "none")
+    $("#submitETHBox").css("display", "none")
+    $("#depositETHBox").css("display", "none")
+    $("#depositXLMBox").css("display", "none")
+    $("#mainBox").css("display", "none")
+    if (userData.seen_congrat === true) {
+      $("#mainBox").css("display", "block")
+    } else {
+      $("#congratulationBox").css("display", "block")
+    }
+    $("#walletBox").css("display", "none")
+    $("#warnBox").css("display", "none")
+  })
+}
+
+function submitCongrat() {
+  updateUser({seen_congrat: true})
+  userData.seen_congrat = true
+  $("#questionBox").css("display", "none")
+  $("#submitXLMBox").css("display", "none")
+  $("#submitETHBox").css("display", "none")
+  $("#depositETHBox").css("display", "none")
+  $("#depositXLMBox").css("display", "none")
+  $("#mainBox").css("display", "block")
+  $("#congratulationBox").css("display", "none")
+  $("#walletBox").css("display", "none")
+  $("#warnBox").css("display", "none")
+}
+
+function gotoCurrency() {
+  $("#questionBox").css("display", "block")
+  $("#submitXLMBox").css("display", "none")
+  $("#submitETHBox").css("display", "none")
+  $("#depositETHBox").css("display", "none")
+  $("#depositXLMBox").css("display", "none")
+  $("#mainBox").css("display", "none")
+  $("#congratulationBox").css("display", "none")
+  $("#walletBox").css("display", "none")
+  $("#warnBox").css("display", "none")
+}
+
+$(document).ready(function(){
+  document.getElementById('walletETHinput').onkeydown = function() {
+    $('#ethWalletAddressAlert').removeClass("invalid")
     $("#ethWalletAddressAlertText").html('')
     $("#ethWalletAddressAlertText").css('display', 'none')
   }
@@ -221,6 +371,9 @@ $(document).ready(function () {
   document.getElementById('xlmToSixInput').onkeyup = function () {
     let number = parseFloat(this.value) || 0
     $("#xlmToSix").html(Number((number*xlmPrice.six_per_xlm).toFixed(7)).toLocaleString())
+    $("#xlmToSixInputAlertText").html("")
+    $("#xlmToSixInputAlertText").css("display", "none")
+    $("#xlmToSixInputAlert").removeClass("invalid")
   }
 
   document.getElementById('ethToSixInput').onkeyup = function() {
@@ -256,10 +409,11 @@ $(document).ready(function () {
       window.location.href = '/'
     } else {
       initializeAdmin().then(() => {
+        sumSixAmountToUser()
         return $('#adminShortcut').css('display', 'block')
       }).finally(() => {
         return firebase.firestore().collection('users').doc(user.uid).get().then(doc => {
-          const endtime = endtimeOfIco          
+          const endtime = endtimeOfIco
           if (!(Date.now() > endtime && doc.data().all_done)) {
             window.location.href = '/wizard'
           }
@@ -267,11 +421,22 @@ $(document).ready(function () {
           let name = (userData.first_name || "") + " " + (userData.last_name || "")
           $("#displayName").html(name || "")
           $("#firstCharName").html((userData.first_name || "").substr(0,1).toUpperCase())
-          if (doc.data().submit_wallet === true) {
-            $("#mainBox").css("display", "block")
-            $("#walletBox").css("display", "none")
-            $("#warnBox").css("display", "none")
-            $("#xlmMemo").html(doc.data().memo)
+          $("#myMemo").html(userData.memo)
+          if (userData.first_transaction === true) {
+            if (userData.seen_congrat === true) {
+              $("#welcomeBox").css("display", "none")
+              $("#mainBox").css("display", "block")
+            } else {
+              $("#welcomeBox").css("display", "none")
+              $("#congratulationBox").css("display", "block")
+            }
+          }
+          if (userData.eth_address !== undefined) {
+            $("#myETHaddress")[0].value = userData.eth_address
+            $("#myETHWalletAddress").html(userData.eth_address)
+          } else {
+            $("#myETHaddress")[0].value = '-'
+            $("#myETHWalletAddress").html('-')
           }
         }).then(getCurrentTotal).then(() => {
           $('#preLoader').fadeToggle()

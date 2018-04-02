@@ -1,0 +1,110 @@
+#progressContent {
+  padding: 32px;
+}
+
+#exchange-ul {
+  display: flex;
+  width: 100%;
+}
+
+.exchange-li {
+  width: 100%;
+  text-align: center;
+}
+
+.exchange li:not(:last-of-type) {
+  border-right: 1px solid rgba(180,180,180,0.2);
+}
+
+.truncate {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+#exchange {
+  margin: 0px 32px 0px;
+}
+
+#warnBox {
+  display: none;
+}
+
+#nwbtn {
+  max-width: 200px;
+  margin: auto;
+  margin-top: 30px;
+}
+
+#questionSelect {
+  max-width: 300px;
+  margin-left: auto;
+  margin-right: auto;
+  margin-bottom: 20px;
+  margin-top: 20px;
+}
+
+#questionBox {
+  display: none;
+}
+
+.warning-label {
+  min-width: 0px!important;
+}
+
+#depositETHBox, #depositXLMBox, #submitXLMBox, #submitETHBox, #congratulationBox {
+  display: none;
+}
+
+.Exexchange {
+  display: flex;
+}
+
+.Exexchange p {
+  line-height: 45px;
+  margin-left: 8px;
+  display: block;
+  width: 100%;
+}
+
+.Exexchange label {
+  display: block;
+  width: 100%;
+}
+
+#welcomeBox {
+  max-width: 750px;
+  margin: auto;
+}
+
+.deposit-box, .submit-box, #congratulationBox {
+  max-width: 750px;
+  margin: auto;
+}
+
+#submitDepositXLM {
+  max-width: 200px;
+  margin: auto;
+}
+
+.qrCenter {
+  width: 100%;
+}
+
+.qrContainer {
+  max-width: 300px;
+  max-height: 300px;
+  margin: auto;
+}
+
+#trnsBtnContainer {
+  display: flex;
+  max-width: 500px;
+  margin: auto;
+}
+
+.btnInline {
+  margin-left: 10px;
+  margin-right: 10px;
+  margin-bottom: 25px;
+}
