@@ -121,10 +121,17 @@ function handleOperation(user, tx, operation, n, price, priceTime) {
   const user_id = user.id
   body.user_id = user_id
 
-  return fireStore
-    .collection('purchase_txs')
-    .doc(`${hash}_${operation.id}`)
-    .set(body)
+  return firestore.runTransaction(transaction => {
+    let documentRef = firestore
+      .collection('purchase_txs')
+      .doc(`${hash}_${operation.id}`);
+
+    return transaction.get(documentRef).then(doc => {
+      if (!doc.exists) {
+        return transaction.create(documentRef, body);
+      }
+    });
+  });
 }
 
 function findUser(tx) {

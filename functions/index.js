@@ -23,7 +23,6 @@ for (let trigger of userModels) {
 
 const getBasePriceURI = (coin) => `https://min-api.cryptocompare.com/data/price?fsym=${coin}&tsyms=USD`
 
-
 exports.incrementTotalAsset = functions.firestore.document('/purchase_txs/{txId}')
   .onCreate(event => {
     const data = event.data.data()
