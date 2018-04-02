@@ -149,7 +149,7 @@ function findUser(tx) {
   }
   return fireStore
     .collection('users')
-    .where('xlm_memo', '==', tx.memo)
+    .where('memo', '==', tx.memo)
     .get()
     .then((snapshot) => {
       const users = [];
