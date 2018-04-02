@@ -11,6 +11,14 @@ function setDisable (doms) {
   })
 }
 
+function compare(a,b) {
+  if (a.data().time > b.data().time)
+    return -1;
+  if (a.data().time < b.data().time)
+    return 1;
+  return 0;
+}
+
 // Remove disabled from dom
 function setEnable (doms) {
   doms.forEach(function (dom) {
@@ -66,7 +74,7 @@ function startConfirmation() {
   }
   const ethAddressDOM = document.getElementById('walletETHinput')
   const confirmAddressBtnDOM = document.getElementById('confirmAddressBtn')
-  const ethAddress = ethAddressDOM.value
+  const ethAddress = ethAddressDOM.value.toLowerCase()
   if (ethAddress === undefined || ethAddress === null || ethAddress === '') {
     $("#ethWalletAddressAlert").addClass("invalid")
     $("#ethWalletAddressAlertText").html("ETH Address could not be blank")
@@ -214,17 +222,6 @@ function updatePrice() {
   updateETHprice()
 }
 
-// count six amount
-function sumSixAmountToUser () {
-  firebase.firestore().collection('purchase_txs').where("user_id",'==',firebase.auth().currentUser.uid).get()
-    .then(snapshot => {
-      let sixAmount = 0
-      snapshot.forEach(doc => {
-        sixAmount = sixAmount + doc.data().six_amount
-      })
-      $('#totalSix').html(`${sixAmount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")} `)
-    })
-}
 // Chack if admin or not
 function initializeAdmin () {
   let promise = new Promise(function (resolve, reject) {
@@ -441,17 +438,44 @@ function buildListTx(doc) {
   return tr
 }
 
+let totalSix = 0
+
 function getTxs () {
   if (firebase.auth().currentUser !== null) {
     firebase.firestore().collection('purchase_txs')
     .where("user_id",'==',firebase.auth().currentUser.uid)
     .get()
     .then(snapshot => {
-      $('#userTxs').empty()
-      snapshot.forEach(d => {
-        const data = d.data()
-        const elem = buildListTx(data)
-        $("#userTxs")[0].prepend(elem)
+      firebase.firestore().collection('presale').doc('supply').collection('purchased_presale_tx').doc(firebase.auth().currentUser.uid).get().then(preDoc => {
+        let preDocData = preDoc.data()
+        $('#userTxs').empty()
+        let allDoc = []
+        snapshot.forEach(d => {
+          allDoc.push(d)
+        })
+        allDoc.sort(compare)
+        allDoc.forEach(d => {
+          let data = d.data()
+          if (preDocData[d.id] !== undefined && preDocData[d.id] !== null) {
+            data.six_amount = Number((data.six_amount * 1.06).toFixed(7))
+            totalSix += data.six_amount
+            $('#totalSix').html(Number(totalSix.toFixed(7)).toLocaleString() + " SIX")
+          }
+          const elem = buildListTx(data)
+          $("#userTxs")[0].appendChild(elem)
+        })
+      }).catch(() => {
+        $('#userTxs').empty()
+        let allDoc = []
+        snapshot.forEach(d => {
+          allDoc.push(d)
+        })
+        allDoc.sort(compare)
+        allDoc.forEach(d => {
+          const data = d.data()
+          const elem = buildListTx(data)
+          $("#userTxs")[0].appendChild(elem)
+        })
       })
     }).then(() => {
       if (userData.alloc_transaction === true) {
@@ -515,7 +539,6 @@ $(document).ready(function(){
       window.location.href = '/'
     } else {
       initializeAdmin().then(() => {
-        sumSixAmountToUser()
         return $('#adminShortcut').css('display', 'block')
       }).finally(() => {
         return firebase.firestore().collection('users').doc(user.uid).get().then(doc => {

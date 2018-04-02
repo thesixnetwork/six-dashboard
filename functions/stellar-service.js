@@ -137,9 +137,12 @@ function handleOperation(user, tx, operation, n, price, priceTime) {
     let documentRef = fireStore
       .collection('purchase_txs')
       .doc(`${hash}_${operation.id}`);
-
+    let userRef = fireStore
+      .collection('users')
+      .doc(user_id)
     return transaction.get(documentRef).then(doc => {
       if (!doc.exists) {
+        transaction.update(userRef, { alloc_transaction: false })
         return transaction.create(documentRef, body);
       }
       const resultText = `Not insert : ${id} already exists`;
