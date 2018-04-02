@@ -48,7 +48,7 @@
     ]
   },
   {
-    "name": "lablock_sync",
+    "name": "latest_block_sync",
     "docs": [
       {
         "name": "eth",
@@ -59,7 +59,7 @@
       {
         "name": "xlm",
         "fields": {
-          "block_number": 0
+          "ts": 1522651074000
         }
       },
       {
@@ -76,7 +76,10 @@
       {
         "name": "supply",
         "fields": {
-          "total_eth": 0
+          "total_eth": 0,
+          "total_presale_six": 0,
+          "limit_presale_six": 52695489.62,
+          "bonus_times": 0.06
         }
       }
     ]

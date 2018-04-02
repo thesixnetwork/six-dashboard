@@ -36,7 +36,7 @@ function createElementFromHTML(htmlString) {
 // Build kyc user list element
 function buildListUser(doc) {
   console.log(doc, 'doc')
-  const { timeStamp, email, uid, diffValues, addressChanged, addressChangeData } = doc
+  const { timeStamp, email, uid, diffValues, walletChanged, walletChangeData } = doc
   let date = new Date((timeStamp + 3600 * 7) * 1000);
 
   var tr = document.createElement("tr");
@@ -76,18 +76,18 @@ function buildListUser(doc) {
   // address change
   var td4 = document.createElement("td");
   var txt4 = document.createTextNode('');
-  if (addressChanged) {
+  if (walletChanged) {
     // let addressChangeText = `from: ${addressChangeData.oldData}, to: ${addressChangeData.newData}`
     const span1 = td4.appendChild(document.createElement("span"));
     span1.appendChild(document.createTextNode(' From: '));
     const span2 = td4.appendChild(document.createElement("span"));
     span2.className = "red"
-    span2.appendChild(document.createTextNode(`"${addressChangeData.oldData}"`));
+    span2.appendChild(document.createTextNode(`"${walletChangeData.oldData}"`));
     const span3 = td4.appendChild(document.createElement("span"));
     span3.appendChild(document.createTextNode(' To: '));
     const span4 = td4.appendChild(document.createElement("span"));
     span4.className = "green"
-    span4.appendChild(document.createTextNode(`"${addressChangeData.newData}"`));
+    span4.appendChild(document.createTextNode(`"${walletChangeData.newData}"`));
     td3.appendChild(document.createElement("br"));
     td3.appendChild(document.createElement("br"));
   }
@@ -132,20 +132,20 @@ function initializeDatabase(status) {
           const diff = difference(document, oldDocument)
           const diffKeys = Object.keys(diff)
           let diffValues = []
-          let addressChanged = false
-          let addressChangeData = null
+          let walletChanged = false
+          let walletChangeData = null
           for (let diffKey of diffKeys) {
             const newData = document[diffKey]
             const oldData = oldDocument[diffKey]
-            if (diffKey !== 'address') {
+            if (diffKey !== 'eth_wallet') {
               diffValues.push({
                 newData,
                 oldData,
                 field: diffKey
               })
             } else {
-              addressChanged = true
-              addressChangeData = {
+              walletChanged = true
+              walletChangeData = {
                 newData,
                 oldData,
                 field: diffKey
@@ -157,8 +157,8 @@ function initializeDatabase(status) {
             email,
             diffValues,
             timeStamp: timeStamps[index],
-            addressChangeData,
-            addressChanged
+            walletChangeData,
+            walletChanged
           })
         }
         allLogs.sort((a, b) => b.timeStamp - a.timeStamp)
@@ -166,52 +166,6 @@ function initializeDatabase(status) {
           let elem = buildListUser(log)
           $("#adminList")[0].appendChild(elem)
         }
-        // docs.forEach(function (doc) {
-        //   allDocs.push(doc)
-        // })
-        // allDocs.sort(compare)
-        // allDocs.forEach(function (doc, index) {
-        //   const data = doc.data()
-        //   userData[doc.id] = data
-        //   let elem = buildListUser(doc);
-        //   $("#adminList")[0].appendChild(elem);
-        //   const { updater, kyc_status } = data
-        //   switch(status) {
-        //     case 'all':
-        //       renderStatus(doc.id, data)
-        //       break
-        //     case 'approved':
-        //       if (updater) {
-        //         $(`#${doc.id} td:last`).text(`${updater}`);
-        //       }
-        //       break
-        //     case 'rejected':
-        //       $(`#${doc.id} td:last`).text(`${updater}`);
-        //       break
-        //     case 'pending':
-        //       firebase
-        //       .database()
-        //       .ref(`watch-list/${doc.id}`)
-        //       .on("value", snapshot => {
-        //         const value = snapshot.val();
-        //         if (value && value !== null) {
-        //           const { uid, ip, email } = value;
-        //           const user = firebase.auth().currentUser;
-        //           $(`#${doc.id} td:last`).text(`${email}, ip: ${ip}`);
-        //           if (uid !== user.uid && ip !== currentIp) {
-        //             $("#hasWatchingText").text(`${uid} watching this user `);
-        //           }
-        //         } else {
-        //           $(`#${doc.id} td:last`).text("-");
-        //           $("#hasWatchingText").text(``);
-        //         }
-        //       });
-        //       break
-        //     case 'notComplete':
-        //       $('#remarkColumn').text('')
-        //       break
-        //   }
-        // });
         resolve();
       })
   });

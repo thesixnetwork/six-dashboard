@@ -2,13 +2,18 @@ const path = '/purchase_txs/{txId}'
 
 module.exports = function (functions, fireStore) {
   const events = functions.firestore.document(path)
-  return [{
-    'name': 'incrementTotalAsset',
-    'module': events.onCreate(event => incrementTotalAsset(event, functions, fireStore))
-  }]
+  return [
+    {
+      'name': 'incrementTotalAsset',
+      'module': events.onCreate(event => incrementTotalAsset(event, fireStore))
+    }, {
+      'name': 'presaleBonus',
+      'module': events.onCreate(event => presaleBonus(event, fireStore))
+    }
+  ]
 }
 
-function incrementTotalAsset (event, functions, fireStore) {
+function incrementTotalAsset (event, fireStore) {
   const data = event.data.data()
   console.log('Create Transaction:', event.params.txId, data.type, data.native_amount)
   const assetCol = fireStore.collection('total_asset')
@@ -22,4 +27,33 @@ function incrementTotalAsset (event, functions, fireStore) {
   })
   )
   )
+}
+
+function presaleBonus (event, fireStore) {
+  const purchaseTxData = event.data.data()
+  const txId = event.params.txId
+  const presaleCol = fireStore.collection('presale')
+  return fireStore.runTransaction(tx => {
+    const presaleRef = presaleCol.doc('supply')
+    const purchasedPresaleRef = presaleRef.collection('purchased_presale_tx')
+    return tx.get(presaleRef).then(presaleDoc => {
+      const supplyInfo = presaleDoc.data()
+      if (supplyInfo.total_presale_six >= supplyInfo.limit_presale_six) {
+        return Promise.resolve('Presale is soldout!')
+      }
+      const latestReceivedSix = supplyInfo.total_presale_six + purchaseTxData.six_amount
+      const userPurchasedPresaleRef = purchasedPresaleRef.doc(purchaseTxData.user_id)
+      const bonus = purchaseTxData.six_amount * (supplyInfo.bonus_times || 0.06)
+      return Promise.all([
+        tx.update(presaleRef, {total_presale_six: latestReceivedSix}),
+        tx.set(userPurchasedPresaleRef,
+          {[txId]: { tx_id: txId,
+            user_id: purchaseTxData.user_id,
+            original_six: purchaseTxData.six_amount,
+            bonus,
+            total: bonus + purchaseTxData.six_amount }
+          }, {merge: true})
+      ])
+    })
+  })
 }
