@@ -33,7 +33,7 @@ function submitConfirm() {
   const ethAddressDOM = document.getElementById('walletETHinput')
   const btnDOM = document.getElementById('alertConfirmBtn')
   const canDOM = document.getElementById('cancelConfirmBtn')
-  const ethAddress = ethAddressDOM.value
+  const ethAddress = ethAddressDOM.value.toLowerCase()
   setDisable([btnDOM, canDOM])
   requestFunction({eth_address: ethAddress}).then(response => {
     if (response.data.success === true) {
