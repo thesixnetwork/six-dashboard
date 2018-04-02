@@ -106,7 +106,7 @@ function saveETHwallet() {
   const ethWalletBtnDOM = document.getElementById('ethWalletBtn')
   const ethWalletDOM = document.getElementById('walletETHinput')
   setDisable([ethWalletDOM, ethWalletBtnDOM])
-  
+
 }
 
 function latestXLMprice() {
@@ -196,6 +196,17 @@ function updatePrice() {
   updateETHprice()
 }
 
+// count six amount
+function sumSixAmountToUser () {
+  firebase.firestore().collection('purchase_txs').where("user_id",'==',firebase.auth().currentUser.uid).get()
+    .then(snapshot => {
+      let sixAmount = 0
+      snapshot.forEach(doc => {
+        sixAmount = sixAmount + doc.data().six_amount
+      })
+      $('#totalSix').html(`${sixAmount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")} `)
+    })
+}
 // Chack if admin or not
 function initializeAdmin () {
   let promise = new Promise(function (resolve, reject) {
@@ -398,6 +409,7 @@ $(document).ready(function(){
       window.location.href = '/'
     } else {
       initializeAdmin().then(() => {
+        sumSixAmountToUser()
         return $('#adminShortcut').css('display', 'block')
       }).finally(() => {
         return firebase.firestore().collection('users').doc(user.uid).get().then(doc => {
