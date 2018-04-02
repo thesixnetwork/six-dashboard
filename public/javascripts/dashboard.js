@@ -97,7 +97,7 @@ function saveETHwallet() {
   const ethWalletBtnDOM = document.getElementById('ethWalletBtn')
   const ethWalletDOM = document.getElementById('walletETHinput')
   setDisable([ethWalletDOM, ethWalletBtnDOM])
-  
+
 }
 
 function latestXLMprice() {
@@ -211,14 +211,14 @@ function getCurrentTotal() {
   })
 }
 
-$(document).ready(function(){
-  document.getElementById('walletETHinput').onkeydown = function() {
-    $('#ethWalletAddressAlert').removeClass("invalid")
+$(document).ready(function () {
+  document.getElementById('walletETHinput').onkeydown = function () {
+    $('#ethWalletAddressAlert').removeClass('invalid')
     $("#ethWalletAddressAlertText").html('')
     $("#ethWalletAddressAlertText").css('display', 'none')
   }
 
-  document.getElementById('xlmToSixInput').onkeyup = function() {
+  document.getElementById('xlmToSixInput').onkeyup = function () {
     let number = parseFloat(this.value) || 0
     $("#xlmToSix").html(Number((number*xlmPrice.six_per_xlm).toFixed(7)).toLocaleString())
   }
@@ -259,6 +259,10 @@ $(document).ready(function(){
         return $('#adminShortcut').css('display', 'block')
       }).finally(() => {
         return firebase.firestore().collection('users').doc(user.uid).get().then(doc => {
+          const endtime = endtimeOfIco          
+          if (!(Date.now() > endtime && doc.data().all_done)) {
+            window.location.href = '/wizard'
+          }
           let userData = doc.data()
           let name = (userData.first_name || "") + " " + (userData.last_name || "")
           $("#displayName").html(name || "")

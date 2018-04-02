@@ -114,7 +114,7 @@ function currencyChange() {
     $("#estimateDescription").html("Please input your desire contribution amount in ETH currency, you should enter a least 0.2 ETH to get the minimum of SIX token")
   } else if (estimate_currency === "XLM") {
     $("#estimateDescription").html("Please input your desire contribution amount in XLM currency, you should enter a least 410 XLM to get the minimum of SIX token")
-  }  
+  }
 }
 
 function submitPhoneNumber() {
@@ -408,6 +408,9 @@ function initializeStep() {
       let db = firebase.firestore()
       db.collection('users').doc(firebase.auth().currentUser.uid).get().then(doc => {
         userData = doc.data()
+        if (Date.now() > endtimeOfIco && userData.all_done) {
+          window.location.href = '/dashboard'
+        }
         setupUserData()
         if (doc.data().phone_verified === true) {
           goToKYCStep()
@@ -798,7 +801,6 @@ $(document).ready(function () {
         $('#adminShortcut').css('display', 'block')
       }).finally(() => {
         initializeStep().then(() => {
-
         }).finally(() => {
           $('#preLoader').fadeToggle()
         })
