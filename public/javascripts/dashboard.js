@@ -195,7 +195,7 @@ function sumSixAmountToUser () {
       snapshot.forEach(doc => {
         sixAmount = sixAmount + doc.data().six_amount
       })
-      $('#totalSix').html(`${sixAmount} `)
+      $('#totalSix').html(`${sixAmount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")} `)
     })
 }
 // Chack if admin or not
