@@ -9,7 +9,8 @@ const etherscan = require('etherscan-api')
 
 const isProduction = functions.config().campaign.is_production === 'true'
 const ethAddress = functions.config().eth.address
-let api = isProduction ? etherscan.init(ethAddress) : etherscan.init(ethAddress, 'ropsten')
+const apiKey = 'ERCB43FKXUNEXD8U3S6PNHX6GCJ2D6G6D9'
+let api = isProduction ? etherscan.init(apiKey) : etherscan.init(apiKey, 'ropsten')
 
 const db = admin.firestore()
 
