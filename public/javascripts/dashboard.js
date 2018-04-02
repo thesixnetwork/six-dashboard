@@ -65,16 +65,33 @@ function startConfirmation() {
     $("#submitWalletAlert").slideToggle()
   }
   const ethAddressDOM = document.getElementById('walletETHinput')
+  const confirmAddressBtnDOM = document.getElementById('confirmAddressBtn')
   const ethAddress = ethAddressDOM.value
   if (ethAddress === undefined || ethAddress === null || ethAddress === '') {
     $("#ethWalletAddressAlert").addClass("invalid")
     $("#ethWalletAddressAlertText").html("ETH Address could not be blank")
     $("#ethWalletAddressAlertText").css("display", "block")
   } else {
-    $("#confirmETHAddress").html(ethAddress)
-    if ($("#alertModal").css("display") === 'none') {
-      $("#alertModal").fadeToggle()
-    }
+    let requestFunction = firebase.functions().httpsCallable('updateETHWallet')
+    setDisable([ethAddressDOM, confirmAddressBtnDOM])
+    requestFunction({eth_address: ethAddress}).then(response => {
+      if (response.data.success === true) {
+        setEnable([ethAddressDOM, confirmAddressBtnDOM])
+        $("#mainBox").css("display", "none")
+        $("#depositETHBox").css("display", "block")
+        $("#walletBox").css("display", "none")
+        $("#warnBox").css("display", "none")
+        $("#myWallet").css("display", "block")
+        $("#myETHaddress")[0].value = ethAddress
+        $("#myETHWalletAddress").html(ethAddress)
+      } else {
+        $("#submitWalletAlertText").html(response.data.error_message)
+        if ($("#submitWalletAlert").css("display") === 'none') {
+          $("#submitWalletAlert").slideToggle()
+        }
+        setEnable([ethAddressDOM, confirmAddressBtnDOM])
+      }
+    })
   }
 }
 
@@ -175,7 +192,7 @@ function latestETHprice() {
 
 function updateXLMprice() {
   latestXLMprice().then(data => {
-    $(".xlmPrice").html("1 / "+data.price.price)
+    $(".xlmPrice").html("1 SIX = "+data.price.price+" USD")
     xlmPrice = data.price
     const elem = document.getElementById('xlmToSixInput')
     setEnable([elem])
@@ -184,7 +201,7 @@ function updateXLMprice() {
 
 function updateETHprice() {
   latestETHprice().then(data => {
-    $(".ethPrice").html("1 / "+data.price.price)
+    $(".ethPrice").html("1 SIX = "+data.price.price+" USD")
     ethPrice = data.price
     const elem = document.getElementById('ethToSixInput')
     setEnable([elem])
@@ -275,9 +292,16 @@ function submitDepositXLM() {
 
 function submitDepositETH() {
   const ethToSixInput = document.getElementById("ethToSixInput")
-  $("#depositETHamount").html(parseFloat(ethToSixInput.value))
-  $("#depositETHBox").css("display", "none")
-  $("#submitETHBox").css("display", "block")
+  const eth_value = (parseFloat(ethToSixInput.value) || 0)
+  if (eth_value > 0 && ethToSixInput.value !== undefined && ethToSixInput.value !== null && ethToSixInput.value !== '') {
+    $("#depositETHamount").html(eth_value)
+    $("#depositETHBox").css("display", "none")
+    $("#submitETHBox").css("display", "block")
+  } else {
+    $("#ethToSixInputAlert").addClass("invalid")
+    $("#ethToSixInputAlertText").html("Value should be > 0")
+    $("#ethToSixInputAlertText").css("display", "block")
+  }
 }
 
 function getCurrentTotal() {
@@ -428,6 +452,7 @@ $(document).ready(function(){
             }
           }
           if (userData.eth_address !== undefined) {
+            $("#myWallet").css("display", "block")
             $("#myETHaddress")[0].value = userData.eth_address
             $("#myETHWalletAddress").html(userData.eth_address)
           } else {

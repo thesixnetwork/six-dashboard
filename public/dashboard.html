@@ -75,7 +75,7 @@
           </a>
           <p>How to contribute SIX token</p>
         </section>
-        <section id='myWallet'>
+        <section id='myWallet' style='display: none;'>
           <h4>My wallet</h4>
           <p id='myETHWallet' class='truncate'>ETH : <span id='myETHWalletAddress'></span></p>
           <a href="#">How to contribute using ETH</a>
@@ -182,15 +182,15 @@
               <input type="text" placeholder="0" id='xlmToSixInput' disabled/>
               <p id='xlmToSixInputAlertText' style='display: none;'></p>
             </label>
-            <p>≈ <strong><span id='xlmToSix'>0</span> SIX</strong></p>
+            <p style='font-size: 23px;'>≈ <strong><span id='xlmToSix'>0</span> SIX</strong></p>
           </div>
           <p style='margin-top: 20px; margin-bottom: 20px;'>Please understand that the SIX token value here is estimated based on the current exchange rate. Your SIX token will be re-calculated using the actual exchange rate at the time we receive your deposit.</p>
           <p style='margin-top: 20px; text-align: center;'><strong>Live exchange rate from cryptocompare (1 hour interval)</strong></p>
           <section id='exchange'>
             <ul class="exchange" id='exchange-ul'>
-              <li class='exchange-li'><p>SIX / USD</p><p>1 / 0.1</p></li>
-              <li class='exchange-li'><p>ETH / USD</p><p class="ethPrice">Loading</p></li>
-              <li class='exchange-li'><p>XLM / USD</p><p class="xlmPrice">Loading</p></li>
+              <li class='exchange-li'><p>SIX / USD</p><p style='font-size: 18px;'>1 SIX = 0.1 USD</p></li>
+              <li class='exchange-li'><p>ETH / USD</p><p class="ethPrice" style='font-size: 18px;'>Loading</p></li>
+              <li class='exchange-li'><p>XLM / USD</p><p class="xlmPrice" style='font-size: 18px;'>Loading</p></li>
             </ul>
           </section>
           <div class="btn"><button id='submitDepositXLM' onclick='submitDepositXLM()'>Submit</button></div>
@@ -213,7 +213,7 @@
               <input type="text" placeholder="0" id='ethToSixInput' disabled/>
               <p id='ethToSixInputAlertText' style='display: none;'></p>
             </label>
-            <p>≈ <strong><span id='ethToSix'>0</span> SIX</strong></p>
+            <p style='font-size: 23px;'>≈ <strong><span id='ethToSix'>0</span> SIX</strong></p>
           </div>
           <p style='margin-top: 15px;'>
             <strong>Source of Funds (YOUR ADDRESS)</strong>
@@ -225,9 +225,9 @@
           <p style='margin-top: 20px; text-align: center;'><strong>Live exchange rate from cryptocompare (1 hour interval)</strong></p>
           <section id='exchange'>
             <ul class="exchange" id='exchange-ul'>
-              <li class='exchange-li'><p>SIX / USD</p><p>1 / 0.1</p></li>
-              <li class='exchange-li'><p>ETH / USD</p><p class="ethPrice">Loading</p></li>
-              <li class='exchange-li'><p>XLM / USD</p><p class="xlmPrice">Loading</p></li>
+              <li class='exchange-li'><p>SIX / USD</p><p style='font-size: 18px;'>1 SIX = 0.1 USD</p></li>
+              <li class='exchange-li'><p>ETH / USD</p><p class="ethPrice" style='font-size: 18px;'>Loading</p></li>
+              <li class='exchange-li'><p>XLM / USD</p><p class="xlmPrice" style='font-size: 18px;'>Loading</p></li>
             </ul>
           </section>
           <div class="btn"><button id='submitDepositETH' onclick='submitDepositETH()'>Submit</button></div>
