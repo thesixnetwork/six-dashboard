@@ -48,7 +48,7 @@
     ]
   },
   {
-    "name": "lablock_sync",
+    "name": "latest_block_sync",
     "docs": [
       {
         "name": "eth",
@@ -76,7 +76,22 @@
       {
         "name": "supply",
         "fields": {
-          "total_eth": 0
+          "total_eth": 0,
+          "total_xlm": 0,
+          "total_reserved_in_eth": 0
+        }
+      }
+    ]
+  },
+  {
+    "name": "latest_price",
+    "docs": [
+      {
+        "name": "xlm_eth",
+        "fields": {
+          "price": 0.0005436,
+          "time": 1522645200000,
+          "time_string": "Mon Apr 02 2018 12:00:00 GMT+0700" 
         }
       }
     ]

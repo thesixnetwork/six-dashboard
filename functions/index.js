@@ -22,6 +22,7 @@ for (let trigger of userModels) {
 }
 
 const getBasePriceURI = (coin) => `https://min-api.cryptocompare.com/data/price?fsym=${coin}&tsyms=USD`
+const getBasePriceURIETH = (coin) => `https://min-api.cryptocompare.com/data/price?fsym=${coin}&tsyms=ETH`
 
 function generatePhoneVerificationCode (phoneNumber) {
   let refCode = Math.random().toString(36).replace(/[^a-z]+/g, '').substr(0, 5).toUpperCase()
@@ -180,6 +181,27 @@ exports.hourly_btc = functions.pubsub.topic('hourly-btc').onPublish((event) => {
   return handleHourlyEvent(event, baseToken)
 })
 
+exports.latest_xlm_eth = functions.pubsub.topic('latest-xlm-eth').onPublish((event) => {
+  const baseToken = 'xlm'
+  return handleLatestEvent(baseToken)
+})
+
+handleLatestEvent('xlm')
+
+function handleLatestEvent (baseToken) {
+  const time = getTime()
+  const uri = getBasePriceURIETH(baseToken.toUpperCase())
+
+  return request({
+    uri,
+    method: 'GET',
+    json: true
+  })
+    .then((body) => {
+      return updateLatestPrice(body, baseToken, time)
+    })
+}
+
 function handleHourlyEvent (event, baseToken) {
   const time = getTime()
   const uri = getBasePriceURI(baseToken.toUpperCase())
@@ -191,6 +213,21 @@ function handleHourlyEvent (event, baseToken) {
   })
     .then((body) => {
       return updateHourlyPrice(body, baseToken, time)
+    })
+}
+
+function updateLatestPrice (body, baseToken, time) {
+  const price = body.ETH
+  console.log('update latest price')
+  console.log(price)
+  if (price <= 0 || price === undefined) return
+  return fireStore
+    .collection('latest_price')
+    .doc(`${baseToken}_eth`)
+    .set({
+      price,
+      time: time.unix,
+      time_string: time.string
     })
 }
 
@@ -214,8 +251,8 @@ exports.monitorETH = functions.pubsub.topic('monitor-eth').onPublish(() => {
 exports.monitorXLM = functions.pubsub.topic('monitor-xlm').onPublish(stellarService)
 
 exports.logsUserTable = functions.firestore.document('users/{userId}').onWrite((event) => {
-  const document = event.data.exists ? event.data.data() : null;
+  const document = event.data.exists ? event.data.data() : null
   const timestamp = Date.now()
-  const oldDocument = event.data.previous.data();
+  const oldDocument = event.data.previous.data()
   return admin.database().ref(`logs/${timestamp}`).set({document, oldDocument})
 })
