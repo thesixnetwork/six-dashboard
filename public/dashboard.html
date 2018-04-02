@@ -180,8 +180,9 @@
           <h2>Create your deposit</h2>
           <p style='margin-bottom: 25px; text-align: center;'>Enter the amount you wish to deposit</p>
           <div class="Exexchange">
-            <label class="text" id='xlmToSixInputAlert'>
-              <input type="text" placeholder="0" id='xlmToSixInput' disabled/>
+            <label class="text dropdown" id='xlmToSixInputAlert'>
+              <input type="text" placeholder="Your contribution amount in" id='xlmToSixInput' style="text-align: end; width: 90%;" disabled/>
+              <i class="">XLM</i>
               <p id='xlmToSixInputAlertText' style='display: none;'></p>
             </label>
             <p style='font-size: 23px;'>≈ <strong><span id='xlmToSix'>0</span> SIX</strong><span id='bonusXLMText' style='display: none;'> + BONUS <span id='bonusXLM'>0</span> SIX</span></p>
@@ -211,8 +212,9 @@
           <h2>Create your deposit</h2>
           <p style='margin-bottom: 25px; text-align: center;'>Enter the amount you wish to deposit</p>
           <div class="Exexchange">
-            <label class="text" id='ethToSixInputAlert'>
-              <input type="text" placeholder="0" id='ethToSixInput' disabled/>
+            <label class="text dropdown" id='ethToSixInputAlert'>
+              <input placeholder="Your contribution amount in" id="ethToSixInput" style="text-align: end; width: 90%;" type="text">
+              <i class="">ETH</i>
               <p id='ethToSixInputAlertText' style='display: none;'></p>
             </label>
             <p style='font-size: 23px;'>≈ <strong><span id='ethToSix'>0</span> SIX</strong><span id='bonusETHText' style='display: none;'> + BONUS <span id='bonusETH'>0</span> SIX</span></p>
@@ -277,19 +279,21 @@
               <div class="btn btnInline"><button id='gotoQuestionBtn' onclick='gotoCurrency()'>Add deposit</button></div>
               <div class="btn btnInline"><button id='contactBtn' onclick='window.open("http://m.me/thesixnetwork")'>Contact Us</button></div>
             </div>
-            <table id='txHistoryTable'>
-              <thead>
-                <tr>
-                  <th width="120">From</th>
-                  <th width="130">To</th>
-                  <th>Transaction ID</th>
-                  <th width="120">Status</th>
-                  <th width="200">Datetime</th>
-                </tr>
-              </thead>
-              <tbody id="userTxs">
-              </tbody>
-            </table>
+            <div id='tableContainer'>
+              <table id='txHistoryTable'>
+                <thead>
+                  <tr>
+                    <th width="120">From</th>
+                    <th width="130">To</th>
+                    <th width="400">Transaction ID</th>
+                    <th width="120">Status</th>
+                    <th width="200">Datetime</th>
+                  </tr>
+                </thead>
+                <tbody id="userTxs">
+                </tbody>
+              </table>
+            </div>
             <div id='loadmoreBtn' style='display: none;' class="loader-more"><a href="#">More</a></div>
           </section>
         </div>
