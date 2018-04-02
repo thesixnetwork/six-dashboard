@@ -6,7 +6,9 @@
         {"fieldPath": "email", "mode": "ASCENDING"},
         {"fieldPath": "eth_address", "mode": "ASCENDING"},
         {"fieldPath": "btc_address", "mode": "ASCENDING"},
-        {"fieldPath": "xlm_memo", "mode": "ASCENDING"}
+        {"fieldPath": "xlm_memo", "mode": "ASCENDING"},
+        {"fieldPath": "memo", "mode": "ASCENDING"},
+        {"fieldPath": "kyc_status", "mode": "ASCENDING"}
       ]
     },
     {

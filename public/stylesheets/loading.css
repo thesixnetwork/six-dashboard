@@ -159,7 +159,7 @@ main.login header .logo {
   max-width: 1280px;
 }
 
-#signUpAlert {
+#signUpAlert, #submitWalletAlert {
   height: auto;
   display: none;
   margin: 16px auto;
@@ -173,4 +173,86 @@ main.login header .logo {
   margin: 16px auto;
   overflow: visible;
   visibility: visible;
+}
+
+label < input:disabled {
+  opacity: 0.9;
+}
+
+.input-and-btn {
+  display: flex!important;
+}
+
+.walletSave {
+  height: 43px!important;
+  max-width: 100px;
+}
+
+#alertModal {
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  display: table;
+  background: rgba(0,0,0,0.5);
+  z-index: 9999;
+  opacity: 1;
+}
+
+#alertModalWrapper {
+  text-align: center;
+  padding: 5px;
+  margin: auto;
+  display: table-cell;
+  vertical-align: middle;
+}
+
+#alertModalContainer {
+  max-width: 100%;
+  margin: auto;
+  background: white;
+  border-radius: 2px;
+  padding: 15px;
+}
+
+.confirmBtn {
+  max-width: 80px;
+  height: 30px;
+}
+
+#alertConfirmBtn {
+  float: right;
+}
+
+
+#cancelConfirmBtn {
+  background: #848c99;
+}
+#leftBtn, #rightBtn {
+  width: 100%;
+}
+
+#fixWidth {
+  max-width: 640px;
+  margin: auto;
+}
+
+#barPercentage {
+  min-width: 0px;
+  text-shadow: -1px -1px 0 #4a5ab5, 1px -1px 0 #4a5ab5, -1px 1px 0 #4a5ab5, 1px 1px 0 #4a5ab5;
+}
+
+.dashboard-2 section.progress .bar::before {
+  left: 35%!important;
+}
+
+.zeroStart {
+  width: 20%!important;
+}
+
+.softCapText {
+  width: 33.3%!important;
+}
+
+.hardCapText {
+  width: 53.3%!important;
 }

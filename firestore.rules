@@ -10,5 +10,21 @@ service cloud.firestore {
     match /admins/{userId}{
     	allow read: if exists(/databases/$(database)/documents/admins/$(request.auth.uid));
     }
+    match /watch-list/{watchId} {
+      allow read: if exists(/databases/$(database)/documents/admins/$(request.auth.uid));
+      allow write: if exists(/databases/$(database)/documents/admins/$(request.auth.uid));
+    }
+    match /user-eth-wallets/{walletAddress}{
+      allow create, read, update: if request.auth.token.admin == true;
+    }
+    match /xlm_prices/{timeStamp}{
+      allow read: if true;
+    }
+    match /eth_prices/{timeStamp}{
+      allow read: if true;
+    }
+    match /total_asset/{currencyType}{
+      allow read: if true;
+    }
   }
 }

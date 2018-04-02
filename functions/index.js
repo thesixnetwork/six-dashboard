@@ -23,6 +23,23 @@ for (let trigger of userModels) {
 
 const getBasePriceURI = (coin) => `https://min-api.cryptocompare.com/data/price?fsym=${coin}&tsyms=USD`
 
+exports.incrementTotalAsset = functions.firestore.document('/purchase_txs/{txId}')
+  .onCreate(event => {
+    const data = event.data.data()
+    console.log('Create Transaction:', event.params.txId, data.type, data.native_amount)
+    const assetCol = fireStore.collection('total_asset')
+    return fireStore.runTransaction(tx => Promise.all([
+      {type: data.type, key: 'native_amount'},
+      {type: 'usd', key: 'total_usd_price'},
+      {type: 'six', key: 'six_amount'}
+    ].map(asset => {
+      const ref = assetCol.doc(asset.type)
+      return tx.get(ref).then(assetDoc => tx.update(ref, {total: assetDoc.data().total + data[asset.key]}))
+    })
+    )
+    )
+  })
+
 function generatePhoneVerificationCode (phoneNumber) {
   let refCode = Math.random().toString(36).replace(/[^a-z]+/g, '').substr(0, 5).toUpperCase()
   let code = Math.random().toString().substr(2, 6)
@@ -137,6 +154,31 @@ exports.phoneVerificationSubmit = functions.https.onCall((data, context) => {
     console.log(err)
     return { success: false, error_message: err.message }
   })
+})
+
+exports.updateETHWallet = functions.https.onCall((data, context) => {
+  const uid = context.auth.uid
+  const eth_address = data.eth_address
+  const ref = admin.firestore().collection('user-eth-wallets')
+  const userRef = admin.firestore().collection('users')
+  if (eth_address !== undefined && eth_address !== null) {
+    return ref.doc(eth_address).get().then(doc => {
+      if (doc.exists) {
+        return { success: false, error_message: 'ETH address have been used' }
+      } else {
+        let batch = admin.firestore().batch()
+        batch.set(ref.doc(eth_address), {uid: uid})
+        batch.update(userRef.doc(uid), {'eth_address': eth_address, 'submit_wallet': true})
+        return batch.commit().then(() => {
+          return { success: true }
+        }).catch(err => {
+          return { success: false, error_message: err.message }
+        })
+      }
+    })
+  } else {
+    return { success: false, error_message: 'ETH address could not be blank' }
+  }
 })
 
 exports.initializeUserDoc = functions.auth.user().onCreate((event) => {
