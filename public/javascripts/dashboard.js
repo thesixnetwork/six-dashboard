@@ -84,6 +84,7 @@ function startConfirmation() {
         $("#myWallet").css("display", "block")
         $("#myETHaddress")[0].value = ethAddress
         $("#myETHWalletAddress").html(ethAddress)
+        userData.submit_wallet = true
       } else {
         $("#submitWalletAlertText").html(response.data.error_message)
         if ($("#submitWalletAlert").css("display") === 'none') {
@@ -276,10 +277,25 @@ function submitWelcome() {
   $("#warnBox").css("display", "none")
 }
 
+function insertFakeTx (native_amount, six_amount, type) {
+  firebase.firestore().collection('fake_txs').doc(`${Date.now()}_${firebase.auth().currentUser.uid}`)
+    .set({
+      native_amount,
+      six_amount,
+      type,
+      user_id: firebase.auth().currentUser.uid,
+      time: Date.now(),
+      tx_status: 'pending',
+      id: `FAKE_${Date.now()}`
+    }).then(() => getTxs())
+}
+
 function submitDepositXLM() {
   const xlmToSixInput = document.getElementById("xlmToSixInput")
+  const sixAmount = document.getElementById('xlmToSix').innerHTML
   const xlm_value = (parseFloat(xlmToSixInput.value) || 0)
   if (xlm_value > 0 && xlmToSixInput.value !== undefined && xlmToSixInput.value !== null && xlmToSixInput.value !== '') {
+    insertFakeTx(parseFloat(xlmToSixInput.value), parseFloat(sixAmount.replace(',', '')), 'xlm')
     $("#depositXLMamount").html(xlm_value)
     $("#depositXLMBox").css("display", "none")
     $("#submitXLMBox").css("display", "block")
@@ -292,8 +308,10 @@ function submitDepositXLM() {
 
 function submitDepositETH() {
   const ethToSixInput = document.getElementById("ethToSixInput")
+  const sixAmount = document.getElementById('ethToSix').innerHTML
   const eth_value = (parseFloat(ethToSixInput.value) || 0)
   if (eth_value > 0 && ethToSixInput.value !== undefined && ethToSixInput.value !== null && ethToSixInput.value !== '') {
+    insertFakeTx(parseFloat(ethToSixInput.value), parseFloat(sixAmount.replace(',', '')), 'eth')
     $("#depositETHamount").html(eth_value)
     $("#depositETHBox").css("display", "none")
     $("#submitETHBox").css("display", "block")
@@ -318,7 +336,13 @@ function submitDepositXLMTran() {
   const xlmToSixInput = document.getElementById("xlmToSixInput")
   const xlm_value = (parseFloat(xlmToSixInput.value) || 0)
   setDisable([btnDOM])
-  updateUser({first_transaction: true, alloc_transaction: true, alloc_transaction_type: 'XLM', alloc_transaction_amount: xlm_value, alloc_time: Math.round((new Date()).getTime() / 1000)}).then(() => {
+  let amount = 0
+  if (userData.is_presale === true) {
+    amount = Number((xlm_value*xlmPrice.six_per_xlm).toFixed(7))
+  } else {
+    amount = Number((xlm_value*xlmPrice.six_per_xlm).toFixed(7))*1.06
+  }
+  updateUser({first_transaction: true, alloc_transaction: true, alloc_transaction_type: 'XLM', alloc_transaction_amount: xlm_value, alloc_transaction_six_amount: amount, alloc_time: (new Date()).getTime()}).then(() => {
     setEnable([btnDOM])
     $("#questionBox").css("display", "none")
     $("#submitXLMBox").css("display", "none")
@@ -326,16 +350,10 @@ function submitDepositXLMTran() {
     $("#depositETHBox").css("display", "none")
     $("#depositXLMBox").css("display", "none")
     $("#mainBox").css("display", "none")
+    const thisTime = (new Date()).getTime()
+    const elem = buildListTx({ time: thisTime, native_amount: xlm_value, type: "XLM", to: '-', id: '-', time: thisTime, six_amount: amount.toLocaleString(), tx_status: 'pending' })
+    $("#userTxs")[0].prepend(elem)
     if (userData.seen_congrat === true) {
-      const thisTime = (new Date()).getTime()
-      let amount = 0
-      if (userData.is_presale === true) {
-        amount = Number((xlm_value*xlmPrice.six_per_xlm).toFixed(7))
-      } else {
-        amount = Number((xlm_value*xlmPrice.six_per_xlm).toFixed(7))*1.06
-      }
-      const elem = buildListTx({ time: thisTime, native_amount: xlm_value, type: "XLM", to: '-', id: '-', time: thisTime, six_amount: amount.toLocaleString(), tx_status: 'pending' })
-      $("#userTxs")[0].prepend(elem)
       $("#mainBox").css("display", "block")
     } else {
       $("#congratulationBox").css("display", "block")
@@ -350,7 +368,13 @@ function submitDepositETHTran() {
   const ethToSixInput = document.getElementById("ethToSixInput")
   const eth_value = (parseFloat(ethToSixInput.value) || 0)
   setDisable([btnDOM])
-  updateUser({first_transaction: true, alloc_transaction: true, alloc_transaction_type: 'ETH', alloc_transaction_amount: eth_value, alloc_time: Math.round((new Date()).getTime() / 1000)}).then(() => {
+  let amount = 0
+  if (userData.is_presale === true) {
+    amount = Number((eth_value*ethPrice.six_per_eth).toFixed(7))
+  } else {
+    amount = Number((eth_value*ethPrice.six_per_eth).toFixed(7))*1.06
+  }
+  updateUser({first_transaction: true, alloc_transaction: true, alloc_transaction_type: 'ETH', alloc_transaction_amount: eth_value, alloc_transaction_six_amount: amount, alloc_time: (new Date()).getTime()}).then(() => {
     setEnable([btnDOM])
     $("#questionBox").css("display", "none")
     $("#submitXLMBox").css("display", "none")
@@ -358,16 +382,10 @@ function submitDepositETHTran() {
     $("#depositETHBox").css("display", "none")
     $("#depositXLMBox").css("display", "none")
     $("#mainBox").css("display", "none")
+    const thisTime = (new Date()).getTime()
+    const elem = buildListTx({ time: thisTime, native_amount: eth_value, type: "ETH", to: '-', id: '-', time: thisTime, six_amount: amount.toLocaleString(), tx_status: 'pending' })
+    $("#userTxs")[0].prepend(elem)
     if (userData.seen_congrat === true) {
-      const thisTime = (new Date()).getTime()
-      let amount = 0
-      if (userData.is_presale === true) {
-        amount = Number((eth_value*ethPrice.six_per_eth).toFixed(7))
-      } else {
-        amount = Number((eth_value*ethPrice.six_per_eth).toFixed(7))*1.06
-      }
-      const elem = buildListTx({ time: thisTime, native_amount: eth_value, type: "ETH", to: '-', id: '-', time: thisTime, six_amount: amount.toLocaleString(), tx_status: 'pending' })
-      $("#userTxs")[0].prepend(elem)
       $("#mainBox").css("display", "block")
     } else {
       $("#congratulationBox").css("display", "block")
@@ -416,8 +434,9 @@ function buildListTx(doc) {
   var txt2 = document.createTextNode(six_amount + " SIX");
   td2.appendChild(txt2);
   // edt fiele
+  const idText = id.includes('FAKE') ? '-' : id.split("_")[0]
   var td3 = document.createElement("td");
-  var txt3 = document.createTextNode(id.split("_")[0]);
+  var txt3 = document.createTextNode(idText);
   td3.appendChild(txt3)
 
   let this_status = 'success'
@@ -442,15 +461,36 @@ function buildListTx(doc) {
 
 function getTxs () {
   if (firebase.auth().currentUser !== null) {
-    firebase.firestore().collection('purchase_txs')
-    .where("user_id",'==',firebase.auth().currentUser.uid)
-    .get()
-    .then(snapshot => {
-      $('#userTxs').empty()
-      snapshot.forEach(d => {
-        const data = d.data()
-        const elem = buildListTx(data)
-        $("#userTxs")[0].appendChild(elem)
+    let db = firebase.firestore();
+    let dbRef = db.collection('purchase_txs')
+    let query = dbRef.where("user_id",'==',firebase.auth().currentUser.uid)
+    query
+    .onSnapshot(snapshot => {
+      firebase.firestore().collection('fake_txs')
+      .where("user_id",'==',firebase.auth().currentUser.uid)
+      .get()
+      .then(fakeSnapshot => {
+        $('#userTxs').empty()
+        let allTxs = []
+        let fakeTxs = []
+        snapshot.forEach(d => {
+          const data = d.data()
+          allTxs.push(data)
+        })
+        fakeSnapshot.forEach(fakeTx => {
+          const data = fakeTx.data()
+          const target = allTxs.find(t => t.id === data.id)
+          if (!target) {
+            allTxs.push(data)
+          } else {
+            fakeTx.ref.delete()
+          }
+        })
+        allTxs.sort((a, b) => new Date(parseInt(b.time)) - new Date(parseInt(a.time)))
+        allTxs.forEach(tx => {
+          const elem = buildListTx(tx)
+          $("#userTxs")[0].appendChild(elem)
+        })
       })
     })
   }
