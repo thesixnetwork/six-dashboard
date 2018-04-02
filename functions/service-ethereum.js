@@ -98,6 +98,7 @@ function filterTransactions (transactions, contractAddress) {
     if (transaction.to !== contractAddress) {
       return null
     }
+    return transaction
   })
   _transactions = _.compact(_transactions)
   return _transactions
