@@ -48,7 +48,7 @@
     ]
   },
   {
-    "name": "lablock_sync",
+    "name": "latest_block_sync",
     "docs": [
       {
         "name": "eth",
