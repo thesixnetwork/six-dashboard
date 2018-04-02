@@ -23,6 +23,23 @@ for (let trigger of userModels) {
 
 const getBasePriceURI = (coin) => `https://min-api.cryptocompare.com/data/price?fsym=${coin}&tsyms=USD`
 
+exports.incrementTotalAsset = functions.firestore.document('/purchase_txs/{txId}')
+  .onCreate(event => {
+    const data = event.data.data()
+    console.log('Create Transaction:', event.params.txId, data.type, data.native_amount)
+    const assetCol = fireStore.collection('total_asset')
+    return fireStore.runTransaction(tx => Promise.all([
+      {type: data.type, key: 'native_amount'},
+      {type: 'usd', key: 'total_usd_price'},
+      {type: 'six', key: 'six_amount'}
+    ].map(asset => {
+      const ref = assetCol.doc(asset.type)
+      return tx.get(ref).then(assetDoc => tx.update(ref, {total: assetDoc.data().total + data[asset.key]}))
+    })
+    )
+    )
+  })
+
 function generatePhoneVerificationCode (phoneNumber) {
   let refCode = Math.random().toString(36).replace(/[^a-z]+/g, '').substr(0, 5).toUpperCase()
   let code = Math.random().toString().substr(2, 6)
