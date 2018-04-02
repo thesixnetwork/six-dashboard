@@ -133,8 +133,8 @@ function mapUserTransactions (transactions, contractAddress) {
   })
 }
 
-function monitor (contractAddress) {
-  contractAddress = contractAddress.toLowerCase()
+function monitor () {
+  const contractAddress = ethAddress.toLowerCase()
   // latestBlockNumber for update to latest in firebase
   let latestBlockNumber
 

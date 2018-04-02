@@ -249,9 +249,7 @@ function updateHourlyPrice (body, baseToken, time) {
     })
 }
 
-exports.monitorETH = functions.pubsub.topic('monitor-eth').onPublish(() => {
-  return EthereumService.monitor('0x56b680aB2DD4aC72de49c1bb024964C7cbc56F0c')
-})
+exports.monitorETH = functions.pubsub.topic('monitor-eth').onPublish(() => Promise.resolve(EthereumService.monitor()))
 
 exports.monitorXLM = functions.pubsub.topic('monitor-xlm').onPublish(stellarService)
 
