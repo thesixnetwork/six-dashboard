@@ -326,16 +326,16 @@ function submitDepositXLMTran() {
     $("#depositETHBox").css("display", "none")
     $("#depositXLMBox").css("display", "none")
     $("#mainBox").css("display", "none")
+    const thisTime = (new Date()).getTime()
+    let amount = 0
+    if (userData.is_presale === true) {
+      amount = Number((xlm_value*xlmPrice.six_per_xlm).toFixed(7))
+    } else {
+      amount = Number((xlm_value*xlmPrice.six_per_xlm).toFixed(7))*1.06
+    }
+    const elem = buildListTx({ time: thisTime, native_amount: xlm_value, type: "XLM", to: '-', id: '-', time: thisTime, six_amount: amount.toLocaleString(), tx_status: 'pending' })
+    $("#userTxs")[0].prepend(elem)
     if (userData.seen_congrat === true) {
-      const thisTime = (new Date()).getTime()
-      let amount = 0
-      if (userData.is_presale === true) {
-        amount = Number((xlm_value*xlmPrice.six_per_xlm).toFixed(7))
-      } else {
-        amount = Number((xlm_value*xlmPrice.six_per_xlm).toFixed(7))*1.06
-      }
-      const elem = buildListTx({ time: thisTime, native_amount: xlm_value, type: "XLM", to: '-', id: '-', time: thisTime, six_amount: amount.toLocaleString(), tx_status: 'pending' })
-      $("#userTxs")[0].prepend(elem)
       $("#mainBox").css("display", "block")
     } else {
       $("#congratulationBox").css("display", "block")
@@ -358,16 +358,16 @@ function submitDepositETHTran() {
     $("#depositETHBox").css("display", "none")
     $("#depositXLMBox").css("display", "none")
     $("#mainBox").css("display", "none")
+    const thisTime = (new Date()).getTime()
+    let amount = 0
+    if (userData.is_presale === true) {
+      amount = Number((eth_value*ethPrice.six_per_eth).toFixed(7))
+    } else {
+      amount = Number((eth_value*ethPrice.six_per_eth).toFixed(7))*1.06
+    }
+    const elem = buildListTx({ time: thisTime, native_amount: eth_value, type: "ETH", to: '-', id: '-', time: thisTime, six_amount: amount.toLocaleString(), tx_status: 'pending' })
+    $("#userTxs")[0].prepend(elem)
     if (userData.seen_congrat === true) {
-      const thisTime = (new Date()).getTime()
-      let amount = 0
-      if (userData.is_presale === true) {
-        amount = Number((eth_value*ethPrice.six_per_eth).toFixed(7))
-      } else {
-        amount = Number((eth_value*ethPrice.six_per_eth).toFixed(7))*1.06
-      }
-      const elem = buildListTx({ time: thisTime, native_amount: eth_value, type: "ETH", to: '-', id: '-', time: thisTime, six_amount: amount.toLocaleString(), tx_status: 'pending' })
-      $("#userTxs")[0].prepend(elem)
       $("#mainBox").css("display", "block")
     } else {
       $("#congratulationBox").css("display", "block")
