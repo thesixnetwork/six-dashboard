@@ -80,22 +80,35 @@ function checkPresaleDiscount (event, functions, fireStore) {
   const uid = event.params.uid
   const userData = event.data.data()
   const previousUserData = event.data.previous.data()
-  const estimate = (+userData.estimate || 0) // force estimate from string to number (default 0)
-  if (userData.kyc_status !== 'approved' || previousUserData.kyc_status === 'approved' || estimate <= 0) return Promise.resolve() // do nothing
+  const estimateETH = (+userData.estimate_eth) > 0 ? (+userData.estimate_eth) : 0 // force estimate from string to number (default 0)
+  const estimateXLM = (+userData.estimate_XLM) > 0 ? (+userData.estimate_xlm) : 0 // force estimate from string to number (default 0)
+  if (userData.kyc_status !== 'approved' ||
+    previousUserData.kyc_status === 'approved' ||
+    (estimateETH === 0 && estimateXLM === 0)) return Promise.resolve() // do nothing
   const userRef = fireStore.collection('users').doc(uid)
   const presaleUserRef = fireStore.collection('presale').doc('supply').collection('reserve').doc(uid)
   const totalEthRef = fireStore.collection('presale').doc('supply')
-  return fireStore.runTransaction(tx => tx.get(presaleUserRef).then(userReserve => {
-    if (userReserve.exists) {
-      return Promise.reject(new Error(`uid:${uid} already reserved`))
-    }
-    return tx.get(totalEthRef).then(doc => {
-      const totalETH = doc.data().total_eth
-      const latestTotalETH = totalETH + estimate
-      if (totalETH > 1000000) return Promise.reject(new Error('Presale is soldout.'))
-      return Promise.all([tx.update(totalEthRef, {total_eth: latestTotalETH}), tx.set(presaleUserRef, {total_eth: estimate}), tx.update(userRef, {is_presale: true})])
-    })
-  }))
+  return fireStore.collection('latest_price').doc('xlm_eth').get().then(latestPrice => {
+    return fireStore.runTransaction(tx => tx.get(presaleUserRef).then(userReserve => {
+      if (userReserve.exists) {
+        return Promise.reject(new Error(`uid:${uid} already reserved`))
+      }
+      return tx.get(totalEthRef).then(doc => {
+        const totalETH = doc.data().total_eth
+        const totalXLM = doc.data().total_xlm
+        const totalReserved = doc.data().total_reserved_in_eth + estimateETH + (estimateXLM * latestPrice.price)
+        const latestTotalETH = totalETH + estimateETH
+        const latestTotalXLM = totalXLM + estimateXLM
+        if (totalReserved > 1000000) return Promise.reject(new Error('Presale is soldout.'))
+        return Promise.all(
+          [
+            tx.update(totalEthRef, {total_eth: latestTotalETH, total_xlm: latestTotalXLM, total_reserved_in_eth: totalReserved}),
+            tx.set(presaleUserRef, {total_eth: estimateETH, total_xlm: estimateXLM}),
+            tx.update(userRef, {is_presale: true})
+          ])
+      })
+    }))
+  })
 }
 
 function addUserNumber (event, functions, fireStore) {
