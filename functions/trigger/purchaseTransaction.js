@@ -38,14 +38,14 @@ function presaleBonus (event, fireStore) {
     const purchasedPresaleRef = presaleRef.collection('purchased_presale_tx')
     return tx.get(presaleRef).then(presaleDoc => {
       const supplyInfo = presaleDoc.data()
-      if (supplyInfo.total_received_xlm >= supplyInfo.limit_presale_xlm) {
+      if (supplyInfo.total_presale_six >= supplyInfo.limit_presale_six) {
         return Promise.resolve('Presale is soldout!')
       }
-      const latestReceivedXLM = supplyInfo.total_received_xlm + purchaseTxData.six_amount
+      const latestReceivedSix = supplyInfo.total_presale_six + purchaseTxData.six_amount
       const userPurchasedPresaleRef = purchasedPresaleRef.doc(purchaseTxData.user_id)
       const bonus = purchaseTxData.six_amount * (supplyInfo.bonus_times || 0.06)
       return Promise.all([
-        tx.update(presaleRef, {total_received_xlm: latestReceivedXLM}),
+        tx.update(presaleRef, {total_presale_six: latestReceivedSix}),
         tx.set(userPurchasedPresaleRef,
           {[txId]: { tx_id: txId,
             user_id: purchaseTxData.user_id,

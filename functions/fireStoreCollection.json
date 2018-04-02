@@ -77,8 +77,8 @@
         "name": "supply",
         "fields": {
           "total_eth": 0,
-          "total_received_xlm": 0,
-          "limit_presale_xlm": 52695489.62,
+          "total_presale_six": 0,
+          "limit_presale_six": 52695489.62,
           "bonus_times": 0.06
         }
       }
