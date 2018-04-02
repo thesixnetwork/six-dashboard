@@ -111,18 +111,25 @@ function handleOperation(user, tx, operation, n, price, priceTime) {
   }
 
   if (!user) {
-    return fireStore
-      .collection('undefined_purchase_txs')
-      .doc(`${hash}_${operation.id}`)
-      .set(body)
+    return fireStore.runTransaction(transaction => {
+      let documentRef = fireStore
+        .collection('undefined_purchase_txs')
+        .doc(`${hash}_${operation.id}`);
+
+      return transaction.get(documentRef).then(doc => {
+        if (!doc.exists) {
+          return transaction.create(documentRef, body);
+        }
+      });
+    });
   }
 
 
   const user_id = user.id
   body.user_id = user_id
 
-  return firestore.runTransaction(transaction => {
-    let documentRef = firestore
+  return fireStore.runTransaction(transaction => {
+    let documentRef = fireStore
       .collection('purchase_txs')
       .doc(`${hash}_${operation.id}`);
 
