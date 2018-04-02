@@ -327,6 +327,15 @@ function submitDepositXLMTran() {
     $("#depositXLMBox").css("display", "none")
     $("#mainBox").css("display", "none")
     if (userData.seen_congrat === true) {
+      const thisTime = (new Date()).getTime()
+      let amount = 0
+      if (userData.is_presale === true) {
+        amount = Number((xlm_value*xlmPrice.six_per_xlm).toFixed(7))
+      } else {
+        amount = Number((xlm_value*xlmPrice.six_per_xlm).toFixed(7))*1.06
+      }
+      const elem = buildListTx({ time: thisTime, native_amount: xlm_value, type: "XLM", to: '-', id: '-', time: thisTime, six_amount: amount.toLocaleString(), tx_status: 'pending' })
+      $("#userTxs")[0].prepend(elem)
       $("#mainBox").css("display", "block")
     } else {
       $("#congratulationBox").css("display", "block")
@@ -350,6 +359,15 @@ function submitDepositETHTran() {
     $("#depositXLMBox").css("display", "none")
     $("#mainBox").css("display", "none")
     if (userData.seen_congrat === true) {
+      const thisTime = (new Date()).getTime()
+      let amount = 0
+      if (userData.is_presale === true) {
+        amount = Number((eth_value*ethPrice.six_per_eth).toFixed(7))
+      } else {
+        amount = Number((eth_value*ethPrice.six_per_eth).toFixed(7))*1.06
+      }
+      const elem = buildListTx({ time: thisTime, native_amount: eth_value, type: "ETH", to: '-', id: '-', time: thisTime, six_amount: amount.toLocaleString(), tx_status: 'pending' })
+      $("#userTxs")[0].prepend(elem)
       $("#mainBox").css("display", "block")
     } else {
       $("#congratulationBox").css("display", "block")
@@ -386,29 +404,33 @@ function gotoCurrency() {
 }
 
 function buildListTx(doc) {
-  const { time: t, from, to, id, time } = doc
+  const { time: t, native_amount, type: currency_type, to, id, time, six_amount, tx_status } = doc
   let date = new Date(parseFloat(t));
 
   var tr = document.createElement("tr");
   var td1 = document.createElement("td");
-  var txt1 = document.createTextNode(from)
+  var txt1 = document.createTextNode(native_amount + " " +currency_type.toUpperCase())
   td1.appendChild(txt1);
   // email
   var td2 = document.createElement("td");
-  var txt2 = document.createTextNode(to);
+  var txt2 = document.createTextNode(six_amount + " SIX");
   td2.appendChild(txt2);
   // edt fiele
   var td3 = document.createElement("td");
-  var txt3 = document.createTextNode(id);
+  var txt3 = document.createTextNode(id.split("_")[0]);
   td3.appendChild(txt3)
 
+  let this_status = 'success'
+  if (tx_status === 'pending') {
+    this_status = 'pending'
+  }
   // edt fiele
   var td4 = document.createElement("td");
-  var txt4 = document.createTextNode(moment(date).format('DD/MM/YYYY'));
+  var txt4 = document.createTextNode(this_status);
   td4.appendChild(txt4)
 
   var td5 = document.createElement("td");
-  var txt5 = document.createTextNode(moment(date).format('HH:mm'));
+  var txt5 = document.createTextNode(moment(date).format('DD-MM-YYYY') +" "+moment(date).format('HH:mm'));
   td5.appendChild(txt5);
   tr.appendChild(td1);
   tr.appendChild(td2);
@@ -444,6 +466,7 @@ $(document).ready(function(){
   document.getElementById('xlmToSixInput').onkeyup = function() {
     let number = parseFloat(this.value) || 0
     $("#xlmToSix").html(Number((number*xlmPrice.six_per_xlm).toFixed(7)).toLocaleString())
+    $("#bonusXLM").html(Number(((number*xlmPrice.six_per_xlm)*0.06).toFixed(7)))
     $("#xlmToSixInputAlertText").html("")
     $("#xlmToSixInputAlertText").css("display", "none")
     $("#xlmToSixInputAlert").removeClass("invalid")
@@ -452,6 +475,10 @@ $(document).ready(function(){
   document.getElementById('ethToSixInput').onkeyup = function() {
     let number = parseFloat(this.value) || 0
     $("#ethToSix").html(Number((number*ethPrice.six_per_eth).toFixed(7)).toLocaleString())
+    $("#bonusETH").html(Number(((number*ethPrice.six_per_eth)*0.06).toFixed(7)))
+    $("#ethToSixInputAlertText").html("")
+    $("#ethToSixInputAlertText").css("display", "none")
+    $("#ethToSixInputAlert").removeClass("invalid")
   }
 
     // Dialog
@@ -507,6 +534,10 @@ $(document).ready(function(){
           } else {
             $("#myETHaddress")[0].value = '-'
             $("#myETHWalletAddress").html('-')
+          }
+          if (userData.is_presale === true) {
+            $("#bonusXLMText").css('display', 'block')
+            $("#bonusETHText").css('display', 'block')
           }
         }).then(getCurrentTotal).then(() => {
           getTxs()

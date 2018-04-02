@@ -183,7 +183,7 @@
               <input type="text" placeholder="0" id='xlmToSixInput' disabled/>
               <p id='xlmToSixInputAlertText' style='display: none;'></p>
             </label>
-            <p style='font-size: 23px;'>≈ <strong><span id='xlmToSix'>0</span> SIX</strong></p>
+            <p style='font-size: 23px;'>≈ <strong><span id='xlmToSix'>0</span> SIX</strong><span id='bonusXLMText' style='display: none;'> + BONUS <span id='bonusXLM'>0</span> SIX</span></p>
           </div>
           <p style='margin-top: 20px; margin-bottom: 20px;'>Please understand that the SIX token value here is estimated based on the current exchange rate. Your SIX token will be re-calculated using the actual exchange rate at the time we receive your deposit.</p>
           <p style='margin-top: 20px; text-align: center;'><strong>Live exchange rate from cryptocompare (1 hour interval)</strong></p>
@@ -214,7 +214,7 @@
               <input type="text" placeholder="0" id='ethToSixInput' disabled/>
               <p id='ethToSixInputAlertText' style='display: none;'></p>
             </label>
-            <p style='font-size: 23px;'>≈ <strong><span id='ethToSix'>0</span> SIX</strong></p>
+            <p style='font-size: 23px;'>≈ <strong><span id='ethToSix'>0</span> SIX</strong><span id='bonusETHText' style='display: none;'> + BONUS <span id='bonusETH'>0</span> SIX</span></p>
           </div>
           <p style='margin-top: 15px;'>
             <strong>Source of Funds (YOUR ADDRESS)</strong>
@@ -276,53 +276,17 @@
               <div class="btn btnInline"><button id='gotoQuestionBtn' onclick='gotoCurrency()'>Add deposit</button></div>
               <div class="btn btnInline"><button id='contactBtn' onclick='window.open("http://m.me/thesixnetwork")'>Contact Us</button></div>
             </div>
-            <p style="text-align: center;" id='noDataTx'>No previous transaction</p>
-            <table id='txHistoryTable' style='display: none;'>
+            <table id='txHistoryTable'>
               <thead>
                 <tr>
                   <th width="120">From</th>
                   <th width="130">To</th>
                   <th>Transaction ID</th>
-                  <th width="120">Date</th>
-                  <th width="150">Time</th>
+                  <th width="120">Status</th>
+                  <th width="200">Datetime</th>
                 </tr>
               </thead>
               <tbody id="userTxs">
-                <tr>
-                  <td>0.05 BTC</td>
-                  <td>41254.7 SIX</td>
-                  <td>MN91LKF93O41829JHWEDWDKWDJKWHUK</td>
-                  <td>2018-03-15</td>
-                  <td>14:22:11 +07:00</td>
-                </tr>
-                <tr>
-                  <td>0.05 BTC</td>
-                  <td>41254.7 SIX</td>
-                  <td>MN91LKF93O41829JHWEDWDKWDJKWHUK</td>
-                  <td>2018-03-15</td>
-                  <td>14:22:11 +07:00</td>
-                </tr>
-                <tr>
-                  <td>0.05 BTC</td>
-                  <td>41254.7 SIX</td>
-                  <td>MN91LKF93O41829JHWEDWDKWDJKWHUK</td>
-                  <td>2018-03-15</td>
-                  <td>14:22:11 +07:00</td>
-                </tr>
-                <tr>
-                  <td>0.05 BTC</td>
-                  <td>41254.7 SIX</td>
-                  <td>MN91LKF93O41829JHWEDWDKWDJKWHUK</td>
-                  <td>2018-03-15</td>
-                  <td>14:22:11 +07:00</td>
-                </tr>
-                <tr>
-                  <td>0.05 BTC</td>
-                  <td>41254.7 SIX</td>
-                  <td>MN91LKF93O41829JHWEDWDKWDJKWHUK</td>
-                  <td>2018-03-15</td>
-                  <td>14:22:11 +07:00</td>
-                </tr>
               </tbody>
             </table>
             <div id='loadmoreBtn' style='display: none;' class="loader-more"><a href="#">More</a></div>
