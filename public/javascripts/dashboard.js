@@ -362,16 +362,16 @@ function gotoCurrency() {
 }
 
 function buildListTx(doc) {
-  const { time: t, from, to, id, time } = doc
+  const { time: t, from, to, id, time, native_amount, six_amount, type } = doc
   let date = new Date(parseFloat(t));
 
   var tr = document.createElement("tr");
   var td1 = document.createElement("td");
-  var txt1 = document.createTextNode(from)
+  var txt1 = document.createTextNode(`${native_amount} ${type.toUpperCase()}`)
   td1.appendChild(txt1);
   // email
   var td2 = document.createElement("td");
-  var txt2 = document.createTextNode(to);
+  var txt2 = document.createTextNode(`${six_amount} SIX`);
   td2.appendChild(txt2);
   // edt fiele
   var td3 = document.createElement("td");
@@ -380,11 +380,11 @@ function buildListTx(doc) {
 
   // edt fiele
   var td4 = document.createElement("td");
-  var txt4 = document.createTextNode(moment(date).format('DD/MM/YYYY'));
+  var txt4 = document.createTextNode('PENDING');
   td4.appendChild(txt4)
 
   var td5 = document.createElement("td");
-  var txt5 = document.createTextNode(moment(date).format('HH:mm'));
+  var txt5 = document.createTextNode(moment(date).format('DD/MM/YYYY HH:mm'));
   td5.appendChild(txt5);
   tr.appendChild(td1);
   tr.appendChild(td2);
