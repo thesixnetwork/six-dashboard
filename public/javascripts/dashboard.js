@@ -361,6 +361,55 @@ function gotoCurrency() {
   $("#warnBox").css("display", "none")
 }
 
+function buildListTx(doc) {
+  const { time: t, from, to, id, time } = doc
+  let date = new Date(parseFloat(t));
+
+  var tr = document.createElement("tr");
+  var td1 = document.createElement("td");
+  var txt1 = document.createTextNode(from)
+  td1.appendChild(txt1);
+  // email
+  var td2 = document.createElement("td");
+  var txt2 = document.createTextNode(to);
+  td2.appendChild(txt2);
+  // edt fiele
+  var td3 = document.createElement("td");
+  var txt3 = document.createTextNode(id);
+  td3.appendChild(txt3)
+
+  // edt fiele
+  var td4 = document.createElement("td");
+  var txt4 = document.createTextNode(moment(date).format('DD/MM/YYYY'));
+  td4.appendChild(txt4)
+
+  var td5 = document.createElement("td");
+  var txt5 = document.createTextNode(moment(date).format('HH:mm'));
+  td5.appendChild(txt5);
+  tr.appendChild(td1);
+  tr.appendChild(td2);
+  tr.appendChild(td3);
+  tr.appendChild(td4);
+  tr.appendChild(td5);
+  return tr
+}
+
+function getTxs () {
+  if (firebase.auth().currentUser !== null) {
+    firebase.firestore().collection('purchase_txs')
+    .where("user_id",'==',firebase.auth().currentUser.uid)
+    .get()
+    .then(snapshot => {
+      $('#userTxs').empty()
+      snapshot.forEach(d => {
+        const data = d.data()
+        const elem = buildListTx(data)
+        $("#userTxs")[0].appendChild(elem)
+      })
+    })
+  }
+}
+
 $(document).ready(function(){
   document.getElementById('walletETHinput').onkeydown = function() {
     $('#ethWalletAddressAlert').removeClass("invalid")
@@ -435,6 +484,7 @@ $(document).ready(function(){
             $("#myETHWalletAddress").html('-')
           }
         }).then(getCurrentTotal).then(() => {
+          getTxs()
           $('#preLoader').fadeToggle()
           updatePrice()
         })
