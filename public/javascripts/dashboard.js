@@ -84,6 +84,7 @@ function startConfirmation() {
         $("#myWallet").css("display", "block")
         $("#myETHaddress")[0].value = ethAddress
         $("#myETHWalletAddress").html(ethAddress)
+        userData.submit_wallet = true
       } else {
         $("#submitWalletAlertText").html(response.data.error_message)
         if ($("#submitWalletAlert").css("display") === 'none') {
@@ -335,7 +336,13 @@ function submitDepositXLMTran() {
   const xlmToSixInput = document.getElementById("xlmToSixInput")
   const xlm_value = (parseFloat(xlmToSixInput.value) || 0)
   setDisable([btnDOM])
-  updateUser({first_transaction: true, alloc_transaction: true, alloc_transaction_type: 'XLM', alloc_transaction_amount: xlm_value, alloc_time: Math.round((new Date()).getTime() / 1000)}).then(() => {
+  let amount = 0
+  if (userData.is_presale === true) {
+    amount = Number((xlm_value*xlmPrice.six_per_xlm).toFixed(7))
+  } else {
+    amount = Number((xlm_value*xlmPrice.six_per_xlm).toFixed(7))*1.06
+  }
+  updateUser({first_transaction: true, alloc_transaction: true, alloc_transaction_type: 'XLM', alloc_transaction_amount: xlm_value, alloc_transaction_six_amount: amount, alloc_time: (new Date()).getTime()}).then(() => {
     setEnable([btnDOM])
     $("#questionBox").css("display", "none")
     $("#submitXLMBox").css("display", "none")
@@ -343,16 +350,10 @@ function submitDepositXLMTran() {
     $("#depositETHBox").css("display", "none")
     $("#depositXLMBox").css("display", "none")
     $("#mainBox").css("display", "none")
+    const thisTime = (new Date()).getTime()
+    const elem = buildListTx({ time: thisTime, native_amount: xlm_value, type: "XLM", to: '-', id: '-', time: thisTime, six_amount: amount.toLocaleString(), tx_status: 'pending' })
+    $("#userTxs")[0].prepend(elem)
     if (userData.seen_congrat === true) {
-      const thisTime = (new Date()).getTime()
-      let amount = 0
-      if (userData.is_presale === true) {
-        amount = Number((xlm_value*xlmPrice.six_per_xlm).toFixed(7))
-      } else {
-        amount = Number((xlm_value*xlmPrice.six_per_xlm).toFixed(7))*1.06
-      }
-      const elem = buildListTx({ time: thisTime, native_amount: xlm_value, type: "XLM", to: '-', id: '-', time: thisTime, six_amount: amount.toLocaleString(), tx_status: 'pending' })
-      $("#userTxs")[0].prepend(elem)
       $("#mainBox").css("display", "block")
     } else {
       $("#congratulationBox").css("display", "block")
@@ -367,7 +368,13 @@ function submitDepositETHTran() {
   const ethToSixInput = document.getElementById("ethToSixInput")
   const eth_value = (parseFloat(ethToSixInput.value) || 0)
   setDisable([btnDOM])
-  updateUser({first_transaction: true, alloc_transaction: true, alloc_transaction_type: 'ETH', alloc_transaction_amount: eth_value, alloc_time: Math.round((new Date()).getTime() / 1000)}).then(() => {
+  let amount = 0
+  if (userData.is_presale === true) {
+    amount = Number((eth_value*ethPrice.six_per_eth).toFixed(7))
+  } else {
+    amount = Number((eth_value*ethPrice.six_per_eth).toFixed(7))*1.06
+  }
+  updateUser({first_transaction: true, alloc_transaction: true, alloc_transaction_type: 'ETH', alloc_transaction_amount: eth_value, alloc_transaction_six_amount: amount, alloc_time: (new Date()).getTime()}).then(() => {
     setEnable([btnDOM])
     $("#questionBox").css("display", "none")
     $("#submitXLMBox").css("display", "none")
@@ -375,16 +382,10 @@ function submitDepositETHTran() {
     $("#depositETHBox").css("display", "none")
     $("#depositXLMBox").css("display", "none")
     $("#mainBox").css("display", "none")
+    const thisTime = (new Date()).getTime()
+    const elem = buildListTx({ time: thisTime, native_amount: eth_value, type: "ETH", to: '-', id: '-', time: thisTime, six_amount: amount.toLocaleString(), tx_status: 'pending' })
+    $("#userTxs")[0].prepend(elem)
     if (userData.seen_congrat === true) {
-      const thisTime = (new Date()).getTime()
-      let amount = 0
-      if (userData.is_presale === true) {
-        amount = Number((eth_value*ethPrice.six_per_eth).toFixed(7))
-      } else {
-        amount = Number((eth_value*ethPrice.six_per_eth).toFixed(7))*1.06
-      }
-      const elem = buildListTx({ time: thisTime, native_amount: eth_value, type: "ETH", to: '-', id: '-', time: thisTime, six_amount: amount.toLocaleString(), tx_status: 'pending' })
-      $("#userTxs")[0].prepend(elem)
       $("#mainBox").css("display", "block")
     } else {
       $("#congratulationBox").css("display", "block")
@@ -492,6 +493,11 @@ function getTxs () {
           $("#userTxs")[0].appendChild(elem)
         })
       })
+    }).then(() => {
+      if (userData.alloc_transaction === true) {
+        const elem = buildListTx({ time: userData.alloc_time, native_amount: userData.alloc_transaction_amount, type: userData.alloc_transaction_type, to: '-', id: '-', six_amount: userData.alloc_transaction_six_amount, alloc_time: userData.alloc_time, tx_status: 'pending' })
+        $("#userTxs")[0].prepend(elem)
+      }
     })
   }
 }
