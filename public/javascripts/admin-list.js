@@ -359,9 +359,13 @@ function renderStatus (id, data) {
   }
 }
 
+let unsubscribe = null
 // Initialize database to query data and draw to view
 function initializeDatabase(status) {
   let promise = new Promise(function(resolve, reject) {
+    if (unsubscribe !== null) {
+      unsubscribe()
+    }
     $("#adminList").empty()
     let db = firebase.firestore();
     let userRef = db.collection("users");
@@ -382,7 +386,7 @@ function initializeDatabase(status) {
       default:
         break
     }
-    query
+    unsubscribe =  query
       .onSnapshot(docs => {
         $("#adminList").empty()
         let allDocs = []
@@ -453,6 +457,7 @@ function handleFilter (type) {
   switch(type) {
     case 'all':
       $('#remarkColumn').text('Status')
+      // currentTab = 
       break
     case 'approved':
       $('#remarkColumn').text('Approved By')
