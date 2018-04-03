@@ -1,5 +1,7 @@
 const path = '/purchase_txs/{txId}'
-
+const emailTemplate = require('./static')
+const nodemailer = require('nodemailer')
+const moment = require('moment-timezone')
 module.exports = function (functions, fireStore) {
   const events = functions.firestore.document(path)
   return [
@@ -9,6 +11,9 @@ module.exports = function (functions, fireStore) {
     }, {
       'name': 'presaleBonus',
       'module': events.onCreate(event => presaleBonus(event, fireStore))
+    }, {
+      'name': 'receivedDeposit',
+      'module': events.onCreate(event => receivedDeposit(event, functions, fireStore))
     }
   ]
 }
@@ -55,5 +60,51 @@ function presaleBonus (event, fireStore) {
           }, {merge: true})
       ])
     })
+  })
+}
+
+function receivedDeposit (event, functions, fireStore) {
+  const mailTransport = nodemailer.createTransport({
+    host: functions.config().email.host,
+    port: functions.config().email.port,
+    secure: true, // true for 465, false for other ports
+    auth: {
+      user: functions.config().email.user, // generated ethereal user
+      pass: functions.config().email.password // generated ethereal password
+    }
+  })
+  let purchaseData = event.data.data()
+  return fireStore.collection('users').doc(purchaseData.user_id).get().then((user) => {
+    user = user.data()
+    const mailOptions = {
+      from: functions.config().email.from,
+      to: user.email
+    }
+    mailOptions.subject = 'SIX.network: Your deposit has been successfully received'
+    let currency
+    switch (purchaseData.type) {
+      case 'eth':
+        currency = 'Ethereum'
+        break
+      case 'xlm':
+        currency = 'Stellar lumens'
+        break
+      default:
+    }
+    let time = new Date(purchaseData.time)
+    let date = moment(time).format('DD-MM-YYYY') + ' ' + moment(time).format('HH:mm')
+    let data = {
+      name: user.first_name,
+      lastname: user.last_name,
+      address: user.address,
+      currency: currency,
+      native_amount: purchaseData.native_amount,
+      type: purchaseData.type.toUpperCase(),
+      tid: event.data.id,
+      time: date
+    }
+    mailOptions.html = emailTemplate.received_deposit(data)
+    console.log(data)
+    return mailTransport.sendMail(mailOptions)
   })
 }
