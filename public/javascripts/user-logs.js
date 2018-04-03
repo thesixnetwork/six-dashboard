@@ -35,7 +35,6 @@ function createElementFromHTML(htmlString) {
 
 // Build kyc user list element
 function buildListUser(doc) {
-  console.log(doc, 'doc')
   const { timeStamp, email, uid, diffValues, walletChanged, walletChangeData } = doc
   let date = new Date((timeStamp + 3600 * 7) * 1000);
 
@@ -93,7 +92,7 @@ function buildListUser(doc) {
   }
   td4.appendChild(txt4);
   var td5 = document.createElement("td");
-  var txt5 = document.createTextNode(moment(new Date(parseInt(timeStamp))).format('DD/MM/YYYY HH:mm'));
+  var txt5 = document.createTextNode(moment(new Date(parseInt(timeStamp))).format('DD/MM/YYYY HH:mm:ss'));
   td5.appendChild(txt5);
   tr.appendChild(td1);
   tr.appendChild(td2);
@@ -115,7 +114,7 @@ function difference(object, base) {
 }
 
 // Initialize database to query data and draw to view
-function initializeDatabase(status) {
+function initializeDatabase2(status) {
   let promise = new Promise(function(resolve, reject) {
     $("#adminList").empty()
     let db = firebase.database().ref(`logs/`);
@@ -168,6 +167,199 @@ function initializeDatabase(status) {
         }
         resolve();
       })
+  });
+  return promise;
+}
+
+let firstDoc = null
+let endAt = null
+let startAt = []
+let fistItemOnNext = null
+
+function prevLogs () {
+  $("#adminList").empty()
+  const target = startAt[startAt.length - 2]
+  let db = firebase.firestore()
+    .collection(`users_log`)
+    .orderBy('timestamp', 'desc')
+    .startAt(target)
+    .limit(20)
+  const first = db.get()
+  .then(docs => {
+    const all = docs.docs.length
+    let allLogs = []
+    const last = docs.docs.length - 1
+    // startAt = docs.docs[0]
+    endAt = docs.docs[last];
+    startAt.pop()
+    if (target.id == firstDoc.id) {
+      $('#prevBtn').prop('disabled', true);
+    }
+    docs.forEach(doc => {
+      const log = doc.data()
+      const { document, oldDocument, timestamp } = log
+      const { uid, email } = oldDocument
+      const diff = difference(document, oldDocument)
+      const diffKeys = Object.keys(diff)
+      let diffValues = []
+      let walletChanged = false
+      let walletChangeData = null
+      diffKeys.forEach(diffKey => {
+        const newData = document[diffKey]
+        const oldData = oldDocument[diffKey]
+        if (diffKey !== 'eth_wallet') {
+          const injectData = {
+            newData,
+            oldData,
+            field: diffKey
+          }
+          diffValues.push(injectData)
+        } else {
+          walletChanged = true
+          walletChangeData = {
+            newData,
+            oldData,
+            field: diffKey
+          }
+        }
+      })
+      allLogs.push({
+        uid,
+        email,
+        diffValues,
+        timeStamp: timestamp,
+        walletChangeData,
+        walletChanged
+      })
+    })
+    // allLogs.sort((a, b) => b.timeStamp - a.timeStamp)
+    for (let log of allLogs) {
+      let elem = buildListUser(log)
+      $("#adminList")[0].appendChild(elem)
+    }
+  })
+}
+
+function nextLogs () {
+  $('#prevBtn').prop('disabled', false);
+  $("#adminList").empty()
+  lastStart = startAt
+  let db = firebase.firestore()
+    .collection(`users_log`)
+    .orderBy('timestamp', 'desc')
+    .startAfter(endAt)
+    .limit(20)
+  const first = db.get()
+  .then(docs => {
+    const all = docs.docs.length
+    let allLogs = []
+    const last = docs.docs.length - 1
+    startAt.push(docs.docs[0])
+    endAt = docs.docs[last];
+    if (docs.docs.length < 20) {
+      $('#nextBtn').prop('disabled', true);
+    }
+    docs.forEach(doc => {
+      const log = doc.data()
+      const { document, oldDocument, timestamp } = log
+      const { uid, email } = oldDocument
+      const diff = difference(document, oldDocument)
+      const diffKeys = Object.keys(diff)
+      let diffValues = []
+      let walletChanged = false
+      let walletChangeData = null
+      diffKeys.forEach(diffKey => {
+        const newData = document[diffKey]
+        const oldData = oldDocument[diffKey]
+        if (diffKey !== 'eth_wallet') {
+          const injectData = {
+            newData,
+            oldData,
+            field: diffKey
+          }
+          diffValues.push(injectData)
+        } else {
+          walletChanged = true
+          walletChangeData = {
+            newData,
+            oldData,
+            field: diffKey
+          }
+        }
+      })
+      allLogs.push({
+        uid,
+        email,
+        diffValues,
+        timeStamp: timestamp,
+        walletChangeData,
+        walletChanged
+      })
+    })
+    // allLogs.sort((a, b) => b.timeStamp - a.timeStamp)
+    for (let log of allLogs) {
+      let elem = buildListUser(log)
+      $("#adminList")[0].appendChild(elem)
+    }
+  })
+}
+
+function initializeDatabase(status) {
+  let promise = new Promise(function(resolve, reject) {
+    $("#adminList").empty()
+    let db = firebase.firestore().collection(`users_log`).orderBy('timestamp', 'desc').limit(10)
+    db.get()
+    .then(docs => {
+      const all = docs.docs.length
+      let allLogs = []
+      const last = docs.docs.length - 1
+      firstDoc = docs.docs[0]
+      endAt = docs.docs[last];
+      startAt.push(docs.docs[0])
+      docs.forEach(doc => {
+        const log = doc.data()
+        const { document, oldDocument, timestamp } = log
+        const { uid, email } = oldDocument
+        const diff = difference(document, oldDocument)
+        const diffKeys = Object.keys(diff)
+        let diffValues = []
+        let walletChanged = false
+        let walletChangeData = null
+        diffKeys.forEach(diffKey => {
+          const newData = document[diffKey]
+          const oldData = oldDocument[diffKey]
+          if (diffKey !== 'eth_wallet') {
+            const injectData = {
+              newData,
+              oldData,
+              field: diffKey
+            }
+            diffValues.push(injectData)
+          } else {
+            walletChanged = true
+            walletChangeData = {
+              newData,
+              oldData,
+              field: diffKey
+            }
+          }
+        })
+        allLogs.push({
+          uid,
+          email,
+          diffValues,
+          timeStamp: timestamp,
+          walletChangeData,
+          walletChanged
+        })
+      })
+      // allLogs.sort((a, b) => b.timeStamp - a.timeStamp)
+      for (let log of allLogs) {
+        let elem = buildListUser(log)
+        $("#adminList")[0].appendChild(elem)
+      }
+      resolve();
+    })
   });
   return promise;
 }
