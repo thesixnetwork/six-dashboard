@@ -35,7 +35,6 @@ function createElementFromHTML(htmlString) {
 
 // Build kyc user list element
 function buildListUser(doc) {
-  console.log(doc, 'doc')
   const { timeStamp, email, uid, diffValues, walletChanged, walletChangeData } = doc
   let date = new Date((timeStamp + 3600 * 7) * 1000);
 

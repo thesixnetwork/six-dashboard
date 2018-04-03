@@ -1,5 +1,8 @@
 {
   "rules": {
+    "logs": {
+      ".read": true
+    },
     "users": {
       "$uid":{
         ".read": "$uid === auth.uid",
