@@ -91,7 +91,7 @@ function startConfirmation() {
         $("#warnBox").css("display", "none")
         $("#myWallet").css("display", "block")
         $("#myETHaddress")[0].value = ethAddress
-        $("#myETHWalletAddress").html(ethAddress)
+        $("#myETHWalletAddress").val(ethAddress)
         userData.submit_wallet = true
       } else {
         $("#submitWalletAlertText").html(response.data.error_message)
@@ -552,6 +552,42 @@ $(document).ready(function(){
     $('body').on('click', '[class^="dialog-"] dialog a.close', function(){
 			$(this).parents('[class^="dialog-"]').removeClass('show-dialog');
 		});
+
+    function copyToClipboard (el) {
+      //resolve the element
+      el = (typeof el === 'string') ? document.querySelector(el) : el;
+      // handle iOS as a special case
+      if (navigator.userAgent.match(/ipad|ipod|iphone/i)) {
+          // save current contentEditable/readOnly status
+          var editable = el.contentEditable;
+          var readOnly = el.readOnly;
+
+          // convert to editable with readonly to stop iOS keyboard opening
+          el.contentEditable = true;
+          el.readOnly = true;
+
+          // create a selectable range
+          var range = document.createRange();
+          range.selectNodeContents(el);
+
+          // select the range
+          var selection = window.getSelection();
+          selection.removeAllRanges();
+          selection.addRange(range);
+          el.setSelectionRange(0, 999999);
+
+          // restore contentEditable/readOnly to original state
+          el.contentEditable = editable;
+          el.readOnly = readOnly;
+      }
+      else {
+          el.select();
+      }
+
+      // execute copy command
+      success = document.execCommand('copy');
+      alert(success)
+  }
   // Listening to auth state change
   firebase.auth().onAuthStateChanged(function (user) {
     if (!user) {
@@ -584,10 +620,15 @@ $(document).ready(function(){
           if (userData.eth_address !== undefined) {
             $("#myWallet").css("display", "block")
             $("#myETHaddress")[0].value = userData.eth_address
-            $("#myETHWalletAddress").html(userData.eth_address)
+            $("#myETHWalletAddress").val(userData.eth_address)
+            var copyTextareaBtn = document.querySelector('#myETHWalletAddressButton')
+            copyTextareaBtn.addEventListener('click',function(event){
+              copyToClipboard('#myETHWalletAddress')
+            })
+
           } else {
             $("#myETHaddress")[0].value = '-'
-            $("#myETHWalletAddress").html('-')
+            $("#myETHWalletAddress").val('-')
           }
           if (userData.is_presale === true) {
             $("#bonusXLMText").css('display', 'block')

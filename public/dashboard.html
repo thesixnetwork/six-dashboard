@@ -79,8 +79,13 @@
           <p>Introducing to SIX token</p>
         </section>
         <section id='myWallet' style='display: none;'>
-          <h4>My wallet address</h4>
-          <p id='myETHWallet' class='truncate'>ETH : <span id='myETHWalletAddress'></span></p>
+          <h4>My wallet</h4>
+          <p class="myETHWallet" id='myETHWallet' class='truncate'>
+            ETH :
+            <input type="text" value="" id="myETHWalletAddress" style="display:inline">
+          </p>
+          <button id="myETHWalletAddressButton" /> copy </button>
+          <a href="#">How to contribute using ETH</a>
         </section>
         <a href="https://six.network/faq.html#howtobuy" id='howToETH'>How to contribute using ETH</a>
         <a href="#" onclick='backToDashboard()' id='backToTxHis' style='display: none;'><i class="fas fa-arrow-left"></i> Back to Dashboard</a>
