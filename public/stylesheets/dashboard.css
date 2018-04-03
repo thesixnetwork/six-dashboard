@@ -108,3 +108,12 @@
   margin-right: 10px;
   margin-bottom: 25px;
 }
+
+#tableContainer {
+  overflow-x: auto;
+  width: 100%;
+}
+
+#txHistoryTable {
+  min-width: 970px;
+}

@@ -68,14 +68,14 @@ function savePurchaseTxs (transactionId, data) {
     .get()
     .then((doc) => {
       if (!doc.exists) {
-        return db.collection(col).doc(transactionId).set(data)
+        return db.collection(col).doc(transactionId).set(data).then(() => { return db.collection('users').doc(data.user_id).set({ alloc_transaction: false }, {merge: true})})
       }
     })
 }
 
-function userByUserNumber (userNumber) {
+function userBySenderAddress (ethAddress) {
   return db.collection('users')
-    .where('user_number', '==', userNumber)
+    .where('eth_address', '==', ethAddress)
     .get()
     .then(snapshot => {
       if (!snapshot) {
@@ -98,17 +98,7 @@ function filterTransactions (transactions, contractAddress) {
     if (transaction.to !== contractAddress) {
       return null
     }
-    const inputText = web3.toAscii(transaction.input)
-    console.log('inputText = ', inputText)
-    try {
-      const _memo = JSON.parse(inputText)
-      if (_memo.n) {
-        transaction.user_number = _memo.n
-      }
-      return transaction
-    } catch (err) {
-      return transaction
-    }
+    return transaction
   })
   _transactions = _.compact(_transactions)
   return _transactions
@@ -117,14 +107,13 @@ function filterTransactions (transactions, contractAddress) {
 function mapUserTransactions (transactions, contractAddress) {
   return bluebird.map(transactions, (transaction) => {
     // Promise.map awaits for returned promises as well.
-    if (!transaction.user_number) {
+    if (!transaction.from) {
       return transaction
     }
-    return userByUserNumber(transaction.user_number)
+    return userBySenderAddress(transaction.from.toLowerCase())
       .then((userId) => {
         console.log('userId = ', userId)
         if (!userId) {
-          transaction.user_number = transaction.user_number
           return transaction
         }
         transaction.user_id = userId
@@ -133,8 +122,8 @@ function mapUserTransactions (transactions, contractAddress) {
   })
 }
 
-function monitor (contractAddress) {
-  contractAddress = contractAddress.toLowerCase()
+function monitor () {
+  const contractAddress = ethAddress.toLowerCase()
   // latestBlockNumber for update to latest in firebase
   let latestBlockNumber
 

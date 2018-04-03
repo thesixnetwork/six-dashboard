@@ -24,6 +24,7 @@ function StellarService(event) {
           if (new Date(payments.records[i].created_at).getTime() <= cursor) {
             break;
           }
+          console.log('doing i', i)
 
           recordPromise.push(payments.records[i].transaction()
             .then(findUser)
@@ -40,6 +41,7 @@ function StellarService(event) {
                   const operationLength = operations._embedded.records.length
                   const operationTxs = []
 
+                  console.log('j length', operationLength)
                   for (let j = 0; j < operationLength; j++) {
                     if (records[j].type !== 'payment') {
                       continue
@@ -80,7 +82,7 @@ function updateCursor(newTime) {
 
 function handleOperation(user, tx, operation, n, price, priceTime) {
   const hash = tx.hash
-  const id = `${hash}_${n}`
+  const id = `${hash}_${operation.id}`
   const memo = tx.memo || ''
   const native_amount = +operation.amount
   const six_amount = +(operation.amount * price.six_per_xlm).toFixed(7)
@@ -110,6 +112,9 @@ function handleOperation(user, tx, operation, n, price, priceTime) {
     xlm_meta
   }
 
+  console.log('user = ', user)
+  console.log('body = ', body)
+
   if (!user) {
     return fireStore.runTransaction(transaction => {
       let documentRef = fireStore
@@ -132,11 +137,17 @@ function handleOperation(user, tx, operation, n, price, priceTime) {
     let documentRef = fireStore
       .collection('purchase_txs')
       .doc(`${hash}_${operation.id}`);
-
+    let userRef = fireStore
+      .collection('users')
+      .doc(user_id)
     return transaction.get(documentRef).then(doc => {
       if (!doc.exists) {
+        transaction.update(userRef, { alloc_transaction: false })
         return transaction.create(documentRef, body);
       }
+      const resultText = `Not insert : ${id} already exists`;
+      console.log(resultText)
+      return Promise.resolve(resultText)
     });
   });
 }

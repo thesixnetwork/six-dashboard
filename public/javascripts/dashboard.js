@@ -11,6 +11,14 @@ function setDisable (doms) {
   })
 }
 
+function compare(a,b) {
+  if (a.data().time > b.data().time)
+    return -1;
+  if (a.data().time < b.data().time)
+    return 1;
+  return 0;
+}
+
 // Remove disabled from dom
 function setEnable (doms) {
   doms.forEach(function (dom) {
@@ -33,7 +41,7 @@ function submitConfirm() {
   const ethAddressDOM = document.getElementById('walletETHinput')
   const btnDOM = document.getElementById('alertConfirmBtn')
   const canDOM = document.getElementById('cancelConfirmBtn')
-  const ethAddress = ethAddressDOM.value
+  const ethAddress = ethAddressDOM.value.toLowerCase()
   setDisable([btnDOM, canDOM])
   requestFunction({eth_address: ethAddress}).then(response => {
     if (response.data.success === true) {
@@ -65,16 +73,34 @@ function startConfirmation() {
     $("#submitWalletAlert").slideToggle()
   }
   const ethAddressDOM = document.getElementById('walletETHinput')
-  const ethAddress = ethAddressDOM.value
+  const confirmAddressBtnDOM = document.getElementById('confirmAddressBtn')
+  const ethAddress = ethAddressDOM.value.toLowerCase()
   if (ethAddress === undefined || ethAddress === null || ethAddress === '') {
     $("#ethWalletAddressAlert").addClass("invalid")
     $("#ethWalletAddressAlertText").html("ETH Address could not be blank")
     $("#ethWalletAddressAlertText").css("display", "block")
   } else {
-    $("#confirmETHAddress").html(ethAddress)
-    if ($("#alertModal").css("display") === 'none') {
-      $("#alertModal").fadeToggle()
-    }
+    let requestFunction = firebase.functions().httpsCallable('updateETHWallet')
+    setDisable([ethAddressDOM, confirmAddressBtnDOM])
+    requestFunction({eth_address: ethAddress}).then(response => {
+      if (response.data.success === true) {
+        setEnable([ethAddressDOM, confirmAddressBtnDOM])
+        $("#mainBox").css("display", "none")
+        $("#depositETHBox").css("display", "block")
+        $("#walletBox").css("display", "none")
+        $("#warnBox").css("display", "none")
+        $("#myWallet").css("display", "block")
+        $("#myETHaddress")[0].value = ethAddress
+        $("#myETHWalletAddress").html(ethAddress)
+        userData.submit_wallet = true
+      } else {
+        $("#submitWalletAlertText").html(response.data.error_message)
+        if ($("#submitWalletAlert").css("display") === 'none') {
+          $("#submitWalletAlert").slideToggle()
+        }
+        setEnable([ethAddressDOM, confirmAddressBtnDOM])
+      }
+    })
   }
 }
 
@@ -175,7 +201,7 @@ function latestETHprice() {
 
 function updateXLMprice() {
   latestXLMprice().then(data => {
-    $(".xlmPrice").html("1 / "+data.price.price)
+    $(".xlmPrice").html("1 SIX = "+data.price.price+" USD")
     xlmPrice = data.price
     const elem = document.getElementById('xlmToSixInput')
     setEnable([elem])
@@ -184,7 +210,7 @@ function updateXLMprice() {
 
 function updateETHprice() {
   latestETHprice().then(data => {
-    $(".ethPrice").html("1 / "+data.price.price)
+    $(".ethPrice").html("1 SIX = "+data.price.price+" USD")
     ethPrice = data.price
     const elem = document.getElementById('ethToSixInput')
     setEnable([elem])
@@ -196,17 +222,6 @@ function updatePrice() {
   updateETHprice()
 }
 
-// count six amount
-function sumSixAmountToUser () {
-  firebase.firestore().collection('purchase_txs').where("user_id",'==',firebase.auth().currentUser.uid).get()
-    .then(snapshot => {
-      let sixAmount = 0
-      snapshot.forEach(doc => {
-        sixAmount = sixAmount + doc.data().six_amount
-      })
-      $('#totalSix').html(`${sixAmount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")} `)
-    })
-}
 // Chack if admin or not
 function initializeAdmin () {
   let promise = new Promise(function (resolve, reject) {
@@ -275,9 +290,16 @@ function submitDepositXLM() {
 
 function submitDepositETH() {
   const ethToSixInput = document.getElementById("ethToSixInput")
-  $("#depositETHamount").html(parseFloat(ethToSixInput.value))
-  $("#depositETHBox").css("display", "none")
-  $("#submitETHBox").css("display", "block")
+  const eth_value = (parseFloat(ethToSixInput.value) || 0)
+  if (eth_value > 0 && ethToSixInput.value !== undefined && ethToSixInput.value !== null && ethToSixInput.value !== '') {
+    $("#depositETHamount").html(eth_value)
+    $("#depositETHBox").css("display", "none")
+    $("#submitETHBox").css("display", "block")
+  } else {
+    $("#ethToSixInputAlert").addClass("invalid")
+    $("#ethToSixInputAlertText").html("Value should be > 0")
+    $("#ethToSixInputAlertText").css("display", "block")
+  }
 }
 
 function getCurrentTotal() {
@@ -294,7 +316,13 @@ function submitDepositXLMTran() {
   const xlmToSixInput = document.getElementById("xlmToSixInput")
   const xlm_value = (parseFloat(xlmToSixInput.value) || 0)
   setDisable([btnDOM])
-  updateUser({first_transaction: true, alloc_transaction: true, alloc_transaction_type: 'XLM', alloc_transaction_amount: xlm_value, alloc_time: Math.round((new Date()).getTime() / 1000)}).then(() => {
+  let amount = 0
+  if (userData.is_presale === true) {
+    amount = Number((xlm_value*xlmPrice.six_per_xlm).toFixed(7))
+  } else {
+    amount = Number((xlm_value*xlmPrice.six_per_xlm).toFixed(7))*1.06
+  }
+  updateUser({first_transaction: true, alloc_transaction: true, alloc_transaction_type: 'XLM', alloc_transaction_amount: xlm_value, alloc_transaction_six_amount: amount, alloc_time: (new Date()).getTime()}).then(() => {
     setEnable([btnDOM])
     $("#questionBox").css("display", "none")
     $("#submitXLMBox").css("display", "none")
@@ -302,6 +330,9 @@ function submitDepositXLMTran() {
     $("#depositETHBox").css("display", "none")
     $("#depositXLMBox").css("display", "none")
     $("#mainBox").css("display", "none")
+    const thisTime = (new Date()).getTime()
+    const elem = buildListTx({ time: thisTime, native_amount: xlm_value, type: "XLM", to: '-', id: '-', time: thisTime, six_amount: amount.toLocaleString(), tx_status: 'pending' })
+    $("#userTxs")[0].prepend(elem)
     if (userData.seen_congrat === true) {
       $("#mainBox").css("display", "block")
     } else {
@@ -317,7 +348,13 @@ function submitDepositETHTran() {
   const ethToSixInput = document.getElementById("ethToSixInput")
   const eth_value = (parseFloat(ethToSixInput.value) || 0)
   setDisable([btnDOM])
-  updateUser({first_transaction: true, alloc_transaction: true, alloc_transaction_type: 'ETH', alloc_transaction_amount: eth_value, alloc_time: Math.round((new Date()).getTime() / 1000)}).then(() => {
+  let amount = 0
+  if (userData.is_presale === true) {
+    amount = Number((eth_value*ethPrice.six_per_eth).toFixed(7))
+  } else {
+    amount = Number((eth_value*ethPrice.six_per_eth).toFixed(7))*1.06
+  }
+  updateUser({first_transaction: true, alloc_transaction: true, alloc_transaction_type: 'ETH', alloc_transaction_amount: eth_value, alloc_transaction_six_amount: amount, alloc_time: (new Date()).getTime()}).then(() => {
     setEnable([btnDOM])
     $("#questionBox").css("display", "none")
     $("#submitXLMBox").css("display", "none")
@@ -325,6 +362,9 @@ function submitDepositETHTran() {
     $("#depositETHBox").css("display", "none")
     $("#depositXLMBox").css("display", "none")
     $("#mainBox").css("display", "none")
+    const thisTime = (new Date()).getTime()
+    const elem = buildListTx({ time: thisTime, native_amount: eth_value, type: "ETH", to: '-', id: '-', time: thisTime, six_amount: amount.toLocaleString(), tx_status: 'pending' })
+    $("#userTxs")[0].prepend(elem)
     if (userData.seen_congrat === true) {
       $("#mainBox").css("display", "block")
     } else {
@@ -361,6 +401,91 @@ function gotoCurrency() {
   $("#warnBox").css("display", "none")
 }
 
+function buildListTx(doc) {
+  const { time: t, native_amount, type: currency_type, to, id, time, six_amount, tx_status } = doc
+  let date = new Date(parseFloat(t));
+
+  var tr = document.createElement("tr");
+  var td1 = document.createElement("td");
+  var txt1 = document.createTextNode(native_amount + " " +currency_type.toUpperCase())
+  td1.appendChild(txt1);
+  // email
+  var td2 = document.createElement("td");
+  var txt2 = document.createTextNode(six_amount + " SIX");
+  td2.appendChild(txt2);
+  // edt fiele
+  var td3 = document.createElement("td");
+  var txt3 = document.createTextNode(id.split("_")[0]);
+  td3.appendChild(txt3)
+
+  let this_status = 'success'
+  if (tx_status === 'pending') {
+    this_status = 'pending'
+  }
+  // edt fiele
+  var td4 = document.createElement("td");
+  var txt4 = document.createTextNode(this_status);
+  td4.appendChild(txt4)
+
+  var td5 = document.createElement("td");
+  var txt5 = document.createTextNode(moment(date).format('DD-MM-YYYY') +" "+moment(date).format('HH:mm'));
+  td5.appendChild(txt5);
+  tr.appendChild(td1);
+  tr.appendChild(td2);
+  tr.appendChild(td3);
+  tr.appendChild(td4);
+  tr.appendChild(td5);
+  return tr
+}
+
+let totalSix = 0
+
+function getTxs () {
+  if (firebase.auth().currentUser !== null) {
+    firebase.firestore().collection('purchase_txs')
+    .where("user_id",'==',firebase.auth().currentUser.uid)
+    .get()
+    .then(snapshot => {
+      firebase.firestore().collection('presale').doc('supply').collection('purchased_presale_tx').doc(firebase.auth().currentUser.uid).get().then(preDoc => {
+        let preDocData = preDoc.data()
+        $('#userTxs').empty()
+        let allDoc = []
+        snapshot.forEach(d => {
+          allDoc.push(d)
+        })
+        allDoc.sort(compare)
+        allDoc.forEach(d => {
+          let data = d.data()
+          if (preDocData[d.id] !== undefined && preDocData[d.id] !== null) {
+            data.six_amount = Number((data.six_amount * 1.06).toFixed(7))
+            totalSix += data.six_amount
+            $('#totalSix').html(Number(totalSix.toFixed(7)).toLocaleString() + " SIX")
+          }
+          const elem = buildListTx(data)
+          $("#userTxs")[0].appendChild(elem)
+        })
+      }).catch(() => {
+        $('#userTxs').empty()
+        let allDoc = []
+        snapshot.forEach(d => {
+          allDoc.push(d)
+        })
+        allDoc.sort(compare)
+        allDoc.forEach(d => {
+          const data = d.data()
+          const elem = buildListTx(data)
+          $("#userTxs")[0].appendChild(elem)
+        })
+      })
+    }).then(() => {
+      if (userData.alloc_transaction === true) {
+        const elem = buildListTx({ time: userData.alloc_time, native_amount: userData.alloc_transaction_amount, type: userData.alloc_transaction_type, to: '-', id: '-', six_amount: userData.alloc_transaction_six_amount, alloc_time: userData.alloc_time, tx_status: 'pending' })
+        $("#userTxs")[0].prepend(elem)
+      }
+    })
+  }
+}
+
 $(document).ready(function(){
   document.getElementById('walletETHinput').onkeydown = function() {
     $('#ethWalletAddressAlert').removeClass("invalid")
@@ -371,6 +496,7 @@ $(document).ready(function(){
   document.getElementById('xlmToSixInput').onkeyup = function () {
     let number = parseFloat(this.value) || 0
     $("#xlmToSix").html(Number((number*xlmPrice.six_per_xlm).toFixed(7)).toLocaleString())
+    $("#bonusXLM").html(Number(((number*xlmPrice.six_per_xlm)*0.06).toFixed(7)))
     $("#xlmToSixInputAlertText").html("")
     $("#xlmToSixInputAlertText").css("display", "none")
     $("#xlmToSixInputAlert").removeClass("invalid")
@@ -379,6 +505,10 @@ $(document).ready(function(){
   document.getElementById('ethToSixInput').onkeyup = function() {
     let number = parseFloat(this.value) || 0
     $("#ethToSix").html(Number((number*ethPrice.six_per_eth).toFixed(7)).toLocaleString())
+    $("#bonusETH").html(Number(((number*ethPrice.six_per_eth)*0.06).toFixed(7)))
+    $("#ethToSixInputAlertText").html("")
+    $("#ethToSixInputAlertText").css("display", "none")
+    $("#ethToSixInputAlert").removeClass("invalid")
   }
 
     // Dialog
@@ -409,7 +539,6 @@ $(document).ready(function(){
       window.location.href = '/'
     } else {
       initializeAdmin().then(() => {
-        sumSixAmountToUser()
         return $('#adminShortcut').css('display', 'block')
       }).finally(() => {
         return firebase.firestore().collection('users').doc(user.uid).get().then(doc => {
@@ -432,13 +561,19 @@ $(document).ready(function(){
             }
           }
           if (userData.eth_address !== undefined) {
+            $("#myWallet").css("display", "block")
             $("#myETHaddress")[0].value = userData.eth_address
             $("#myETHWalletAddress").html(userData.eth_address)
           } else {
             $("#myETHaddress")[0].value = '-'
             $("#myETHWalletAddress").html('-')
           }
+          if (userData.is_presale === true) {
+            $("#bonusXLMText").css('display', 'block')
+            $("#bonusETHText").css('display', 'block')
+          }
         }).then(getCurrentTotal).then(() => {
+          getTxs()
           $('#preLoader').fadeToggle()
           updatePrice()
         })
