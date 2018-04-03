@@ -257,5 +257,5 @@ exports.logsUserTable = functions.firestore.document('users/{userId}').onWrite((
   const document = event.data.exists ? event.data.data() : null;
   const timestamp = Date.now()
   const oldDocument = event.data.previous.data();
-  return admin.database().ref(`logs/${timestamp}`).set({document, oldDocument})
+  return admin.firestore().collection('users_log').doc(timestamp.toString()).set({document, oldDocument, timestamp})
 })
