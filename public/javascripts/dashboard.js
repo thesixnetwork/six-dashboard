@@ -647,30 +647,30 @@ $(document).ready(function(){
             $("#myETHWalletAddress").html('-')
             $("#myHiddenETHWalletAddress").val('-')
           }
-          var copyTextareaBtn = document.querySelector('#myETHWalletAddress')
-          copyTextareaBtn.addEventListener('click',function(event){
-            let y = event.clientY
-            let x = event.clientX
-            copyToClipboard($('#myHiddenETHWalletAddress'), y-40, x-53)
-          })
-          var copyTextareaBtn2 = document.querySelector('#myAddressBtn')
-          copyTextareaBtn2.addEventListener('click',function(event){
-            let y = event.clientY
-            let x = event.clientX
-            copyToClipboard($('#myHiddenETHWalletAddress'), y-40, x-53)
-          })
-          var copyTextareaBtn3 = document.querySelector('#XLMaddressToCopyText')
-          copyTextareaBtn3.addEventListener('click',function(event){
-            let y = event.clientY
-            let x = event.clientX
-            copyToClipboard($('#XLMaddressToCopy'), y-40, x-53)
-          })
-          var copyTextareaBtn4 = document.querySelector('#ETHaddressToCopyText')
-          copyTextareaBtn4.addEventListener('click',function(event){
-            let y = event.clientY
-            let x = event.clientX
-            copyToClipboard($('#ETHaddressToCopy'), y-40, x-53)
-          })
+          //var copyTextareaBtn = document.querySelector('#myETHWalletAddress')
+          //copyTextareaBtn.addEventListener('click',function(event){
+          //  let y = event.clientY
+          //  let x = event.clientX
+          //  copyToClipboard($('#myHiddenETHWalletAddress'), y-40, x-53)
+          //})
+          //var copyTextareaBtn2 = document.querySelector('#myAddressBtn')
+          //copyTextareaBtn2.addEventListener('click',function(event){
+          //  let y = event.clientY
+          //  let x = event.clientX
+          //  copyToClipboard($('#myHiddenETHWalletAddress'), y-40, x-53)
+          //})
+          //var copyTextareaBtn3 = document.querySelector('#XLMaddressToCopyText')
+          //copyTextareaBtn3.addEventListener('click',function(event){
+          //  let y = event.clientY
+          //  let x = event.clientX
+          //  copyToClipboard($('#XLMaddressToCopy'), y-40, x-53)
+          //})
+          //var copyTextareaBtn4 = document.querySelector('#ETHaddressToCopyText')
+          //copyTextareaBtn4.addEventListener('click',function(event){
+          //  let y = event.clientY
+          //  let x = event.clientX
+          //  copyToClipboard($('#ETHaddressToCopy'), y-40, x-53)
+          //})
           if (userData.is_presale === true) {
             $("#bonusXLMText").css('display', 'block')
             $("#bonusETHText").css('display', 'block')

@@ -149,6 +149,3 @@
   opacity: 0.7!important;
 }
 
-#XLMaddressToCopyText, #ETHaddressToCopyText, #myETHWalletAddress {
-  cursor: pointer;
-}
