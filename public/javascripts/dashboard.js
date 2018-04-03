@@ -91,7 +91,8 @@ function startConfirmation() {
         $("#warnBox").css("display", "none")
         $("#myWallet").css("display", "block")
         $("#myETHaddress")[0].value = ethAddress
-        $("#myETHWalletAddress").val(ethAddress)
+        $("#myETHWalletAddress").html(ethAddress)
+        $("#myHiddenETHWalletAddress").val(ethAddress)
         userData.submit_wallet = true
       } else {
         $("#submitWalletAlertText").html(response.data.error_message)
@@ -306,9 +307,11 @@ function submitDepositETH() {
 
 function getCurrentTotal() {
   return firebase.firestore().collection('total_asset').doc('usd').get().then(doc => {
-    const currentAsset = doc.data().total
+    const totalAsset = parseFloat(doc.data().total || 0)
+    const privateAsset = parseFloat(doc.data().private_asset || 0)
+    const currentAsset = privateAsset+totalAsset
     const percentage = ((currentAsset/(doc.data().hard_cap_usd/100)) || 0)
-    $("#totalCurrentAsset").html(parseFloat(currentAsset).toLocaleString())
+    $("#totalCurrentAsset").html(Number(parseFloat(currentAsset).toFixed(0)).toLocaleString())
     $("#barPercentage").css("width", Number(percentage.toFixed(1))+"%")
   })
 }
@@ -506,6 +509,45 @@ function getTxs () {
   }
 }
 
+function copyToClipboard (el, y, x) {
+  //resolve the element
+  el = (typeof el === 'string') ? document.querySelector(el) : el;
+  // handle iOS as a special case
+  if (navigator.userAgent.match(/ipad|ipod|iphone/i)) {
+    // save current contentEditable/readOnly status
+    var editable = el.contentEditable;
+    var readOnly = el.readOnly;
+
+    // convert to editable with readonly to stop iOS keyboard opening
+    el.contentEditable = true;
+    el.readOnly = true;
+
+    // create a selectable range
+    var range = document.createRange();
+    range.selectNodeContents(el);
+
+    // select the range
+    var selection = window.getSelection();
+    selection.removeAllRanges();
+    selection.addRange(range);
+    el.setSelectionRange(0, 999999);
+
+    // restore contentEditable/readOnly to original state
+    el.contentEditable = editable;
+    el.readOnly = readOnly;
+  }
+  else {
+    el.select();
+  }
+
+  // execute copy command
+  success = document.execCommand('copy');
+  $("#copiedTooltip").css('top', y+'px')
+  $("#copiedTooltip").css('left', x+'px')
+  $("#copiedTooltip").addClass("showToolTip")
+  setTimeout(function() { $("#copiedTooltip").removeClass("showToolTip") } , 400)
+}
+
 $(document).ready(function(){
   document.getElementById('walletETHinput').onkeydown = function() {
     $('#ethWalletAddressAlert').removeClass("invalid")
@@ -553,41 +595,6 @@ $(document).ready(function(){
 			$(this).parents('[class^="dialog-"]').removeClass('show-dialog');
 		});
 
-    function copyToClipboard (el) {
-      //resolve the element
-      el = (typeof el === 'string') ? document.querySelector(el) : el;
-      // handle iOS as a special case
-      if (navigator.userAgent.match(/ipad|ipod|iphone/i)) {
-          // save current contentEditable/readOnly status
-          var editable = el.contentEditable;
-          var readOnly = el.readOnly;
-
-          // convert to editable with readonly to stop iOS keyboard opening
-          el.contentEditable = true;
-          el.readOnly = true;
-
-          // create a selectable range
-          var range = document.createRange();
-          range.selectNodeContents(el);
-
-          // select the range
-          var selection = window.getSelection();
-          selection.removeAllRanges();
-          selection.addRange(range);
-          el.setSelectionRange(0, 999999);
-
-          // restore contentEditable/readOnly to original state
-          el.contentEditable = editable;
-          el.readOnly = readOnly;
-      }
-      else {
-          el.select();
-      }
-
-      // execute copy command
-      success = document.execCommand('copy');
-      alert(success)
-  }
   // Listening to auth state change
   firebase.auth().onAuthStateChanged(function (user) {
     if (!user) {
@@ -620,16 +627,38 @@ $(document).ready(function(){
           if (userData.eth_address !== undefined) {
             $("#myWallet").css("display", "block")
             $("#myETHaddress")[0].value = userData.eth_address
-            $("#myETHWalletAddress").val(userData.eth_address)
-            var copyTextareaBtn = document.querySelector('#myETHWalletAddressButton')
-            copyTextareaBtn.addEventListener('click',function(event){
-              copyToClipboard('#myETHWalletAddress')
-            })
+            $("#myETHWalletAddress").html(userData.eth_address)
+            $("#myHiddenETHWalletAddress").val(userData.eth_address)
 
           } else {
             $("#myETHaddress")[0].value = '-'
-            $("#myETHWalletAddress").val('-')
+            $("#myETHWalletAddress").html('-')
+            $("#myHiddenETHWalletAddress").val('-')
           }
+          var copyTextareaBtn = document.querySelector('#myETHWalletAddress')
+          copyTextareaBtn.addEventListener('click',function(event){
+            let y = event.clientY
+            let x = event.clientX
+            copyToClipboard($('#myHiddenETHWalletAddress'), y-40, x-53)
+          })
+          var copyTextareaBtn2 = document.querySelector('#myAddressBtn')
+          copyTextareaBtn2.addEventListener('click',function(event){
+            let y = event.clientY
+            let x = event.clientX
+            copyToClipboard($('#myHiddenETHWalletAddress'), y-40, x-53)
+          })
+          var copyTextareaBtn3 = document.querySelector('#XLMaddressToCopyText')
+          copyTextareaBtn3.addEventListener('click',function(event){
+            let y = event.clientY
+            let x = event.clientX
+            copyToClipboard($('#XLMaddressToCopy'), y-40, x-53)
+          })
+          var copyTextareaBtn4 = document.querySelector('#ETHaddressToCopyText')
+          copyTextareaBtn4.addEventListener('click',function(event){
+            let y = event.clientY
+            let x = event.clientX
+            copyToClipboard($('#ETHaddressToCopy'), y-40, x-53)
+          })
           if (userData.is_presale === true) {
             $("#bonusXLMText").css('display', 'block')
             $("#bonusETHText").css('display', 'block')
