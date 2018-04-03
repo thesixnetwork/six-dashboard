@@ -69,7 +69,7 @@ function savePurchaseTxs (transactionId, data) {
     .get()
     .then((doc) => {
       if (!doc.exists) {
-        return db.collection(col).doc(transactionId).set(data)
+        return db.collection(col).doc(transactionId).set(data).then(() => { return db.collection('users').doc(data.user_id).set({ alloc_transaction: false }, {merge: true})})
       }
     })
 }

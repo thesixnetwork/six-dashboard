@@ -11,6 +11,14 @@ function setDisable (doms) {
   })
 }
 
+function compare(a,b) {
+  if (a.data().time > b.data().time)
+    return -1;
+  if (a.data().time < b.data().time)
+    return 1;
+  return 0;
+}
+
 // Remove disabled from dom
 function setEnable (doms) {
   doms.forEach(function (dom) {
@@ -33,7 +41,7 @@ function submitConfirm() {
   const ethAddressDOM = document.getElementById('walletETHinput')
   const btnDOM = document.getElementById('alertConfirmBtn')
   const canDOM = document.getElementById('cancelConfirmBtn')
-  const ethAddress = ethAddressDOM.value
+  const ethAddress = ethAddressDOM.value.toLowerCase()
   setDisable([btnDOM, canDOM])
   requestFunction({eth_address: ethAddress}).then(response => {
     if (response.data.success === true) {
@@ -66,7 +74,7 @@ function startConfirmation() {
   }
   const ethAddressDOM = document.getElementById('walletETHinput')
   const confirmAddressBtnDOM = document.getElementById('confirmAddressBtn')
-  const ethAddress = ethAddressDOM.value
+  const ethAddress = ethAddressDOM.value.toLowerCase()
   if (ethAddress === undefined || ethAddress === null || ethAddress === '') {
     $("#ethWalletAddressAlert").addClass("invalid")
     $("#ethWalletAddressAlertText").html("ETH Address could not be blank")
@@ -214,17 +222,6 @@ function updatePrice() {
   updateETHprice()
 }
 
-// count six amount
-function sumSixAmountToUser () {
-  firebase.firestore().collection('purchase_txs').where("user_id",'==',firebase.auth().currentUser.uid).get()
-    .then(snapshot => {
-      let sixAmount = 0
-      snapshot.forEach(doc => {
-        sixAmount = sixAmount + doc.data().six_amount
-      })
-      $('#totalSix').html(`${sixAmount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")} `)
-    })
-}
 // Chack if admin or not
 function initializeAdmin () {
   let promise = new Promise(function (resolve, reject) {
@@ -459,6 +456,8 @@ function buildListTx(doc) {
   return tr
 }
 
+let totalSix = 0
+
 function getTxs () {
   if (firebase.auth().currentUser !== null) {
     let db = firebase.firestore();
@@ -549,7 +548,6 @@ $(document).ready(function(){
       window.location.href = '/'
     } else {
       initializeAdmin().then(() => {
-        sumSixAmountToUser()
         return $('#adminShortcut').css('display', 'block')
       }).finally(() => {
         return firebase.firestore().collection('users').doc(user.uid).get().then(doc => {
