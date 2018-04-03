@@ -74,7 +74,7 @@ function receivedDeposit (event, functions, fireStore) {
     }
   })
   let purchaseData = event.data.data()
-  fireStore.collection('users').doc(purchaseData.user_id).get().then((user) => {
+  return fireStore.collection('users').doc(purchaseData.user_id).get().then((user) => {
     user = user.data()
     const mailOptions = {
       from: functions.config().email.from,
