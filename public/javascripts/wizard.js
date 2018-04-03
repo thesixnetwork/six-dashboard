@@ -459,11 +459,26 @@ function resubmission() {
 }
 
 function proceedToIco() {
-  $("#icoPage").addClass("show-detail")
-  $('#icoStep').addClass('current')
-  $("#congratulationPage").removeClass("show-detail")
+  const icoBtn = document.getElementById('toIcoBtn')
+  setDisable([icoBtn])
   let uid = firebase.auth().currentUser.uid
-  updateUser({all_done: true})
+  updateUser({all_done: true}).then(() => {
+    if (Date.now() > endtimeOfIco && userData.all_done) {
+      window.location.href = '/dashboard'
+    }    
+    setEnable([icoBtn])
+    $("#icoPage").addClass("show-detail")
+    $('#icoStep').addClass('current')
+    $("#congratulationPage").removeClass("show-detail")
+  }).catch(() => {
+    if (Date.now() > endtimeOfIco && userData.all_done) {
+      window.location.href = '/dashboard'
+    }    
+    setEnable([icoBtn])
+    $("#icoPage").addClass("show-detail")
+    $('#icoStep').addClass('current')
+    $("#congratulationPage").removeClass("show-detail")
+  })
 }
 
 function submitKyc() {

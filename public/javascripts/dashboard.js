@@ -566,7 +566,7 @@ $(document).ready(function(){
           if (!(Date.now() > endtime && doc.data().all_done)) {
             window.location.href = '/wizard'
           }
-          let userData = doc.data()
+          userData = doc.data()
           let name = (userData.first_name || "") + " " + (userData.last_name || "")
           $("#displayName").html(name || "")
           $("#firstCharName").html((userData.first_name || "").substr(0,1).toUpperCase())
