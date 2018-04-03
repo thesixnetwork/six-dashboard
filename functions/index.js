@@ -328,7 +328,7 @@ function genKycReadyEmail ({ email }) {
                                   <table width="100%" border="0" cellpadding="0" cellspacing="0" style="font-size:13px;min-width:100%;mso-table-lspace:0pt;mso-table-rspace:0pt;">
                                     <tr>
                                       <td class="image-td" align="center" valign="top" width="650">
-                                        <img src="https://six.network/images/logo/six-logo.png" alt="" width="296" style="display:block;border-style:none;outline-style:none;width:150px;opacity:1;max-width:100%;">
+                                        <img src="https://six.network/images/logo/six-logo.png" alt="" width="296" style="display:block;border-style:none;outline-style:none;width:120px;opacity:1;max-width:100%;">
                                       </td>
                                     </tr>
                                   </table>
@@ -651,3 +651,12 @@ exports.sendKycReadyEmail = functions.https.onRequest(function () {
 //     return res.status(400).json(new Error('Password not match'))
 //   }
 // })
+
+exports.autoSendKycReadyEmail = functions.firestore.document('/users/{userId}').onUpdate(event => {
+  console.log(event.data.kyc_status)
+  const document = event.data.exists ? event.data.data() : null;
+  const oldDocument = event.data.previous.data();
+  if (document.kyc_status === 'approved' && !oldDocument.kyc_status !== 'approved') {
+    return genKycReadyEmail({ email: document.email }).then(mailOptions => mailTransport.sendMail(mailOptions))
+  }
+})
