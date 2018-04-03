@@ -41,7 +41,7 @@ function submitConfirm() {
   const ethAddressDOM = document.getElementById('walletETHinput')
   const btnDOM = document.getElementById('alertConfirmBtn')
   const canDOM = document.getElementById('cancelConfirmBtn')
-  const ethAddress = ethAddressDOM.value.toLowerCase()
+  const ethAddress = ethAddressDOM.value.toLowerCase().trim()
   setDisable([btnDOM, canDOM])
   requestFunction({eth_address: ethAddress}).then(response => {
     if (response.data.success === true) {
@@ -74,7 +74,7 @@ function startConfirmation() {
   }
   const ethAddressDOM = document.getElementById('walletETHinput')
   const confirmAddressBtnDOM = document.getElementById('confirmAddressBtn')
-  const ethAddress = ethAddressDOM.value.toLowerCase()
+  const ethAddress = ethAddressDOM.value.toLowerCase().trim()
   if (ethAddress === undefined || ethAddress === null || ethAddress === '') {
     $("#ethWalletAddressAlert").addClass("invalid")
     $("#ethWalletAddressAlertText").html("ETH Address could not be blank")
