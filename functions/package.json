@@ -23,6 +23,7 @@
     "moment-timezone": "^0.5.14",
     "nodemailer": "^4.6.3",
     "query-string": "^6.0.0",
+    "regenerator-runtime": "^0.11.1",
     "request": "^2.85.0",
     "request-promise": "^4.2.2",
     "standard": "^11.0.1",
