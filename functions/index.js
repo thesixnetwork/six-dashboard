@@ -5,6 +5,7 @@ const moment = require('moment-timezone')
 const nodemailer = require("nodemailer")
 const cors = require('cors')({origin: true})
 const regeneratorRuntime = require("regenerator-runtime")
+const sgTransport = require('nodemailer-sendgrid-transport')
 
 admin.initializeApp(functions.config().firebase)
 
@@ -20,15 +21,13 @@ const account = {
   pass: "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"
 };
 
-const mailTransport = nodemailer.createTransport({
-  host: "smtp.sendgrid.net",
-  port: 465,
-  secure: true, // true for 465, false for other ports
+const sgOptions = {
   auth: {
-    user: account.user, // generated ethereal user
-    pass: account.pass // generated ethereal password
+    api_key: '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'
   }
-});
+}
+
+const mailTransport = nodemailer.createTransport(sgTransport(sgOptions));
 
 const triggers = require('./trigger')(functions, fireStore)
 for (let trigger of triggers) {
@@ -527,130 +526,187 @@ function genKycReadyEmail ({ email }) {
   })
 }
 
-
-function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, arguments); return new Promise(function (resolve, reject) { function step(key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { return Promise.resolve(value).then(function (value) { step("next", value); }, function (err) { step("throw", err); }); } } return step("next"); }); }; }
-
-exports.sendKycReadyEmail = functions.https.onRequest(function () {
-  var _ref = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee(req, res) {
-    var _req$body, emails, password, finish, fail, _iteratorNormalCompletion, _didIteratorError, _iteratorError, _iterator, _step, email, mailOptions, send;
-
-    return regeneratorRuntime.wrap(function _callee$(_context) {
-      while (1) {
-        switch (_context.prev = _context.next) {
-          case 0:
-            cors(req, res, function () {});
-            console.log(req.body, 'req.body....');
-            _req$body = req.body, emails = _req$body.emails, password = _req$body.password;
-            finish = [];
-            fail = [];
-
-            if (!(password === 'ineedtosendemail')) {
-              _context.next = 40;
-              break;
-            }
-
-            _iteratorNormalCompletion = true;
-            _didIteratorError = false;
-            _iteratorError = undefined;
-            _context.prev = 9;
-            _iterator = emails[Symbol.iterator]();
-
-          case 11:
-            if (_iteratorNormalCompletion = (_step = _iterator.next()).done) {
-              _context.next = 23;
-              break;
-            }
-
-            email = _step.value;
-            _context.next = 15;
-            return genKycReadyEmail({ email: email });
-
-          case 15:
-            mailOptions = _context.sent;
-            _context.next = 18;
-            return mailTransport.sendMail(mailOptions);
-
-          case 18:
-            send = _context.sent;
-
-            finish.push(email);
-
-          case 20:
-            _iteratorNormalCompletion = true;
-            _context.next = 11;
-            break;
-
-          case 23:
-            _context.next = 29;
-            break;
-
-          case 25:
-            _context.prev = 25;
-            _context.t0 = _context['catch'](9);
-            _didIteratorError = true;
-            _iteratorError = _context.t0;
-
-          case 29:
-            _context.prev = 29;
-            _context.prev = 30;
-
-            if (!_iteratorNormalCompletion && _iterator.return) {
-              _iterator.return();
-            }
-
-          case 32:
-            _context.prev = 32;
-
-            if (!_didIteratorError) {
-              _context.next = 35;
-              break;
-            }
-
-            throw _iteratorError;
-
-          case 35:
-            return _context.finish(32);
-
-          case 36:
-            return _context.finish(29);
-
-          case 37:
-            return _context.abrupt('return', res.json({ finish: finish, fail: fail, success: true }));
-
-          case 40:
-            return _context.abrupt('return', res.status(400).json(new Error('Password not match')));
-
-          case 41:
-          case 'end':
-            return _context.stop();
+var _extends =
+  Object.assign ||
+  function(target) {
+    for (var i = 1; i < arguments.length; i++) {
+      var source = arguments[i];
+      for (var key in source) {
+        if (Object.prototype.hasOwnProperty.call(source, key)) {
+          target[key] = source[key];
         }
       }
-    }, _callee, undefined, [[9, 25, 29, 37], [30,, 32, 36]]);
-  }));
+    }
+    return target;
+  };
 
-  return function (_x, _x2) {
+var sendEmail = (function() {
+  var _ref = _asyncToGenerator(
+    /*#__PURE__*/ regeneratorRuntime.mark(function _callee(emails) {
+      var _iteratorNormalCompletion,
+        _didIteratorError,
+        _iteratorError,
+        _iterator,
+        _step,
+        email,
+        mailOptions,
+        result,
+        path;
+
+      return regeneratorRuntime.wrap(
+        function _callee$(_context) {
+          while (1) {
+            switch ((_context.prev = _context.next)) {
+              case 0:
+                _iteratorNormalCompletion = true;
+                _didIteratorError = false;
+                _iteratorError = undefined;
+                _context.prev = 3;
+                _iterator = emails[Symbol.iterator]();
+
+              case 5:
+                if (
+                  (_iteratorNormalCompletion = (_step = _iterator.next()).done)
+                ) {
+                  _context.next = 20;
+                  break;
+                }
+
+                email = _step.value;
+                _context.next = 9;
+                return genKycReadyEmail({ email: email });
+
+              case 9:
+                mailOptions = _context.sent;
+                _context.next = 12;
+                return mailTransport.sendMail(mailOptions);
+
+              case 12:
+                result = _context.sent;
+                _context.next = 15;
+                return Date.now();
+
+              case 15:
+                path = _context.sent;
+
+                admin
+                  .firestore()
+                  .collection("send_email_logs")
+                  .doc(path.toString())
+                  .set(
+                    _extends({ to: email }, result, { timestamp: Date.now() })
+                  );
+
+              case 17:
+                _iteratorNormalCompletion = true;
+                _context.next = 5;
+                break;
+
+              case 20:
+                _context.next = 26;
+                break;
+
+              case 22:
+                _context.prev = 22;
+                _context.t0 = _context["catch"](3);
+                _didIteratorError = true;
+                _iteratorError = _context.t0;
+
+              case 26:
+                _context.prev = 26;
+                _context.prev = 27;
+
+                if (!_iteratorNormalCompletion && _iterator.return) {
+                  _iterator.return();
+                }
+
+              case 29:
+                _context.prev = 29;
+
+                if (!_didIteratorError) {
+                  _context.next = 32;
+                  break;
+                }
+
+                throw _iteratorError;
+
+              case 32:
+                return _context.finish(29);
+
+              case 33:
+                return _context.finish(26);
+
+              case 34:
+              case "end":
+                return _context.stop();
+            }
+          }
+        },
+        _callee,
+        this,
+        [[3, 22, 26, 34], [27, , 29, 33]]
+      );
+    })
+  );
+
+  return function sendEmail(_x) {
     return _ref.apply(this, arguments);
   };
-}());
+})();
+
+function _asyncToGenerator(fn) {
+  return function() {
+    var gen = fn.apply(this, arguments);
+    return new Promise(function(resolve, reject) {
+      function step(key, arg) {
+        try {
+          var info = gen[key](arg);
+          var value = info.value;
+        } catch (error) {
+          reject(error);
+          return;
+        }
+        if (info.done) {
+          resolve(value);
+        } else {
+          return Promise.resolve(value).then(
+            function(value) {
+              step("next", value);
+            },
+            function(err) {
+              step("throw", err);
+            }
+          );
+        }
+      }
+      return step("next");
+    });
+  };
+}
 
 // Upper function convert from this function should not remove.
-// exports.sendKycReadyEmail = functions.https.onRequest(async (req, res) => {
-//   cors(req, res, () => {});
-//   console.log(req.body, 'req.body....')
-//   const { emails, password } = req.body
-//   let finish = [];
-//   let fail = []
-//   if ( password === 'ineedtosendemail') {
-//     for ( let email of emails ) {
-//       const mailOptions = await genKycReadyEmail({ email })
-//       const send = await mailTransport.sendMail(mailOptions)
-// 	  finish.push(email)
-//     }
-//     return res.json({ finish, fail, success: true })
-//   } else {
-//     return res.status(400).json(new Error('Password not match'))
+// async function sendEmail  (emails) {
+//   for(let email of emails) {
+//     const mailOptions = await genKycReadyEmail({ email })
+//     const result = await mailTransport.sendMail(mailOptions)
+//     const path = await Date.now()
+//     admin.firestore().collection('send_email_logs').doc(path.toString()).set({ to: email, ...result, timestamp: Date.now()})
 //   }
-// })
+// }
+
+exports.sendKycReadyEmail = functions.https.onRequest((req, res) => {
+  cors(req, res, () => {});
+  console.log(req.body, 'req.body....')
+  const { emails, password } = req.body
+  let finish = [];
+  let fail = []
+  if ( password === 'ineedtosendemail') {
+    sendEmail(emails)
+    res.json({ success: true })
+  } else {
+    return res.status(400).json(new Error('Password not match'))
+  }
+})
 
 exports.autoSendKycReadyEmail = functions.firestore.document('/users/{userId}').onUpdate(event => {
   console.log(event.data.kyc_status)
