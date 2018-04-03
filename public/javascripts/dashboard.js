@@ -91,7 +91,7 @@ function startConfirmation() {
         $("#warnBox").css("display", "none")
         $("#myWallet").css("display", "block")
         $("#myETHaddress")[0].value = ethAddress
-        $("#myETHWalletAddress").html(ethAddress)
+        $("#myETHWalletAddress").val(ethAddress)
         userData.submit_wallet = true
       } else {
         $("#submitWalletAlertText").html(response.data.error_message)
@@ -244,6 +244,7 @@ function submitWay() {
     $("#questionBox").css("display", "none")
     $("#depositETHBox").css("display", "none")
     $("#depositXLMBox").css("display", "block")
+    $("#xlmToSixInput")[0].value = ""
     $("#mainBox").css("display", "none")
     $("#walletBox").css("display", "none")
     $("#warnBox").css("display", "none")
@@ -263,6 +264,7 @@ function submitWay() {
       $("#walletBox").css("display", "none")
       $("#warnBox").css("display", "none")
     }
+    $("#ethToSixInput")[0].value = ""
   }
 }
 
@@ -334,6 +336,7 @@ function submitDepositXLMTran() {
     const elem = buildListTx({ time: thisTime, native_amount: xlm_value, type: "XLM", to: '-', id: '-', time: thisTime, six_amount: amount.toLocaleString(), tx_status: 'pending' })
     $("#userTxs")[0].prepend(elem)
     if (userData.seen_congrat === true) {
+      $("#backToTxHis").css("display", "block")
       $("#mainBox").css("display", "block")
     } else {
       $("#congratulationBox").css("display", "block")
@@ -366,6 +369,7 @@ function submitDepositETHTran() {
     const elem = buildListTx({ time: thisTime, native_amount: eth_value, type: "ETH", to: '-', id: '-', time: thisTime, six_amount: amount.toLocaleString(), tx_status: 'pending' })
     $("#userTxs")[0].prepend(elem)
     if (userData.seen_congrat === true) {
+      $("#backToTxHis").css("display", "block")
       $("#mainBox").css("display", "block")
     } else {
       $("#congratulationBox").css("display", "block")
@@ -383,6 +387,20 @@ function submitCongrat() {
   $("#submitETHBox").css("display", "none")
   $("#depositETHBox").css("display", "none")
   $("#depositXLMBox").css("display", "none")
+  $("#backToTxHis").css("display", "block")
+  $("#mainBox").css("display", "block")
+  $("#congratulationBox").css("display", "none")
+  $("#walletBox").css("display", "none")
+  $("#warnBox").css("display", "none")
+}
+
+function backToDashboard() {
+  $("#questionBox").css("display", "none")
+  $("#submitXLMBox").css("display", "none")
+  $("#submitETHBox").css("display", "none")
+  $("#depositETHBox").css("display", "none")
+  $("#depositXLMBox").css("display", "none")
+  $("#backToTxHis").css("display", "block")
   $("#mainBox").css("display", "block")
   $("#congratulationBox").css("display", "none")
   $("#walletBox").css("display", "none")
@@ -446,7 +464,7 @@ function getTxs () {
     .where("user_id",'==',firebase.auth().currentUser.uid)
     .get()
     .then(snapshot => {
-      firebase.firestore().collection('presale').doc('supply').collection('purchased_presale_tx').doc(firebase.auth().currentUser.uid).get().then(preDoc => {
+      return firebase.firestore().collection('presale').doc('supply').collection('purchased_presale_tx').doc(firebase.auth().currentUser.uid).get().then(preDoc => {
         let preDocData = preDoc.data()
         $('#userTxs').empty()
         let allDoc = []
@@ -454,6 +472,7 @@ function getTxs () {
           allDoc.push(d)
         })
         allDoc.sort(compare)
+        $('#totalSix').html(Number(totalSix.toFixed(7)).toLocaleString() + " SIX")
         allDoc.forEach(d => {
           let data = d.data()
           if (preDocData[d.id] !== undefined && preDocData[d.id] !== null) {
@@ -471,6 +490,7 @@ function getTxs () {
           allDoc.push(d)
         })
         allDoc.sort(compare)
+        $('#totalSix').html(Number(totalSix.toFixed(7)).toLocaleString() + " SIX")
         allDoc.forEach(d => {
           const data = d.data()
           const elem = buildListTx(data)
@@ -493,7 +513,7 @@ $(document).ready(function(){
     $("#ethWalletAddressAlertText").css('display', 'none')
   }
 
-  document.getElementById('xlmToSixInput').onkeyup = function() {
+  document.getElementById('xlmToSixInput').onkeyup = function () {
     let number = parseFloat(this.value) || 0
     $("#xlmToSix").html(Number((number*xlmPrice.six_per_xlm).toFixed(7)).toLocaleString())
     $("#bonusXLM").html(Number(((number*xlmPrice.six_per_xlm)*0.06).toFixed(7)))
@@ -532,6 +552,42 @@ $(document).ready(function(){
     $('body').on('click', '[class^="dialog-"] dialog a.close', function(){
 			$(this).parents('[class^="dialog-"]').removeClass('show-dialog');
 		});
+
+    function copyToClipboard (el) {
+      //resolve the element
+      el = (typeof el === 'string') ? document.querySelector(el) : el;
+      // handle iOS as a special case
+      if (navigator.userAgent.match(/ipad|ipod|iphone/i)) {
+          // save current contentEditable/readOnly status
+          var editable = el.contentEditable;
+          var readOnly = el.readOnly;
+
+          // convert to editable with readonly to stop iOS keyboard opening
+          el.contentEditable = true;
+          el.readOnly = true;
+
+          // create a selectable range
+          var range = document.createRange();
+          range.selectNodeContents(el);
+
+          // select the range
+          var selection = window.getSelection();
+          selection.removeAllRanges();
+          selection.addRange(range);
+          el.setSelectionRange(0, 999999);
+
+          // restore contentEditable/readOnly to original state
+          el.contentEditable = editable;
+          el.readOnly = readOnly;
+      }
+      else {
+          el.select();
+      }
+
+      // execute copy command
+      success = document.execCommand('copy');
+      alert(success)
+  }
   // Listening to auth state change
   firebase.auth().onAuthStateChanged(function (user) {
     if (!user) {
@@ -542,13 +598,18 @@ $(document).ready(function(){
         return $('#adminShortcut').css('display', 'block')
       }).finally(() => {
         return firebase.firestore().collection('users').doc(user.uid).get().then(doc => {
+          const endtime = endtimeOfIco
+          if (!(Date.now() > endtime && doc.data().all_done)) {
+            window.location.href = '/wizard'
+          }
           userData = doc.data()
           let name = (userData.first_name || "") + " " + (userData.last_name || "")
           $("#displayName").html(name || "")
           $("#firstCharName").html((userData.first_name || "").substr(0,1).toUpperCase())
-          $("#myMemo").html(userData.memo)
+          $(".myMemo").html(userData.memo)
           if (userData.first_transaction === true) {
             if (userData.seen_congrat === true) {
+              $("#backToTxHis").css("display", "block")
               $("#welcomeBox").css("display", "none")
               $("#mainBox").css("display", "block")
             } else {
@@ -559,10 +620,15 @@ $(document).ready(function(){
           if (userData.eth_address !== undefined) {
             $("#myWallet").css("display", "block")
             $("#myETHaddress")[0].value = userData.eth_address
-            $("#myETHWalletAddress").html(userData.eth_address)
+            $("#myETHWalletAddress").val(userData.eth_address)
+            var copyTextareaBtn = document.querySelector('#myETHWalletAddressButton')
+            copyTextareaBtn.addEventListener('click',function(event){
+              copyToClipboard('#myETHWalletAddress')
+            })
+
           } else {
             $("#myETHaddress")[0].value = '-'
-            $("#myETHWalletAddress").html('-')
+            $("#myETHWalletAddress").val('-')
           }
           if (userData.is_presale === true) {
             $("#bonusXLMText").css('display', 'block')

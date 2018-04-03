@@ -117,3 +117,18 @@
 #txHistoryTable {
   min-width: 970px;
 }
+
+#howToETH, #backToTxHis {
+  color: white;
+  font-weight: bold;
+  background: #4a5ab5;
+  padding: 1px;
+  display: block;
+  text-align: center;
+  border-radius: 5px;
+  margin-top: 7px;
+}
+
+.faqMenu {
+  text-decoration: underline;
+}
