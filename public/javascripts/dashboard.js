@@ -202,7 +202,7 @@ function latestETHprice() {
 
 function updateXLMprice() {
   latestXLMprice().then(data => {
-    $(".xlmPrice").html("1 SIX = "+data.price.price+" USD")
+    $(".xlmPrice").html("1 XLM = "+data.price.price+" USD")
     xlmPrice = data.price
     const elem = document.getElementById('xlmToSixInput')
     setEnable([elem])
@@ -211,7 +211,7 @@ function updateXLMprice() {
 
 function updateETHprice() {
   latestETHprice().then(data => {
-    $(".ethPrice").html("1 SIX = "+data.price.price+" USD")
+    $(".ethPrice").html("1 ETH = "+data.price.price+" USD")
     ethPrice = data.price
     const elem = document.getElementById('ethToSixInput')
     setEnable([elem])
@@ -535,13 +535,25 @@ function copyToClipboard (el, y, x) {
     // restore contentEditable/readOnly to original state
     el.contentEditable = editable;
     el.readOnly = readOnly;
+    success = document.execCommand('copy')
+    console.log(success)
   }
   else {
-    el.select();
+    var textarea = document.createElement('textarea');
+    textarea.textContent = el.val();
+    console.log(el.val())
+    document.body.appendChild(textarea)
+    var selection = document.getSelection();
+    var range = document.createRange();
+    range.selectNode(textarea);
+    selection.removeAllRanges();
+    selection.addRange(range);
+    success = document.execCommand('copy')
+    console.log(success)
+    selection.removeAllRanges();
+    document.body.removeChild(textarea);
   }
 
-  // execute copy command
-  success = document.execCommand('copy');
   $("#copiedTooltip").css('top', y+'px')
   $("#copiedTooltip").css('left', x+'px')
   $("#copiedTooltip").addClass("showToolTip")
