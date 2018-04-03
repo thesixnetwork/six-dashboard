@@ -6,7 +6,7 @@ const moment = require('moment-timezone')
 admin.initializeApp(functions.config().firebase)
 
 const EthereumService = require('./service-ethereum')
-const stellarService = require('./stellar-service')
+const stellarService = require('./stellar-paging')
 
 const fireStore = admin.firestore()
 
