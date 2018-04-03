@@ -493,7 +493,7 @@ $(document).ready(function(){
     $("#ethWalletAddressAlertText").css('display', 'none')
   }
 
-  document.getElementById('xlmToSixInput').onkeyup = function() {
+  document.getElementById('xlmToSixInput').onkeyup = function () {
     let number = parseFloat(this.value) || 0
     $("#xlmToSix").html(Number((number*xlmPrice.six_per_xlm).toFixed(7)).toLocaleString())
     $("#bonusXLM").html(Number(((number*xlmPrice.six_per_xlm)*0.06).toFixed(7)))
@@ -542,7 +542,11 @@ $(document).ready(function(){
         return $('#adminShortcut').css('display', 'block')
       }).finally(() => {
         return firebase.firestore().collection('users').doc(user.uid).get().then(doc => {
-          userData = doc.data()
+          const endtime = endtimeOfIco
+          if (!(Date.now() > endtime && doc.data().all_done)) {
+            window.location.href = '/wizard'
+          }
+          let userData = doc.data()
           let name = (userData.first_name || "") + " " + (userData.last_name || "")
           $("#displayName").html(name || "")
           $("#firstCharName").html((userData.first_name || "").substr(0,1).toUpperCase())
