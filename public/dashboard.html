@@ -28,6 +28,7 @@
     <link rel="stylesheet" href="stylesheets/dashboard.css">
     <script src="javascripts/bluebird.js"></script>
     <script src="javascripts/jquery-3.2.1.min.js"></script>
+    <script src="javascripts/config.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.18.1/moment.js"></script>
     <script src="javascripts/dashboard.js"></script>
   </head>
@@ -68,14 +69,14 @@
       <aside>
         <section class="user-detail">
           <span class="avatar" id='firstCharName'>V</span>
-          <p>Hello&nbsp;<span id='displayName'>Vachara A.</span></p>
-          <p>Balance :&nbsp;<span><span id='totalSix'>0 </span>SIX</span></p>
+          <p class='truncate'>Hello&nbsp;<span id='displayName'>Vachara A.</span></p>
+          <p>Balance :&nbsp;<span><span id='totalSix'>Loading</span></span></p>
         </section>
         <section class="video">
           <a class="btn-play open-dialog-video">
             <i class="fas fa-play"></i>
           </a>
-          <p>How to contribute SIX token</p>
+          <p>Introducing to SIX token</p>
         </section>
         <section id='myWallet' style='display: none;'>
           <h4>My wallet</h4>
@@ -86,16 +87,18 @@
           <button id="myETHWalletAddressButton" /> copy </button>
           <a href="#">How to contribute using ETH</a>
         </section>
-        <section class="static-link">
-          <a href="#">FAQ</a>
-          <a href="#">How to buy ?</a>
+        <a href="https://six.network/faq.html#howtobuy" id='howToETH'>How to contribute using ETH</a>
+        <a href="#" onclick='backToDashboard()' id='backToTxHis' style='display: none;'><i class="fas fa-arrow-left"></i> Back to Dashboard</a>
+        <section class="static-link" style='margin-top: 7px;'>
+          <a href="https://six.network/faq.html" class='faqMenu'><strong>FAQ</strong></a>
+          <a href="https://six.network/faq.html#howtobuy" class='faqMenu'><strong>How to buy ?</strong></a>
         </section>
       </aside>
       <div class="content">
         <section class="progress" id='progressContent'>
           <div class="bar">
             <div class="top">
-              <p class='zeroStart'>0</p>
+              <p class='zeroStart'>$0</p>
               <p class='softCapText'>$15,000,000</p>
               <p class='hardCapText'>$42,905,579</p>
             </div>
@@ -128,12 +131,8 @@
                 <p>3. Confirm your transaction</p>
               </label>
             </li>
-            <li>
-              <label class="option">
-                <p>4. When end of ICO period, we will send you an instruction to cliam SIX token again in June</p>
-              </label>
-            </li>
           </ul>
+          <p>When end of ICO period, we will announce the token distribution date shortly. You will receive an email to claim SIX tokens from us by following step by step wizard</p>
           <div id="nwbtn"><button id="nextWayBtn" onclick='submitWelcome()'>Next</button></div>
         </section>
         <section class="question-box" id='questionBox'>
@@ -184,8 +183,9 @@
           <h2>Create your deposit</h2>
           <p style='margin-bottom: 25px; text-align: center;'>Enter the amount you wish to deposit</p>
           <div class="Exexchange">
-            <label class="text" id='xlmToSixInputAlert'>
-              <input type="text" placeholder="0" id='xlmToSixInput' disabled/>
+            <label class="text dropdown" id='xlmToSixInputAlert'>
+              <input type="text" placeholder="Your contribution amount in" id='xlmToSixInput' style="text-align: end; width: 90%;" disabled/>
+              <i class="">XLM</i>
               <p id='xlmToSixInputAlertText' style='display: none;'></p>
             </label>
             <p style='font-size: 23px;'>≈ <strong><span id='xlmToSix'>0</span> SIX</strong><span id='bonusXLMText' style='display: none;'> + BONUS <span id='bonusXLM'>0</span> SIX</span></p>
@@ -204,8 +204,9 @@
         <section class='submit-xlm-box submit-box' id='submitXLMBox'>
           <h2>Transfer your deposit</h2>
           <p style='text-align: center;'><strong>Please transfer <span id='depositXLMamount'>0</span> XLM to following address:</strong></p>
-          <p style='text-align: center; text-decoration: underline; font-size: 20px;'>GDYALW6CVL6PRL6RZHJMQZ4VXGJXRKPZHJH6VKHW3J7USHBBPY52XHNO</p>
-          <p style="text-align: center; font-size: 20px;"><strong>MEMO : <span id='myMemo'></span></strong></p>
+          <p class='' style='text-align: center; text-decoration: underline; font-size: 20px;'>GDYALW6CVL6PRL6RZHJMQZ4VXGJXRKPZHJH6VKHW3J7USHBBPY52XHNO</p>
+          <p style="text-align: center; font-size: 20px;"><strong>MEMO : <span id='myMemo' class='myMemo'></span></strong></p>
+          <p style="text-align: center; font-size: 17px;">To prevent transfer failure, please specify <i class='myMemo'>XXXXXX</i> on the memo on your Stella Lumens transfer.</p>
           <div class='qrContainer'>
             <img class='qrCenter' src='images/content/xlm_qr.png'>
           </div>
@@ -215,8 +216,9 @@
           <h2>Create your deposit</h2>
           <p style='margin-bottom: 25px; text-align: center;'>Enter the amount you wish to deposit</p>
           <div class="Exexchange">
-            <label class="text" id='ethToSixInputAlert'>
-              <input type="text" placeholder="0" id='ethToSixInput' disabled/>
+            <label class="text dropdown" id='ethToSixInputAlert'>
+              <input placeholder="Your contribution amount in" id="ethToSixInput" style="text-align: end; width: 90%;" type="text">
+              <i class="">ETH</i>
               <p id='ethToSixInputAlertText' style='display: none;'></p>
             </label>
             <p style='font-size: 23px;'>≈ <strong><span id='ethToSix'>0</span> SIX</strong><span id='bonusETHText' style='display: none;'> + BONUS <span id='bonusETH'>0</span> SIX</span></p>
@@ -241,7 +243,8 @@
         <section class='submit-sth-box submit-box' id='submitETHBox'>
           <h2>Transfer your deposit</h2>
           <p style='text-align: center;'><strong>Please transfer <span id='depositETHamount'>0</span> ETH to following address:</strong></p>
-          <p style='text-align: center; text-decoration: underline; font-size: 20px;'>0x47ef7027425426db85b70b67600a47490312431a</p>
+          <p class='' style='text-align: center; text-decoration: underline; font-size: 20px;'>0x47ef7027425426db85b70b67600a47490312431a</p>
+          <p style="text-align: center; font-size: 20px;"><strong>To prevent a failed transfer. We recommend a minimum Gas Limit of 200,000 and a Gas Price of 40 gwei.</strong></p>
           <div class='qrContainer'>
             <img class='qrCenter' src='images/content/eth_qr.png'>
           </div>
@@ -256,7 +259,7 @@
           <ul class="option-list">
             <li>
               <label class="option">
-                <p>Ethereum ( ETH )</p>
+                <p>Your Ethereum ( ETH ) Address</p>
               </label>
               <p>:</p>
               <label class="text width-full" id='ethWalletAddressAlert' style='width: 100%;'>
@@ -281,19 +284,21 @@
               <div class="btn btnInline"><button id='gotoQuestionBtn' onclick='gotoCurrency()'>Add deposit</button></div>
               <div class="btn btnInline"><button id='contactBtn' onclick='window.open("http://m.me/thesixnetwork")'>Contact Us</button></div>
             </div>
-            <table id='txHistoryTable'>
-              <thead>
-                <tr>
-                  <th width="120">From</th>
-                  <th width="130">To</th>
-                  <th>Transaction ID</th>
-                  <th width="120">Status</th>
-                  <th width="200">Datetime</th>
-                </tr>
-              </thead>
-              <tbody id="userTxs">
-              </tbody>
-            </table>
+            <div id='tableContainer'>
+              <table id='txHistoryTable'>
+                <thead>
+                  <tr>
+                    <th width="120">From</th>
+                    <th width="130">To</th>
+                    <th width="400">Transaction ID</th>
+                    <th width="120">Status</th>
+                    <th width="200">Datetime</th>
+                  </tr>
+                </thead>
+                <tbody id="userTxs">
+                </tbody>
+              </table>
+            </div>
             <div id='loadmoreBtn' style='display: none;' class="loader-more"><a href="#">More</a></div>
           </section>
         </div>

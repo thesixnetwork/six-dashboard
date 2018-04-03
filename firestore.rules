@@ -29,5 +29,8 @@ service cloud.firestore {
     match /purchase_txs/{tid}{
       allow read: if request.auth.uid == resource.data.user_id;
     }
+    match /presale/supply/purchased_presale_tx/{userId} {
+      allow read: if request.auth.uid == userId;
+    }
   }
 }

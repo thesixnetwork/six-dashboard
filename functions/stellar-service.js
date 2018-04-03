@@ -81,6 +81,10 @@ function updateCursor(newTime) {
 }
 
 function handleOperation(user, tx, operation, n, price, priceTime) {
+  if (+operation.amount < 1) {
+      console.log(`Amount too low : ${tx.hash}`)
+      return Promise.resolve()
+  }
   const hash = tx.hash
   const id = `${hash}_${operation.id}`
   const memo = tx.memo || ''
@@ -137,9 +141,12 @@ function handleOperation(user, tx, operation, n, price, priceTime) {
     let documentRef = fireStore
       .collection('purchase_txs')
       .doc(`${hash}_${operation.id}`);
-
+    let userRef = fireStore
+      .collection('users')
+      .doc(user_id)
     return transaction.get(documentRef).then(doc => {
       if (!doc.exists) {
+        transaction.update(userRef, { alloc_transaction: false })
         return transaction.create(documentRef, body);
       }
       const resultText = `Not insert : ${id} already exists`;
