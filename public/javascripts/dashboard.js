@@ -93,6 +93,7 @@ function startConfirmation() {
         $("#myETHaddress")[0].value = ethAddress
         $("#myETHWalletAddress").html(ethAddress)
         $("#myHiddenETHWalletAddress").val(ethAddress)
+        $("#myHiddenETHWalletAddress").attr('value', ethAddress)
         userData.submit_wallet = true
       } else {
         $("#submitWalletAlertText").html(response.data.error_message)
@@ -561,6 +562,15 @@ function copyToClipboard (el, y, x) {
 }
 
 $(document).ready(function(){
+  let clipboard = new ClipboardJS('.blinkTooltip')
+  clipboard.on('success', function(e) {
+    let bodyRect = document.body.getBoundingClientRect()
+    let react = e.trigger.getBoundingClientRect()
+    $("#copiedTooltip").css('top', ((react.top-bodyRect.top)-40)+'px')
+    $("#copiedTooltip").css('left', (react.left+((react.right-react.left)/2)-53)+'px')
+    $("#copiedTooltip").addClass("showToolTip")
+    setTimeout(function() { $("#copiedTooltip").removeClass("showToolTip") } , 400)
+  })
   document.getElementById('walletETHinput').onkeydown = function() {
     $('#ethWalletAddressAlert').removeClass("invalid")
     $("#ethWalletAddressAlertText").html('')
@@ -626,6 +636,8 @@ $(document).ready(function(){
           $("#displayName").html(name || "")
           $("#firstCharName").html((userData.first_name || "").substr(0,1).toUpperCase())
           $(".myMemo").html(userData.memo)
+          $("#myHiddenMemo").val(userData.memo)
+          $("#myHiddenMemo").attr('value', userData.memo)
           if (userData.first_transaction === true) {
             if (userData.seen_congrat === true) {
               $("#backToTxHis").css("display", "block")
@@ -641,11 +653,13 @@ $(document).ready(function(){
             $("#myETHaddress")[0].value = userData.eth_address
             $("#myETHWalletAddress").html(userData.eth_address)
             $("#myHiddenETHWalletAddress").val(userData.eth_address)
+            $("#myHiddenETHWalletAddress").attr('value', userData.eth_address)
 
           } else {
             $("#myETHaddress")[0].value = '-'
             $("#myETHWalletAddress").html('-')
             $("#myHiddenETHWalletAddress").val('-')
+            $("#myHiddenETHWalletAddress").attr('value', '-')
           }
           //var copyTextareaBtn = document.querySelector('#myETHWalletAddress')
           //copyTextareaBtn.addEventListener('click',function(event){
