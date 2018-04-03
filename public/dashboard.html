@@ -68,7 +68,7 @@
       <aside>
         <section class="user-detail">
           <span class="avatar" id='firstCharName'>V</span>
-          <p>Hello&nbsp;<span id='displayName'>Vachara A.</span></p>
+          <p class='truncate'>Hello&nbsp;<span id='displayName'>Vachara A.</span></p>
           <p>Balance :&nbsp;<span><span id='totalSix'>Loading</span></span></p>
         </section>
         <section class="video">
@@ -78,20 +78,21 @@
           <p>Introducing to SIX token</p>
         </section>
         <section id='myWallet' style='display: none;'>
-          <h4>My wallet</h4>
+          <h4>My wallet address</h4>
           <p id='myETHWallet' class='truncate'>ETH : <span id='myETHWalletAddress'></span></p>
-          <a href="https://six.network/faq.html#howtobuy">How to contribute using ETH</a>
         </section>
-        <section class="static-link">
-          <a href="https://six.network/faq.html">FAQ</a>
-          <a href="https://six.network/faq.html#howtobuy">How to buy ?</a>
+        <a href="https://six.network/faq.html#howtobuy" id='howToETH'>How to contribute using ETH</a>
+        <a href="#" onclick='backToDashboard()' id='backToTxHis' style='display: none;'><i class="fas fa-arrow-left"></i> Back to Dashboard</a>
+        <section class="static-link" style='margin-top: 7px;'>
+          <a href="https://six.network/faq.html" class='faqMenu'><strong>FAQ</strong></a>
+          <a href="https://six.network/faq.html#howtobuy" class='faqMenu'><strong>How to buy ?</strong></a>
         </section>
       </aside>
       <div class="content">
         <section class="progress" id='progressContent'>
           <div class="bar">
             <div class="top">
-              <p class='zeroStart'>0</p>
+              <p class='zeroStart'>$0</p>
               <p class='softCapText'>$15,000,000</p>
               <p class='hardCapText'>$42,905,579</p>
             </div>
@@ -197,8 +198,9 @@
         <section class='submit-xlm-box submit-box' id='submitXLMBox'>
           <h2>Transfer your deposit</h2>
           <p style='text-align: center;'><strong>Please transfer <span id='depositXLMamount'>0</span> XLM to following address:</strong></p>
-          <p style='text-align: center; text-decoration: underline; font-size: 20px;'>GDYALW6CVL6PRL6RZHJMQZ4VXGJXRKPZHJH6VKHW3J7USHBBPY52XHNO</p>
-          <p style="text-align: center; font-size: 20px;"><strong>MEMO : <span id='myMemo'></span></strong></p>
+          <p class='truncate' style='text-align: center; text-decoration: underline; font-size: 20px;'>GDYALW6CVL6PRL6RZHJMQZ4VXGJXRKPZHJH6VKHW3J7USHBBPY52XHNO</p>
+          <p style="text-align: center; font-size: 20px;"><strong>MEMO : <span id='myMemo' class='myMemo'></span></strong></p>
+          <p style="text-align: center; font-size: 17px;">To prevent transfer failure, please specify <i class='myMemo'>XXXXXX</i> on the memo on your Stella Lumens transfer.</p>
           <div class='qrContainer'>
             <img class='qrCenter' src='images/content/xlm_qr.png'>
           </div>
@@ -235,7 +237,7 @@
         <section class='submit-sth-box submit-box' id='submitETHBox'>
           <h2>Transfer your deposit</h2>
           <p style='text-align: center;'><strong>Please transfer <span id='depositETHamount'>0</span> ETH to following address:</strong></p>
-          <p style='text-align: center; text-decoration: underline; font-size: 20px;'>0x47ef7027425426db85b70b67600a47490312431a</p>
+          <p class='truncate' style='text-align: center; text-decoration: underline; font-size: 20px;'>0x47ef7027425426db85b70b67600a47490312431a</p>
           <p style="text-align: center; font-size: 20px;"><strong>To prevent a failed transfer. We recommend a minimum Gas Limit of 200,000 and a Gas Price of 40 gwei.</strong></p>
           <div class='qrContainer'>
             <img class='qrCenter' src='images/content/eth_qr.png'>

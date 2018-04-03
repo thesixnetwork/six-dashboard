@@ -706,7 +706,7 @@ $(document).ready(function () {
   // ===================== //
   // ===== Countdown ===== //
   // ===================== //
-  var countDownDate = new Date('April 3, 2018 10:00:00').getTime()
+  var countDownDate = new Date('April 3, 2018 11:00:00').getTime()
   var now = new Date().getTime()
   var distance = countDownDate - now
 
