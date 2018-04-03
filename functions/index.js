@@ -385,8 +385,8 @@ function genKycReadyEmail ({ email }) {
                                             <p>
                                               Proceed to contribute:
                                               <a href="https://ico.six.network">https://ico.six.network</a>
-                                              <br> How to contribute:
-                                              <a href="https://six.network/faq.html#howtobuy">https://six.network/faq</a>
+                                              <br> How to buy:
+                                              <a href="https://six.network/faq.html#howtobuy">https://six.network/faq.html#howtobuy</a>
                                             </p>
                                             <p>Best Regards,
                                               <br>SIX.network team</p>
@@ -657,6 +657,17 @@ exports.autoSendKycReadyEmail = functions.firestore.document('/users/{userId}').
   const document = event.data.exists ? event.data.data() : null;
   const oldDocument = event.data.previous.data();
   if (document.kyc_status === 'approved' && !oldDocument.kyc_status !== 'approved') {
-    return genKycReadyEmail({ email: document.email }).then(mailOptions => mailTransport.sendMail(mailOptions))
+    console.log(`Send pro-ico email to : ${document.email}`)
+    return genKycReadyEmail({ email: document.email }).then(mailOptions => {
+      return mailTransport.sendMail(mailOptions)
+        .then(result => {
+          console.log(result, 'result')
+          return result
+        })
+        .catch(err => {
+          console.log(err)
+          return err
+        })
+    })
   }
 })
