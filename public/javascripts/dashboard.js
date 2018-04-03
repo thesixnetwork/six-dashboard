@@ -92,8 +92,8 @@ function startConfirmation() {
         $("#myWallet").css("display", "block")
         $("#myETHaddress")[0].value = ethAddress
         $("#myETHWalletAddress").html(ethAddress)
-        $("#myHiddenETHWalletAddress").val(ethAddress)
-        $("#myHiddenETHWalletAddress").attr('value', ethAddress)
+        $("#myETHWalletAddress").attr('data-clipboard-text', userData.ethAddress)
+        $("#myAddressBtn").attr('data-clipboard-text', userData.ethAddress)
         userData.submit_wallet = true
       } else {
         $("#submitWalletAlertText").html(response.data.error_message)
@@ -636,8 +636,7 @@ $(document).ready(function(){
           $("#displayName").html(name || "")
           $("#firstCharName").html((userData.first_name || "").substr(0,1).toUpperCase())
           $(".myMemo").html(userData.memo)
-          $("#myHiddenMemo").val(userData.memo)
-          $("#myHiddenMemo").attr('value', userData.memo)
+          $("#memoCopy").attr('data-clipboard-text', userData.memo)
           if (userData.first_transaction === true) {
             if (userData.seen_congrat === true) {
               $("#backToTxHis").css("display", "block")
@@ -652,39 +651,15 @@ $(document).ready(function(){
             $("#myWallet").css("display", "block")
             $("#myETHaddress")[0].value = userData.eth_address
             $("#myETHWalletAddress").html(userData.eth_address)
-            $("#myHiddenETHWalletAddress").val(userData.eth_address)
-            $("#myHiddenETHWalletAddress").attr('value', userData.eth_address)
+            $("#myETHWalletAddress").attr('data-clipboard-text', userData.eth_address)
+            $("#myAddressBtn").attr('data-clipboard-text', userData.eth_address)
 
           } else {
             $("#myETHaddress")[0].value = '-'
             $("#myETHWalletAddress").html('-')
-            $("#myHiddenETHWalletAddress").val('-')
-            $("#myHiddenETHWalletAddress").attr('value', '-')
+            $("#myETHWalletAddress").attr('data-clipboard-text', '-')
+            $("#myAddressBtn").attr('data-clipboard-text', '-')
           }
-          //var copyTextareaBtn = document.querySelector('#myETHWalletAddress')
-          //copyTextareaBtn.addEventListener('click',function(event){
-          //  let y = event.clientY
-          //  let x = event.clientX
-          //  copyToClipboard($('#myHiddenETHWalletAddress'), y-40, x-53)
-          //})
-          //var copyTextareaBtn2 = document.querySelector('#myAddressBtn')
-          //copyTextareaBtn2.addEventListener('click',function(event){
-          //  let y = event.clientY
-          //  let x = event.clientX
-          //  copyToClipboard($('#myHiddenETHWalletAddress'), y-40, x-53)
-          //})
-          //var copyTextareaBtn3 = document.querySelector('#XLMaddressToCopyText')
-          //copyTextareaBtn3.addEventListener('click',function(event){
-          //  let y = event.clientY
-          //  let x = event.clientX
-          //  copyToClipboard($('#XLMaddressToCopy'), y-40, x-53)
-          //})
-          //var copyTextareaBtn4 = document.querySelector('#ETHaddressToCopyText')
-          //copyTextareaBtn4.addEventListener('click',function(event){
-          //  let y = event.clientY
-          //  let x = event.clientX
-          //  copyToClipboard($('#ETHaddressToCopy'), y-40, x-53)
-          //})
           if (userData.is_presale === true) {
             $("#bonusXLMText").css('display', 'block')
             $("#bonusETHText").css('display', 'block')
