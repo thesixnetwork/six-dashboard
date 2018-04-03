@@ -166,13 +166,19 @@ exports.updateETHWallet = functions.https.onCall((data, context) => {
       if (doc.exists) {
         return { success: false, error_message: 'ETH address have been used' }
       } else {
-        let batch = admin.firestore().batch()
-        batch.set(ref.doc(eth_address), {uid: uid})
-        batch.update(userRef.doc(uid), {'eth_address': eth_address, 'submit_wallet': true})
-        return batch.commit().then(() => {
-          return { success: true }
-        }).catch(err => {
-          return { success: false, error_message: err.message }
+        return userRef.doc(uid).get().then(doc => {
+          if (doc.data().eth_address === undefined || doc.data().eth_address === null) {
+            let batch = admin.firestore().batch()
+            batch.set(ref.doc(eth_address), {uid: uid})
+            batch.update(userRef.doc(uid), {'eth_address': eth_address, 'submit_wallet': true})
+            return batch.commit().then(() => {
+              return { success: true }
+            }).catch(err => {
+              return { success: false, error_message: err.message }
+            })
+          } else {
+            return { success: false, error_message: 'Can not change ETH address' }
+          }
         })
       }
     })
