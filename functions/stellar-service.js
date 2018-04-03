@@ -81,6 +81,10 @@ function updateCursor(newTime) {
 }
 
 function handleOperation(user, tx, operation, n, price, priceTime) {
+  if (+operation.amount < 1) {
+      console.log(`Amount too low : ${tx.hash}`)
+      return Promise.resolve()
+  }
   const hash = tx.hash
   const id = `${hash}_${operation.id}`
   const memo = tx.memo || ''
