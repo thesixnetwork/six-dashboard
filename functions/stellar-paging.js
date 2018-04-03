@@ -22,7 +22,7 @@ function StellarService(event) {
       .forAccount(this.address)
       .cursor(cursor)
       .order("asc")
-      .limit(1)
+      .limit(20)
       .call()
       .then((payments) => {
         pages.push(handlePayments(payments, cursor))
