@@ -65,7 +65,15 @@ class User {
              'pic4',
              'estimate',
              'phone_verified',
-             'phone_number'
+             'phone_number',
+             'first_transaction',
+             'alloc_transaction',
+             'alloc_transaction_type',
+             'alloc_transaction_amount',
+             'alloc_transaction_six_amount',
+             'alloc_time',
+             'submit_wallet',
+             'seen_congrat'
            ], Object.keys(data)) ||
            (data.all_done && currentUser.kyc_status === 'approved')
         ) {
