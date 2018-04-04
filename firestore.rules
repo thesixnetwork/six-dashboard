@@ -32,5 +32,8 @@ service cloud.firestore {
     match /presale/supply/purchased_presale_tx/{userId} {
       allow read: if request.auth.uid == userId;
     }
+    match /users_log/{timeStamp}{
+      allow read: if exists(/databases/$(database)/documents/admins/$(request.auth.uid));
+    }
   }
 }
