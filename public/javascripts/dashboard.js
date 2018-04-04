@@ -79,7 +79,7 @@ function startConfirmation() {
     $("#ethWalletAddressAlert").addClass("invalid")
     $("#ethWalletAddressAlertText").html("ETH Address could not be blank")
     $("#ethWalletAddressAlertText").css("display", "block")
-  } else if (/^0x[a-fA-F0-9]{40}$/.test(ethAddress)) {
+  } else if (/^0x[a-fA-F0-9]{40}$/.test(ethAddress) == false) {
     $("#ethWalletAddressAlert").addClass("invalid")
     $("#ethWalletAddressAlertText").html("ETH Address is invalid")
     $("#ethWalletAddressAlertText").css("display", "block")
