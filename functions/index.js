@@ -253,9 +253,10 @@ exports.monitorETH = functions.pubsub.topic('monitor-eth').onPublish(() => Promi
 
 exports.monitorXLM = functions.pubsub.topic('monitor-xlm').onPublish(stellarService)
 
-exports.logsUserTable = functions.firestore.document('users/{userId}').onWrite((event) => {
+exports.logsUserTable = functions.firestore.document('users/{userId}').onUpdate((event) => {
   const document = event.data.exists ? event.data.data() : null;
   const timestamp = Date.now()
   const oldDocument = event.data.previous.data();
-  return admin.database().ref(`logs/${timestamp}`).set({document, oldDocument})
+  const random = Math.floor(Math.random() * 1000)
+  return admin.firestore().collection('users_log').doc(`${timestamp}_${random}`).set({document, oldDocument, timestamp})
 })

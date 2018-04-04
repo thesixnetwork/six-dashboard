@@ -22,3 +22,25 @@
     color: #FFF !important;
     border: 0.5px solid #4a5ab5;
 }
+
+.table-nav-wrapper {
+    display: flex !important;
+    flex-direction: row;
+    padding-bottom: 20px;
+}
+
+.table-nav-wrapper > button {
+    background: #FFF;
+    border: 0.5px solid #4a5ab5;
+    color:#4a5ab5;
+    margin-left: 20px;
+    margin-right: 20px;
+}
+
+.table-nav-wrapper > button:hover {
+    background:#4a5ab5 !important;
+    color: #FFF !important;
+    border: 0.5px solid #4a5ab5;
+    margin-left: 20px;
+    margin-right: 20px;
+}
