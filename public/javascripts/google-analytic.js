@@ -6,7 +6,7 @@ if (domain.match('localhost')) {
 } else if (domain.match('six-dashboard')) {
   googleId = 'UA-116980354-1'
 } else if (domain.match('ico.six.network')) {
-  googleId = 'UA-116935621-1'
+  googleId = 'UA-116085165-1'
 }
 
 if (googleId != '') {
