@@ -100,7 +100,7 @@ function receivedDeposit (event, functions, fireStore) {
       currency: currency,
       native_amount: purchaseData.native_amount,
       type: purchaseData.type.toUpperCase(),
-      tid: event.data.id,
+      tid: event.data.id.split("_")[0],
       time: date
     }
     mailOptions.html = emailTemplate.received_deposit(data)
