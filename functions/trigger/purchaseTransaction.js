@@ -96,7 +96,7 @@ function receivedDeposit (event, functions, fireStore) {
     let data = {
       name: user.first_name,
       lastname: user.last_name,
-      address: user.address,
+      address: purchaseData.from,
       currency: currency,
       native_amount: purchaseData.native_amount,
       type: purchaseData.type.toUpperCase(),
