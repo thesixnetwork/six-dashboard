@@ -852,250 +852,84 @@ exports.autoSendKycReadyEmail = functions.firestore
         to: email,
         subject: "SIX.network: this is reminder ",
         html: `
-        <body id="ac-designer" class="body" style="font-family:Arial;line-height:1.1;margin-top:0px;margin-bottom:0px;margin-right:0px;margin-left:0px;background-color:#ffffff;width:100%;text-align:center;">
-          <div class="divbody" style="margin-top:0px;margin-bottom:0px;margin-right:0px;margin-left:0px;outline-style:none;padding-top:0px;padding-bottom:0px;padding-right:0px;padding-left:0px;color:#000000;font-family:arial;line-height:1.1;width:100%;background-color:#ffffff;background-image:none;background-repeat:repeat;background-position:top left;background-attachment:scroll;text-align:center;">
-            <table class="template-table" border="0" cellpadding="0" cellspacing="0" width="100%" align="left" style="font-size:13px;min-width:auto;mso-table-lspace:0pt;mso-table-rspace:0pt;background-color:#ffffff;background-image:none;background-repeat:repeat;background-position:top left;background-attachment:scroll;">
-              <tr>
-                <td align="center" valign="top" width="100%">
-                  <table class="template-table" border="0" cellpadding="0" cellspacing="0" width="650" bgcolor="#ffffff" style="font-size:13px;min-width:auto;mso-table-lspace:0pt;mso-table-rspace:0pt;max-width:650px;">
-                    <tr>
-                      <td id="layout_table_8ec95b1f4afbf007cff9c9f914a162067c7ba113" valign="top" align="center" width="650">
-                        <table cellpadding="0" cellspacing="0" border="0" class="layout layout-table root-table" width="650" style="font-size:13px;min-width:100%;mso-table-lspace:0pt;mso-table-rspace:0pt;">
-                          <tr>
-                            <td id="layout-row-margin105" valign="top">
-                              <table width="100%" border="0" cellpadding="0" cellspacing="0" style="font-size:13px;min-width:100%;mso-table-lspace:0pt;mso-table-rspace:0pt;">
-                                <tr id="layout-row105" class="layout layout-row widget _widget_spacer ">
-                                  <td id="layout-row-padding105" valign="top">
-                                    <table width="100%" border="0" cellpadding="0" cellspacing="0" style="font-size:13px;min-width:100%;mso-table-lspace:0pt;mso-table-rspace:0pt;">
-                                      <tr>
-                                        <td valign="top" height="30">
-                                          <div class="spacer" style="margin-top:0;margin-bottom:0;margin-right:0;margin-left:0;outline-style:none;padding-top:0;padding-bottom:0;padding-right:0;padding-left:0;height:30px;">
-                                            <table cellpadding="0" cellspacing="0" border="0" width="100%" style="font-size:13px;min-width:100%;mso-table-lspace:0pt;mso-table-rspace:0pt;">
-                                              <tbody>
-                                                <tr>
-                                                  <td class="spacer-body" valign="top" height="30" width="650"> </td>
-                                                </tr>
-                                              </tbody>
-                                            </table>
-                                          </div>
-                                        </td>
-                                      </tr>
-                                    </table>
-                                  </td>
-                                </tr>
-                              </table>
-                            </td>
-                          </tr>
-                          <tr>
-                            <td id="layout-row-margin107" valign="top">
-                              <table width="100%" border="0" cellpadding="0" cellspacing="0" style="font-size:13px;min-width:100%;mso-table-lspace:0pt;mso-table-rspace:0pt;">
-                                <tr id="layout-row107" class="layout layout-row widget _widget_picture " align="center">
-                                  <td id="layout-row-padding107" valign="top">
-                                    <table width="100%" border="0" cellpadding="0" cellspacing="0" style="font-size:13px;min-width:100%;mso-table-lspace:0pt;mso-table-rspace:0pt;">
-                                      <tr>
-                                        <td class="image-td" align="center" valign="top" width="650">
-                                          <img src="https://six.network/images/logo/six-logo.png" alt="" width="296" style="display:block;border-style:none;outline-style:none;width:120px;opacity:1;max-width:100%;">
-                                        </td>
-                                      </tr>
-                                    </table>
-                                  </td>
-                                </tr>
-                              </table>
-                            </td>
-                          </tr>
-                          <tr>
-                            <td id="layout-row-margin108" valign="top">
-                              <table width="100%" border="0" cellpadding="0" cellspacing="0" style="font-size:13px;min-width:100%;mso-table-lspace:0pt;mso-table-rspace:0pt;">
-                                <tr id="layout-row108" class="layout layout-row widget _widget_break ">
-                                  <td id="layout-row-padding108" valign="top" style="line-height:0;mso-line-height-rule:exactly;">
-                                    <table width="100%" border="0" cellpadding="0" cellspacing="0" style="font-size:13px;min-width:100%;mso-table-lspace:0pt;mso-table-rspace:0pt;border-collapse:collapse;line-height:0;mso-line-height-rule:exactly;">
-                                      <tr>
-                                        <td height="10" style="line-height:0;mso-line-height-rule:exactly;"></td>
-                                      </tr>
-                                      <tr>
-                                        <td align="center" height="1" width="650" style="line-height:0;mso-line-height-rule:exactly;">
-                                          <table align="center" border="0" cellpadding="0" cellspacing="0" height="1" width="650" style="font-size:13px;min-width:auto!important;mso-table-lspace:0pt;mso-table-rspace:0pt;border-collapse:collapse;line-height:0;mso-line-height-rule:exactly;width:100%;max-width:100%;">
-                                            <tr>
-                                              <td class="break-line" bgcolor="#000000" height="1" width="650" style="line-height:1px;mso-line-height-rule:exactly;height:1px;width:650px;background-color:#000000;">
-                                              </td>
-                                            </tr>
-                                          </table>
-                                        </td>
-                                      </tr>
-                                      <tr>
-                                        <td height="10" style="line-height:0;mso-line-height-rule:exactly;"></td>
-                                      </tr>
-                                    </table>
-                                  </td>
-                                </tr>
-                              </table>
-                            </td>
-                          </tr>
-        
-                          <tr>
-                            <td id="layout-row-margin109" valign="top" style="padding-top:5px;padding-bottom:5px;padding-right:5px;padding-left:5px;">
-                              <table width="100%" border="0" cellpadding="0" cellspacing="0" style="font-size:13px;min-width:100%;mso-table-lspace:0pt;mso-table-rspace:0pt;border-collapse:initial !important;">
-                                <tr id="layout-row109" class="layout layout-row widget _widget_text style109" style="margin-top:0;margin-bottom:0;margin-right:0;margin-left:0;padding-top:0;padding-bottom:0;padding-right:0;padding-left:0;">
-                                  <td id="layout-row-padding109" valign="top" style="padding-top:5px;padding-bottom:5px;padding-right:5px;padding-left:5px;">
-                                    <table width="100%" border="0" cellpadding="0" cellspacing="0" style="font-size:13px;min-width:100%;mso-table-lspace:0pt;mso-table-rspace:0pt;">
-                                      <tr>
-                                        <td id="text_div99" class="td_text td_block" valign="top" align="left" style="color:inherit;font-size:12px;font-weight:inherit;line-height:1;text-decoration:inherit;font-family:Arial;">
-                                          <div style="margin-top:0;margin-bottom:0;margin-right:0;margin-left:0;outline-style:none;padding-top:0;padding-bottom:0;padding-right:0;padding-left:0;font-size:15px;">
-                                            <span class="" style="color:inherit;font-size:15px;font-weight:inherit;line-height:inherit;text-decoration:inherit;">
-                                              <h2>Pre-ICO is now open for contribution !</h2>
-                                              <p>We have already opened a pre-ICO. You can login with your registered username and password
-                                                to contribute.</p>
-                                              <p>Please note that, the pre-ICO 6% bonus is first come first serve and
-                                                <u>very limited.</u>
-                                              </p>
-                                              <p>
-                                                Proceed to contribute:
-                                                <a href="https://ico.six.network">https://ico.six.network</a>
-                                                <br> How to buy:
-                                                <a href="https://six.network/faq.html#howtobuy">https://six.network/faq.html#howtobuy</a>
-                                              </p>
-                                              <p>Best Regards,
-                                                <br>SIX.network team</p>
-                                            </span>
-                                            <br>
-                                            <div style="margin-top:0;margin-bottom:0;margin-right:0;margin-left:0;outline-style:none;padding-top:0;padding-bottom:0;padding-right:0;padding-left:0;text-align:center;">
-                                              <span style="color:#000000;font-size:inherit;font-weight:400;line-height:inherit;text-decoration:inherit;font-family:arial;text-align:inherit;">Follow us</span>
-                                              <span class="" style="color:#000000;font-size:inherit;font-weight:400;line-height:inherit;text-decoration:inherit;font-family:arial;text-align:inherit;"></span>
-                                              <span style="color:#000000;font-size:inherit;font-weight:400;line-height:inherit;text-decoration:inherit;font-family:arial;text-align:inherit;">
-                                              :</span>
-                                            </div>
-        
-                                          </div>
-                                        </td>
-                                      </tr>
-                                    </table>
-                                  </td>
-                                </tr>
-                              </table>
-                            </td>
-                          </tr>
-                          <tr>
-                            <td id="layout-row-margin110" valign="top" style="padding-top:5px;padding-bottom:5px;padding-right:5px;padding-left:5px;">
-                              <table width="100%" border="0" cellpadding="0" cellspacing="0" style="font-size:13px;min-width:100%;mso-table-lspace:0pt;mso-table-rspace:0pt;border-collapse:initial !important;">
-                                <tr id="layout-row110" class="layout layout-row widget _widget_social style110">
-                                  <td id="layout-row-padding110" valign="top" style="padding-top:5px;padding-bottom:5px;padding-right:5px;padding-left:5px;">
-                                    <table width="100%" border="0" cellpadding="0" cellspacing="0" style="font-size:13px;min-width:100%;mso-table-lspace:0pt;mso-table-rspace:0pt;">
-                                      <tr>
-                                        <td>
-                                          <table width="100%" cellspacing="0" cellpadding="0" style="font-size:13px;min-width:100%;mso-table-lspace:0pt;mso-table-rspace:0pt;">
-                                            <tr>
-                                              <td width="650" align="left">
-                                                <center style="margin-top:0;margin-bottom:0;margin-right:0;margin-left:0;outline-style:none;padding-top:0;padding-bottom:0;padding-right:0;padding-left:0;font-size:0px;">
-                                                  <table class="_ac_social_table" cellspacing="0" cellpadding="0" align="center" style="font-size:0;min-width:auto!important;mso-table-lspace:0pt;mso-table-rspace:0pt;margin-top:auto !important;margin-bottom:auto !important;margin-right:auto !important;margin-left:auto !important;display:inline-block!important;text-align:center!important;">
-                                                    <tr>
-                                                      <td align="center" valign="middle" width="34" style="display:inline-block!important;font-size:0;width:34px!important;">
-                                                        <div class="__ac_social_icons" style="margin-top:0;margin-bottom:0;margin-right:0;margin-left:0;outline-style:none;padding-top:0;padding-bottom:0;padding-right:0;padding-left:0;">
-                                                          <a href="https://www.facebook.com/thesixnetwork/" id="facebook" class="__ac_social_icon_link"
-                                                            style="margin-top:0;margin-bottom:0;margin-right:0;margin-left:0;outline-style:none;padding-top:0;padding-bottom:0;padding-right:0;padding-left:0;color:#045fb4;">
-                                                            <img src="http://sixnetwork.img-us3.com/_social_/flat-color-poly-facebook.png"
-                                                              border="0" width="34" style="display:block;border-style:none;">
-                                                          </a>
-                                                        </div>
-                                                      </td>
-                                                      <td width="10" style="display:inline-block!important;font-size:0;width:10px!important;"> </td>
-                                                      <td align="center" valign="middle" width="34" style="display:inline-block!important;font-size:0;width:34px!important;">
-                                                        <div class="__ac_social_icons" style="margin-top:0;margin-bottom:0;margin-right:0;margin-left:0;outline-style:none;padding-top:0;padding-bottom:0;padding-right:0;padding-left:0;">
-                                                          <a href="https://twitter.com/theSIXnetwork" id="twitter" class="__ac_social_icon_link"
-                                                            style="margin-top:0;margin-bottom:0;margin-right:0;margin-left:0;outline-style:none;padding-top:0;padding-bottom:0;padding-right:0;padding-left:0;color:#045fb4;">
-                                                            <img src="http://sixnetwork.img-us3.com/_social_/flat-color-poly-twitter.png"
-                                                              border="0" width="34" style="display:block;border-style:none;">
-                                                          </a>
-                                                        </div>
-                                                      </td>
-                                                      <td width="10" style="display:inline-block!important;font-size:0;width:10px!important;"> </td>
-                                                      <td align="center" valign="middle" width="34" style="display:inline-block!important;font-size:0;width:34px!important;">
-                                                        <div class="__ac_social_icons" style="margin-top:0;margin-bottom:0;margin-right:0;margin-left:0;outline-style:none;padding-top:0;padding-bottom:0;padding-right:0;padding-left:0;">
-                                                          <a href="https://six.network" id="website" class="__ac_social_icon_link"
-                                                            style="margin-top:0;margin-bottom:0;margin-right:0;margin-left:0;outline-style:none;padding-top:0;padding-bottom:0;padding-right:0;padding-left:0;color:#045fb4;">
-                                                            <img src="http://sixnetwork.img-us3.com/_social_/flat-color-poly-website.png"
-                                                              border="0" width="34" style="display:block;border-style:none;">
-                                                          </a>
-                                                        </div>
-                                                      </td>
-                                                    </tr>
-                                                  </table>
-                                                </center>
-                                              </td>
-                                            </tr>
-                                          </table>
-                                        </td>
-                                      </tr>
-                                    </table>
-                                  </td>
-                                </tr>
-                              </table>
-                            </td>
-                          </tr>
-                          <tr>
-                            <td id="layout-row-margin104" valign="top">
-                              <table width="100%" border="0" cellpadding="0" cellspacing="0" style="font-size:13px;min-width:100%;mso-table-lspace:0pt;mso-table-rspace:0pt;">
-                                <tr id="layout-row104" class="layout layout-row widget _widget_text " style="margin-top:0;margin-bottom:0;margin-right:0;margin-left:0;padding-top:0;padding-bottom:0;padding-right:0;padding-left:0;">
-                                  <td id="layout-row-padding104" valign="top">
-                                    <table width="100%" border="0" cellpadding="0" cellspacing="0" style="font-size:13px;min-width:100%;mso-table-lspace:0pt;mso-table-rspace:0pt;border-collapse:collapse;line-height:0;mso-line-height-rule:exactly;">
-                                      <tbody>
-                                        <tr>
-                                          <td height="10" style="line-height:0;mso-line-height-rule:exactly;"></td>
-                                        </tr>
-                                        <tr>
-                                          <td align="center" height="1" width="650" style="line-height:0;mso-line-height-rule:exactly;">
-                                            <table align="center" border="0" cellpadding="0" cellspacing="0" height="1" width="650" style="font-size:13px;min-width:auto!important;mso-table-lspace:0pt;mso-table-rspace:0pt;border-collapse:collapse;line-height:0;mso-line-height-rule:exactly;width:100%;max-width:100%;">
-                                              <tbody>
-                                                <tr>
-                                                  <td class="break-line" bgcolor="#000000" height="1" width="650" style="line-height:1px;mso-line-height-rule:exactly;height:1px;width:650px;background-color:#000000;">
-                                                  </td>
-                                                </tr>
-                                              </tbody>
-                                            </table>
-                                          </td>
-                                        </tr>
-                                        <tr>
-                                          <td height="10" style="line-height:0;mso-line-height-rule:exactly;"></td>
-                                        </tr>
-                                      </tbody>
-                                    </table>
-                                    <table width="100%" border="0" cellpadding="0" cellspacing="0" style="font-size:13px;min-width:100%;mso-table-lspace:0pt;mso-table-rspace:0pt;">
-                                      <tr>
-                                        <td id="text_div94" class="td_text td_block" valign="top" align="left" style="line-height:1.4;color:inherit;font-size:12px;font-weight:inherit;text-decoration:inherit;font-family:Arial;mso-line-height-rule:exactly;">
-                                          <div data-line-height="1.4" style="line-height:1.4;margin-top:0;margin-bottom:0;margin-right:0;margin-left:0;outline-style:none;padding-top:0;padding-bottom:0;padding-right:0;padding-left:0;font-size:12px;mso-line-height-rule:exactly;">
-                                            <div style="margin-top:0;margin-bottom:0;margin-right:0;margin-left:0;outline-style:none;padding-top:0;padding-bottom:0;padding-right:0;padding-left:0;">
-                                              <p style="margin-top:0;margin-bottom:0;margin-right:0;margin-left:0;outline-style:none;padding-top:0;padding-bottom:0;padding-right:0;padding-left:0;color:inherit;font-size:inherit;font-weight:inherit;line-height:inherit;text-decoration:inherit;">This email was sent to you by SIX.network because you registered for ICO contribution.
-                                                If you don't know this source, please ignore this email..</p>
-                                            </div>
-                                          </div>
-                                          <!--[if (gte mso 12)&(lte mso 15) ]>
-                                                          <style data-ac-keep="true" data-ac-inline="false"> #text_div94, #text_div94 div { line-height: 140% !important !important; } !important;</style>
-                                                          <![endif]-->
-                                        </td>
-                                      </tr>
-                                    </table>
-                                  </td>
-                                </tr>
-                              </table>
-                            </td>
-                          </tr>
-                        </table>
-                      </td>
-                    </tr>
-                  </table>
-                </td>
-              </tr>
-            </table>
+        <div style="font-family: &quot;Prompt&quot;, sans-serif;color: rgba(33, 33, 33, 1);margin: 0;background: #F6F6F6">
+        <div class="section" style="font-family: &quot;Prompt&quot;, sans-serif;color: rgba(33, 33, 33, 1);position: relative;background: #F6F6F6;padding-bottom: 10px;height: 100%;z-index: 1">
+          <!-- <img class="top-header" src="https://firebasestorage.googleapis.com/v0/b/devson-f46f4.appspot.com/o/public%2Fheader.png?alt=media&token=9f32b7f1-6def-45f2-bf1a-2cea15326450"
+            alt=""> -->
+          <div class="card" style="font-family: &quot;Prompt&quot;, sans-serif;color: rgba(33, 33, 33, 1);width: 80%;padding: 0;padding-top: 2%;z-index: 100;margin-left: 10%;background: transparent">
+            <div class="card-header" style="font-family: &quot;Prompt&quot;, sans-serif;color: rgba(33, 33, 33, 1);position: relative;padding: 0;background: transparent;width: 100%">
+              <img class="header-img" src="https://firebasestorage.googleapis.com/v0/b/devson-f46f4.appspot.com/o/public%2Fcover2.png?alt=media&amp;token=74bc44f8-f8e2-4a0d-aeca-6ee76ab2befb" alt="" style="font-family: &quot;Prompt&quot;, sans-serif;color: rgba(33, 33, 33, 1);width: 100%;box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);z-index: 10"/>
+            </div>
+            <div class="card-content" style="font-family: &quot;Prompt&quot;, sans-serif;color: rgba(33, 33, 33, 1);padding: 5px;margin-top: -20px;box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);background: #FFF">
+                <div class="container" style="font-family: &quot;Prompt&quot;, sans-serif;color: rgba(33, 33, 33, 1);padding: 2%">
+                    <h3 class="subtitle" style="font-family: &quot;Prompt&quot;, sans-serif;color: rgba(33, 33, 33, 1)">(English content below)</h3>
+                    <!-- thai -->
+                    <h2 class="title" style="font-family: &quot;Prompt&quot;, sans-serif;color: rgba(33, 33, 33, 1)">สวัสดีครับ!</h2>
+                    <h3 class="subtitle" style="font-family: &quot;Prompt&quot;, sans-serif;color: rgba(33, 33, 33, 1)">ขอบคุณที่ให้ความสนใจกับ SIX.network นะครับ</h3>
+                    <p style="font-family: &quot;Prompt&quot;, sans-serif;color: rgba(33, 33, 33, 1);font-size: 14px">ในสัปดาห์ที่ผ่านมา เราได้เริ่มเปิดขาย token รอบ Pre-ICO ซึ่งได้ผลตอบรับที่ดีมาก เนื่องจากเราจะมี bonus พิเศษ +6%
+                      ให้สำหรับทุกๆยอดที่มีการสั่งซื้อเข้ามา เช่น ซื้อทั้งหมด 10,000 SIX จะได้รับเพิ่มทันที 600 SIX มูลค่า ถึง 1,800
+                      บาท !</p>
+                    <p style="font-family: &quot;Prompt&quot;, sans-serif;color: rgba(33, 33, 33, 1);font-size: 14px">ทั้งนี้เราเห็นว่าคุณยังไม่ส่งเอกสารเข้ามาเลยกลัวว่าจะพลาดโอกาสดีๆแบบนี้ไป คุณสามารถเข้าสู่ระบบ และส่งเอกสารยืนยันตัวตนเข้ามาเพื่อรับสิทธิ์
+                      bonus 6% ก่อนที่จะหมดลงนะครับ</p>
+                    <div class="p-group" style="font-family: &quot;Prompt&quot;, sans-serif;color: rgba(33, 33, 33, 1)">
+                      <span style="font-family: &quot;Prompt&quot;, sans-serif;color: rgba(33, 33, 33, 1);font-size: 14px">เข้าสู่ระบบ: https://ico.six.network</span>
+                      <br style="font-family: &quot;Prompt&quot;, sans-serif;color: rgba(33, 33, 33, 1)"/>
+                      <span style="font-family: &quot;Prompt&quot;, sans-serif;color: rgba(33, 33, 33, 1);font-size: 14px">วิธีการใช้งาน: https://ico.six.network/faq.html#howtobuy</span>
+                      <br style="font-family: &quot;Prompt&quot;, sans-serif;color: rgba(33, 33, 33, 1)"/>
+                      <span style="font-family: &quot;Prompt&quot;, sans-serif;color: rgba(33, 33, 33, 1);font-size: 14px">ติดต่อทีมงาน: https://m.me/thesixnetwork</span>
+                    </div>
+                    <p style="font-family: &quot;Prompt&quot;, sans-serif;color: rgba(33, 33, 33, 1);font-size: 14px">หวังว่าจะได้รับการตอบรับที่ดีจากคุณอีกนะครับ</p>
+                    <div class="p-group" style="font-family: &quot;Prompt&quot;, sans-serif;color: rgba(33, 33, 33, 1)">
+                      <span style="font-family: &quot;Prompt&quot;, sans-serif;color: rgba(33, 33, 33, 1);font-size: 14px">ขอบคุณครับ</span>
+                      <br style="font-family: &quot;Prompt&quot;, sans-serif;color: rgba(33, 33, 33, 1)"/>
+                      <span style="font-family: &quot;Prompt&quot;, sans-serif;color: rgba(33, 33, 33, 1);font-size: 14px">ทีมงาน SIX network</span>
+                    </div>
+                    <div class="button-wrapper" style="font-family: &quot;Prompt&quot;, sans-serif;color: rgba(33, 33, 33, 1);text-align: center;padding: 20px">
+                        <a href="https://goo.gl/H14G3B" target="_blank"  class="button" style="font-family: &quot;Prompt&quot;, sans-serif;color: #FFF;background: #3B409E;font-size: 16px;padding: 15px 20px;float: center;border-radius: 5px;margin-top: 10px;margin-bottom: 10px">ส่งเอกสาร</a>
+                    </div>
+                    <!-- end-thai -->
+            
+                    <!-- english -->
+                    <h2 class="title" style="font-family: &quot;Prompt&quot;, sans-serif;color: rgba(33, 33, 33, 1)">Hello !</h2>
+                    <h3 class="subtitle" style="font-family: &quot;Prompt&quot;, sans-serif;color: rgba(33, 33, 33, 1)">Thank you for your interest in SIX.network</h3>
+                    <p style="font-family: &quot;Prompt&quot;, sans-serif;color: rgba(33, 33, 33, 1);font-size: 14px">We have already launched the pre-ICO and received a very good response. We will have a special bonus of 6% for every
+                      purchase. For example, the purchase of 10,000 SIX will be offered an additional 600 SIX worth of 60 USD !!</p>
+                    <p style="font-family: &quot;Prompt&quot;, sans-serif;color: rgba(33, 33, 33, 1);font-size: 14px">It seems you have not submitted the document. </p>
+                    <p style="font-family: &quot;Prompt&quot;, sans-serif;color: rgba(33, 33, 33, 1);font-size: 14px">o ensure that you will get 6% bonus, please login and submit the documents before this offer period ended.</p>
+                    <div class="p-group" style="font-family: &quot;Prompt&quot;, sans-serif;color: rgba(33, 33, 33, 1)">
+                      <span style="font-family: &quot;Prompt&quot;, sans-serif;color: rgba(33, 33, 33, 1);font-size: 14px">Log in: https://ico.six.network</span>
+                      <br style="font-family: &quot;Prompt&quot;, sans-serif;color: rgba(33, 33, 33, 1)"/>
+                      <span style="font-family: &quot;Prompt&quot;, sans-serif;color: rgba(33, 33, 33, 1);font-size: 14px">How to buy: https://ico.six.network/faq.html#howtobuy</span>
+                      <br style="font-family: &quot;Prompt&quot;, sans-serif;color: rgba(33, 33, 33, 1)"/>
+                      <span style="font-family: &quot;Prompt&quot;, sans-serif;color: rgba(33, 33, 33, 1);font-size: 14px">Contact us: https://m.me/thesixnetwork</span>
+                    </div>
+                    <p style="font-family: &quot;Prompt&quot;, sans-serif;color: rgba(33, 33, 33, 1);font-size: 14px">Hope we get a good response from you again.</p>
+                    <div class="p-group" style="font-family: &quot;Prompt&quot;, sans-serif;color: rgba(33, 33, 33, 1)">
+                      <span style="font-family: &quot;Prompt&quot;, sans-serif;color: rgba(33, 33, 33, 1);font-size: 14px">Thank you</span>
+                      <br style="font-family: &quot;Prompt&quot;, sans-serif;color: rgba(33, 33, 33, 1)"/>
+                      <span style="font-family: &quot;Prompt&quot;, sans-serif;color: rgba(33, 33, 33, 1);font-size: 14px">SIX network team</span>
+                    </div>
+                    <div class="button-wrapper" style="font-family: &quot;Prompt&quot;, sans-serif;color: rgba(33, 33, 33, 1);text-align: center;padding: 20px">
+                        <a href="https://goo.gl/fVxRmq" target="_blank" class="button" style="font-family: &quot;Prompt&quot;, sans-serif;color: #FFF;background: #3B409E;font-size: 16px;padding: 15px 20px;float: center;border-radius: 5px;margin-top: 10px;margin-bottom: 10px">Submit documents</a>
+                    </div>
+                    <!-- end-english -->
+                  </div>
+            </div>
           </div>
-        </body>
+          <div class="footer" style="font-family: &quot;Prompt&quot;, sans-serif;color: rgba(33, 33, 33, 1);text-align: center;padding: 20px;margin-top: 50px">
+              <span class="credit" style="font-family: &quot;Prompt&quot;, sans-serif;color: rgba(33, 33, 33, 1);font-size: 14px">© Copyright Media Maxx Advertising</span>
+          </div>
+        </div>
+      </div>
       `
       };
       resolve(mailOptions);
     });
   }
-  
+
 
 function sendRemindEmails ({ remind_status, email, doc, db, new_remind_status }) {
-  genReminderEmail({ email })
+  genReminderEmail({ email: email })
   .then(mailOptions => {
     console.log(`Sending email to: ${email}, from status: ${remind_status} to ${new_remind_status}`)
     return mailTransport.sendMail(mailOptions)
@@ -1107,7 +941,7 @@ function sendRemindEmails ({ remind_status, email, doc, db, new_remind_status })
 exports.remindEmail = functions.https.onRequest((request, response) => {
   cors(request, response, () => {});
   const db = admin.firestore().collection("users");
-  const { password } = request.body
+  const { password } = request.query
   if (password === "ineedtosendemail") {
     db.get().then(docs => {
       docs.forEach(doc => {
@@ -1142,6 +976,7 @@ exports.remindEmail = functions.https.onRequest((request, response) => {
       response.send({ success: true });
     });
   } else {
-    return res.status(400).json(new Error("Password not match"));
+    return response.status(400).json(new Error("Password not match"));
   }
 });
+
