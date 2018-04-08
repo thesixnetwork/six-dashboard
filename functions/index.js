@@ -934,7 +934,7 @@ function sendRemindEmails ({ remind_status, email, doc, db, new_remind_status })
     console.log(`Sending email to: ${email}, from status: ${remind_status} to ${new_remind_status}`)
     return mailTransport.sendMail(mailOptions)
   })
-  .then(result => db.doc(doc.id).update({ remind_status: new_remind_status }))
+  .then(result => db.doc(doc.id).update({ remind_status: new_remind_status, last_send_remind: Date.now() }))
   .catch(err => console.log(err, 'error'))
 }
 
@@ -946,24 +946,26 @@ exports.remindEmail = functions.https.onRequest((request, response) => {
     db.get().then(docs => {
       docs.forEach(doc => {
         const user = doc.data();
-        const { remind_status, email, kyc_status } = user;
+        const { remind_status, email, kyc_status, last_send_remind } = user;
         if (kyc_status === 'not_complete') {
-          if (remind_status) {
+          if (remind_status && last_send_remind) {
+            const diff = moment(new Date).diff(moment(new Date(parseInt(last_send_remind))), 'days')
+            console.log(diff, 'diff')
             switch (remind_status) {
               case 'd1':
-                sendRemindEmails({ remind_status, email, db, doc, new_remind_status: 'd4' })
+                if (diff >= 4) sendRemindEmails({ remind_status, email, db, doc, new_remind_status: 'd4' })
                 break;
               case 'd4':
-                sendRemindEmails({ remind_status, email, db, doc, new_remind_status: 'd8' })
+                if (diff >= 4) sendRemindEmails({ remind_status, email, db, doc, new_remind_status: 'd8' })
                 break;
               case 'd8':
-                sendRemindEmails({ remind_status, email, db, doc, new_remind_status: 'd8+7' })
+                if (diff >= 7) sendRemindEmails({ remind_status, email, db, doc, new_remind_status: 'd8+7' })
                 break;
               case 'd8+7':
-                sendRemindEmails({ remind_status, email, db, doc, new_remind_status: 'd8+7(2)' })
+                if (diff >= 14) sendRemindEmails({ remind_status, email, db, doc, new_remind_status: 'd8+7(2)' })
                 break;
               case 'd8+7(2)':
-                sendRemindEmails({ remind_status, email, db, doc, new_remind_status: 'd8+7(3)' })
+                if (diff >= 21) sendRemindEmails({ remind_status, email, db, doc, new_remind_status: 'd8+7(3)' })
                 break;
               default:
                 break;
