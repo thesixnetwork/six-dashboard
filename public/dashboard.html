@@ -29,6 +29,7 @@
     <script src="javascripts/bluebird.js"></script>
     <script src="javascripts/clipboard.js"></script>
     <script src="javascripts/jquery-3.2.1.min.js"></script>
+    <script src="javascripts/jquery.animateNumber.min.js"></script>
     <script src="javascripts/config.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.18.1/moment.js"></script>
     <script src="javascripts/dashboard.js"></script>
@@ -84,6 +85,23 @@
           </a>
           <p>Introducing to SIX token</p>
         </section>
+        <section class="progress" id='progressContent'>
+          <div class="bar">
+            <div class="top">
+              <p class='zeroStart'>$0</p>
+              <p class='softCapText'>$15,000,000</p>
+              <p class='hardCapText'>$42,905,579</p>
+            </div>
+            <span class="available" style=" width: 5%;" id='barPercentage'>
+              <em>$<span id='totalCurrentAsset'>-</span></em>
+            </span>
+            <div class="bottom">
+              <p class='zeroStart'>Start</p>
+              <p class='softCapText'>Soft cap</p>
+              <p class='hardCapText'>Hard Cap</p>
+            </div>
+          </div>
+        </section>
         <section id='myWallet' style='display: none;'>
           <h4>My wallet</h4>
           <p class="myETHWallet truncate" id='myETHWallet'>
@@ -100,23 +118,6 @@
         </section>
       </aside>
       <div class="content">
-        <section class="progress" id='progressContent'>
-          <div class="bar">
-            <div class="top">
-              <p class='zeroStart'>$0</p>
-              <p class='softCapText'>$15,000,000</p>
-              <p class='hardCapText'>$42,905,579</p>
-            </div>
-            <span class="available" style=" width: 5%;" id='barPercentage'>
-              <em>$<span id='totalCurrentAsset'>0</span></em>
-            </span>
-            <div class="bottom">
-              <p class='zeroStart'>Start</p>
-              <p class='softCapText'>Soft cap</p>
-              <p class='hardCapText'>Hard Cap</p>
-            </div>
-          </div>
-        </section>
         <section class="welcome-box show-detail" id='welcomeBox'>
           <h2>Welcome to SIX dashboard</h2>
           <p>In order to contribute to our ICO, you need to deposit your coin for convert to SIX Token consisting of the following steps.</p>

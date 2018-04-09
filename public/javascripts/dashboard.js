@@ -310,15 +310,30 @@ function submitDepositETH() {
   }
 }
 
+let globalCurrent
+let percentageGlobalCurrent
 function getCurrentTotal() {
   return firebase.firestore().collection('total_asset').doc('usd').get().then(doc => {
     const totalAsset = parseFloat(doc.data().total || 0)
     const privateAsset = parseFloat(doc.data().private_asset || 0)
     const currentAsset = privateAsset+totalAsset
-    const percentage = ((currentAsset/(doc.data().hard_cap_usd/100)) || 0)
-    $("#totalCurrentAsset").html(Number(parseFloat(currentAsset).toFixed(0)).toLocaleString())
-    $("#barPercentage").css("width", Number(percentage.toFixed(1))+"%")
+    const softCapAmount = doc.data().soft_cap_usd
+    const percentage = Number(((currentAsset/(doc.data().hard_cap_usd/100)) || 0).toFixed(0))
+    const scalePercentage = Number((((((100-percentage)*99273.68461538461)+currentAsset)/(doc.data().hard_cap_usd/100)) || 0).toFixed(1))
+    percentageGlobalCurrent = Number(scalePercentage)
+    globalCurrent = Number(parseFloat(currentAsset).toFixed(0))
   })
+}
+
+function runGlobalNumber() {
+  var comma_separator_number_step = $.animateNumber.numberStepFactories.separator(',')
+  $('#totalCurrentAsset').animateNumber(
+    {
+      number: globalCurrent,
+      numberStep: comma_separator_number_step
+    }
+  )
+  $("#barPercentage").css("width", Number(percentageGlobalCurrent)+"%")
 }
 
 function submitDepositXLMTran() {
@@ -480,13 +495,24 @@ function getTxs () {
           allDoc.push(d)
         })
         allDoc.sort(compare)
-        $('#totalSix').html(Number(totalSix.toFixed(7)).toLocaleString() + " SIX")
+        var percent_number_step = $.animateNumber.numberStepFactories.append(' SIX')
+        $('#totalSix').animateNumber(
+          {
+            number: totalSix.toFixed(7),
+            numberStep: percent_number_step
+          }
+        );
         allDoc.forEach(d => {
           let data = d.data()
           if (preDocData[d.id] !== undefined && preDocData[d.id] !== null) {
             data.six_amount = Number((data.six_amount * 1.06).toFixed(7))
             totalSix += data.six_amount
-            $('#totalSix').html(Number(totalSix.toFixed(7)).toLocaleString() + " SIX")
+            $('#totalSix').animateNumber(
+              { 
+                number: totalSix.toFixed(7),
+                numberStep: percent_number_step
+              }
+            );
           }
           const elem = buildListTx(data)
           $("#userTxs")[0].appendChild(elem)
@@ -498,7 +524,13 @@ function getTxs () {
           allDoc.push(d)
         })
         allDoc.sort(compare)
-        $('#totalSix').html(Number(totalSix.toFixed(7)).toLocaleString() + " SIX")
+        var percent_number_step = $.animateNumber.numberStepFactories.append(' SIX')
+        $('#totalSix').animateNumber(
+          { 
+            number: totalSix.toFixed(7),
+            numberStep: percent_number_step
+          }
+        );
         allDoc.forEach(d => {
           const data = d.data()
           const elem = buildListTx(data)
@@ -599,6 +631,20 @@ $(document).ready(function(){
     $("#ethToSixInputAlert").removeClass("invalid")
   }
 
+  $("body").on("click", ".dashboard-2 aside .tab-header .eth-link", function(){
+      $(".dashboard-2 aside .tab-container .video").removeClass("show");
+      $(".dashboard-2 aside .tab-container .eth").addClass("show");
+  });
+
+  $("body").on("click", ".dashboard-2 aside .tab-header .stl-link", function(){
+      $(".dashboard-2 aside .tab-container .video").removeClass("show");
+      $(".dashboard-2 aside .tab-container .stl").addClass("show");
+  });
+  $("body").on("click", ".tab-header a:not(.disabled)", function(){
+      $(this).parent('.tab-header').find("a").removeClass("actived");
+      $(this).addClass("actived");
+  });
+
     // Dialog
     // Open
     $("body").on("click", ".open-dialog-video", function(){
@@ -670,6 +716,9 @@ $(document).ready(function(){
           }
         }).then(getCurrentTotal).then(() => {
           getTxs()
+          setTimeout(function(){
+            runGlobalNumber()
+          }, 1000)
           $('#preLoader').fadeToggle()
           updatePrice()
         })
