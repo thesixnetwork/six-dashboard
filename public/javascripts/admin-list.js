@@ -135,7 +135,16 @@ function buildListUser(doc) {
   tr.appendChild(td1);
   tr.appendChild(td2);
   tr.appendChild(td3);
-  tr.appendChild(td4);
+  if (currentStatus !== 'notComplete') {
+    tr.appendChild(td4);
+  }
+  const { kyc_status, remind_status } = doc.data()
+  if (currentStatus === 'notComplete' && kyc_status === 'not_complete' && remind_status !== undefined) {
+    let td5 = document.createElement("td");
+    let txt5 = document.createTextNode(remind_status);
+    td5.appendChild(txt5)
+    tr.appendChild(td5)
+  }
   tr.onclick = function() {
     openUser(doc.id);
   };
@@ -469,20 +478,29 @@ function handleFilter (type) {
   initializeDatabase(type)
   switch(type) {
     case 'all':
+      $('#remarkColumn').show()
       $('#remarkColumn').text('Status')
-      // currentTab = 
+      $('#remindStatus').hide()
       break
     case 'approved':
+      $('#remarkColumn').show()
       $('#remarkColumn').text('Approved By')
+      $('#remindStatus').hide()
       break
     case 'rejected':
+      $('#remarkColumn').show()
       $('#remarkColumn').text('Rejected By')
+      $('#remindStatus').hide()
       break
     case 'pending':
+      $('#remarkColumn').show()
       $('#remarkColumn').text('Watcher')
+      $('#remindStatus').hide()
       break
     case 'notComplete':
-      $('#remarkColumn').text('')
+      $('#remarkColumn').hide()
+      $('#remindStatus').show()
+      $('#remindStatus').text('REMIND STATUS')
       break
   }
 }
