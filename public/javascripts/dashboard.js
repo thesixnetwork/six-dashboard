@@ -641,11 +641,13 @@ $(document).ready(function(){
   $("body").on("click", ".dashboard-2 aside .tab-header .eth-link", function(){
       $(".dashboard-2 aside .tab-container .video").removeClass("show");
       $(".dashboard-2 aside .tab-container .eth").addClass("show");
+      $("#videoEmbed").attr('src', 'https://www.youtube.com/embed/LvHgV8D9Uj4?rel=0&showinfo=0&enablejsapi=1')
   });
 
   $("body").on("click", ".dashboard-2 aside .tab-header .stl-link", function(){
       $(".dashboard-2 aside .tab-container .video").removeClass("show");
       $(".dashboard-2 aside .tab-container .stl").addClass("show");
+      $("#videoEmbed").attr('src', 'https://www.youtube.com/embed/_Yyowe7AWP8?rel=0&showinfo=0&enablejsapi=1')
   });
   $("body").on("click", ".tab-header a:not(.disabled)", function(){
       $(this).parent('.tab-header').find("a").removeClass("actived");
@@ -659,6 +661,9 @@ $(document).ready(function(){
     });
     // Close
 		$('body').on('click', '[class^="dialog-"] dialog', function(e){
+      $('#videoEmbed').each(function(){
+        this.contentWindow.postMessage('{"event":"command","func":"' + 'stopVideo' + '","args":""}', '*')
+      });
 			e.stopPropagation();
     });
 
