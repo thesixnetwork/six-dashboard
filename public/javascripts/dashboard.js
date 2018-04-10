@@ -319,18 +319,25 @@ function getCurrentTotal() {
     const currentAsset = privateAsset+totalAsset
     const softCapAmount = doc.data().soft_cap_usd
     const percentage = Number(((currentAsset/(doc.data().hard_cap_usd/100)) || 0).toFixed(0))
-    const scalePercentage = Number((((((100-percentage)*99273.68461538461)+currentAsset)/(doc.data().hard_cap_usd/100)) || 0).toFixed(1))
+    let scalePercentage = Number((((((100-percentage)*99273.68461538461)+currentAsset)/(doc.data().hard_cap_usd/100)) || 0).toFixed(1))
+    if ((scalePercentage + 5) < 100) {
+      scalePercentage = scalePercentage+5
+    }
     percentageGlobalCurrent = Number(scalePercentage)
-    globalCurrent = Number(parseFloat(currentAsset).toFixed(0))
+    globalCurrent = Number(parseFloat(currentAsset/1000000).toFixed(1))
   })
 }
 
 function runGlobalNumber() {
-  var comma_separator_number_step = $.animateNumber.numberStepFactories.separator(',')
+  var decimal_places = 1;
   $('#totalCurrentAsset').animateNumber(
     {
       number: globalCurrent,
-      numberStep: comma_separator_number_step
+      numberStep: function(now, tween) {
+        var target = $(tween.elem);
+        floored_number = now.toFixed(decimal_places);
+        target.text(floored_number+' M');
+      }
     }
   )
   $("#barPercentage").css("width", Number(percentageGlobalCurrent)+"%")
