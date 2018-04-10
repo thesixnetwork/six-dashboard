@@ -949,7 +949,7 @@ exports.remindEmail = functions.https.onRequest((request, response) => {
         const { remind_status, email, kyc_status, last_send_remind } = user;
         if (kyc_status === 'not_complete') {
           if (remind_status && last_send_remind) {
-            const diff = moment(new Date).diff(moment(new Date(parseInt(last_send_remind))), 'days')
+            const diff = moment(new Date()).diff(moment(new Date(parseInt(last_send_remind))), 'days')
             console.log(diff, 'diff')
             switch (remind_status) {
               case 'd1':
