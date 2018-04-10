@@ -52,7 +52,7 @@ exports.incrementTotalAsset = functions.firestore.document('/purchase_txs/{txId}
       {type: 'six', key: 'six_amount'}
     ].map(asset => {
       const ref = assetCol.doc(asset.type)
-      return tx.get(ref).then(assetDoc => tx.update(ref, {total: assetDoc.data().total + data[asset.key]}))
+      return tx.get(ref).then(assetDoc => tx.update(ref, {total: parseFloat(assetDoc.data().total) + parseFloat(data[asset.key])}))
     })
     )
     )
@@ -364,7 +364,7 @@ function genKycReadyEmail ({ email }) {
                             </table>
                           </td>
                         </tr>
-      
+
                         <tr>
                           <td id="layout-row-margin109" valign="top" style="padding-top:5px;padding-bottom:5px;padding-right:5px;padding-left:5px;">
                             <table width="100%" border="0" cellpadding="0" cellspacing="0" style="font-size:13px;min-width:100%;mso-table-lspace:0pt;mso-table-rspace:0pt;border-collapse:initial !important;">
@@ -397,7 +397,7 @@ function genKycReadyEmail ({ email }) {
                                             <span style="color:#000000;font-size:inherit;font-weight:400;line-height:inherit;text-decoration:inherit;font-family:arial;text-align:inherit;">
                                             :</span>
                                           </div>
-      
+
                                         </div>
                                       </td>
                                     </tr>
