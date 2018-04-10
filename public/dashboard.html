@@ -29,9 +29,12 @@
     <script src="javascripts/bluebird.js"></script>
     <script src="javascripts/clipboard.js"></script>
     <script src="javascripts/jquery-3.2.1.min.js"></script>
+    <script src="javascripts/jquery.animateNumber.min.js"></script>
     <script src="javascripts/config.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.18.1/moment.js"></script>
     <script src="javascripts/dashboard.js"></script>
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script src="javascripts/google-analytic.js"></script>    
   </head>
   <body>
     <div id='copiedTooltip'>
@@ -69,7 +72,6 @@
     </header>
   </body>
   <main class="dashboard-2">
-    <div class="container">
       <aside>
         <section class="user-detail">
           <span class="avatar" id='firstCharName'>V</span>
@@ -77,36 +79,34 @@
           <p>Balance :&nbsp;<span><span id='totalSix'>Loading</span></span></p>
         </section>
         <section class="video">
-          <a class="btn-play open-dialog-video">
-            <i class="fas fa-play"></i>
-          </a>
-          <p>Introducing to SIX token</p>
+          <div class="tab-header">
+            <a class="eth-link actived">ETH</a>
+            <a class="stl-link">XLM</a>
+          </div>
+          <div class="tab-container">
+            <div class="video eth show">
+              <a class="open-dialog-video">
+                <i class="fas fa-play"></i>
+                <p>How to contribute using ETH</p>
+              </a>
+            </div>
+            <div class="video stl">
+              <a class="open-dialog-video">
+                <i class="fas fa-play"></i>
+                <p>How to contribute using XLM</p>
+              </a>
+            </div>
+          </div>
         </section>
-        <section id='myWallet' style='display: none;'>
-          <h4>My wallet</h4>
-          <p class="myETHWallet truncate" id='myETHWallet'>
-            ETH : <a href='#' id='myAddressBtn' data-clipboard-text="" class='blinkTooltip'><i class="far fa-copy"></i></a>&nbsp;
-            <span id="myETHWalletAddress" data-clipboard-text="" class='blinkTooltip'>-</span>
-            <input type="text" value="" id='myHiddenETHWalletAddress' style="display:inline; color: rgba(255,255,255,0); width: 0px;">
-          </p>
-        </section>
-        <a href="https://six.network/faq.html#howtobuy" id='howToETH'>How to contribute using ETH</a>
-        <a href="#" onclick='backToDashboard()' id='backToTxHis' style='display: none;'><i class="fas fa-arrow-left"></i> Back to Dashboard</a>
-        <section class="static-link" style='margin-top: 7px;'>
-          <a href="https://six.network/faq.html" class='faqMenu'><strong>FAQ</strong></a>
-          <a href="https://six.network/faq.html#howtobuy" class='faqMenu'><strong>How to buy ?</strong></a>
-        </section>
-      </aside>
-      <div class="content">
         <section class="progress" id='progressContent'>
           <div class="bar">
             <div class="top">
               <p class='zeroStart'>$0</p>
-              <p class='softCapText'>$15,000,000</p>
-              <p class='hardCapText'>$42,905,579</p>
+              <p class='softCapText'>$15 M</p>
+              <p class='hardCapText'>$43 M</p>
             </div>
             <span class="available" style=" width: 5%;" id='barPercentage'>
-              <em>$<span id='totalCurrentAsset'>0</span></em>
+              <em>$<span id='totalCurrentAsset'>-</span></em>
             </span>
             <div class="bottom">
               <p class='zeroStart'>Start</p>
@@ -115,6 +115,22 @@
             </div>
           </div>
         </section>
+        <hr style='border-bottom: 1px solid #DDDDDD;'>
+        <section id='myWallet' style='display: none;'>
+          <h4>My wallet</h4>
+          <p class="myETHWallet truncate" id='myETHWallet'>
+            ETH : <a href='#' id='myAddressBtn' data-clipboard-text="" class='blinkTooltip'><i class="far fa-copy"></i></a>&nbsp;
+            <span id="myETHWalletAddress" data-clipboard-text="" class='blinkTooltip'>-</span>
+            <input type="text" value="" id='myHiddenETHWalletAddress' style="display:inline; color: rgba(255,255,255,0); width: 0px;">
+          </p>
+        </section>
+        <a href="#" onclick='backToDashboard()' id='backToTxHis' style='display: none;'><i class="fas fa-arrow-left"></i> Back to Dashboard</a>
+        <section class="static-link" style='margin-top: 7px;'>
+          <a href="https://six.network/faq.html" class='faqMenu'><strong>FAQ</strong></a>
+          <a href="https://six.network/faq.html#howtobuy" class='faqMenu'><strong>How to buy ?</strong></a>
+        </section>
+      </aside>
+      <div class="content">
         <section class="welcome-box show-detail" id='welcomeBox'>
           <h2>Welcome to SIX dashboard</h2>
           <p>In order to contribute to our ICO, you need to deposit your coin for convert to SIX Token consisting of the following steps.</p>
@@ -282,7 +298,7 @@
           <div class="btn"><button id='confirmAddressBtn' onclick='startConfirmation()'>Submit</button></div>
         </section>
         <div class="address-history" id='mainBox'>
-          <section class="transaction-history with-table">
+          <section class="transaction-history with-table" style='display: block;'>
             <header>
               <h2>Your Transactions</h2>
             </header>
@@ -309,14 +325,13 @@
           </section>
         </div>
       </div>
-    </div>
   </main>
 </html>
 
 
 <div class="dialog-video">
   <dialog>
-    <iframe width="870" height="520" src="https://www.youtube.com/embed/QkzQsTX5_Xg?rel=0&amp;showinfo=0" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+    <iframe id='videoEmbed' width="870" height="520" src="https://www.youtube.com/embed/LvHgV8D9Uj4?rel=0&amp;showinfo=0&enablejsapi=1" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
     <a class="close">Close this window</a>
   </dialog>
 </div>

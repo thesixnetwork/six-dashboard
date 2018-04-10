@@ -1,5 +1,6 @@
 #progressContent {
   padding: 32px;
+  margin: 0px;
 }
 
 #exchange-ul {
@@ -163,3 +164,6 @@
   }
 }
 
+.dashboard-2 section.progress .bar {
+  background: #ffffff;
+}
