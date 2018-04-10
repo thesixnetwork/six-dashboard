@@ -850,7 +850,7 @@ exports.autoSendKycReadyEmail = functions.firestore
       const mailOptions = {
         from: '"SIX Network" <noreply@six.network>',
         to: email,
-        subject: "SIX.network: this is reminder ",
+        subject: "SIX.network - Don't forget to submit your document",
         html: `
         <div style="font-family: &quot;Prompt&quot;, sans-serif;color: rgba(33, 33, 33, 1);margin: 0;background: #F6F6F6">
         <div class="section" style="font-family: &quot;Prompt&quot;, sans-serif;color: rgba(33, 33, 33, 1);position: relative;background: #F6F6F6;padding-bottom: 10px;height: 100%;z-index: 1">
@@ -931,11 +931,17 @@ exports.autoSendKycReadyEmail = functions.firestore
 function sendRemindEmails ({ remind_status, email, doc, db, new_remind_status }) {
   genReminderEmail({ email: email })
   .then(mailOptions => {
-    console.log(`Sending email to: ${email}, from status: ${remind_status} to ${new_remind_status}`)
+    console.log(`PENDING: Sending email to: ${email}, from status: ${remind_status} to ${new_remind_status}`)
     return mailTransport.sendMail(mailOptions)
   })
-  .then(result => db.doc(doc.id).update({ remind_status: new_remind_status, last_send_remind: Date.now() }))
-  .catch(err => console.log(err, 'error'))
+  .then(result => {
+    console.log(`SUCCESS: sent email to: ${email}, from status: ${remind_status} to ${new_remind_status}`)
+    return db.doc(doc.id).update({ remind_status: new_remind_status, last_send_remind: Date.now() })
+  })
+  .catch(err => {
+    console.log(`FAILURE: sent email to: ${email}, from status: ${remind_status} to ${new_remind_status}`)
+    console.log(err, 'error send remind email')
+  })
 }
 
 exports.remindEmail = functions.https.onRequest((request, response) => {
@@ -944,38 +950,45 @@ exports.remindEmail = functions.https.onRequest((request, response) => {
   const { password } = request.query
   if (password === "ineedtosendemail") {
     db.get().then(docs => {
+      let emailsList = []
       docs.forEach(doc => {
         const user = doc.data();
         const { remind_status, email, kyc_status, last_send_remind } = user;
         if (kyc_status === 'not_complete') {
           if (remind_status && last_send_remind) {
-            const diff = moment(new Date).diff(moment(new Date(parseInt(last_send_remind))), 'days')
+            const diff = moment(new Date()).diff(moment(new Date(parseInt(last_send_remind))), 'days')
             console.log(diff, 'diff')
             switch (remind_status) {
               case 'd1':
                 if (diff >= 4) sendRemindEmails({ remind_status, email, db, doc, new_remind_status: 'd4' })
+                emailsList.push(email)
                 break;
               case 'd4':
                 if (diff >= 4) sendRemindEmails({ remind_status, email, db, doc, new_remind_status: 'd8' })
+                emailsList.push(email)
                 break;
               case 'd8':
                 if (diff >= 7) sendRemindEmails({ remind_status, email, db, doc, new_remind_status: 'd8+7' })
+                emailsList.push(email)
                 break;
               case 'd8+7':
                 if (diff >= 14) sendRemindEmails({ remind_status, email, db, doc, new_remind_status: 'd8+7(2)' })
+                emailsList.push(email)
                 break;
               case 'd8+7(2)':
                 if (diff >= 21) sendRemindEmails({ remind_status, email, db, doc, new_remind_status: 'd8+7(3)' })
+                emailsList.push(email)
                 break;
               default:
                 break;
             }
           } else {
             sendRemindEmails({ remind_status: 'd0', email, db, doc, new_remind_status: 'd1' })
+            emailsList.push(email)
           }
         }
       });
-      response.send({ success: true });
+      response.send({ success: true, emailsList });
     });
   } else {
     return response.status(400).json(new Error("Password not match"));
