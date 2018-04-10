@@ -248,6 +248,7 @@ label < input:disabled {
 }
 
 .zeroStart {
+  width: 50%!important;
 }
 
 .softCapText {
