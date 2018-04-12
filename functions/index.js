@@ -6,6 +6,7 @@ const nodemailer = require("nodemailer");
 const cors = require("cors")({ origin: true });
 const regeneratorRuntime = require("regenerator-runtime");
 const sgTransport = require("nodemailer-sendgrid-transport");
+const axios = require('axios')
 
 admin.initializeApp(functions.config().firebase);
 
@@ -845,15 +846,24 @@ exports.autoSendKycReadyEmail = functions.firestore
     }
   });
 
-  function genReminderEmail({ email }) {
+  function genReminderEmail(emails) {
     return new Promise((resolve, reject) => {
+      let personalizations = []
+      emails.forEach(email => {
+        if (email !== null) {
+          personalizations.push({
+            "to": [{ email: email.email }],
+            "subject": "SIX.network - Don't forget to submit your document"
+          })
+        }
+      })
       const mailOptions = {
-        from: '"SIX Network" <noreply@six.network>',
-        to: email,
-        subject: "SIX.network - Don't forget to submit your document",
-        html: `
-        <div style="font-family: &quot;Prompt&quot;, sans-serif;color: rgba(33, 33, 33, 1);margin: 0;background: #F6F6F6">
-        <div class="section" style="font-family: &quot;Prompt&quot;, sans-serif;color: rgba(33, 33, 33, 1);position: relative;background: #F6F6F6;padding-bottom: 10px;height: 100%;z-index: 1">
+        personalizations,
+        from: {email: 'no-reply@six.network'},
+        content: [{
+          type: 'text/html',
+          value: `<div style="font-family: &quot;Prompt&quot;, sans-serif;color: rgba(33, 33, 33, 1);margin: 0;background: #F6F6F6">
+          <div class="section" style="font-family: &quot;Prompt&quot;, sans-serif;color: rgba(33, 33, 33, 1);position: relative;background: #F6F6F6;padding-bottom: 10px;height: 100%;z-index: 1">
           <!-- <img class="top-header" src="https://firebasestorage.googleapis.com/v0/b/devson-f46f4.appspot.com/o/public%2Fheader.png?alt=media&token=9f32b7f1-6def-45f2-bf1a-2cea15326450"
             alt=""> -->
           <div class="card" style="font-family: &quot;Prompt&quot;, sans-serif;color: rgba(33, 33, 33, 1);width: 80%;padding: 0;padding-top: 2%;z-index: 100;margin-left: 10%;background: transparent">
@@ -922,7 +932,8 @@ exports.autoSendKycReadyEmail = functions.firestore
         </div>
       </div>
       `
-      };
+      }]
+    }
       resolve(mailOptions);
     });
   }
@@ -944,51 +955,78 @@ function sendRemindEmails ({ remind_status, email, doc, db, new_remind_status })
   })
 }
 
-exports.remindEmail = functions.https.onRequest((request, response) => {
+
+function updateRemindStatus (users) {
+  const db = admin.firestore().collection('users')
+  users.forEach(user => {
+    const { id, new_remind_status, status, email } = user
+    console.log(`PENDING: update user status ${email}`)
+    return db.doc(id).update({ remind_status: new_remind_status, last_send_remind: Date.now() }).then(res => {
+      console.log(`SUCCESS: update user status ${email}`)
+      return res
+    }).catch(err => {
+      console.log(`ERROR: update user status ${email} with ${err}`)
+      throw err
+    })
+  })
+}
+
+exports.remindEmails = functions.https.onRequest((request, response) => {
   cors(request, response, () => {});
   const db = admin.firestore().collection("users");
   const { password } = request.query
   if (password === "ineedtosendemail") {
     db.get().then(docs => {
       let emailsList = []
+      let sendList = []
       docs.forEach(doc => {
         const user = doc.data();
         const { remind_status, email, kyc_status, last_send_remind } = user;
         if (kyc_status === 'not_complete') {
           if (remind_status && last_send_remind) {
             const diff = moment(new Date()).diff(moment(new Date(parseInt(last_send_remind))), 'days')
-            console.log(diff, 'diff')
             switch (remind_status) {
               case 'd1':
-                if (diff >= 4) sendRemindEmails({ remind_status, email, db, doc, new_remind_status: 'd4' })
-                emailsList.push(email)
+                if (diff >= 4) sendList.push({ email, remind_status, new_remind_status: 'd4', id: doc.id })
                 break;
               case 'd4':
-                if (diff >= 4) sendRemindEmails({ remind_status, email, db, doc, new_remind_status: 'd8' })
-                emailsList.push(email)
+                if (diff >= 4) sendList.push({ email, remind_status, new_remind_status: 'd8', id: doc.id })
                 break;
               case 'd8':
-                if (diff >= 7) sendRemindEmails({ remind_status, email, db, doc, new_remind_status: 'd8+7' })
-                emailsList.push(email)
+                if (diff >= 7) sendList.push({ email, remind_status, new_remind_status: 'd8+7', id: doc.id })
                 break;
               case 'd8+7':
-                if (diff >= 14) sendRemindEmails({ remind_status, email, db, doc, new_remind_status: 'd8+7(2)' })
-                emailsList.push(email)
+                if (diff >= 14) sendList.push({ email, remind_status, new_remind_status: 'd8+7(2)', id: doc.id })
                 break;
               case 'd8+7(2)':
-                if (diff >= 21) sendRemindEmails({ remind_status, email, db, doc, new_remind_status: 'd8+7(3)' })
-                emailsList.push(email)
+                if (diff >= 21) sendList.push({ email, remind_status, new_remind_status: 'd8+7(3)', id: doc.id })
                 break;
               default:
                 break;
             }
           } else {
-            sendRemindEmails({ remind_status: 'd0', email, db, doc, new_remind_status: 'd1' })
-            emailsList.push(email)
+            sendList.push({ email, remind_status, new_remind_status: 'd1', id: doc.id })
           }
         }
       });
-      response.send({ success: true, emailsList });
+      if (sendList && sendList.length > 0) {
+        return genReminderEmail(sendList)
+        .then(mailOptions => {
+          return axios.post('https://api.sendgrid.com/v3/mail/send', mailOptions, { headers: { Authorization: 'Bearer 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'}})
+        })
+        .then(res => {
+          updateRemindStatus(sendList, db)
+          console.log('should return reponse')
+          return response.json({ success: true, sendList })
+        })
+        .catch(err => {
+          console.log(err.response.data, 'err')
+          console.log(err.message, 'err.message')
+          return response.status(400).json({ error: err.reponse.data })
+        })
+      } else {
+        return response.send({ success: true, sendList })
+      }
     });
   } else {
     return response.status(400).json(new Error("Password not match"));
