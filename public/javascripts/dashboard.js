@@ -354,6 +354,12 @@ function submitDepositXLMTran() {
   } else {
     amount = Number((xlm_value*xlmPrice.six_per_xlm).toFixed(7))*1.06
   }
+  try {
+    _gaq.push(['_trackEvent', 'deposit', 'clicked'])
+    console.log('gaq push')
+  } catch(err) {
+    console.log(err.message)
+  }
   updateUser({first_transaction: true, alloc_transaction: true, alloc_transaction_type: 'XLM', alloc_transaction_amount: xlm_value, alloc_transaction_six_amount: amount, alloc_time: (new Date()).getTime()}).then(() => {
     setEnable([btnDOM])
     $("#questionBox").css("display", "none")
@@ -387,6 +393,13 @@ function submitDepositETHTran() {
   } else {
     amount = Number((eth_value*ethPrice.six_per_eth).toFixed(7))*1.06
   }
+  try {
+    _gaq.push(['_trackEvent', 'deposit', 'clicked'])
+    console.log('gaq push')
+  } catch(err) {
+    console.log(err.message)
+  }
+
   updateUser({first_transaction: true, alloc_transaction: true, alloc_transaction_type: 'ETH', alloc_transaction_amount: eth_value, alloc_transaction_six_amount: amount, alloc_time: (new Date()).getTime()}).then(() => {
     setEnable([btnDOM])
     $("#questionBox").css("display", "none")

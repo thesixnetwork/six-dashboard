@@ -18,12 +18,15 @@ if (googleId != '') {
 
   var script = document.createElement('script')
   script.innerHTML = `
-  window.dataLayer = window.dataLayer || []
+  window.dataLayer = window.dataLayer || [];
   function gtag () {
-    dataLayer.push(arguments)
+    dataLayer.push(arguments);
   }
-  gtag('js', new Date())
-  gtag('config', googleId)
+  gtag('js', new Date());
+  gtag('config', googleId);
+  var _gaq = _gaq || []; 
+  _gaq.push(['_setAccount', googleId]); 
+  _gaq.push(['_trackPageview']);
   `
   document.head.appendChild(script)
 }
