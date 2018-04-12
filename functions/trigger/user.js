@@ -3,6 +3,7 @@ const Querystring = require('query-string')
 const nodemailer = require('nodemailer')
 const axios = require('axios')
 const path = '/users/{uid}'
+const http = require('http')
 
 module.exports = function (functions, fireStore) {
   const events = functions.firestore.document(path)
@@ -21,6 +22,9 @@ module.exports = function (functions, fireStore) {
   }, {
     'name': 'checkKYCStatus',
     'module': events.onUpdate(event => checkKYCStatus(event, functions, fireStore))
+  }, {
+    'name': 'checkAddressETH',
+    'module': events.onUpdate(event => checkAddressETH(event, functions, fireStore))
   }]
 }
 
@@ -168,4 +172,36 @@ function sendCampaignEmailApprove (event, functions) {
           return console.log(data, 'res from activecampaign')
         })
     })
+}
+
+function checkAddressETH (event, functions, fireStore) {
+  const uid = event.params.uid
+  const userData = event.data.data()
+  const previousUserData = event.data.previous.data()
+  // console.log(userData.eth_address)
+  // console.log(previousUserData.eth_address)
+  if (userData.eth_address !== previousUserData.eth_address) {
+    return http.get(`http://api.etherscan.io/api?module=account&action=txlist&address=${userData.eth_address}&startblock=0&endblock=99999999&sort=asc&apikey=EBYZ1URIDI4E7JWZNW4NVPPDISMMEQHS9S&offset=100&page=1`, function (response) {
+      let finalData = ''
+      response.on('data', function (data) {
+        finalData += data.toString()
+      })
+      response.on('end', function () {
+        const userRef = fireStore.collection('users').doc(uid)
+        return fireStore.runTransaction(tx => tx.get(userRef).then(user => {
+          if (finalData !== '') {
+            let txs = JSON.parse(finalData)
+            // console.log(txs)
+            let suspiciousETH = true
+            if (txs.result.length !== 100) {
+              suspiciousETH = false
+            }
+            tx.update(userRef, {suspicious_eth: suspiciousETH})
+          }
+        }))
+      })
+    })
+  } else {
+    return Promise.resolve()
+  }
 }
