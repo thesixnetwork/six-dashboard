@@ -850,7 +850,7 @@ exports.autoSendKycReadyEmail = functions.firestore
     return new Promise((resolve, reject) => {
       let personalizations = []
       emails.forEach(email => {
-        if (email !== null) {
+        if (email && email.email !== null) {
           personalizations.push({
             "to": [{ email: email.email }],
             "subject": "SIX.network - Don't forget to submit your document"
