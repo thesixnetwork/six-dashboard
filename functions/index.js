@@ -306,7 +306,7 @@ exports.initializeUserDoc = functions.auth.user().onCreate(event => {
     .firestore()
     .collection("users")
     .doc(user.uid);
-  return ref.set({ email: email }, { merge: true }).then(() => {
+  return ref.set({ email: email, registration_time: user.metadata.a }, { merge: true }).then(() => {
     return true;
   });
 });
