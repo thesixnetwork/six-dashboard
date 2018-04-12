@@ -98,7 +98,7 @@ function createElementFromHTML(htmlString) {
 }
 
 // Build kyc user list element
-function buildListUser(doc) {
+function buildListUser(doc, status) {
   var date = ''
   if (doc.data().kyc_submit_time && doc.data().kyc_submit_time !== null) {
     date = new Date((doc.data().kyc_submit_time) * 1000);
@@ -125,14 +125,22 @@ function buildListUser(doc) {
   td2.appendChild(txt2);
   var td3 = document.createElement("td");
   let estimate = doc.data().estimate
-  if (doc.data().estimate_currency == "XLM") {
-    estimate = estimate*2050
+  if (status == 'approved') {
+    estimate = doc.data().total_six
+  } else {
+    if (doc.data().estimate_currency == "XLM") {
+      estimate = estimate*2050
+    }
   }
   let estimate_text = ""
   if (estimate === undefined) {
     estimate_text = "-"
   } else {
-    estimate_text = estimate+" "+(doc.data().estimate_currency || "ETH")
+    if (status == 'approved') {
+      estimate_text = estimate+" SIX"
+    } else {
+      estimate_text = estimate+" "+(doc.data().estimate_currency || "ETH")
+    }
   }
   var txt3 = document.createTextNode(estimate_text);
   td3.appendChild(txt3);
@@ -433,7 +441,7 @@ function initializeDatabase(status) {
         allDocs.forEach(function (doc, index) {
           const data = doc.data()
           userData[doc.id] = data
-          let elem = buildListUser(doc);
+          let elem = buildListUser(doc, status);
           $("#adminList")[0].appendChild(elem);
           const { updater, kyc_status } = data
           switch(status) {
@@ -495,27 +503,37 @@ function handleFilter (type) {
     case 'all':
       $('#remarkColumn').show()
       $('#remarkColumn').text('Registration Date')
+      $('#kycColumn').text("KYC Submit Datetime")
+      $('#contributeColumn').text("Estimate Contribute (ETH)")
       $('#remindStatus').hide()
       break
     case 'approved':
       $('#remarkColumn').show()
       $('#remarkColumn').text('Approved By')
+      $('#kycColumn').text("KYC Submit Datetime")
+      $('#contributeColumn').text("Contributed")
       $('#remindStatus').hide()
       break
     case 'rejected':
       $('#remarkColumn').show()
       $('#remarkColumn').text('Rejected By')
+      $('#kycColumn').text("KYC Submit Datetime")
+      $('#contributeColumn').text("Estimate Contribute (ETH)")
       $('#remindStatus').hide()
       break
     case 'pending':
       $('#remarkColumn').show()
       $('#remarkColumn').text('Watcher')
+      $('#kycColumn').text("KYC Submit Datetime")
+      $('#contributeColumn').text("Estimate Contribute (ETH)")
       $('#remindStatus').hide()
       break
     case 'notComplete':
       $('#remarkColumn').hide()
       $('#remindStatus').show()
+      $('#kycColumn').text("KYC Submit Datetime")
       $('#remindStatus').text('REMIND STATUS')
+      $('#contributeColumn').text("Estimate Contribute (ETH)")
       break
   }
 }

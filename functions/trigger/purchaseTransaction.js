@@ -12,6 +12,9 @@ module.exports = function (functions, fireStore) {
       'name': 'presaleBonus',
       'module': events.onCreate(event => presaleBonus(event, fireStore))
     }, {
+      'name': 'updateTotalSix',
+      'module': events.onCreate(event => updateTotalSix(event, fireStore))
+    }, {
       'name': 'receivedDeposit',
       'module': events.onCreate(event => receivedDeposit(event, functions, fireStore))
     }
@@ -32,6 +35,24 @@ function incrementTotalAsset (event, fireStore) {
   })
   )
   )
+}
+
+function updateTotalSix(event, fireStore) {
+  const purchaseTxData = event.data.data()
+  const userCol = fireStore.collection('users')
+  return fireStore.runTransaction(tx => {
+    const sixAmount = purchaseTxData.six_amount
+    const userId = purchaseTxData.user_id
+    const userRef = userCol.doc(userId)
+    return tx.get(userRef).then(userDoc => {
+      const userData = userDoc.data()
+      const totalSix = (userData.total_six || 0)
+      const newTotalSix = totalSix + sixAmount
+      return Promise.all([
+        tx.update(userRef, {total_six: newTotalSix})
+      ])
+    })
+  })
 }
 
 function presaleBonus (event, fireStore) {
