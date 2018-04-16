@@ -416,7 +416,7 @@ function initializeDatabase(status, country) {
     let db = firebase.firestore();
     let userRef = db.collection("users");
     let query = userRef
-    if (country) {
+    if (country && country !== 'ALL') {
       query = userRef.where('country', '==', country)
     }
     switch(status) {
