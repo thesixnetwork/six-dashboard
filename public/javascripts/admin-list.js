@@ -98,6 +98,13 @@ function createElementFromHTML(htmlString) {
 }
 
 // Build kyc user list element
+function buildOption(doc) {
+  const option = document.createElement('OPTION')
+  option.setAttribute('value', doc)
+  option.setAttribute('label', doc)
+  return option
+}
+
 function buildListUser(doc, status) {
   var date = ''
   if (doc.data().kyc_submit_time && doc.data().kyc_submit_time !== null) {
@@ -398,8 +405,9 @@ function renderStatus (id, data) {
 }
 
 let unsubscribe = null
+let filteredUsers = []
 // Initialize database to query data and draw to view
-function initializeDatabase(status) {
+function initializeDatabase(status, country) {
   let promise = new Promise(function(resolve, reject) {
     if (unsubscribe !== null) {
       unsubscribe()
@@ -408,29 +416,42 @@ function initializeDatabase(status) {
     let db = firebase.firestore();
     let userRef = db.collection("users");
     let query = userRef
+    if (country) {
+      query = userRef.where('country', '==', country)
+    }
     switch(status) {
       case 'approved':
-        query = userRef.where("kyc_status", "==", "approved");
+        query = query.where("kyc_status", "==", "approved");
         break
       case 'rejected':
-        query = userRef.where("kyc_status", "==", "rejected");
+        query = query.where("kyc_status", "==", "rejected");
         break
       case 'pending':
-        query = userRef.where("kyc_status", "==", "pending");
+        query = query.where("kyc_status", "==", "pending");
         break
       case 'notComplete':
-        query = userRef.where("kyc_status", "==", "not_complete");
+        query = query.where("kyc_status", "==", "not_complete");
         break
       default:
         break
     }
     unsubscribe =  query
       .onSnapshot(docs => {
+        filteredUsers = []
         $("#adminList").empty()
         let allDocs = []
+        let countries = ['ALL']
         docs.forEach(function (doc) {
           allDocs.push(doc)
+          // if (doc.data().country !== undefined) {
+          //   countries.push(doc.data().country)
+          // }
         })
+        // countries = _.uniq(countries)
+        // countries.forEach(function (country) {
+        //   const elm = buildOption(country)
+        //   $('#country')[0].appendChild(elm);
+        // })
         if (status != 'pending' && status != 'all') {
           allDocs.sort(compareReverse)
         } else if (status == 'all') {
@@ -440,6 +461,7 @@ function initializeDatabase(status) {
         }
         allDocs.forEach(function (doc, index) {
           const data = doc.data()
+          filteredUsers.push(data)
           userData[doc.id] = data
           let elem = buildListUser(doc, status);
           $("#adminList")[0].appendChild(elem);
@@ -494,6 +516,10 @@ function removeWatching(uid) {
     .remove();
 }
 
+function filterCountry (country) {
+  initializeDatabase(currentStatus, country)
+}
+
 function handleFilter (type) {
   $(`#${currentStatus}`).removeClass('is-active')
   $(`#${type}`).addClass('is-active')
@@ -538,6 +564,83 @@ function handleFilter (type) {
   }
 }
 
+function JSONToCSVConvertor(JSONData, ReportTitle, ShowLabel) {
+  //If JSONData is not an object then JSON.parse will parse the JSON string in an Object
+  var arrData = typeof JSONData != 'object' ? JSON.parse(JSONData) : JSONData;
+  
+  var CSV = '';    
+  //Set Report title in first row or line
+  
+  CSV += ReportTitle + '\r\n\n';
+
+  //This condition will generate the Label/Header
+  if (ShowLabel) {
+      var row = "";
+      
+      //This loop will extract the label from 1st index of on array
+      for (var index in arrData[0]) {
+          
+          //Now convert each value to string and comma-seprated
+          row += index + ',';
+      }
+
+      row = row.slice(0, -1);
+      
+      //append Label row with line break
+      CSV += row + '\r\n';
+  }
+  
+  //1st loop is to extract each row
+  for (var i = 0; i < arrData.length; i++) {
+      var row = "";
+      
+      //2nd loop will extract each column and convert it in string comma-seprated
+      for (var index in arrData[i]) {
+          row += '"' + arrData[i][index] + '",';
+      }
+
+      row.slice(0, row.length - 1);
+      
+      //add a line break after each row
+      CSV += row + '\r\n';
+  }
+
+  if (CSV == '') {        
+      alert("Invalid data");
+      return;
+  }   
+  
+  //Generate a file name
+  var fileName = "";
+  //this will remove the blank-spaces from the title and replace it with an underscore
+  fileName += ReportTitle.replace(/ /g,"_");
+  
+  //Initialize file format you want csv or xls
+  var uri = 'data:text/csv;charset=utf-8,' + escape(CSV);
+  
+  // Now the little tricky part.
+  // you can use either>> window.open(uri);
+  // but this will not work in some browsers
+  // or you will not get the correct file extension    
+  
+  //this trick will generate a temp <a /> tag
+  var link = document.createElement("a");    
+  link.href = uri;
+  
+  //set the visibility hidden so it will not effect on your web-layout
+  link.style = "visibility:hidden";
+  link.download = fileName + ".csv";
+  
+  //this part will append the anchor tag and remove it after automatic click
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+}
+
+function exportCSV () {
+  JSONToCSVConvertor(filteredUsers, "User Report", true)
+}
+
 $(document).ready(function() {
   // Search list
   $("body").on("click", ".search i.fa-search", function() {
@@ -551,6 +654,15 @@ $(document).ready(function() {
       .parents(".search")
       .removeClass("show-search");
   });
+
+  $('#country').change(function() {
+    const value = $('#country').val()
+    filterCountry(value)
+  });
+
+  $('#exportCsv').click(function() {
+    exportCSV()
+  })
 
   window.addEventListener("beforeunload", function(e) {
     return removeWatching(currentFocus);

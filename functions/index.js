@@ -1010,13 +1010,12 @@ exports.remindEmails = functions.https.onRequest((request, response) => {
         }
       });
       if (sendList && sendList.length > 0) {
+        updateRemindStatus(sendList, db)
         return genReminderEmail(sendList)
         .then(mailOptions => {
           return axios.post('https://api.sendgrid.com/v3/mail/send', mailOptions, { headers: { Authorization: 'Bearer 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'}})
         })
         .then(res => {
-          updateRemindStatus(sendList, db)
-          console.log('should return reponse')
           return response.json({ success: true, sendList })
         })
         .catch(err => {
