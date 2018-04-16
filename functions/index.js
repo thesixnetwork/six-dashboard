@@ -307,7 +307,7 @@ exports.initializeUserDoc = functions.auth.user().onCreate(event => {
     .firestore()
     .collection("users")
     .doc(user.uid);
-  return ref.set({ email: email }, { merge: true }).then(() => {
+  return ref.set({ email: email, registration_time: user.metadata.a }, { merge: true }).then(() => {
     return true;
   });
 });
@@ -1020,9 +1020,9 @@ exports.remindEmails = functions.https.onRequest((request, response) => {
           return response.json({ success: true, sendList })
         })
         .catch(err => {
-          console.log(err.response.data, 'err')
+          console.log((err.response || {}).data, 'err')
           console.log(err.message, 'err.message')
-          return response.status(400).json({ error: err.reponse.data })
+          return response.status(400).json({ error: (err.reponse || {}).data })
         })
       } else {
         return response.send({ success: true, sendList })
