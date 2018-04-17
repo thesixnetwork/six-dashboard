@@ -116,6 +116,12 @@ function signUp () {
   if ($('#signUpAlert').css('display') == 'block') {
     $('#signUpAlert').slideToggle()
   }
+  try {
+    gtag('event','click',{'event_category':'button','event_label':'signup'}); 
+  }
+  catch {
+    console.log("gtag error")
+  }
   let emailDOM = document.getElementById('signUpEmail')
   let firstNameDOM = document.getElementById('signUpFirstName')
   let lastNameDOM = document.getElementById('signUpLastName')
