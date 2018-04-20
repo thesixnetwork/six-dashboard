@@ -44,3 +44,24 @@
     margin-left: 20px;
     margin-right: 20px;
 }
+
+.dropdown-select {
+    margin: 10px;
+    border: 1px solid grey !important;
+    padding: 10px;
+    padding-left: 20px;
+    padding-right: 20px;
+    float: right;
+}
+
+.table-option {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-end;
+    align-items: center;
+    vertical-align: middle;
+}
+
+.small-btn {
+    max-width: 100px !important;
+}
