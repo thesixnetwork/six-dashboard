@@ -25,8 +25,10 @@
         <link href="stylesheets/style.css" rel="stylesheet">
         <link href="stylesheets/style2.css" rel="stylesheet">
         <link href="stylesheets/loading.css" rel="stylesheet">
+        <link href="stylesheets/admin.css" rel="stylesheet">
         <script src="javascripts/bluebird.js"></script>
         <script src="javascripts/jquery-3.2.1.min.js"></script>
+        <script src="javascripts/url_replacer.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/lodash@4.17.5/lodash.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.18.1/moment.js"></script>
         <script src="javascripts/admin-list.js"></script>
@@ -325,19 +327,21 @@
             </select>
         </div>
         <br>
-        <table>
-          <thead>
-            <tr>
-              <th>Name</th>
-              <th width="200" id='kycColumn'>KYC Submit Datetime</th>
-              <th width="200" id='contributeColumn'>Estimate Contribute (ETH)</th>
-              <th width="500" id="remarkColumn">Registration Date</th>
-              <th width="100" id="remindStatus"></th>
-            </tr>
-          </thead>
-          <tbody id="adminList">
-          </tbody>
-        </table>
+        <div style="overflow-x: auto;width: 100%;">
+          <table>
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th width="200" id='kycColumn'>KYC Submit Datetime</th>
+                <th width="200" id='contributeColumn'>Estimate Contribute (ETH)</th>
+                <th width="500" id="remarkColumn">Registration Date</th>
+                <th width="100" id="remindStatus"></th>
+              </tr>
+            </thead>
+            <tbody id="adminList">
+            </tbody>
+          </table>
+        </div>
       </section>
         </div>
     </main>
