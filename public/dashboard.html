@@ -26,7 +26,6 @@
     <link rel="stylesheet" href="stylesheets/style.css">
     <link rel="stylesheet" href="stylesheets/loading.css">
     <link rel="stylesheet" href="stylesheets/dashboard.css">
-    <script src="javascripts/bluebird.js"></script>
     <script src="javascripts/clipboard.js"></script>
     <script src="javascripts/jquery-3.2.1.min.js"></script>
     <script src="javascripts/url_replacer.js"></script>
@@ -37,6 +36,7 @@
     <!-- Global site tag (gtag.js) - Google Analytics -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=GTM-N5DKTMD"></script>
     <script src="javascripts/google-analytic.js"></script>    
+    <script src="javascripts/stellar-sdk.js"></script>
   </head>
   <body>
     <script type="text/javascript"> (function() { 
@@ -133,6 +133,7 @@
           </p>
         </section>
         <a href="#" onclick='backToDashboard()' id='backToTxHis' style='display: none;'><i class="fas fa-arrow-left"></i> Back to Dashboard</a>
+        <a href="#" onclick='goToClaim()' id='goToClaim' style='display: none;'>Claim your six</a>
         <section class="static-link" style='margin-top: 7px;'>
           <a href="https://six.network/faq.html" class='faqMenu'><strong>FAQ</strong></a>
           <a href="https://six.network/faq.html#howtobuy" class='faqMenu'><strong>How to buy ?</strong></a>
@@ -332,11 +333,114 @@
             <div id='loadmoreBtn' style='display: none;' class="loader-more"><a href="#">More</a></div>
           </section>
         </div>
+        <section class="claim-box" id='claimBox' style='display: none;'>
+          <header>
+            <h2>Claim your SIX tokens</h2>
+          </header>
+          <div id='divClaimBox'>
+            <div class="btn"><button id='generateAddressBtn' onclick='generateNewAccount()' style='width: auto; margin-top: 50px; margin-bottom: 20px;'> Generate new Stellar address keypair </button></div>
+            <div class='fdiv'>
+              <p>Public key</p>
+              <label class="text" style='margin-top: 10px;'>
+                <input placeholder="Public Address" id="genP" type="text">
+              </label>
+            </div>
+            <div class='fdiv'>
+              <p>Secret key</p>
+              <label class="text" style='margin-top: 10px;'>
+                <input placeholder="Secret Key" id="genS" type="text">
+              </label>
+            </div>
+            <p>Please note, saving a secret is very important. To keep your token safe, make sure that you hide your secret key away from unauthorized parties.</p>
+            <div class="btn"><button id='submitGAccountBtn' onclick='submitGeneratedAccount()' style='width: auto; margin-top: 20px; margin-bottom: 20px; min-width: 150px;'> Submit </button></div>
+            <div id='progressContainer' style='display: none;'>
+              <div class="spinner" style='display: block; text-align: center; margin: auto; margin-bottom: 15px; margin-top: 10px;'>
+                <div class="bounce1"></div>
+                <div class="bounce2"></div>
+                <div class="bounce3"></div>
+              </div>
+              <div id='accountPgB'>
+                <div id='accountPg'></div>
+              </div>
+              <p id='progressText'>Initialize processing<p>
+            </div>
+          </div>
+          <div id='rewardClaimBox' style='display: none;'>
+            
+            <div id='claimTableContainer'>
+              <table id='claimTable'>
+                <thead>
+                  <tr>
+                    <th width="150">Available Date</th>
+                    <th width="180">Amount</th>
+                    <th width="180">Bonus</th>
+                    <th width="400">Transaction ID</th>
+                    <th width="200">Status</th>
+                  </tr>
+                </thead>
+                <tbody id="claimTxs">
+                  <tr>
+                    <td>2018-06-14</td>
+                    <td>14220.112</td>
+                    <td>214.565</td>
+                    <td>720c5d04193db9dc5290b6cf96f2eb0695b257f37b1ceac1eb32c9d96bd04df0</td>
+                    <td>
+                      <button disabled class='claimMoneyBtn claimed'>Claimed</button>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>2018-06-20</td>
+                    <td>21567.44</td>
+                    <td>426.54</td>
+                    <td>-</td>
+                    <td>
+                      <button class='claimMoneyBtn avail' onclick='claimSix()'>Claim</button>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>2018-06-30</td>
+                    <td>5655.4</td>
+                    <td>56.4</td>
+                    <td>-</td>
+                    <td>
+                      <button disabled class='claimMoneyBtn notAvail'>Not Available</button>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
       </div>
   </main>
 </html>
 
 
+<div id='otpDialog' class='dialog-otp'>
+  <dialog>
+    <div id='otpContent'>
+      <header>
+        <h2>One time password</h2>
+      </header>
+      <div id='requestOTPContent'>
+        <div class="btn"><button id='requestOTPBtn' onclick='requestOTP()' style='width: auto; margin-top: 20px; margin-bottom: 20px; min-width: 150px;'> Request OTP </button></div>
+      </div>
+      <div id='submitOTPContent' style='display: none;'>
+        <article>
+          <p>An SMS message with one time password is sent to you (<span id='refPhoneNumber'>+66875487117</span>). Ref: <span id='refVerify'>AFYSWG</span></p>
+          <div class="countdown-verify" style='text-align: center;'></div>
+          <fieldset>
+            <dl>
+              <dd><label class="text"><input id='otpCode' type="text" placeholder="Code" style='text-align: center;'></label></dd>
+            </dl>
+            <dl><dd><button id='otpSubmitBtn' onclick='submitOTP()'>Submit</button></dd></dl>
+            <p id='submitOTPError' class="alert-text error" style='display: none;'></p>
+          </fieldset>
+        </article>
+      </div>
+    </div>
+  </dialog>
+</div>
 <div class="dialog-video">
   <dialog>
     <iframe id='videoEmbed' width="870" height="520" src="https://www.youtube.com/embed/LvHgV8D9Uj4?rel=0&amp;showinfo=0&enablejsapi=1" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>

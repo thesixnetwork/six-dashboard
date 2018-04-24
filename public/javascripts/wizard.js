@@ -819,9 +819,9 @@ $(document).ready(function () {
     } else {
       initializeAdmin().then(() => {
         $('#adminShortcut').css('display', 'block')
-      }).finally(() => {
+      }).catch(() => {}).then(() => {
         initializeStep().then(() => {
-        }).finally(() => {
+        }).catch(() => {}).then(() => {
           $('#preLoader').fadeToggle()
         })
       })

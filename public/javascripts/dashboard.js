@@ -234,6 +234,7 @@ function initializeAdmin () {
     let db = firebase.firestore()
     db.collection('admins').get()
       .then(() => {
+        $("#goToClaim").css("display", "block")
         resolve()
       })
       .catch(() => {
@@ -700,7 +701,7 @@ $(document).ready(function(){
     } else {
       initializeAdmin().then(() => {
         return $('#adminShortcut').css('display', 'block')
-      }).finally(() => {
+      }).catch(() => {}).then(() => {
         return firebase.firestore().collection('users').doc(user.uid).get().then(doc => {
           const endtime = endtimeOfIco
           if (!(Date.now() > endtime && doc.data().all_done)) {
@@ -751,3 +752,92 @@ $(document).ready(function(){
     }
   })
 });
+
+function goToClaim() {
+  $("#questionBox").css("display", "none")
+  $("#submitXLMBox").css("display", "none")
+  $("#submitETHBox").css("display", "none")
+  $("#depositETHBox").css("display", "none")
+  $("#depositXLMBox").css("display", "none")
+  $("#mainBox").css("display", "none")
+  $("#congratulationBox").css("display", "none")
+  $("#walletBox").css("display", "none")
+  $("#warnBox").css("display", "none")
+  $("#claimBox").css("display", "block")
+}
+
+function generateNewAccount() {
+  var pair = StellarSdk.Keypair.random()
+  $("#genP").val(pair.publicKey())
+  $("#genS").val(pair.secret())
+}
+
+function submitGeneratedAccount() {
+  const btnDOM = document.getElementById('submitGAccountBtn')
+  const genBtnDOM = document.getElementById('generateAddressBtn')
+  const genSDOM = document.getElementById('genP')
+  const genPDOM = document.getElementById('genS')
+  setDisable([btnDOM, genBtnDOM, genSDOM, genPDOM])
+  $("#progressContainer").slideToggle(function() {
+    $("#accountPg").css('width', '15%')
+    setTimeout(function(){ 
+      $("#accountPg").css('width', '54%')
+      $("#progressText").html("Activate your address")
+      setTimeout(function(){        
+        $("#accountPg").css('width', '79%')
+        $("#progressText").html("Adding trustline")
+        setTimeout(function(){
+          $("#accountPg").css('width', '100%')
+          $("#progressText").html("Yay ! Your address is now ready")
+          setTimeout(function(){
+            $("#divClaimBox").slideToggle()
+            $("#rewardClaimBox").slideToggle()
+          }, 2000);
+        }, 1200);
+      }, 1200);
+    }, 1200);
+  })
+}
+
+function claimSix() {
+  $("#otpDialog").addClass("show-dialog")
+}
+
+var intervalFunction
+
+function requestOTP() {
+  $("#requestOTPContent").slideToggle()
+  $("#submitOTPContent").slideToggle()
+  
+  clearInterval(intervalFunction)
+
+  // Countdown verify
+  'use strict'
+  function countdown (options = {}) {
+    let defaults = { cssClass: '.countdown-verify'
+    }
+    let settings = Object.assign({}, defaults, options),
+      startNum = settings.fromNumber,
+      block = document.querySelector(settings.cssClass)
+    function appendText () {
+      let countText = `<p class="countdown-number">${startNum}</p>`
+      block.innerHTML = countText
+      startNum--
+    }
+    function count () {
+      if (startNum < 0) {
+        startNum = settings.fromNumber
+      } else {
+        appendText()
+      }
+      if (startNum == 0) {
+        $("#requestOTPContent").slideToggle()
+        $("#submitOTPContent").slideToggle()
+      }
+    }
+    appendText()
+    intervalFunction = setInterval(() => { count() }, 1000)
+  }
+//  let countDownNum = response.data.valid_until - Math.round((new Date()).getTime() / 1000)
+  countdown({ fromNumber: 180 })
+}

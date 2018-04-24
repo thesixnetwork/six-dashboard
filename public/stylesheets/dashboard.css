@@ -119,7 +119,7 @@
   min-width: 970px;
 }
 
-#howToETH, #backToTxHis {
+#howToETH, #backToTxHis, #goToClaim {
   color: white;
   font-weight: bold;
   background: #4a5ab5;
@@ -166,4 +166,74 @@
 
 .dashboard-2 section.progress .bar {
   background: #ffffff;
+}
+
+#divClaimBox {
+  max-width: 800px;
+  margin: auto;
+}
+
+.fdiv {
+  display: flex;
+}
+
+.fdiv p {
+  width: 170px;
+  line-height: 58px;
+  font-size: 16px;
+}
+
+#accountPgB {
+  width: 100%;
+  height: 10px;
+  border-radius: 5px;
+  background: #EFEFEF;
+  box-shadow: inset 0 1px 2px #e3e3e3,0 -1px 1px #fff,0 1px 0 #fff;
+}
+
+#accountPg {
+  min-width: 0px;
+  -webkit-transition: width 0.5s;
+  transition: width 0.5s;
+  width: 0%;
+  height: 10px;
+  background: #4a5ab5;
+  border-radius: 5px;
+}
+
+#progressContainer {
+  margin-top: 50px;
+}
+
+#progressText {
+  display: block;
+  text-align: center;
+  margin-top: 10px;
+  font-size: 15px;
+}
+
+.claimMoneyBtn {
+  width: 100%;
+  text-align: center;
+  display: block;
+}
+
+.notAvail {
+  background: #b7b7b7;
+}
+
+#claimTableContainer {
+  overflow-x: auto;
+}
+
+#otpContent {
+  padding: 20px;
+}
+
+#otpContent header h2 {
+  width: 100%;
+  margin-bottom: 16px;
+  color: #4a5ab5;
+  font-weight: 500;
+  text-align: center;
 }
