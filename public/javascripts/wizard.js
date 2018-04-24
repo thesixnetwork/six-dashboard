@@ -463,6 +463,11 @@ function proceedToIco() {
   setDisable([icoBtn])
   let uid = firebase.auth().currentUser.uid
   updateUser({all_done: true}).then(() => {
+    window.dataLayer = window.dataLayer || [];
+    function gtag () {
+      dataLayer.push(arguments);
+    }
+    gtag('event','click',{'event_category':'button','event_label':'finish-kyc'});
     if (Date.now() > endtimeOfIco && userData.all_done) {
       window.location.href = '/dashboard'+window.location.search
     }    
