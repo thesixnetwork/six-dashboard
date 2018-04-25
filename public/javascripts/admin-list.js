@@ -152,8 +152,8 @@ function buildListUser(doc, status) {
   var txt3 = document.createTextNode(estimate_text);
   td3.appendChild(txt3);
   var td4 = document.createElement("td");
-  var txt4 = document.createTextNode("-");
-  td4.setAttribute("id", `remarkText(${doc.id})`)
+  var txt4 = document.createTextNode('-');
+  td4.setAttribute("id", `remarkText_${doc.id}`)
   td4.appendChild(txt4);
   tr.appendChild(td1);
   tr.appendChild(td2);
@@ -383,7 +383,9 @@ function updateWatcherText (id) {
 }
 
 function renderRegistrationTime(id, data) {
-  $(`#${id} td:last`).text(new Date(parseInt(data.registration_time)))
+  const date_string = data.registration_time && data.registration_time !== null ? moment(new Date(parseInt(data.registration_time))).format('DD/MM/YYYY HH:mm:ss') : ''
+  const dom = document.getElementById(`remarkText_${id}`)
+  dom.textContent = date_string
 }
 
 function renderStatus (id, data) {
@@ -406,8 +408,10 @@ function renderStatus (id, data) {
 
 let unsubscribe = null
 let filteredUsers = []
+let current_startDate = null
+let current_endDate = null
 // Initialize database to query data and draw to view
-function initializeDatabase(status, country) {
+function initializeDatabase(status, country, startDate, endDate) {
   let promise = new Promise(function(resolve, reject) {
     if (unsubscribe !== null) {
       unsubscribe()
@@ -416,8 +420,46 @@ function initializeDatabase(status, country) {
     let db = firebase.firestore();
     let userRef = db.collection("users");
     let query = userRef
-    if (country && country !== 'ALL') {
-      query = userRef.where('country', '==', country)
+    let date_filter_field = 'registration_time'
+    let date_prefix = 1
+    switch(status) {
+      case 'all':
+        date_filter_field = 'registration_time'
+        break
+      case 'approved':
+        date_filter_field = 'kyc_submit_time'
+        date_prefix = 1000
+        break
+      case 'rejected':
+        date_filter_field = 'kyc_submit_time'
+        date_prefix = 1000
+        break
+      case 'pending':
+        date_filter_field = 'kyc_submit_time'
+        date_prefix = 1000
+        break
+      case 'notComplete':
+        date_filter_field = 'registration_time'
+        break
+      default:
+        break
+    }
+
+    if (country && country !== 'ALL' && typeof country === 'string') {
+        if (endDate && endDate !== null && startDate && startDate !== null) {
+          query = userRef
+            .where('country', '==', country)
+            .where(date_filter_field, '<=', endDate.toDate().getTime() / date_prefix)
+            .where(date_filter_field, '>=', startDate.toDate().getTime() / date_prefix)
+        } else {
+          query = userRef.where('country', '==', country)
+        }
+    } else {
+      if (endDate && endDate !== null && startDate && startDate !== null) {
+        query = userRef
+        .where(date_filter_field, '<=', endDate.toDate().getTime() / date_prefix)
+        .where(date_filter_field, '>=', startDate.toDate().getTime() / date_prefix)
+      }
     }
     switch(status) {
       case 'approved':
@@ -459,16 +501,23 @@ function initializeDatabase(status, country) {
         } else {
           allDocs.sort(compare)
         }
+        let total_contibrute = 0
+        let total_six = 0
         allDocs.forEach(function (doc, index) {
           const data = doc.data()
           filteredUsers.push(data)
           userData[doc.id] = data
           let elem = buildListUser(doc, status);
+          const estimate = data.estimate ? parseFloat(data.estimate) : 0
+          const six = data.total_six ? parseFloat(data.total_six) : 0
+          total_contibrute = total_contibrute + estimate
+          total_six = total_six + six
+          document.getElementById('total_contibrute').textContent = `${total_contibrute} ETH`
+          document.getElementById('total_six').textContent = `${total_six} SIX`
           $("#adminList")[0].appendChild(elem);
           const { updater, kyc_status } = data
           switch(status) {
             case 'all':
-              //renderStatus(doc.id, data)
               renderRegistrationTime(doc.id, data)
               break
             case 'approved':
@@ -516,15 +565,19 @@ function removeWatching(uid) {
     .remove();
 }
 
+let currentCountry = 'ALL'
+
 function filterCountry (country) {
-  initializeDatabase(currentStatus, country)
+  currentCountry = country
+  initializeDatabase(currentStatus, country, current_startDate, current_endDate)
 }
 
 function handleFilter (type) {
   $(`#${currentStatus}`).removeClass('is-active')
   $(`#${type}`).addClass('is-active')
   currentStatus = type
-  initializeDatabase(type)
+  initializeDatabase(type, null)
+  $('input[name="daterange"]').val('')
   switch(type) {
     case 'all':
       $('#remarkColumn').show()
@@ -653,6 +706,23 @@ function exportCSV () {
 }
 
 $(document).ready(function() {
+  $(function() {
+      $('input[name="daterange"]').daterangepicker({
+        autoUpdateInput: false
+      })
+  });
+  $('input[name="daterange"]').on('apply.daterangepicker', function(ev, picker) {
+      const { startDate, endDate } = picker
+      current_startDate = startDate
+      current_endDate = endDate
+      initializeDatabase(currentStatus, currentCountry, startDate, endDate)
+      $(this).val(picker.startDate.format('MM/DD/YYYY') + ' - ' + picker.endDate.format('MM/DD/YYYY'));
+  });
+
+  $('input[name="daterange"]').on('cancel.daterangepicker', function(ev, picker) {
+    initializeDatabase(currentStatus, currentCountry, null, null)
+      $(this).val('');
+  });
   // Search list
   $("body").on("click", ".search i.fa-search", function() {
     $(this)
