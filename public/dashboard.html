@@ -36,15 +36,41 @@
     <script src="javascripts/dashboard.js"></script>
     <!-- Global site tag (gtag.js) - Google Analytics -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=GTM-N5DKTMD"></script>
-    <script src="javascripts/google-analytic.js"></script>    
+    <script src="javascripts/google-analytic.js"></script>
   </head>
   <body>
-    <script type="text/javascript"> (function() { 
-      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true; 
-      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js'; 
-      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s); 
-      })(); 
-    </script> 
+    <script>
+        var s = document.createElement('div')
+        s.className = 'fb-customerchat'
+        var att = document.createAttribute("page_id")
+        att.value = pageId
+        s.setAttributeNode(att)        
+        document.body.appendChild(s)
+
+        window.fbAsyncInit = function() {
+          FB.init({
+            appId            : appId,
+            autoLogAppEvents : true,
+            xfbml            : true,
+            version          : 'v2.11'
+          });
+        };
+
+        (function(d, s, id){
+           var js, fjs = d.getElementsByTagName(s)[0];
+           if (d.getElementById(id)) {return;}
+           js = d.createElement(s); js.id = id;
+           js.src = "https://connect.facebook.net/en_US/sdk.js";
+           fjs.parentNode.insertBefore(js, fjs);
+         }(document, 'script', 'facebook-jssdk'));
+     </script>
+    <script type="text/javascript"> (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+      })();
+    </script>
+
     <div id='copiedTooltip'>
       <span>Address copied</span>
     </div>
