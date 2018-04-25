@@ -409,7 +409,7 @@ function initializeStep() {
       db.collection('users').doc(firebase.auth().currentUser.uid).get().then(doc => {
         userData = doc.data()
         if (Date.now() > endtimeOfIco && userData.all_done) {
-          window.location.href = '/dashboard'
+          window.location.href = '/dashboard'+window.location.search
         }
         setupUserData()
         if (doc.data().phone_verified === true) {
@@ -463,8 +463,13 @@ function proceedToIco() {
   setDisable([icoBtn])
   let uid = firebase.auth().currentUser.uid
   updateUser({all_done: true}).then(() => {
+    window.dataLayer = window.dataLayer || [];
+    function gtag () {
+      dataLayer.push(arguments);
+    }
+    gtag('event','click',{'event_category':'button','event_label':'finish-kyc'});
     if (Date.now() > endtimeOfIco && userData.all_done) {
-      window.location.href = '/dashboard'
+      window.location.href = '/dashboard'+window.location.search
     }    
     setEnable([icoBtn])
     $("#icoPage").addClass("show-detail")
@@ -472,7 +477,7 @@ function proceedToIco() {
     $("#congratulationPage").removeClass("show-detail")
   }).catch(() => {
     if (Date.now() > endtimeOfIco && userData.all_done) {
-      window.location.href = '/dashboard'
+      window.location.href = '/dashboard'+window.location.search
     }    
     setEnable([icoBtn])
     $("#icoPage").addClass("show-detail")
@@ -485,6 +490,11 @@ function submitKyc() {
   if ($("#kycFormAlert").css('display') == 'block') {
     $("#kycFormAlert").slideToggle()
   }
+  window.dataLayer = window.dataLayer || [];
+  function gtag () {
+    dataLayer.push(arguments);
+  }
+  gtag('event','click',{'event_category':'button','event_label':'Certified'});
   $(".kycinput").removeClass('invalid')
   let btnDOM = document.getElementById('kycSubmitBtn')
   let firstNameDOM = document.getElementById('kycFirstName')
@@ -810,7 +820,7 @@ $(document).ready(function () {
   firebase.auth().onAuthStateChanged(function (user) {
     if (!user) {
       console.log('Go to login')
-      window.location.href = '/'
+      window.location.href = '/'+window.location.search
     } else {
       initializeAdmin().then(() => {
         $('#adminShortcut').css('display', 'block')

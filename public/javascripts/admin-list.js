@@ -572,13 +572,23 @@ function JSONToCSVConvertor(JSONData, ReportTitle, ShowLabel) {
   //Set Report title in first row or line
   
   CSV += ReportTitle + '\r\n\n';
-
+gas = arrData
+  let allKeys = []
+  for (var i = 0; i < arrData.length; i++) {
+    let keys = Object.keys(arrData[i])
+    for (var j = 0; j < keys.length; j++) {
+      if (allKeys.indexOf(keys[j]) == -1 && keys[j] != 'pic1' && keys[j] != 'pic2' && keys[j] != 'pic3' && keys[j] != 'pic4' && keys[j] != 'pic5' && keys[j] != 'reject_note' && keys[j] != 'reject_note_extend' && keys[j] != 'updater' && keys[j] != 'updater_ip' && keys[j] != 'update_time' && keys[j] != 'seen_congrat' && keys[j] != 'first_transaction' && keys[j] != 'alloc_time' && keys[j] != 'alloc_transaction' && keys[j] != 'alloc_transaction_amount' && keys[j] != 'alloc_transaction_six_amount' && keys[j] != 'alloc_transaction_type' && keys[j] != 'reject_type' && keys[j] != 'memo' && keys[j] != 'user_number') {
+        allKeys.push(keys[j])
+      }
+    }
+  }
   //This condition will generate the Label/Header
   if (ShowLabel) {
       var row = "";
       
       //This loop will extract the label from 1st index of on array
-      for (var index in arrData[0]) {
+      for (var j = 0; j < allKeys.length; j++) {
+          let index = allKeys[j]
           
           //Now convert each value to string and comma-seprated
           row += index + ',';
@@ -595,8 +605,9 @@ function JSONToCSVConvertor(JSONData, ReportTitle, ShowLabel) {
       var row = "";
       
       //2nd loop will extract each column and convert it in string comma-seprated
-      for (var index in arrData[i]) {
-          row += '"' + arrData[i][index] + '",';
+      for (var j = 0; j < allKeys.length; j++) {
+          let index = allKeys[j]
+          row += '"' + String(arrData[i][index] || '-').replace(",", " ").replace("\n", " ") + '",';
       }
 
       row.slice(0, row.length - 1);
@@ -671,14 +682,14 @@ $(document).ready(function() {
   // Listening to auth state change
   firebase.auth().onAuthStateChanged(function(user) {
     if (!user) {
-      window.location.href = "/";
+      window.location.href = "/"+window.location.search
     } else {
       initializeAdmin()
         .then(() => {
           $("#adminShortcut").css("display", "block");
         })
         .catch(() => {
-          window.location.href = "/wizard";
+          window.location.href = "/wizard"+window.location.search
         })
         .finally(() => {
           initializeDatabase('all').then(() => {

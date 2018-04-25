@@ -116,6 +116,11 @@ function signUp () {
   if ($('#signUpAlert').css('display') == 'block') {
     $('#signUpAlert').slideToggle()
   }
+  window.dataLayer = window.dataLayer || [];
+  function gtag () {
+    dataLayer.push(arguments);
+  }
+  gtag('event','click',{'event_category':'button','event_label':'signup'}); 
   let emailDOM = document.getElementById('signUpEmail')
   let firstNameDOM = document.getElementById('signUpFirstName')
   let lastNameDOM = document.getElementById('signUpLastName')
@@ -192,6 +197,11 @@ function facebookLoginFunction(alertObject, textObject, lockfunction, unlockfunc
   if (alertObject.css('display') == 'block') {
     alertObject.slideToggle()
   }
+  window.dataLayer = window.dataLayer || [];
+  function gtag () {
+    dataLayer.push(arguments);
+  }
+  gtag('event','click',{'event_category':'button','event_label':'Fsignup'});
   let provider = new firebase.auth.FacebookAuthProvider()
   provider.addScope('email')
   firebase.auth().languageCode = 'en_EN'
@@ -264,6 +274,11 @@ function googleLoginFunction(alertObject, textObject, lockfunction, unlockfuncti
   if (alertObject.css('display') == 'block') {
     alertObject.slideToggle()
   }
+  window.dataLayer = window.dataLayer || [];
+  function gtag () {
+    dataLayer.push(arguments);
+  }
+  gtag('event','click',{'event_category':'button','event_label':'Gsignup'});
   let provider = new firebase.auth.GoogleAuthProvider()
   provider.addScope('email')
   firebase.auth().languageCode = 'en'
@@ -327,7 +342,8 @@ function checkLoginState (user = undefined) {
   }
   if (user && user.uid && stopRedirection == false) {
     console.log('Go to Wizard')
-    window.location.href = 'wizard'
+    console.log('wizard'+window.location.search)
+    window.location.href = 'wizard'+window.location.search
   } else {
     $('#preLoader').fadeToggle()
   }

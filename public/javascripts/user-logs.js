@@ -381,14 +381,14 @@ $(document).ready(function() {
   // Listening to auth state change
   firebase.auth().onAuthStateChanged(function(user) {
     if (!user) {
-      window.location.href = "/";
+      window.location.href = "/"+window.location.search
     } else {
       initializeAdmin()
         .then(() => {
           $("#adminShortcut").css("display", "block");
         })
         .catch(() => {
-          window.location.href = "/wizard";
+          window.location.href = "/wizard"+window.location.search
         })
         .finally(() => {
           initializeDatabase('all').then(() => {
