@@ -468,7 +468,7 @@ function proceedToIco() {
       dataLayer.push(arguments);
     }
     gtag('event','click',{'event_category':'button','event_label':'finish-kyc'});
-    if (Date.now() > endtimeOfIco && userData.all_done) {
+    if (Date.now() > endtimeOfIco) {
       window.location.href = '/dashboard'+window.location.search
     }    
     setEnable([icoBtn])
@@ -476,7 +476,7 @@ function proceedToIco() {
     $('#icoStep').addClass('current')
     $("#congratulationPage").removeClass("show-detail")
   }).catch(() => {
-    if (Date.now() > endtimeOfIco && userData.all_done) {
+    if (Date.now() > endtimeOfIco) {
       window.location.href = '/dashboard'+window.location.search
     }    
     setEnable([icoBtn])
@@ -495,6 +495,9 @@ function submitKyc() {
     dataLayer.push(arguments);
   }
   gtag('event','click',{'event_category':'button','event_label':'Certified'});
+  if (typeof(fbq) !== "undefined") {
+    fbq('trackCustom', 'Certified');
+  }
   $(".kycinput").removeClass('invalid')
   let btnDOM = document.getElementById('kycSubmitBtn')
   let firstNameDOM = document.getElementById('kycFirstName')
