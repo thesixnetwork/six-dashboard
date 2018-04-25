@@ -32,7 +32,7 @@
     <script src="javascripts/libphonenumber-js.min.js"></script>
     <script src="javascripts/config.js"></script>
     <script src="javascripts/wizard.js"></script>
-    <!-- Global site tag (gtag.js) - Google Analytics -->    
+    <!-- Global site tag (gtag.js) - Google Analytics -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=GTM-N5DKTMD"></script>
     <script src="javascripts/google-analytic.js"></script>
     <!-- Facebook Pixel Code -->
@@ -54,6 +54,32 @@
     <!-- End Facebook Pixel Code -->
   </head>
   <body>
+    <script>
+        var s = document.createElement('div')
+        s.className = 'fb-customerchat'
+        var att = document.createAttribute("page_id")
+        att.value = pageId
+        s.setAttributeNode(att)
+        document.body.appendChild(s)
+
+        window.fbAsyncInit = function() {
+          FB.init({
+            appId            : appId,
+            autoLogAppEvents : true,
+            xfbml            : true,
+            version          : 'v2.11'
+          });
+        };
+
+        (function(d, s, id){
+           var js, fjs = d.getElementsByTagName(s)[0];
+           if (d.getElementById(id)) {return;}
+           js = d.createElement(s); js.id = id;
+           js.src = "https://connect.facebook.net/en_US/sdk.js";
+           fjs.parentNode.insertBefore(js, fjs);
+         }(document, 'script', 'facebook-jssdk'));
+     </script>
+    
     <div id='preLoader'>
       <div id='preloadWrapper'>
         <img id='preloadImage'src="images/six_network.png">
