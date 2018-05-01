@@ -752,6 +752,7 @@ $(document).ready(function(){
 });
 
 function goToClaim() {
+  $("#welcomeBox").css("display", "none")
   $("#questionBox").css("display", "none")
   $("#submitXLMBox").css("display", "none")
   $("#submitETHBox").css("display", "none")
@@ -770,12 +771,17 @@ function generateNewAccount() {
   $("#genS").val(pair.secret())
 }
 
+function nextGeneratedAccount() {
+  $("#divClaimBoxNew").css("display", "none")
+  $("#makeSureBoxNew").css("display", "block")
+}
+
 function submitGeneratedAccount() {
   const btnDOM = document.getElementById('submitGAccountBtn')
-  const genBtnDOM = document.getElementById('generateAddressBtn')
   const genSDOM = document.getElementById('genP')
   const genPDOM = document.getElementById('genS')
-  setDisable([btnDOM, genBtnDOM, genSDOM, genPDOM])
+  const genMDOM = document.getElementById('genM')
+  setDisable([btnDOM, genSDOM, genPDOM, genMDOM])
   $("#progressContainer").slideToggle(function() {
     $("#accountPg").css('width', '15%')
     setTimeout(function(){ 
@@ -783,12 +789,14 @@ function submitGeneratedAccount() {
       $("#progressText").html("Activate your address")
       setTimeout(function(){        
         $("#accountPg").css('width', '79%')
+        $("#trustlineStep").addClass("current")
         $("#progressText").html("Adding trustline")
         setTimeout(function(){
           $("#accountPg").css('width', '100%')
           $("#progressText").html("Yay ! Your address is now ready")
           setTimeout(function(){
-            $("#divClaimBox").slideToggle()
+            $("#claimStep").addClass("current")
+            $("#makeSureBoxNew").slideToggle()
             $("#rewardClaimBox").slideToggle()
           }, 2000);
         }, 1200);
@@ -799,6 +807,72 @@ function submitGeneratedAccount() {
 
 function claimSix() {
   $("#otpDialog").addClass("show-dialog")
+}
+
+var generatedWallet
+var mnemonicWords
+function submitWalletWay() {
+  const walletSelectDOM = document.getElementById('walletSelect')
+  const wallet = walletSelectDOM.value 
+  $("#walletSelectBox").css("display", 'none')
+  if (wallet == 'new') {
+    mnemonic = StellarHDWallet.generateMnemonic({entropyBits: 128})
+    mnemonicWords = mnemonic
+    generatedwallet = StellarHDWallet.fromMnemonic(mnemonic)
+    generatedWallet = generatedwallet
+    $("#genS").val(generatedwallet.getSecret(0))
+    $("#genP").val(generatedwallet.getPublicKey(0))
+    $("#genM").val(mnemonic)
+    $("#divClaimBoxNew").css("display", 'block')
+  } else {
+    $("#divClaimBoxOld").css("display", 'block')
+  }
+}
+
+function downloadGeneratedAccount() {
+  let element = document.createElement('a');
+  let splittedWords = mnemonicWords.split(" ")
+  let data = `Public Key : ${generatedWallet.getPublicKey(0)}
+Secret Key : ${generatedWallet.getSecret(0)}
+
+Mnemonic words :
+
+1. ${splittedWords[0]}
+2. ${splittedWords[1]}
+3. ${splittedWords[2]}
+4. ${splittedWords[3]}
+5. ${splittedWords[4]}
+6. ${splittedWords[5]}
+7. ${splittedWords[6]}
+8. ${splittedWords[7]}
+9. ${splittedWords[8]}
+10. ${splittedWords[9]}
+11. ${splittedWords[10]}
+12. ${splittedWords[11]}`
+
+  element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(data));
+  element.setAttribute('download', 'stellar_wallet_credentials.txt');
+
+  element.style.display = 'none';
+  document.body.appendChild(element);
+
+  element.click();
+
+  document.body.removeChild(element);
+}
+
+var toggleSecretshow = false
+
+function toggleSecret() {
+  if (toggleSecretshow == false) {
+    $("#toggleSecret").removeClass("fa-eye").addClass("fa-eye-slash")
+    $("#genS").attr("type", "text")
+    toggleSecretshow = true
+  } else {
+    $("#toggleSecret").removeClass("fa-eye-slash").addClass("fa-eye")
+    $("#genS").attr("type", "password")
+    toggleSecretshow = false
+  }
 }
 
 var intervalFunction
