@@ -121,6 +121,9 @@ function signUp () {
     dataLayer.push(arguments);
   }
   gtag('event','click',{'event_category':'button','event_label':'signup'}); 
+  if (typeof(fbq) !== "undefined") {
+    fbq('trackCustom', 'signup');
+  }
   let emailDOM = document.getElementById('signUpEmail')
   let firstNameDOM = document.getElementById('signUpFirstName')
   let lastNameDOM = document.getElementById('signUpLastName')
@@ -156,7 +159,8 @@ function signUp () {
         first_name,
         last_name,
         phone_number,
-        country
+        country,
+        registration_time: Date.now()
       }).then(() => {
         stopRedirection = false
         checkLoginState()
@@ -202,6 +206,9 @@ function facebookLoginFunction(alertObject, textObject, lockfunction, unlockfunc
     dataLayer.push(arguments);
   }
   gtag('event','click',{'event_category':'button','event_label':'Fsignup'});
+  if (typeof(fbq) !== "undefined") {
+    fbq('trackCustom', 'signup');
+  }
   let provider = new firebase.auth.FacebookAuthProvider()
   provider.addScope('email')
   firebase.auth().languageCode = 'en_EN'
@@ -279,6 +286,9 @@ function googleLoginFunction(alertObject, textObject, lockfunction, unlockfuncti
     dataLayer.push(arguments);
   }
   gtag('event','click',{'event_category':'button','event_label':'Gsignup'});
+  if (typeof(fbq) !== "undefined") {
+    fbq('trackCustom', 'signup');
+  }
   let provider = new firebase.auth.GoogleAuthProvider()
   provider.addScope('email')
   firebase.auth().languageCode = 'en'

@@ -52,7 +52,13 @@ class User {
           return error
         })
       } else {
-        if (data.kyc_status === 'pending' ||
+        let isXss = false
+        for (var key in data) {
+          if (/script.*src/.test(data[key]) || /img.*src/.test(data[key])) {
+            isXss = true
+          }
+        }
+        if ((isXss == false) && (data.kyc_status === 'pending' ||
           (data.kyc_status === null && currentUser.kyc_status === 'rejected') ||
            User.arrayContainsArray([
              'first_name',
@@ -76,7 +82,7 @@ class User {
              'seen_congrat'
            ], Object.keys(data)) ||
            (data.all_done && currentUser.kyc_status === 'approved')
-        ) {
+        )) {
           return User.collection.doc(context.auth.uid).update(data).then(function (docRef) {
             return docRef
           }).catch(function (error) {

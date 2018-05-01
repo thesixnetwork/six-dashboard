@@ -463,7 +463,12 @@ function proceedToIco() {
   setDisable([icoBtn])
   let uid = firebase.auth().currentUser.uid
   updateUser({all_done: true}).then(() => {
-    if (Date.now() > endtimeOfIco && userData.all_done) {
+    window.dataLayer = window.dataLayer || [];
+    function gtag () {
+      dataLayer.push(arguments);
+    }
+    gtag('event','click',{'event_category':'button','event_label':'finish-kyc'});
+    if (Date.now() > endtimeOfIco) {
       window.location.href = '/dashboard'+window.location.search
     }    
     setEnable([icoBtn])
@@ -471,7 +476,7 @@ function proceedToIco() {
     $('#icoStep').addClass('current')
     $("#congratulationPage").removeClass("show-detail")
   }).catch(() => {
-    if (Date.now() > endtimeOfIco && userData.all_done) {
+    if (Date.now() > endtimeOfIco) {
       window.location.href = '/dashboard'+window.location.search
     }    
     setEnable([icoBtn])
@@ -490,6 +495,19 @@ function submitKyc() {
     dataLayer.push(arguments);
   }
   gtag('event','click',{'event_category':'button','event_label':'Certified'});
+  if (typeof(fbq) !== "undefined") {
+    fbq('trackCustom', 'Certified');
+  }
+
+  var strUser = firebase.auth().currentUser.uid;      
+  window._paq = window._paq || [];
+  _paq.push(['track_code',"3bf5292d-0432-4171-896f-13f513b2ba19"]);
+  _paq.push(['user_id',SHA1(strUser)]); 
+  _paq.push(['event_name','CA_CONVERSION']);
+  _paq.push(['send_event']);
+  (function() { var u="//image.cauly.co.kr/script/"; var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0]; g.type='text/javascript'; g.async=true; g.defer=true; g.src=u+'caulytracker_async.js'; s.parentNode.insertBefore(g,s); }
+  )();
+
   $(".kycinput").removeClass('invalid')
   let btnDOM = document.getElementById('kycSubmitBtn')
   let firstNameDOM = document.getElementById('kycFirstName')

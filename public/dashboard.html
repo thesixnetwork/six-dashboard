@@ -37,14 +37,58 @@
     <script async src="https://www.googletagmanager.com/gtag/js?id=GTM-N5DKTMD"></script>
     <script src="javascripts/google-analytic.js"></script>    
     <script src="javascripts/stellar-sdk.js"></script>
+    <script src="javascripts/stellar-hd-wallet.js"></script>
+    <!-- Facebook Pixel Code -->
+    <script>
+      !function(f,b,e,v,n,t,s)
+      {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+      n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+      if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+      n.queue=[];t=b.createElement(e);t.async=!0;
+      t.src=v;s=b.getElementsByTagName(e)[0];
+      s.parentNode.insertBefore(t,s)}(window, document,'script',
+      'https://connect.facebook.net/en_US/fbevents.js');
+      fbq('init', '1617914968512909');
+      fbq('track', 'PageView');
+    </script>
+    <noscript><img height="1" width="1" style="display:none"
+      src="https://www.facebook.com/tr?id=1617914968512909&ev=PageView&noscript=1"
+    /></noscript>
+    <!-- End Facebook Pixel Code -->
   </head>
   <body>
-    <script type="text/javascript"> (function() { 
-      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true; 
-      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js'; 
-      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s); 
-      })(); 
-    </script> 
+    <script>
+        var s = document.createElement('div')
+        s.className = 'fb-customerchat'
+        var att = document.createAttribute("page_id")
+        att.value = pageId
+        s.setAttributeNode(att)        
+        document.body.appendChild(s)
+
+        window.fbAsyncInit = function() {
+          FB.init({
+            appId            : appId,
+            autoLogAppEvents : true,
+            xfbml            : true,
+            version          : 'v2.11'
+          });
+        };
+
+        (function(d, s, id){
+           var js, fjs = d.getElementsByTagName(s)[0];
+           if (d.getElementById(id)) {return;}
+           js = d.createElement(s); js.id = id;
+           js.src = "https://connect.facebook.net/en_US/sdk.js";
+           fjs.parentNode.insertBefore(js, fjs);
+         }(document, 'script', 'facebook-jssdk'));
+     </script>
+    <script type="text/javascript"> (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+      })();
+    </script>
+
     <div id='copiedTooltip'>
       <span>Address copied</span>
     </div>
@@ -206,7 +250,7 @@
             </li>
           </ul>
           <div style='max-width: 500px; margin: auto;'>
-            <img src='images/content/donotuse_exchange_wallet.jpg' style='width: 100%;'></img>
+            <img src='images/content/donotuse_exchange_wallet.png' style='width: 100%;'></img>
           </div>
           <div class="btn"><button disabled id="acknowledgeBtn" onclick='submitAcknowledge()'>Next</button></div>
         </section>
@@ -306,7 +350,7 @@
           </ul>
           <div class="btn"><button id='confirmAddressBtn' onclick='startConfirmation()'>Submit</button></div>
         </section>
-        <div class="address-history" id='mainBox'>
+        <div class="address-history" id='mainBox' style='display: none;'>
           <section class="transaction-history with-table" style='display: block;'>
             <header>
               <h2>Your Transactions</h2>
@@ -337,36 +381,111 @@
           <header>
             <h2>Claim your SIX tokens</h2>
           </header>
-          <div id='divClaimBox'>
-            <div class="btn"><button id='generateAddressBtn' onclick='generateNewAccount()' style='width: auto; margin-top: 50px; margin-bottom: 20px;'> Generate new Stellar address keypair </button></div>
+          <main class='wizard'>
+            <div class="step" style='background: white;'>
+              <div class="container">
+                <ul>
+                  <li id='walletStep' class="current"><div class="circle"></div><p>Wallet</p></li>
+                  <li id='trustlineStep'><div class="circle"></div><p>Trustline</p></li>
+                  <li id='claimStep'><div class="circle"></div><p>Claim</p></li>
+                </ul>
+              </div>
+            </div>
+          </main>
+          <div id='walletSelectBox'>
+            <fieldset id='newWalletSelect'>
+              <dl>
+                <dd>
+                  <label class="dropdown kycinput" id="walletSelectAlert">
+                    <select id='walletSelect' name="value" id="value">
+                      <option value="new">Generate new wallet address</option>
+                      <option value="old">I already have a wallet address</option>
+                    </select>
+                    <i class="fas fa-angle-down"></i>
+                  </label>
+                </dd>
+              </dl>
+            </fieldset>
+            <div id="swbtn"><button id="submitWalletWayBtn" onclick='submitWalletWay()'>Next</button></div>
+
+          </div>
+          <div id='divClaimBoxNew' style='display: none;'>
+            <br>
+            <br>
             <div class='fdiv'>
               <p>Public key</p>
               <label class="text" style='margin-top: 10px;'>
-                <input placeholder="Public Address" id="genP" type="text">
+                <input placeholder="Public Address" id="genP" type="text" readonly="readonly">
               </label>
             </div>
             <div class='fdiv'>
               <p>Secret key</p>
-              <label class="text" style='margin-top: 10px;'>
-                <input placeholder="Secret Key" id="genS" type="text">
+              <label class="text dropdown" style='margin-top: 10px;'>
+                <input placeholder="Secret Key" id="genS" type="password" readonly="readonly">
+                <i id='toggleSecret' class="fas fa-eye" onclick='toggleSecret()'></i>
               </label>
             </div>
+            <div class='fdiv'>
+              <p>Memonic Words</p>
+              <label class="text" style='margin-top: 10px;'>
+                <input placeholder="Secret Key" id="genM" type="text" readonly="readonly">
+              </label>
+            </div>
+            <br>
             <p>Please note, saving a secret is very important. To keep your token safe, make sure that you hide your secret key away from unauthorized parties.</p>
-            <div class="btn"><button id='submitGAccountBtn' onclick='submitGeneratedAccount()' style='width: auto; margin-top: 20px; margin-bottom: 20px; min-width: 150px;'> Submit </button></div>
-            <div id='progressContainer' style='display: none;'>
-              <div class="spinner" style='display: block; text-align: center; margin: auto; margin-bottom: 15px; margin-top: 10px;'>
-                <div class="bounce1"></div>
-                <div class="bounce2"></div>
-                <div class="bounce3"></div>
-              </div>
-              <div id='accountPgB'>
-                <div id='accountPg'></div>
-              </div>
-              <p id='progressText'>Initialize processing<p>
+            <div class="btn">
+              <button id='DownloadGAccountBtn' onclick='downloadGeneratedAccount()' style='width: auto; margin-top: 20px; margin-bottom: 20px; min-width: 150px; margin-right: 40px; background: white; color: #4a5ab5; border: solid;'> Download </button>
+              <button id='submitG2AccountBtn' onclick='nextGeneratedAccount()' style='width: auto; margin-top: 20px; margin-bottom: 20px; min-width: 150px;'> Next </button>
             </div>
           </div>
+          <div id='makeSureBoxNew' style='display: none;'>
+            <br>
+            <p style='margin-bottom: 25px; text-align: center;'>To make sure that you have save all your memonic words for recovery your address, please fill in the box below</p>
+            <div class="fdiv" style="width: 500px;margin: auto;">
+              <p>1st words</p>
+              <label class="text" style="margin-top: 10px;">
+                <input placeholder="" id="genM1" type="text">
+              </label>
+            </div>
+            <div class="fdiv" style="width: 500px;margin: auto;">
+              <p>5th words</p>
+              <label class="text" style="margin-top: 10px;">
+                <input placeholder="" id="genM5" type="text">
+              </label>
+            </div>
+            <div class="fdiv" style="width: 500px;margin: auto;">
+              <p>8th words</p>
+              <label class="text" style="margin-top: 10px;">
+                <input placeholder="" id="genM8" type="text">
+              </label>
+            </div>
+            <div class="fdiv" style="width: 500px;margin: auto;">
+              <p>11th words</p>
+              <label class="text" style="margin-top: 10px;">
+                <input placeholder="" id="genM11" type="text">
+              </label>
+            </div>
+            <div class="btn"><button id='submitGAccountBtn' onclick='submitGeneratedAccount()' style='width: auto; margin-top: 20px; margin-bottom: 20px; min-width: 150px;'> Submit </button></div>
+            <div style='max-width: 650px; margin: auto;'>
+              <div id='progressContainer' style='display: none;'>
+                <div class="spinner" style='display: block; text-align: center; margin: auto; margin-bottom: 15px; margin-top: 10px;'>
+                  <div class="bounce1"></div>
+                  <div class="bounce2"></div>
+                  <div class="bounce3"></div>
+                </div>
+                <div id='accountPgB'>
+                  <div id='accountPg'></div>
+                </div>
+                <p id='progressText'>Initialize processing<p>
+              </div>
+            </div>
+          </div>
+          <div id='manualTrustlineBox' style='display: none;'>
+            <h3>To add a trustline to SIX assets, please follow the steps below:</h3>
+            <p>Some information or link</p>
+          </div>
           <div id='rewardClaimBox' style='display: none;'>
-            
+            <br>
             <div id='claimTableContainer'>
               <table id='claimTable'>
                 <thead>

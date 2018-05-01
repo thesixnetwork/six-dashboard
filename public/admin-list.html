@@ -26,10 +26,15 @@
         <link href="stylesheets/style2.css" rel="stylesheet">
         <link href="stylesheets/loading.css" rel="stylesheet">
         <link href="stylesheets/admin.css" rel="stylesheet">
+        <link rel="stylesheet" type="text/css" href="//cdn.jsdelivr.net/bootstrap/3/css/bootstrap.css" />
         <script src="javascripts/jquery-3.2.1.min.js"></script>
         <script src="javascripts/url_replacer.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/lodash@4.17.5/lodash.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.18.1/moment.js"></script>
+        <!-- Include Date Range Picker -->
+        <script type="text/javascript" src="//cdn.jsdelivr.net/bootstrap.daterangepicker/2/daterangepicker.js"></script>
+        <link rel="stylesheet" type="text/css" href="//cdn.jsdelivr.net/bootstrap.daterangepicker/2/daterangepicker.css" />
+
         <script src="javascripts/admin-list.js"></script>
         <!-- <script src="javascripts/wizard.js"></script> -->
         <!-- Global site tag (gtag.js) - Google Analytics -->
@@ -62,6 +67,16 @@
           <input type="text" placeholder="Search">
         </label>
       </div>
+      <section class="row widget-row">
+        <div class="widget">
+          <h3 class="value" id='total_contibrute'>0</h3>
+          <h6 class="title">Contributed / Total User</h6>
+        </div>
+        <div class="widget">
+            <h3 class="value" id='total_six'>0</h3>
+            <h6 class="title">Total Contributed SIX</h6>
+          </div>
+      </section>
       <section class="row filter-row">
         <button id="all" onclick="handleFilter('all')" class="tab-button is-active">All</button>
         <button id="approved" onclick="handleFilter('approved')" class="tab-button">Approved</button>
@@ -71,6 +86,7 @@
       </section>
       <section class="list-user with-table">
         <div class="table-option">
+            <input type="text" class="date-picker" id="date-picker" name="daterange" placeholder="เลือกช่วงเวลา" />
             <a id="exportCsv">Export CSV</a>
             <select name="country" id="country" class="dropdown-select">
                 <option value="ALL">All</option>

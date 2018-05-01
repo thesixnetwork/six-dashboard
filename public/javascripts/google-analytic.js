@@ -37,9 +37,6 @@ if (googleId != '') {
     gtag('js', new Date());
     gtag('config', googleId);
     gtag('config', 'GTM-N5DKTMD');
-    var _gaq = _gaq || []; 
-    _gaq.push(['_setAccount', googleId]); 
-    _gaq.push(['_trackPageview']);
   `
   document.head.appendChild(script)
 }
