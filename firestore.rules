@@ -9,13 +9,16 @@ service cloud.firestore {
       allow create, read, update: if request.auth.token.admin == true;
     }
     match /admins/{userId}{
-    	allow read: if exists(/databases/$(database)/documents/admins/$(request.auth.uid));
+      allow read: if exists(/databases/$(database)/documents/admins/$(request.auth.uid));
     }
     match /watch-list/{watchId} {
       allow read: if exists(/databases/$(database)/documents/admins/$(request.auth.uid));
       allow write: if exists(/databases/$(database)/documents/admins/$(request.auth.uid));
     }
     match /user-eth-wallets/{walletAddress}{
+      allow create, read, update: if request.auth.token.admin == true;
+    }
+    match /user-xlm-wallets/{walletAddress}{
       allow create, read, update: if request.auth.token.admin == true;
     }
     match /xlm_prices/{timeStamp}{
@@ -29,8 +32,10 @@ service cloud.firestore {
     }
     match /purchase_txs/{tid}{
       allow read: if request.auth.uid == resource.data.user_id;
+      allow read: if exists(/databases/$(database)/documents/admins/$(request.auth.uid));
     }
     match /presale/supply/purchased_presale_tx/{userId} {
+      allow read: if exists(/databases/$(database)/documents/admins/$(request.auth.uid));
       allow read: if request.auth.uid == userId;
     }
     match /users_log/{timeStamp}{

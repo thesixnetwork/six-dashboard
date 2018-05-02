@@ -409,6 +409,23 @@
             <div id="swbtn"><button id="submitWalletWayBtn" onclick='submitWalletWay()'>Next</button></div>
 
           </div>
+          <div id='divClaimBoxOld' style='display: none;'>
+            <br>
+            <br>
+            <div class='fdiv'>
+              <p>Public key</p>
+              <label id='oldAddress' class="text" style='margin-top: 10px;'>
+                <input placeholder="Public Address" id="oldP" type="text">
+                <p id='alertOldAddress'></p>
+              </label>
+            </div>
+            <div id="oldWalletAlert" class="alert-error">
+              <p id="oldWalletAlertText"></p>
+            </div>
+            <div class="btn">
+              <button id='submitOldAccountBtn' onclick='submitOldAccount()' style='width: auto; margin-top: 20px; margin-bottom: 20px; min-width: 150px;'> Next </button>
+            </div>
+          </div>
           <div id='divClaimBoxNew' style='display: none;'>
             <br>
             <br>
@@ -442,30 +459,34 @@
             <br>
             <p style='margin-bottom: 25px; text-align: center;'>To make sure that you have save all your memonic words for recovery your address, please fill in the box below</p>
             <div class="fdiv" style="width: 500px;margin: auto;">
-              <p>1st words</p>
-              <label class="text" style="margin-top: 10px;">
+              <p>1st word</p>
+              <label id="m1alert" class="text" style="margin-top: 10px;">
                 <input placeholder="" id="genM1" type="text">
               </label>
             </div>
             <div class="fdiv" style="width: 500px;margin: auto;">
-              <p>5th words</p>
-              <label class="text" style="margin-top: 10px;">
+              <p>5th word</p>
+              <label id="m5alert" class="text" style="margin-top: 10px;">
                 <input placeholder="" id="genM5" type="text">
               </label>
             </div>
             <div class="fdiv" style="width: 500px;margin: auto;">
-              <p>8th words</p>
-              <label class="text" style="margin-top: 10px;">
+              <p>8th word</p>
+              <label id="m8alert" class="text" style="margin-top: 10px;">
                 <input placeholder="" id="genM8" type="text">
               </label>
             </div>
             <div class="fdiv" style="width: 500px;margin: auto;">
-              <p>11th words</p>
-              <label class="text" style="margin-top: 10px;">
+              <p>11th word</p>
+              <label id="m11alert" class="text" style="margin-top: 10px;">
                 <input placeholder="" id="genM11" type="text">
               </label>
             </div>
-            <div class="btn"><button id='submitGAccountBtn' onclick='submitGeneratedAccount()' style='width: auto; margin-top: 20px; margin-bottom: 20px; min-width: 150px;'> Submit </button></div>
+            
+            <div class="btn">
+              <button id='backGAccountBtn' onclick='backGeneratedAccount()' style='width: auto; margin-top: 20px; margin-bottom: 20px; min-width: 150px; margin-right: 40px; background: #9a9ca3;'> Back </button>
+              <button id='submitGAccountBtn' onclick='submitGeneratedAccount()' style='width: auto; margin-top: 20px; margin-bottom: 20px; min-width: 150px;'> Submit </button>
+            </div>
             <div style='max-width: 650px; margin: auto;'>
               <div id='progressContainer' style='display: none;'>
                 <div class="spinner" style='display: block; text-align: center; margin: auto; margin-bottom: 15px; margin-top: 10px;'>
@@ -483,6 +504,9 @@
           <div id='manualTrustlineBox' style='display: none;'>
             <h3>To add a trustline to SIX assets, please follow the steps below:</h3>
             <p>Some information or link</p>
+            <div class="btn">
+              <button id='checkTrustAccountBtn' onclick='checkTrustAccount()' style='width: auto; margin-top: 20px; margin-bottom: 20px; min-width: 150px;'> Next </button>
+            </div>
           </div>
           <div id='rewardClaimBox' style='display: none;'>
             <br>

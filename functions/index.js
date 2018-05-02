@@ -304,6 +304,43 @@ exports.updateETHWallet = functions.https.onCall((data, context) => {
   }
 });
 
+exports.updateXLMWallet = functions.https.onCall((data, context) => {
+  const uid = context.auth.uid;
+  const xlm_address = data.xlm_address;
+  const ref = admin.firestore().collection("user-xlm-wallets");
+  const userRef = admin.firestore().collection("users");
+  if (xlm_address !== undefined && xlm_address !== null) {
+    return ref
+      .doc(xlm_address)
+      .get()
+      .then(doc => {
+        if (doc.exists) {
+          return {
+            success: false,
+            error_message: "XLM address have been used"
+          };
+        } else {
+          let batch = admin.firestore().batch();
+          batch.set(ref.doc(xlm_address), { uid: uid });
+          batch.update(userRef.doc(uid), {
+            xlm_address: xlm_address,
+            submit_wallet: true
+          });
+          return batch
+            .commit()
+            .then(() => {
+              return { success: true };
+            })
+            .catch(err => {
+              return { success: false, error_message: err.message };
+            });
+        }
+      });
+  } else {
+    return { success: false, error_message: "XLM address could not be blank" };
+  }
+});
+
 exports.initializeUserDoc = functions.auth.user().onCreate(event => {
   const user = event.data;
   const email = user.email;

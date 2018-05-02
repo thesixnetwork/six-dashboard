@@ -617,6 +617,22 @@ function copyToClipboard (el, y, x) {
 }
 
 $(document).ready(function(){
+  document.getElementById('oldP').onkeydown = function() {
+    $('#oldAddress').removeClass("invalid")
+    $("#alertOldAddress").html("")
+  }
+  document.getElementById('genM1').onkeydown = function() {
+    $('#m1alert').removeClass("invalid")
+  }
+  document.getElementById('genM5').onkeydown = function() {
+    $('#m5alert').removeClass("invalid")
+  }
+  document.getElementById('genM8').onkeydown = function() {
+    $('#m8alert').removeClass("invalid")
+  }
+  document.getElementById('genM11').onkeydown = function() {
+    $('#m11alert').removeClass("invalid")
+  }
   let clipboard = new ClipboardJS('.blinkTooltip')
   clipboard.on('success', function(e) {
     let bodyRect = document.body.getBoundingClientRect()
@@ -776,12 +792,36 @@ function nextGeneratedAccount() {
   $("#makeSureBoxNew").css("display", "block")
 }
 
+function backGeneratedAccount() {
+  $("#divClaimBoxNew").css("display", "block")
+  $("#makeSureBoxNew").css("display", "none")
+}
+
 function submitGeneratedAccount() {
   const btnDOM = document.getElementById('submitGAccountBtn')
-  const genSDOM = document.getElementById('genP')
-  const genPDOM = document.getElementById('genS')
-  const genMDOM = document.getElementById('genM')
-  setDisable([btnDOM, genSDOM, genPDOM, genMDOM])
+  const btn2DOM = document.getElementById('backGAccountBtn')
+  let splittedWords = mnemonicWords.split(" ")
+  const genM1DOM = document.getElementById('genM1')
+  if (genM1DOM.value !== splittedWords[0]) {
+    $("#m1alert").addClass("invalid")
+    return false
+  }
+  const genM5DOM = document.getElementById('genM5')
+  if (genM5DOM.value !== splittedWords[4]) {
+    $("#m5alert").addClass("invalid")
+    return false
+  }
+  const genM8DOM = document.getElementById('genM8')
+  if (genM8DOM.value !== splittedWords[7]) {
+    $("#m8alert").addClass("invalid")
+    return false
+  }
+  const genM11DOM = document.getElementById('genM11')
+  if (genM11DOM.value !== splittedWords[10]) {
+    $("#m11alert").addClass("invalid")
+    return false
+  }
+  setDisable([btnDOM, btn2DOM])
   $("#progressContainer").slideToggle(function() {
     $("#accountPg").css('width', '15%')
     setTimeout(function(){ 
@@ -829,13 +869,44 @@ function submitWalletWay() {
   }
 }
 
+function submitOldAccount() {
+  if ($("#oldWalletAlert").css("display") === 'block') {
+    $("#oldWalletAlert").slideToggle()
+  }
+  const oldAccount = document.getElementById('oldP')
+  if (/[A-Z]/.test(oldAccount.value) == false) {
+    $("#oldAddress").addClass("invalid")
+    $("#alertOldAddress").html("Invalid address format")
+    return true
+  }
+  let requestFunction = firebase.functions().httpsCallable('updateXLMWallet')
+  const oldXlmAddressDOM = document.getElementById('oldP')
+  const btnDOM = document.getElementById('submitOldAccountBtn')
+  const xlmAddress = oldXlmAddressDOM.value.toLowerCase().trim()
+  setDisable([btnDOM, oldXlmAddressDOM])
+  requestFunction({xlm_address: xlmAddress}).then(response => {
+    if (response.data.success === true) {
+      setEnable([btnDOM, oldXlmAddressDOM])
+      $("#divClaimBoxOld").css("display", "none")
+      $("#manualTrustlineBox").css("display", "block")
+      $("#trustlineStep").addClass("current")
+    } else {
+      $("#oldWalletAlertText").html(response.data.error_message)
+      if ($("#oldWalletAlert").css("display") === 'none') {
+        $("#oldWalletAlert").slideToggle()
+      }
+      setEnable([btnDOM, oldXlmAddressDOM])
+    }
+  })
+}
+
 function downloadGeneratedAccount() {
   let element = document.createElement('a');
   let splittedWords = mnemonicWords.split(" ")
   let data = `Public Key : ${generatedWallet.getPublicKey(0)}
 Secret Key : ${generatedWallet.getSecret(0)}
 
-Mnemonic words :
+Mnemonic words : ${mnemonicWords}
 
 1. ${splittedWords[0]}
 2. ${splittedWords[1]}
