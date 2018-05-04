@@ -5,6 +5,9 @@ service cloud.firestore {
       allow create, read, update: if exists(/databases/$(database)/documents/admins/$(request.auth.uid));
       allow read, update: if request.auth.token.admin == true;
     }
+    match /users_claim/{userId}{
+      allow read: if request.auth.uid == userId;
+    }
     match /phone-numbers/{phoneNumber}{
       allow create, read, update: if request.auth.token.admin == true;
     }
