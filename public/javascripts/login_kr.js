@@ -18,14 +18,14 @@ function forgotPassword () {
   setDisable([emailDOM, btnDOM])
   return firebase.auth().sendPasswordResetEmail(email)
     .then(() => {
-      $('#forgotPasswordText').html(lang.emailSentToInbox)
+      $('#forgotPasswordText').html('Email sent to inbox')
       if ($('#forgotPasswordText').css('display') == 'none') {
         $('#forgotPasswordText').slideToggle()
       }
       setEnable([emailDOM, btnDOM])
     })
     .catch(err => {
-      $('#forgotPasswordText').html(lang.emailSentToInbox)
+      $('#forgotPasswordText').html('Email sent to inbox')
       if ($('#forgotPasswordText').css('display') == 'none') {
         $('#forgotPasswordText').slideToggle()
       }
@@ -62,7 +62,7 @@ function login () {
     .catch(err => {
       console.log(err)
       if (err.code == 'auth/wrong-password' || err.code == 'auth/user-not-found') {
-        $('#signInAlertText').html(lang.signInError)
+        $('#signInAlertText').html('Invalid email or password')
       } else {
         $('#signInAlertText').html(err.message)
       }
@@ -140,7 +140,7 @@ function signUp () {
   lockSignupForm()
   const parseData = libphonenumber.parse(phone_number_temp, country, {extended: true })
   if (parseData.valid === false) {
-    $('#signUpAlertText').html(lang.phoneInvalid)
+    $('#signUpAlertText').html('Invalid phone number format')
     if ($('#signUpAlert').css('display') == 'none') {
       $('#signUpAlert').slideToggle()
     }
