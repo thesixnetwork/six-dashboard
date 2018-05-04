@@ -353,7 +353,7 @@ function checkLoginState (user = undefined) {
   if (user && user.uid && stopRedirection == false) {
     console.log('Go to Wizard')
     console.log('wizard'+window.location.search)
-    window.location.href = 'wizard'+window.location.search
+    window.location.href = 'wizard-kr'+window.location.search
   } else {
     $('#preLoader').fadeToggle()
   }
@@ -446,4 +446,22 @@ $(document).ready(function () {
     e.preventDefault()
     signUp()
   })
+  $('body').on('click', '.dropdown a', function() {
+    var dropdown = $(this).parent(".dropdown");
+
+    dropdown.toggleClass("show-dropdown");
+
+    clickBody('dropdown', dropdown, 'show-dropdown');
+  });
+
 })
+
+// Click body for close
+function clickBody(name, elem, rm_class) {
+  if ( elem.hasClass(rm_class) ) {
+    $('body').on('click.'+name, function(){
+      elem.removeClass(rm_class);
+      $('body').off('click.'+name);
+    });
+  }
+}

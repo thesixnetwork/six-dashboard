@@ -409,7 +409,7 @@ function initializeStep() {
       db.collection('users').doc(firebase.auth().currentUser.uid).get().then(doc => {
         userData = doc.data()
         if (Date.now() > endtimeOfIco && userData.all_done) {
-          window.location.href = '/dashboard'+window.location.search
+          window.location.href = '/dashboard-kr'+window.location.search
         }
         setupUserData()
         if (doc.data().phone_verified === true) {
@@ -469,7 +469,7 @@ function proceedToIco() {
     }
     gtag('event','click',{'event_category':'button','event_label':'finish-kyc'});
     if (Date.now() > endtimeOfIco) {
-      window.location.href = '/dashboard'+window.location.search
+      window.location.href = '/dashboard-kr'+window.location.search
     }    
     setEnable([icoBtn])
     $("#icoPage").addClass("show-detail")
@@ -477,7 +477,7 @@ function proceedToIco() {
     $("#congratulationPage").removeClass("show-detail")
   }).catch(() => {
     if (Date.now() > endtimeOfIco) {
-      window.location.href = '/dashboard'+window.location.search
+      window.location.href = '/dashboard-kr'+window.location.search
     }    
     setEnable([icoBtn])
     $("#icoPage").addClass("show-detail")
@@ -833,7 +833,7 @@ $(document).ready(function () {
   firebase.auth().onAuthStateChanged(function (user) {
     if (!user) {
       console.log('Go to login')
-      window.location.href = '/'+window.location.search
+      window.location.href = '/kr'+window.location.search
     } else {
       initializeAdmin().then(() => {
         $('#adminShortcut').css('display', 'block')
@@ -845,4 +845,25 @@ $(document).ready(function () {
       })
     }
   })
+
+  $('body').on('click', '.dropdown a', function() {
+    var dropdown = $(this).parent(".dropdown");
+
+    dropdown.toggleClass("show-dropdown");
+
+    clickBody('dropdown', dropdown, 'show-dropdown');
+  });
+
 })
+
+// Click body for close
+function clickBody(name, elem, rm_class) {
+  if ( elem.hasClass(rm_class) ) {
+    $('body').on('click.'+name, function(){
+      elem.removeClass(rm_class);
+      $('body').off('click.'+name);
+    });
+  }
+}
+
+
