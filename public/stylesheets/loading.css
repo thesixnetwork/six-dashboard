@@ -258,3 +258,58 @@ label < input:disabled {
 .hardCapText {
   width: 50%!important;
 }
+
+.dropdown {
+  position: relative;
+  color: #FFFFFF;
+  border-radius: 40px;
+  min-width: 150px;
+}
+.dropdown i {
+  margin: 0 0 0 10px;
+}
+.dropdown a {
+  display: block;
+  text-align: center;
+  font-weight: 700;
+  line-height: 44px;
+  padding: 0 20px;
+  opacity: 1;
+}
+.dropdown ul {
+  margin-top: 15px;
+  display: none;
+  position: absolute;
+  top: 100%;
+  left: calc(50% - 75px);
+  width: 150px;
+  background: #FFFFFF;
+  color: #4a5ab5;
+  border-radius: 4px;
+  z-index: 1;
+  box-shadow: 0 0 15px -1px rgba(74, 90, 181, 0.2);
+}
+.dropdown ul li:hover {
+  background-color: #ececec;
+}
+.dropdown ul:before {
+  content: "";
+  display: none;
+  position: absolute;
+  bottom: 100%;
+  left: calc(50% - 8px);
+  z-index: 100;
+  border: 8px solid transparent;
+  border-bottom-color: #FFFFFF;
+}
+.dropdown.show-dropdown ul {
+  display: block;
+}
+.dropdown.show-dropdown ul:before {
+  display: block;
+}
+
+.dropdown a img {
+  width: 20px;
+  height: 20px;
+}

@@ -120,7 +120,7 @@ function signUp () {
   function gtag () {
     dataLayer.push(arguments);
   }
-  gtag('event','click',{'event_category':'button','event_label':'signup'}); 
+  gtag('event','click',{'event_category':'button','event_label':'signup'});
   if (typeof(fbq) !== "undefined") {
     fbq('trackCustom', 'signup');
   }
@@ -140,7 +140,7 @@ function signUp () {
   lockSignupForm()
   const parseData = libphonenumber.parse(phone_number_temp, country, {extended: true })
   if (parseData.valid === false) {
-    $('#signUpAlertText').html("Invalid phone number format")
+    $('#signUpAlertText').html('Invalid phone number format')
     if ($('#signUpAlert').css('display') == 'none') {
       $('#signUpAlert').slideToggle()
     }
@@ -301,7 +301,7 @@ function googleLoginFunction(alertObject, textObject, lockfunction, unlockfuncti
       let ref = firebase.firestore().collection('users').doc(uid)
       return ref.get()
         .then(docSnapshot => {
-          if (!docSnapshot.exists) {            
+          if (!docSnapshot.exists) {
             signUpFunction({email})
               .then((data) => {
                 stopRedirection = false
@@ -353,7 +353,7 @@ function checkLoginState (user = undefined) {
   if (user && user.uid && stopRedirection == false) {
     console.log('Go to Wizard')
     console.log('wizard'+window.location.search)
-    window.location.href = 'wizard'+window.location.search
+    window.location.href = 'wizard-kr'+window.location.search
   } else {
     $('#preLoader').fadeToggle()
   }
@@ -365,13 +365,13 @@ $(document).ready(function () {
     if ($(this).hasClass('open-sign-up')) {
       $(this).parents('section').find('.sign-in, .forgot').removeClass('show-detail')
       $(this).parents('section').find('.sign-up').addClass('show-detail')
-      $(this).parent('.btn-tool').find('p').text('Have an account?')
-      $(this).removeClass('open-sign-up').addClass('open-sign-in').text('Sign in')
+      $(this).parent('.btn-tool').find('p').text('회원이신가요?')
+      $(this).removeClass('open-sign-up').addClass('open-sign-in').text('로그인하기')
     } else if ($(this).hasClass('open-sign-in')) {
       $(this).parents('section').find('.sign-up, .forgot').removeClass('show-detail')
       $(this).parents('section').find('.sign-in').addClass('show-detail')
-      $(this).parent('.btn-tool').find('p').text("Don't have an account?")
-      $(this).removeClass('open-sign-in').addClass('open-sign-up').text('Sign up')
+      $(this).parent('.btn-tool').find('p').text('아직 회원이 아니신가요?')
+      $(this).removeClass('open-sign-in').addClass('open-sign-up').text('가입하기')
     }
   })
 
@@ -465,4 +465,3 @@ function clickBody(name, elem, rm_class) {
     });
   }
 }
-
