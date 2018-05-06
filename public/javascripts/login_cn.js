@@ -120,7 +120,7 @@ function signUp () {
   function gtag () {
     dataLayer.push(arguments);
   }
-  gtag('event','click',{'event_category':'button','event_label':'signup'}); 
+  gtag('event','click',{'event_category':'button','event_label':'signup'});
   if (typeof(fbq) !== "undefined") {
     fbq('trackCustom', 'signup');
   }
@@ -301,7 +301,7 @@ function googleLoginFunction(alertObject, textObject, lockfunction, unlockfuncti
       let ref = firebase.firestore().collection('users').doc(uid)
       return ref.get()
         .then(docSnapshot => {
-          if (!docSnapshot.exists) {            
+          if (!docSnapshot.exists) {
             signUpFunction({email})
               .then((data) => {
                 stopRedirection = false
@@ -360,18 +360,18 @@ function checkLoginState (user = undefined) {
 }
 
 $(document).ready(function () {
-  // Sign up, Sign in
+  // Sign up, 登录
   $('body').on('click', '.login header .btn-tool a', function () {
     if ($(this).hasClass('open-sign-up')) {
       $(this).parents('section').find('.sign-in, .forgot').removeClass('show-detail')
       $(this).parents('section').find('.sign-up').addClass('show-detail')
-      $(this).parent('.btn-tool').find('p').text('Have an account?')
-      $(this).removeClass('open-sign-up').addClass('open-sign-in').text('Sign in')
+      $(this).parent('.btn-tool').find('p').text('已有帐号？')
+      $(this).removeClass('open-sign-up').addClass('open-sign-in').text('登录')
     } else if ($(this).hasClass('open-sign-in')) {
       $(this).parents('section').find('.sign-up, .forgot').removeClass('show-detail')
       $(this).parents('section').find('.sign-in').addClass('show-detail')
-      $(this).parent('.btn-tool').find('p').text("Don't have an account?")
-      $(this).removeClass('open-sign-in').addClass('open-sign-up').text('Sign up')
+      $(this).parent('.btn-tool').find('p').text("没有帐号？")
+      $(this).removeClass('open-sign-in').addClass('open-sign-up').text('立即注册')
     }
   })
 

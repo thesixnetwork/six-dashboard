@@ -30,10 +30,10 @@
     <script src="javascripts/jquery-3.2.1.min.js"></script>
     <script src="javascripts/url_replacer.js"></script>
     <script src="javascripts/libphonenumber-js.min.js"></script>
-    <script src="javascripts/login.js"></script>
+    <script src="javascripts/login_cn.js"></script>
     <!-- Global site tag (gtag.js) - Google Analytics -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=GTM-N5DKTMD"></script>
-    <script src="javascripts/google-analytic.js"></script>    
+    <script src="javascripts/google-analytic.js"></script>
     <!-- Facebook Pixel Code -->
     <script>
       !function(f,b,e,v,n,t,s)
@@ -68,36 +68,36 @@
         <header class="header">
           <a href="" class="logo"><img src="images/logo/six-logo.png"></a>
           <div class="btn-tool">
-            <p>Have an account?</p>
-            <a class="open-sign-in">Sign in</a>
+            <p>已有帐号？</p>
+            <a class="open-sign-in">登录</a>
           </div>
         </header>
         <div class="container" id='loginLoginContainer'>
-          <h2 style='text-align: center; border-bottom: 1px solid #EEEEEE; margin-bottom: 20px; font-size: 19px; padding-bottom: 20px;'>PRE-ICO REGISTRATION</h2>
+          <h2 style='text-align: center; border-bottom: 1px solid #EEEEEE; margin-bottom: 20px; font-size: 19px; padding-bottom: 20px;'>公开预售注册</h2>
           <div class="sign-in">
-            <h1 style='text-transform: unset;'><span>WELCOME TO</span>SIX.network</h1>
-            <p>More than just a wallet for cryptocurrencies, but a single point of entry for your contents, media, IP loyalty and more</p>
+            <h1 style='text-transform: unset;'><span>欢迎来到</span>SIX.network</h1>
+            <p>不仅仅是一个用于加密货币的钱包，它以分散的方式为所有数字资产提供了一个可以储存、联系和交流的地方。</p>
             <form id="signInForm">
-              <label class="text"><input id="signInEmail" type="email" placeholder="Email" required></label>
-              <label class="text"><input id="signInPassword" type="password" placeholder="Password" required></label>
+              <label class="text"><input id="signInEmail" type="email" placeholder="邮箱" required></label>
+              <label class="text"><input id="signInPassword" type="password" placeholder="密码" required></label>
               <div id='signInAlert' class="alert-error">
                 <p id='signInAlertText'>Error</p>
               </div>
-              <button id='signInBtn'>Sign in</button>
-              <a class="open-forgot btn-link">Forgot password</a>
+              <button id='signInBtn'>登录</button>
+              <a class="open-forgot btn-link">忘记密码</a>
             </form>
             <ul class="list">
-              <li><p>Sign in with</p></li>
+              <li><p>用facebook账号/google账号注册</p></li>
               <li><a href="javascript:;" onclick='authFacebook()'><i class="fab fa-facebook-f"></i></a></li>
               <li><a href="javascript:;" onclick='authGoogle()'><i class="fab fa-google"></i></a></li>
             </ul>
           </div>
           <div class="sign-up show-detail" id='loginSignUpContainer'>
-            <h1>Sign up</h1>
+            <h1>注册</h1>
             <form id="signUpForm">
-              <label class="text"><input id="signUpEmail" type="email" placeholder="Email" required></label>
+              <label class="text"><input id="signUpEmail" type="email" placeholder="邮箱" required></label>
               <label class="text"><input id="signUpFirstName" type="text" placeholder="First name" required></label>
-              <label class="text"><input id="signUpLastName" type="text" placeholder="Last name" required></label>
+              <label class="text"><input id="signUpLastName" type="text" placeholder="姓" required></label>
               <dl>
                 <dd>
                   <label class="dropdown">
@@ -357,32 +357,32 @@
                 </dd>
               </dl>
 
-              <label class="text"><input id="signUpPhoneNumber" type="text" placeholder="Phone number" required></label>
-              <label class="text"><input id="signUpPassword" type="password" placeholder="Password" required></label>
+              <label class="text"><input id="signUpPhoneNumber" type="text" placeholder="手机号码" required></label>
+              <label class="text"><input id="signUpPassword" type="password" placeholder="密码" required></label>
               <div id='signUpAlert' class="alert-error">
                 <p id='signUpAlertText'>Error</p>
               </div>
-              <button id='signUpBtn'>Sign up</button>
+              <button id='signUpBtn'>注册</button>
             </form>
             <ul class="list">
-              <li><p>Sign up with</p></li>
+              <li><p>用facebook账号/google账号注册</p></li>
               <li><a href="javascript:;" onclick='authFacebookS()'><i class="fab fa-facebook-f"></i></a></li>
               <li><a href="javascript:;" onclick='authGoogleS()'><i class="fab fa-google"></i></a></li>
             </ul>
           </div>
           <div class="forgot">
-            <h1>forgot password</h1>
+            <h1>忘记密码</h1>
             <form id='forgotPasswordForm'>
               <p id='forgotPasswordText' style="display: none;" class="alert-text"></p>
-              <label class="text"><input id="forgotPasswordEmail" type="email" placeholder="Email" required></label>
+              <label class="text"><input id="forgotPasswordEmail" type="email" placeholder="邮箱" required></label>
               <button id='forgotPasswordBtn'>Submit</button>
-              <a class="open-sign-in btn-link">Sign in</a>
+              <a class="open-sign-in btn-link">登录</a>
             </form>
           </div>
         </div>
         <footer>
           <p>&copy; 2018 SIX Network PTE. LTD.</p>
-          <p><a href='content/term_policy.pdf' id='term_policy'>Terms &amp; Policy</a></p>
+          <p><a href='content/term_policy.pdf' id='term_policy'>通用条款</a></p>
         </footer>
       </section>
       <section id='loginSlidePanel'>
