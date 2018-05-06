@@ -31,7 +31,7 @@
     <script src="javascripts/url_replacer.js"></script>
     <script src="javascripts/libphonenumber-js.min.js"></script>
     <script src="javascripts/config.js"></script>
-    <script src="javascripts/wizard_kr.js"></script>
+    <script src="javascripts/wizard.js"></script>
     <!-- Global site tag (gtag.js) - Google Analytics -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=GTM-N5DKTMD"></script>
     <script src="javascripts/google-analytic.js"></script>
@@ -108,14 +108,14 @@
         <li id='adminShortcut' style='display: none;'><a href="/kyc_manager">Admin</a></li>
         <li>
           <div class="dropdown">
-            <a><img src="images/south-korea.png"><i class="fas fa-angle-down"></i></a>
+            <a><img src="images/united-kingdom.png"><i class="fas fa-angle-down"></i></a>
             <ul style="z-index: 9999;">
-              <li><a href="/wizard"><img src="images/united-kingdom.png">&nbsp;&nbsp;EN</a></li>
+              <li><a href="/wizard-kr"><img src="images/south-korea.png">&nbsp;&nbsp;KR</a></li>
             </ul>
           </div>
         </li>
       </ul>
-      <a href="javascript:;" onclick='logOut()' class="logout">로그아웃&nbsp;<i class="fas fa-sign-out-alt"></i></a>
+      <a href="javascript:;" onclick='logOut()' class="logout">退出&nbsp;<i class="fas fa-sign-out-alt"></i></a>
     </header>
   </body>
 
@@ -123,20 +123,20 @@
     <div class="step">
       <div class="container">
         <ul>
-          <li id='verifyEmailStep' class="current"><div class="circle"></div><p>이메일</p></li>
-          <li id='verifyPhoneStep'><div class="circle"></div><p>전화번호</p></li>
-          <li id='kycStep'><div class="circle"></div><p>KYC</p></li>
-          <li id='doneStep'><div class="circle"></div><p>완료</p></li>
-          <li id='icoStep'><div class="circle"></div><p>ICO</p></li>
+          <li id='verifyEmailStep' class="current"><div class="circle"></div><p>邮箱</p></li>
+          <li id='verifyPhoneStep'><div class="circle"></div><p>手机号码</p></li>
+          <li id='kycStep'><div class="circle"></div><p>身份验证</p></li>
+          <li id='doneStep'><div class="circle"></div><p>完成验证</p></li>
+          <li id='icoStep'><div class="circle"></div><p>公开销售</p></li>
         </ul>
       </div>
     </div>
     <div class="content">
       <div class="container">
         <section id='verifyEmailContent' class="verify-email show-detail">
-          <h1>이메일 주소 인증하기</h1>
-          <p>가입해주셔서 감사합니다. 다음 단계로 넘어가기 위해서는 이메일 주소를 인증해주세요. (<span id='emailToVerify'></span>)</p>
-          <dl><dd><button id='verifyResendBtn' onclick='resendVerifyEmailClick()'>인증 이메일 다시 보내기</button></dd></dl>
+          <h1>邮箱验证</h1>
+          <p>感谢您的注册，为了进行下一步请验证您的邮箱地址。 (<span id='emailToVerify'></span>)</p>
+          <dl><dd><button id='verifyResendBtn' onclick='resendVerifyEmailClick()'>重新发送验证邮件</button></dd></dl>
           <p id='verifyNotice' class="alert-text" style='display: none;'></p>
         </section>
 
@@ -144,7 +144,7 @@
           <article id='verifyCodeContent1' class="phone-number show-detail">
             <fieldset>
               <dl>
-                <dt>국적</dt>
+                <dt>国家</dt>
                 <dd>
                   <label class="dropdown kycinput" id="kycCountryPhoneAlert">
                     <select id='kycCountryPhone' name="value" id="value">
@@ -193,7 +193,7 @@
                       <option value="CF">Central African Republic</option>
                       <option value="TD">Chad</option>
                       <option value="CL">Chile</option>
-                      <option value="CN">China</option>
+                      <option value="CN" selected="selected">China</option>
                       <option value="CX">Christmas Island</option>
                       <option value="CC">Cocos (Keeling) Islands</option>
                       <option value="CO">Colombia</option>
@@ -265,7 +265,7 @@
                       <option value="KZ">Kazakhstan</option>
                       <option value="KE">Kenya</option>
                       <option value="KI">Kiribati</option>
-                      <option value="KR" selected="selected">대한민국</option>
+                      <option value="KR">Korea</option>
                       <option value="KW">Kuwait</option>
                       <option value="KG">Kyrgyzstan</option>
                       <option value="LA">Lao People's Democratic Republic</option>
@@ -403,10 +403,10 @@
               </dl>
 
               <dl>
-                <dt>전화번호 인증</dt>
-                <dd><label class="text"><input id='verifyPhonePhonenumber' type="tel" placeholder="전화번호"></label></dd>
+                <dt>验证手机号码</dt>
+                <dd><label class="text"><input id='verifyPhonePhonenumber' type="tel" placeholder="Phone number"></label></dd>
               </dl>
-              <dl><dd><button id='verifyPhoneBtn' onclick='submitPhoneNumber()'>보내기</button></dd></dl>
+              <dl><dd><button id='verifyPhoneBtn' onclick='submitPhoneNumber()'>提交</button></dd></dl>
               <p id='verifyPhoneError' class="alert-text error" style='display: none;'></p>
             </fieldset>
           </article>
@@ -428,22 +428,22 @@
         <section id='kycContent' class="information">
           <article id='kycContentForm' class="profile-form show-detail">
             <fieldset>
-              <legend>상세정보(영어로만 입력해주세요)</legend>
+              <legend>个人信息（请用英文填写）</legend>
               <dl>
-                <dt>이름</dt>
+                <dt>姓名 （名 姓）</dt>
                 <dd class="combine">
                   <label class="text kycinput" id='kycFirstNameAlert'>
-                    <input type="text" id='kycFirstName' placeholder="이름(名)"/>
+                    <input type="text" id='kycFirstName' placeholder="First name"/>
                     <p id='kycFirstNameError' style='display: none;'></p>
                   </label>
                   <label class="text kycinput" id='kycLastNameAlert'>
-                    <input type="text" id='kycLastName' placeholder="성(姓)"/>
+                    <input type="text" id='kycLastName' placeholder="Last Name"/>
                     <p id='kycLastNameError' style='display: none;'></p>
                   </label>
                 </dd>
               </dl>
               <dl>
-                <dt>국적</dt>
+                <dt>国籍</dt>
                 <dd>
                   <label class="dropdown kycinput" id="kycCountryAlert">
                     <select id='kycCountry' name="value" id="value" onchange="kycCountryChange()">
@@ -492,7 +492,7 @@
                       <option value="CF">Central African Republic</option>
                       <option value="TD">Chad</option>
                       <option value="CL">Chile</option>
-                      <option value="CN">China</option>
+                      <option value="CN" selected="selected">China</option>
                       <option value="CX">Christmas Island</option>
                       <option value="CC">Cocos (Keeling) Islands</option>
                       <option value="CO">Colombia</option>
@@ -564,7 +564,7 @@
                       <option value="KZ">Kazakhstan</option>
                       <option value="KE">Kenya</option>
                       <option value="KI">Kiribati</option>
-                      <option value="KR" selected="selected">대한민국</option>
+                      <option value="KR">Korea</option>
                       <option value="KW">Kuwait</option>
                       <option value="KG">Kyrgyzstan</option>
                       <option value="LA">Lao People's Democratic Republic</option>
@@ -701,36 +701,36 @@
                 </dd>
               </dl>
               <dl id='citizenId'>
-                <dt>Citizen ID</dt>
+                <dt>身份证号码</dt>
                 <dd><label class="text kycinput" id="kycCitizenIdAlert">
-                  <input type="text" id='kycCitizenId' placeholder="Citizen ID">
+                  <input type="text" id='kycCitizenId' placeholder="身份证号码">
                   <p id='kycCitizenIdError' style='display: none;'></p>
                 </label></dd>
               </dl>
 
               <dl id='passportNumber'>
-                <dt>여권번호
+                <dt>护照号
                   <span>As SIX.network is registered in Singapore, we require your passport ID to do the KYC process</span>
                 </dt>
                 <dd><label class="text kycinput" id="kycPassportNumberAlert">
-                  <input type="text" id='kycPassportNumber' placeholder="여권번호">
+                  <input type="text" id='kycPassportNumber' placeholder="护照号">
                   <p id='kycPassportNumberError' style='display: none;'></p>
                 </label></dd>
               </dl>
 
               <dl>
-                <dt>주소</dt>
+                <dt>地址</dt>
                 <dd><label class="textarea kycinput" id="kycAddressAlert">
-                  <textarea id='kycAddress' placeholder="주소"></textarea>
+                  <textarea id='kycAddress' placeholder="地址"></textarea>
                   <p id='kycAddressError' style='display: none;'></p>
                 </label></dd>
               </dl>
               <dl id='citizenIdPhoto'>
-                <dt><i class="animate-flicker fas fa-question-circle" style='cursor: pointer; color: #555555; font-size: 17px;' onclick='showSample1()'></i> &nbsp;&nbsp;Photo of ID card with signature and a paper with the word for "SIX.network"</dt>
+                <dt><i class="animate-flicker fas fa-question-circle" style='cursor: pointer; color: #555555; font-size: 17px;' onclick='showSample1()'></i> &nbsp;&nbsp;上传身份证及带有您签名和“SIX.network”字样的照片</dt>
                 <dd>
                   <label class="file kycinput" id="kycPic1Alert">
                     <input type="file" id='kycPic1'>
-                    <p id='kycPicName1'>파일 첨부하기</p>
+                    <p id='kycPicName1'>选择文件</p>
                     <i class="fas fa-upload"></i>
                   </label>
                 </dd>
@@ -756,7 +756,7 @@
                 <dd>
                   <label class="file kycinput" id="kycPic5Alert">
                     <input type="file" id='kycPic5'>
-                    <p id='kycPicName5'>파일 첨부하기</p>
+                    <p id='kycPicName5'>选择文件</p>
                     <i class="fas fa-upload"></i>
                   </label>
                 </dd>
@@ -778,11 +778,11 @@
                 </dd>
               </dl>
               <dl id='passportNumberPhoto'>
-                <dt><i class="animate-flicker fas fa-question-circle" style='cursor: pointer; color: #555555; font-size: 17px;' onclick='showSample2()'></i> &nbsp;&nbsp;실제 여권의 사진과 함께 자필로 서명 및 “Six.network”를 써주세요</dt>
+                <dt><i class="animate-flicker fas fa-question-circle" style='cursor: pointer; color: #555555; font-size: 17px;' onclick='showSample2()'></i> &nbsp;&nbsp;外国人需要上传身份证及带有您签名和“SIX.network”字样的照片</dt>
                 <dd>
                   <label class="file kycinput" id="kycPic4Alert">
                     <input type="file" id='kycPic4'>
-                    <p id='kycPicName4'>파일 첨부하기</p>
+                    <p id='kycPicName4'>选择文件</p>
                     <i class="fas fa-upload"></i>
                   </label>
                 </dd>
@@ -805,13 +805,13 @@
               </dl>
               <dl>
                 <dt>
-                  <i id='idHelper' class="animate-flicker fas fa-question-circle" style='cursor: pointer; color: #555555; font-size: 17px; display: none;' onclick='showSample6()'></i><i id='passportHelper' class="animate-flicker fas fa-question-circle" style='cursor: pointer; color: #555555; font-size: 17px;' onclick='showSample3()'></i> &nbsp;&nbsp;여권을 들고 찍은 사진 첨부하기<holding id='itemHoldingHead'></holding>
-                  <span>여권 및 “For Six.network”라는 말과 등록일자를 적은 종이를 든 셀카를 첨부해주세요<holding id='itemHolding'></holding></span>
+                  <i id='idHelper' class="animate-flicker fas fa-question-circle" style='cursor: pointer; color: #555555; font-size: 17px; display: none;' onclick='showSample6()'></i><i id='passportHelper' class="animate-flicker fas fa-question-circle" style='cursor: pointer; color: #555555; font-size: 17px;' onclick='showSample3()'></i> &nbsp;&nbsp;Photo of you holding a <holding id='itemHoldingHead'>Passport</holding>
+                  <span>A selfie of you holding your official <holding id='itemHolding'>passport showing the passport photo page</holding> and a paper with the word "for SIX.network on the date of registration"</span>
                 </dt>
                 <dd>
                   <label class="file kycinput" id="kycPic2Alert">
                     <input type="file" id='kycPic2'>
-                    <p id='kycPicName2'>파일 첨부하기</p>
+                    <p id='kycPicName2'>选择文件</p>
                     <i class="fas fa-upload"></i>
                   </label>
                 </dd>
@@ -835,11 +835,11 @@
               </dl>
             </fieldset>
             <fieldset>
-              <legend>참여 금액</legend>
+              <legend>Contribution amount</legend>
               <dl>
                 <dd>
                   <dt>
-                    <span id='estimateDescription'>참여 예상 금액을 ETH 기준으로 써주셔야 하며, 최소 참여 가능한 금액은 0.2 ETH입니다.</span>
+                    <span id='estimateDescription'>Please input your desire contribution amount in ETH currency, you should enter a least 0.2 ETH to get the minimum of SIX token</span>
                   </dt>
                   <dd class="combine">
                     <label class="text kycinput" id="kycEstimateAlert" style='width: 100%;'>
@@ -861,7 +861,7 @@
               <p id='kycFormAlertText'>Sorry, Civils in the jurisdiction of the US, China, and Singapore are not able to join this ICO contribution according to the laws. Apologize for inconvenience this may cause.</p>
             </div>
             <dl>
-              <dd><button id='kycSubmitBtn' onclick='submitKyc()'>보내기</button></dd>
+              <dd><button id='kycSubmitBtn' onclick='submitKyc()'>Submit</button></dd>
             </dl>
           </article>
 

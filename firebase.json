@@ -37,6 +37,10 @@
         "destination": "/wizard_kr.html"
       },
       {
+        "source": "/wizard-cn",
+        "destination": "/wizard_cn.html"
+      },
+      {
         "source": "/dashboard-cn",
         "destination": "/dashboard_cn.html"
       },
