@@ -22,10 +22,11 @@ const account = {
   pass: "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"
 };
 
+const SENDGRID_API_KEY = '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'
+
 const sgOptions = {
   auth: {
-    api_key:
-      "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"
+    api_key: SENDGRID_API_KEY
   }
 };
 
@@ -938,6 +939,61 @@ exports.autoSendKycReadyEmail = functions.firestore
     });
   }
 
+  function genRemindBonusExpireEmail(emails) {
+    return new Promise((resolve, reject) => {
+      let personalizations = []
+      emails.forEach(email => {
+        if (email && email.email !== null) {
+          personalizations.push({
+            "to": [{ email: email.email }],
+            "subject": "SIX.network - Remind Customer to contribute"
+          })
+        }
+      })
+      const mailOptions = {
+        personalizations,
+        from: {email: 'no-reply@six.network'},
+        content: [{
+          type: 'text/html',
+          value: `<div style="font-family: &quot;Prompt&quot;, sans-serif;color: rgba(33, 33, 33, 1);margin: 0;background: #F6F6F6">
+          <div class="section" style="font-family: &quot;Prompt&quot;, sans-serif;color: rgba(33, 33, 33, 1);position: relative;background: #F6F6F6;padding-bottom: 10px;height: 100%;z-index: 1">
+          <!-- <img class="top-header" src="https://firebasestorage.googleapis.com/v0/b/devson-f46f4.appspot.com/o/public%2Fheader.png?alt=media&token=9f32b7f1-6def-45f2-bf1a-2cea15326450"
+            alt=""> -->
+          <div class="card" style="font-family: &quot;Prompt&quot;, sans-serif;color: rgba(33, 33, 33, 1);width: 80%;padding: 0;padding-top: 2%;z-index: 100;margin-left: 10%;background: transparent">
+            <div class="card-header" style="font-family: &quot;Prompt&quot;, sans-serif;color: rgba(33, 33, 33, 1);position: relative;padding: 0;background: transparent;width: 100%">
+              <img class="header-img" src="https://firebasestorage.googleapis.com/v0/b/devson-f46f4.appspot.com/o/public%2Fcover2.png?alt=media&amp;token=74bc44f8-f8e2-4a0d-aeca-6ee76ab2befb" alt="" style="font-family: &quot;Prompt&quot;, sans-serif;color: rgba(33, 33, 33, 1);width: 100%;box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);z-index: 10"/>
+            </div>
+            <div class="card-content" style="font-family: &quot;Prompt&quot;, sans-serif;color: rgba(33, 33, 33, 1);padding: 5px;margin-top: -20px;box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);background: #FFF">
+                <div class="container" style="font-family: &quot;Prompt&quot;, sans-serif;color: rgba(33, 33, 33, 1);padding: 2%">
+                    <!-- thai -->
+                    <h2 class="title" style="font-family: &quot;Prompt&quot;, sans-serif;color: rgba(33, 33, 33, 1)">เรียน ผู้ร่วมลงทุน</h2>
+                    <dd> <p style="text-indent: 2.5em;font-family: &quot;Prompt&quot;, sans-serif;color: rgba(33, 33, 33, 1);font-size: 14px">    ทาง ซิคซ์ เนทเวิร์ค ขอแสดงความขอบคุณ ท่านผู้ร่วมลงทุนที่สนใจลงทุนในเหรียญ SIX Token จากการลงทะเบียนรอบ Pre-Sale SIX Token เพื่อรับโบนัส 6% ในช่วงต้นเดือนเมษายน 2561 ที่ผ่านมา อย่างไรก็ตามทางเรายังไม่ได้รับยอดโอนเงินจากท่านและมีความจำเป็นต้องเรียนแจ้ง ผู้ร่วมลงทุน ทราบว่า โบนัส 6% ใกล้จะสิ้นสุดและปิดการขายแล้ว</p>
+                    <p style="font-family: &quot;Prompt&quot;, sans-serif;color: rgba(33, 33, 33, 1);font-size: 14px"> ขอความกรุณาท่านผู้ร่วมลงทุนกรุณาทำการส่ง ETH ตามจำนวนที่ท่านได้ลงทะเบียนไว้และถ้าหากท่านผู้ร่วมลงทุนทำการโอนเหรียญ ETH เพื่อซื้อ SIX Token หลังจากนี้ ทางบริษัทขอเรียนแจ้งว่า ท่านผู้ร่วมลงทุนจะไม่ได้รับโบนัส 6% ตามที่กำหนด 
+
+                      bonus 6% ก่อนที่จะหมดลงนะครับ</p></dd>
+                    <dd> <p style="text-indent: 2.5em;font-family: &quot;Prompt&quot;, sans-serif;color: rgba(33, 33, 33, 1);font-size: 14px">  ทั้งนี้ทางบริษัทต้องขออภัย หากท่านผู้ร่วมลงทุนได้ทำการโอนเหรียญ ETH หรือ XLM มาเพื่อทำการซื้อ SIX Token เรียบร้อยแล้ว </p>
+                    <div class="p-group" style="font-family: &quot;Prompt&quot;, sans-serif;color: rgba(33, 33, 33, 1)">
+                    <div class="p-group" style="font-family: &quot;Prompt&quot;, sans-serif;color: rgba(33, 33, 33, 1)">
+                      <span style="font-family: &quot;Prompt&quot;, sans-serif;color: rgba(33, 33, 33, 1);font-size: 14px">จึงเรียนมาเพื่อโปรดทราบ</span>
+                      <br style="font-family: &quot;Prompt&quot;, sans-serif;color: rgba(33, 33, 33, 1)"/>
+                      <span style="font-family: &quot;Prompt&quot;, sans-serif;color: rgba(33, 33, 33, 1);font-size: 14px">ทีมงาน SIX network</span>
+                    </div>
+    
+                  </div>
+            </div>
+          </div>
+          <div class="footer" style="font-family: &quot;Prompt&quot;, sans-serif;color: rgba(33, 33, 33, 1);text-align: center;padding: 20px;margin-top: 50px">
+              <span class="credit" style="font-family: &quot;Prompt&quot;, sans-serif;color: rgba(33, 33, 33, 1);font-size: 14px">© Copyright Media Maxx Advertising</span>
+          </div>
+        </div>
+      </div>
+      `
+      }]
+    }
+      resolve(mailOptions);
+    });
+  }
+
 
 function sendRemindEmails ({ remind_status, email, doc, db, new_remind_status }) {
   genReminderEmail({ email: email })
@@ -1014,6 +1070,44 @@ exports.remindEmails = functions.https.onRequest((request, response) => {
         return genReminderEmail(sendList)
         .then(mailOptions => {
           return axios.post('https://api.sendgrid.com/v3/mail/send', mailOptions, { headers: { Authorization: 'Bearer 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'}})
+        })
+        .then(res => {
+          return response.json({ success: true, sendList })
+        })
+        .catch(err => {
+          console.log((err.response || {}).data, 'err')
+          console.log(err.message, 'err.message')
+          return response.status(400).json({ error: (err.reponse || {}).data })
+        })
+      } else {
+        return response.send({ success: true, sendList })
+      }
+    });
+  } else {
+    return response.status(400).json(new Error("Password not match"));
+  }
+});
+
+exports.remindBonusExpireEmail = functions.https.onRequest((request, response) => {
+  cors(request, response, () => {});
+  const db = admin.firestore().collection("users");
+  const { password } = request.query
+  if (password === "ineedtosendemail") {
+    db.get().then(docs => {
+      let emailsList = []
+      let sendList = []
+      docs.forEach(doc => {
+        const user = doc.data();
+        const { remind_status, email, kyc_status, last_send_remind, eth_address, estimate } = user;
+        const notFoundEstimate = !estimate || estimate === null || estimate === ''
+        if (eth_address && eth_address !== null && notFoundEstimate) {
+          sendList.push({ email })
+        }
+      });
+      if (sendList && sendList.length > 0) {
+        return genRemindBonusExpireEmail(sendList)
+        .then(mailOptions => {
+          return axios.post('https://api.sendgrid.com/v3/mail/send', mailOptions, { headers: { Authorization: `Bearer ${SENDGRID_API_KEY}`}})
         })
         .then(res => {
           return response.json({ success: true, sendList })
