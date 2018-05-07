@@ -527,7 +527,7 @@ function getTxs () {
             data.six_amount = Number((data.six_amount * 1.06).toFixed(7))
             totalSix += data.six_amount
             $('#totalSix').animateNumber(
-              { 
+              {
                 number: totalSix.toFixed(7),
                 numberStep: percent_number_step
               }
@@ -545,7 +545,7 @@ function getTxs () {
         allDoc.sort(compare)
         var percent_number_step = $.animateNumber.numberStepFactories.append(' SIX')
         $('#totalSix').animateNumber(
-          { 
+          {
             number: totalSix.toFixed(7),
             numberStep: percent_number_step
           }
@@ -824,10 +824,10 @@ function submitGeneratedAccount() {
   setDisable([btnDOM, btn2DOM])
   $("#progressContainer").slideToggle(function() {
     $("#accountPg").css('width', '15%')
-    setTimeout(function(){ 
+    setTimeout(function(){
       $("#accountPg").css('width', '54%')
       $("#progressText").html("Activate your address")
-      setTimeout(function(){        
+      setTimeout(function(){
         $("#accountPg").css('width', '79%')
         $("#trustlineStep").addClass("current")
         $("#progressText").html("Adding trustline")
@@ -853,7 +853,7 @@ var generatedWallet
 var mnemonicWords
 function submitWalletWay() {
   const walletSelectDOM = document.getElementById('walletSelect')
-  const wallet = walletSelectDOM.value 
+  const wallet = walletSelectDOM.value
   $("#walletSelectBox").css("display", 'none')
   if (wallet == 'new') {
     mnemonic = StellarHDWallet.generateMnemonic({entropyBits: 128})
@@ -901,12 +901,14 @@ function submitOldAccount() {
 }
 
 function downloadGeneratedAccount() {
-  let element = document.createElement('a');
   let splittedWords = mnemonicWords.split(" ")
-  let data = `Public Key : ${generatedWallet.getPublicKey(0)}
-Secret Key : ${generatedWallet.getSecret(0)}
+  let data = `Public Key :
+   ${generatedWallet.getPublicKey(0)}
+Secret Key :
+   ${generatedWallet.getSecret(0)}
 
-Mnemonic words : ${mnemonicWords}
+Mnemonic words :
+${mnemonicWords}
 
 1. ${splittedWords[0]}
 2. ${splittedWords[1]}
@@ -921,15 +923,20 @@ Mnemonic words : ${mnemonicWords}
 11. ${splittedWords[10]}
 12. ${splittedWords[11]}`
 
-  element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(data));
-  element.setAttribute('download', 'stellar_wallet_credentials.txt');
+var doc = new jsPDF()
+doc.setFontSize(12)
+doc.text(data,10,10)
+doc.save('stellar_wallet_credentials.pdf')
 
-  element.style.display = 'none';
-  document.body.appendChild(element);
-
-  element.click();
-
-  document.body.removeChild(element);
+  // element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(data));
+  // element.setAttribute('download', 'stellar_wallet_credentials.txt');
+  //
+  // element.style.display = 'none';
+  // document.body.appendChild(element);
+  //
+  // element.click();
+  //
+  // document.body.removeChild(element);
 }
 
 var toggleSecretshow = false
@@ -951,7 +958,7 @@ var intervalFunction
 function requestOTP() {
   $("#requestOTPContent").slideToggle()
   $("#submitOTPContent").slideToggle()
-  
+
   clearInterval(intervalFunction)
 
   // Countdown verify
