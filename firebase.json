@@ -13,6 +13,10 @@
     "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
     "rewrites": [
       {
+        "source": "/cn",
+        "destination": "/login_cn.html"
+      },
+      {
         "source": "/kr",
         "destination": "/login_kr.html"
       },
@@ -35,6 +39,10 @@
       {
         "source": "/wizard-cn",
         "destination": "/wizard_cn.html"
+      },
+      {
+        "source": "/dashboard-cn",
+        "destination": "/dashboard_cn.html"
       },
       {
         "source": "/dashboard-kr",
