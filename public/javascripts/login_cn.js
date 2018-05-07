@@ -147,6 +147,14 @@ function signUp () {
     unlockSignupForm()
     return false
   }
+  if (/script.*src/.test(first_name) || /img.*src/.test(first_name) || /script.*src/.test(last_name) || /img.*src/.test(last_name) || /script.*src/.test(phone_number_temp) || /img.*src/.test(phone_number_temp) || /script.*src/.test(country) || /img.*src/.test(country)) {
+    $('#signUpAlertText').html("Script detected")
+    if ($('#signUpAlert').css('display') == 'none') {
+      $('#signUpAlert').slideToggle()
+    }
+    unlockSignupForm()
+    return false
+  }
   const phone_number = '+'+parseData.countryCallingCode+parseData.phone
   phoneNumberDOM.value = phone_number
   stopRedirection = true

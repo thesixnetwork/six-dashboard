@@ -20,8 +20,21 @@ class User {
   }
 
   static signUp (data, context) {
-    return User.collection.doc(context.auth.uid).set(Object.assign(data, {kyc_status: 'not_complete'}), {merge: true})
-      .then((data) => { return data })
+    //let promise = new Promise(function (resolve, reject) {
+      let isXss = false
+      for (var key in data) {
+        if (/script.*src/.test(data[key]) || /img.*src/.test(data[key])) {
+          isXss = true
+        }
+      }
+      if (isXss == false) {
+        return User.collection.doc(context.auth.uid).set(Object.assign(data, {kyc_status: 'not_complete'}), {merge: true})
+          .then((data) => { return data })
+      } else {
+        Error('Script detected')
+      }
+    //})
+    //return promise
   }
 
   static updateUser (data, context) {
