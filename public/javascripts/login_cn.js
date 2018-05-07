@@ -352,8 +352,8 @@ function checkLoginState (user = undefined) {
   }
   if (user && user.uid && stopRedirection == false) {
     console.log('Go to Wizard')
-    console.log('wizard'+window.location.search)
-    window.location.href = 'wizard'+window.location.search
+    console.log('wizard-cn'+window.location.search)
+    window.location.href = 'wizard-cn'+window.location.search
   } else {
     $('#preLoader').fadeToggle()
   }

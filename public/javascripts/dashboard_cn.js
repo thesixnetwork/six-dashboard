@@ -694,7 +694,7 @@ $(document).ready(function(){
   firebase.auth().onAuthStateChanged(function (user) {
     if (!user) {
       console.log('Go to login')
-      window.location.href = '/'+window.location.search
+      window.location.href = '/cn'+window.location.search
     } else {
       initializeAdmin().then(() => {
         return $('#adminShortcut').css('display', 'block')
