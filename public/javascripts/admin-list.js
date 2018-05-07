@@ -502,17 +502,20 @@ function initializeDatabase(status, country, startDate, endDate) {
           allDocs.sort(compare)
         }
         let total_contibrute = 0
+        let total_user = 0
         let total_six = 0
         allDocs.forEach(function (doc, index) {
           const data = doc.data()
           filteredUsers.push(data)
           userData[doc.id] = data
           let elem = buildListUser(doc, status);
-          const estimate = data.estimate ? parseFloat(data.estimate) : 0
           const six = data.total_six ? parseFloat(data.total_six) : 0
-          total_contibrute = total_contibrute + estimate
+          total_user = total_user + 1
+          if (six != 0) {
+            total_contibrute = total_contibrute + 1
+          }
           total_six = total_six + six
-          document.getElementById('total_contibrute').textContent = `${total_contibrute} ETH`
+          document.getElementById('total_contibrute').textContent = `${total_contibrute} / ${total_user}`
           document.getElementById('total_six').textContent = `${total_six} SIX`
           $("#adminList")[0].appendChild(elem);
           const { updater, kyc_status } = data
@@ -660,7 +663,17 @@ gas = arrData
       //2nd loop will extract each column and convert it in string comma-seprated
       for (var j = 0; j < allKeys.length; j++) {
           let index = allKeys[j]
-          row += '"' + String(arrData[i][index] || '-').replace(",", " ").replace("\n", " ") + '",';
+          if (index == 'registration_time') {
+            let date = new Date(arrData[i][index] || 0)
+            var hours = date !== '' ? '0' + date.getHours() : '';
+            var minutes =  date !== '' ? '0' + date.getMinutes() : '';
+            var seconds =  date !== '' ? '0' + date.getSeconds() : '';
+            formattedTime = hours.substr(-2) + ":" + minutes.substr(-2) + ":" + seconds.substr(-2);
+            formatted_date = date.toISOString().substr(0, 10)
+            row += '"' + String(formatted_date+" "+formattedTime || '-').replace(",", " ").replace("\n", " ") + '",';
+          } else {
+            row += '"' + String(arrData[i][index] || '-').replace(",", " ").replace("\n", " ") + '",';
+          }
       }
 
       row.slice(0, row.length - 1);

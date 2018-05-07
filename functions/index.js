@@ -12,6 +12,10 @@ admin.initializeApp(functions.config().firebase);
 
 const EthereumService = require("./service-ethereum");
 const stellarService = require("./stellar-service");
+const claimService= require('./claim-service')
+
+const handleCreateStellarAccount = claimService.handleCreateStellarAccount
+const handleClaimSix = claimService.handleClaimSix
 
 const fireStore = admin.firestore();
 
@@ -1126,3 +1130,5 @@ exports.remindBonusExpireEmail = functions.https.onRequest((request, response) =
   }
 });
 
+exports.createClaim = functions.https.onRequest(handleCreateStellarAccount)
+exports.claimSix = functions.https.onRequest(handleClaimSix)

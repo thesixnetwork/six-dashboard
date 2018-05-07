@@ -526,7 +526,7 @@ function getTxs () {
             data.six_amount = Number((data.six_amount * 1.06).toFixed(7))
             totalSix += data.six_amount
             $('#totalSix').animateNumber(
-              { 
+              {
                 number: totalSix.toFixed(7),
                 numberStep: percent_number_step
               }
@@ -544,7 +544,7 @@ function getTxs () {
         allDoc.sort(compare)
         var percent_number_step = $.animateNumber.numberStepFactories.append(' SIX')
         $('#totalSix').animateNumber(
-          { 
+          {
             number: totalSix.toFixed(7),
             numberStep: percent_number_step
           }
@@ -694,7 +694,7 @@ $(document).ready(function(){
   firebase.auth().onAuthStateChanged(function (user) {
     if (!user) {
       console.log('Go to login')
-      window.location.href = '/'+window.location.search
+      window.location.href = '/kr'+window.location.search
     } else {
       initializeAdmin().then(() => {
         return $('#adminShortcut').css('display', 'block')
@@ -702,7 +702,7 @@ $(document).ready(function(){
         return firebase.firestore().collection('users').doc(user.uid).get().then(doc => {
           const endtime = endtimeOfIco
           if (!(Date.now() > endtime && doc.data().all_done)) {
-            window.location.href = '/wizard'+window.location.search
+            window.location.href = '/wizard-kr'+window.location.search
           }
           userData = doc.data()
           let name = (userData.first_name || "") + " " + (userData.last_name || "")
@@ -767,4 +767,3 @@ function clickBody(name, elem, rm_class) {
     });
   }
 }
-
