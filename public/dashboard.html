@@ -32,10 +32,11 @@
     <script src="javascripts/jquery.animateNumber.min.js"></script>
     <script src="javascripts/config.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.18.1/moment.js"></script>
+    <script src="javascripts/jspdf.min.js"></script>
     <script src="javascripts/dashboard.js"></script>
     <!-- Global site tag (gtag.js) - Google Analytics -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=GTM-N5DKTMD"></script>
-    <script src="javascripts/google-analytic.js"></script>    
+    <script src="javascripts/google-analytic.js"></script>
     <script src="javascripts/stellar-sdk.js"></script>
     <script src="javascripts/stellar-hd-wallet.js"></script>
     <!-- Facebook Pixel Code -->
@@ -62,7 +63,7 @@
         s.className = 'fb-customerchat'
         var att = document.createAttribute("page_id")
         att.value = pageId
-        s.setAttributeNode(att)        
+        s.setAttributeNode(att)
         document.body.appendChild(s)
 
         window.fbAsyncInit = function() {
@@ -482,7 +483,7 @@
                 <input placeholder="" id="genM11" type="text">
               </label>
             </div>
-            
+
             <div class="btn">
               <button id='backGAccountBtn' onclick='backGeneratedAccount()' style='width: auto; margin-top: 20px; margin-bottom: 20px; min-width: 150px; margin-right: 40px; background: #9a9ca3;'> Back </button>
               <button id='submitGAccountBtn' onclick='submitGeneratedAccount()' style='width: auto; margin-top: 20px; margin-bottom: 20px; min-width: 150px;'> Submit </button>
