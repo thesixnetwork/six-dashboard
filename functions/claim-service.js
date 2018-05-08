@@ -21,8 +21,8 @@ const issuerKey = StellarSdk.Keypair.fromSecret(
 const distKey = StellarSdk.Keypair.fromSecret(
   functions.config().xlm.ico_distributor_secret
 )
-
-const sixAsset = new StellarSdk.Asset('six', issuerKey.publicKey())
+const ASSET_CODE = 'SIX'
+const sixAsset = new StellarSdk.Asset(ASSET_CODE, issuerKey.publicKey())
 
 const startingBalance = '2.5'
 
@@ -54,7 +54,7 @@ const handleCreateStellarAccount = (req, res) => {
       })
     })
     .catch(error => {
-      console.dir(error)
+      console.log(error)
       return res.status(503).json({
         error
       })
@@ -67,7 +67,7 @@ const setPublicKey = ({ uid, public_key: publicKey }) => {
   return claimRef
     .doc(uid)
     .update({
-      'claim.public_key': publicKey
+      'public_key': publicKey
     })
     .then(() => {
       return {
@@ -115,7 +115,7 @@ const updateUserCreatedAccount = ({ uid }) => {
   return claimRef
     .doc(uid)
     .update({
-      'claim.sent_xlm': true
+      'sent_xlm': true
     })
 }
 
@@ -150,7 +150,7 @@ const handleClaimSix = (req, res) => {
       })
     })
     .catch(error => {
-      console.dir(error)
+      console.log(error)
       return res.status(503).json({
         'error': error.message
       })
@@ -198,7 +198,7 @@ function allowTrust ({ uid, claim_id: claimId, user, claim }) {
       .addOperation(
         StellarSdk.Operation.allowTrust({
           trustor: user.public_key,
-          assetCode: 'six',
+          assetCode: ASSET_CODE,
           authorize: true
         })
       )
@@ -235,7 +235,7 @@ const updateAllowTrust = ({ uid, claim, claim_id: claimId, user }) => {
   return claimRef
     .doc(uid)
     .update({
-      'claim.allow_trust': true
+      'allow_trust': true
     })
     .then(() => {
       return {
