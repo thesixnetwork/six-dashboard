@@ -67,7 +67,7 @@ const setPublicKey = ({ uid, public_key: publicKey }) => {
   return claimRef
     .doc(uid)
     .update({
-      'claim.public_key': publicKey
+      'public_key': publicKey
     })
     .then(() => {
       return {
@@ -115,7 +115,7 @@ const updateUserCreatedAccount = ({ uid }) => {
   return claimRef
     .doc(uid)
     .update({
-      'claim.sent_xlm': true
+      'sent_xlm': true
     })
 }
 
@@ -158,6 +158,7 @@ const handleClaimSix = (req, res) => {
 }
 
 function findUser ({ uid, claim_id: claimId }) {
+  console.log("find user")
   return claimRef
     .doc(uid)
     .get()
@@ -174,13 +175,16 @@ function findUser ({ uid, claim_id: claimId }) {
 }
 
 function findClaim ({ uid, claim_id: claimId, user }) {
+  console.log("find claim")
+  console.log(uid)
+  console.log(claimId)
   return claimRef
     .doc(uid)
     .collection('claim_period')
-    .doc(claimId)
+    .doc(String(claimId))
     .get()
     .then(claim => {
-      if (claim.exists) {
+      if (claim.exists && (claim.data() || {}).claimed === false) {
         return {
           uid,
           claim: claim.data(),
@@ -188,12 +192,14 @@ function findClaim ({ uid, claim_id: claimId, user }) {
           user
         }
       }
-      return Promise.reject(new Error('User not found'))
+      return Promise.reject(new Error('Data not found'))
     })
 }
 
 function allowTrust ({ uid, claim_id: claimId, user, claim }) {
+  console.log('allowTrust')
   function createTransaction (issuerAccount) {
+    console.log("createTransaction")
     const transaction = new StellarSdk.TransactionBuilder(issuerAccount)
       .addOperation(
         StellarSdk.Operation.allowTrust({
@@ -215,6 +221,8 @@ function allowTrust ({ uid, claim_id: claimId, user, claim }) {
   }
 
   function submitTransaction ({ uid, public_key: publicKey, transaction }) {
+    console.log("submitTransaction")
+    console.log(transaction)
     return server.submitTransaction(transaction).then(() => {
       return {
         uid,
@@ -232,10 +240,11 @@ function allowTrust ({ uid, claim_id: claimId, user, claim }) {
 }
 
 const updateAllowTrust = ({ uid, claim, claim_id: claimId, user }) => {
+  console.log("updateAllowTrust")
   return claimRef
     .doc(uid)
     .update({
-      'claim.allow_trust': true
+      'allow_trust': true
     })
     .then(() => {
       return {
@@ -248,6 +257,7 @@ const updateAllowTrust = ({ uid, claim, claim_id: claimId, user }) => {
 }
 
 function sendSix ({ uid, claim_id: claimId, user, claim }) {
+  console.log("sendSix")
   function createTransaction (distributorAccount) {
     const sendTransaction = new StellarSdk.TransactionBuilder(
       distributorAccount
@@ -295,10 +305,11 @@ function sendSix ({ uid, claim_id: claimId, user, claim }) {
 }
 
 const updateClaim = ({ uid, claim, claim_id: claimId, user }) => {
+  console.log("updateClaim")
   return claimRef
     .doc(uid)
     .collection('claim_period')
-    .doc(claimId)
+    .doc(String(claimId))
     .update({
       claimed: true
     })
@@ -314,6 +325,12 @@ const updateClaim = ({ uid, claim, claim_id: claimId, user }) => {
 
 module.exports = {
   handleCreateStellarAccount,
-  handleClaimSix
+  handleClaimSix,
+  findUser,
+  findClaim,
+  allowTrust,
+  updateAllowTrust,
+  sendSix,
+  updateClaim,
 }
 

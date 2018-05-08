@@ -7,6 +7,11 @@ service cloud.firestore {
     }
     match /users_claim/{userId}{
       allow read: if request.auth.uid == userId;
+      allow create, read, update: if request.auth.token.admin == true;
+    }
+    match /users_claim/{userId}/claim_period/{claimId}{
+      allow read: if request.auth.uid == userId;
+      allow create, read, update: if request.auth.token.admin == true;
     }
     match /phone-numbers/{phoneNumber}{
       allow create, read, update: if request.auth.token.admin == true;

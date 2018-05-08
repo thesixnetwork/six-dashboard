@@ -19,6 +19,15 @@ function compare(a,b) {
   return 0;
 }
 
+function compare_valid_after(a,b) {
+  if (a.data().valid_after > b.data().valid_after)
+    return -1;
+  if (a.data().valid_after < b.data().valid_after)
+    return 1;
+  return 0;
+}
+
+
 // Remove disabled from dom
 function setEnable (doms) {
   doms.forEach(function (dom) {
@@ -498,7 +507,86 @@ function buildListTx(doc) {
   return tr
 }
 
+function buildListClaim(doc, id) {
+  const { amount, claimed, valid_after } = doc
+  var tr = document.createElement("tr")
+  var td1 = document.createElement("td");
+  var txt1 = document.createTextNode(formatDate(valid_after))
+  td1.appendChild(txt1)
+
+  var td2 = document.createElement("td");
+  var txt2 = document.createTextNode(amount)
+  td2.appendChild(txt2)
+
+  var td3 = document.createElement("td");
+  var txt3 = document.createTextNode("-")
+  td3.appendChild(txt3)
+
+  var td4 = document.createElement("td")
+  var thisbtn = document.createElement("button")
+  thisbtn.id = "claim-"+id
+  if ((new Date) > valid_after) {
+    if (claimed === true) {
+      thisbtn.className = "claimMoneyBtn claimed"
+      var txt4 = document.createTextNode("Claimed")
+      thisbtn.appendChild(txt4)
+      thisbtn.disabled = true
+    } else {
+      thisbtn.className = "claimMoneyBtn avail"
+      var txt4 = document.createTextNode("Claim")
+      thisbtn.appendChild(txt4)
+      thisbtn.onclick = function() { claimSix(id) }
+    }
+  } else {
+    thisbtn.className = "claimMoneyBtn notAvail"
+    var txt4 = document.createTextNode("Not Available")
+    thisbtn.appendChild(txt4)
+    thisbtn.disabled = true
+  }
+  td4.appendChild(thisbtn)
+
+  tr.appendChild(td1)
+  tr.appendChild(td2)
+  tr.appendChild(td3)
+  tr.appendChild(td4)
+
+  return tr
+}
+
+function formatDate(date) {
+    var d = new Date(date),
+        month = '' + (d.getMonth() + 1),
+        day = '' + d.getDate(),
+        year = d.getFullYear();
+
+    if (month.length < 2) month = '0' + month;
+    if (day.length < 2) day = '0' + day;
+
+    return [year, month, day].join('-');
+}
+
 let totalSix = 0
+
+function getClaims() {
+  if (firebase.auth().currentUser !== null) {
+    firebase.firestore().collection('users_claim').doc(firebase.auth().currentUser.uid).collection('claim_period').get().then(docs => {
+      docs.forEach(doc => {
+        let allDoc = []
+        docs.forEach(doc => {
+          allDoc.push(doc)
+        })
+        allDoc.sort(compare_valid_after)
+        allDoc.forEach(d => {
+          let data = d.data()
+          const elem = buildListClaim(data, d.id)
+          $("#claimTxs")[0].appendChild(elem)
+        })
+        console.log(doc.id)
+        console.log(doc.data())
+      })
+    })
+  }
+}
 
 function getTxs () {
   if (firebase.auth().currentUser !== null) {
@@ -754,8 +842,24 @@ $(document).ready(function(){
             $("#bonusXLMText").css('display', 'block')
             $("#bonusETHText").css('display', 'block')
           }
+          if ((new Date()) > closeIco) {
+            goToClaim()
+          }
+          if (userData.submit_xlm_wallet === true) {
+            $("#trustlineStep").addClass("current")
+            $("#walletSelectBox").css("display", "none")
+            $("#manualTrustlineBox").css("display", "block")
+          }
+          if (userData.add_trust_line === true) {
+            $("#trustlineStep").addClass("current")
+            $("#claimStep").addClass("current")
+            $("#rewardClaimBox").css("display", "block")
+            $("#walletSelectBox").css("display", "none")
+            $("#manualTrustlineBox").css("display", "none")
+          }
         }).then(getCurrentTotal).then(() => {
           getTxs()
+          getClaims()
           setTimeout(function(){
             runGlobalNumber()
           }, 1000)
@@ -845,8 +949,63 @@ function submitGeneratedAccount() {
   })
 }
 
-function claimSix() {
-  $("#otpDialog").addClass("show-dialog")
+function submitOTP(id) {
+  const btnDOM = document.getElementById('otpSubmitBtn')
+  setDisable([btnDOM])
+  console.log(id)
+}
+
+function claimSix(id) {
+  clearInterval(intervalFunction)
+  const btnDOM = document.getElementById('claim-'+id)
+  const btn2DOM = document.getElementById('otpSubmitBtn')
+  setEnable([btn2DOM])
+  setDisable([btnDOM])
+  let requestFunction = firebase.functions().httpsCallable('claimVerificationRequest')
+  requestFunction({claim_id: id}).then(response => {
+    if (response.data.success === true) {
+      $("#otpDialog").addClass("show-dialog")
+      $('#refVerify').html(response.data.ref_code)
+      $('#refPhoneNumber').html(response.data.phone_number)
+      clearInterval(intervalFunction)
+
+      let otpSubmitBtn = document.getElementById('otpSubmitBtn')
+      otpSubmitBtn.onclick = function() {
+        submitOTP(id)
+      }
+      // Countdown verify
+      'use strict'
+      function countdown (options = {}) {
+        let defaults = { cssClass: '.countdown-verify'
+        }
+        let settings = Object.assign({}, defaults, options),
+          startNum = settings.fromNumber,
+          block = document.querySelector(settings.cssClass)
+        function appendText () {
+          let countText = `<p class="countdown-number">${startNum}</p>`
+          block.innerHTML = countText
+          startNum--
+        }
+        function count () {
+          if (startNum < 0) {
+            startNum = settings.fromNumber
+          } else {
+            appendText()
+          }
+          if (startNum == 0) {
+            $("#otpDialog").removeClass('show-dialog')
+          }
+        }
+        appendText()
+        intervalFunction = setInterval(() => { count() }, 1000)
+      }
+      let countDownNum = response.data.valid_until - Math.round((new Date()).getTime() / 1000)
+      countdown({ fromNumber: countDownNum })
+    }
+    setEnable([btnDOM])
+  }).catch(() => {
+    setEnable([btnDOM])
+  })
 }
 
 var generatedWallet

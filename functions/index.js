@@ -1,4 +1,5 @@
 const admin = require("firebase-admin");
+const StellarSdk = require('stellar-sdk')
 const functions = require("firebase-functions");
 const request = require("request-promise");
 const moment = require("moment-timezone");
@@ -76,6 +77,229 @@ exports.incrementTotalAsset = functions.firestore
       )
     );
   });
+
+
+const issuerKey = StellarSdk.Keypair.fromSecret(
+  functions.config().xlm.issuer_low_secret
+)
+const distKey = StellarSdk.Keypair.fromSecret(
+  functions.config().xlm.ico_distributor_secret
+)
+
+
+exports.claimOTPSubmit = functions.https.onCall((data, context) => {
+  let ref = admin.firestore().collection("users_claim");
+  let claimId = String(data.claim_id);
+  let refCode = data.ref_code;
+  let code = data.code;
+  const uid = context.auth.uid;
+  return ref
+    .doc(uid)
+    .collection('claim_period')
+    .doc(String(claimId))
+    .get()
+    .then(doc => {
+      if (doc.exists) {
+        if (doc.data().claimed === true) {
+          return {
+            success: false,
+            error_message: "Claimed"
+          };
+        } else {
+          if (
+            doc.data().valid_until > Math.round(new Date().getTime() / 1000)
+          ) {
+            if (doc.data().ref_code === refCode && doc.data().code === code) {
+
+              if (!issuerKey || !distKey) {
+                return {
+                  success: false,
+                  error_message: 'not yet config stellar params'
+                }
+              }
+
+              if (!uid || ((claimId !== undefined) && !String(claimId))) {
+                return {
+                  success: false,
+                  error_message: 'Invalid Request'
+                }
+              }
+
+              return claimService.findUser({
+                uid,
+                claim_id: claimId
+              })
+              .then(claimService.findClaim)
+              .then(claimService.allowTrust)
+              .then(claimService.updateAllowTrust)
+              .then(claimService.sendSix)
+              .then(claimService.updateClaim)
+              .then(() => {
+                return {
+                  success: true
+                }
+              })
+              .catch(error => {
+                console.dir(error)
+                return {
+                  success: false,
+                  error_message: error.message
+                }
+             })
+
+
+
+
+            } else {
+              return {
+                success: false,
+                error_message: "Invalid verification code"
+              };
+            }
+          } else {
+            return {
+              success: false,
+              error_message: "Verification session expired"
+            };
+          }
+        }
+      } else {
+        return {
+          success: false,
+          error_message: "Unexpected error, please try again"
+        };
+      }
+    })
+    .catch(err => {
+      console.log(err);
+      return { success: false, error_message: err.message };
+    });
+})
+
+exports.claimVerificationRequest = functions.https.onCall((data, context) => {
+  let ref = admin.firestore().collection("users_claim");
+  let userref = admin.firestore().collection("users");
+  let user_id = context.auth.uid;
+  let claim_id = data.claim_id;
+  return userref
+    .doc(user_id)
+    .get()
+    .then(doc => {
+      return doc.data().phone_number
+    }).then(phone_number => {
+      return ref
+      .doc(user_id)
+      .collection('claim_period')
+      .doc(String(claim_id))
+      .get()
+      .then(doc => {
+        if (doc.exists) {
+          if (doc.data().claimed === true) {
+            return {
+              success: false,
+              error_message: "Claimed"
+            };
+          } else {
+            return generateClaimVerificationCode(user_id, claim_id, phone_number)
+              .then(data => {
+                if (data.success === true) {
+                  let refCode = data.refCode;
+                  let validUntil = data.validUntil;
+                  return {
+                    success: true,
+                    ref_code: refCode,
+                    valid_until: validUntil,
+                    phone_number: phone_number
+                  };
+                } else {
+                  return {
+                    success: false,
+                    error_message: "Unexpected error, please try again"
+                  };
+                }
+              })
+              .catch(() => {
+                return {
+                  success: false,
+                  error_message: "Unexpected error, please try again"
+                };
+              });
+          }
+        } else {
+          return {
+              success: false,
+              error_message: "Not found"
+            }
+        }
+      })
+      .catch(err => {
+        console.log(err);
+        return { success: false, error_message: err.message };
+      });
+    })
+    .catch(err => {
+      console.log(err);
+      return { success: false, error_message: err.message };
+    });
+});
+
+function generateClaimVerificationCode(user_id, claim_id, phoneNumber) {
+  let refCode = Math.random()
+    .toString(36)
+    .replace(/[^a-z]+/g, "")
+    .substr(0, 5)
+    .toUpperCase();
+  let code = Math.random()
+    .toString()
+    .substr(2, 6);
+  let validUntil = Math.round(new Date().getTime() / 1000) + 180;
+  var http = require("https");
+  var options = {
+    method: "POST",
+    hostname: "xisth3qe4e.execute-api.ap-southeast-1.amazonaws.com",
+    port: null,
+    path: "/production/sms",
+    headers: {
+      "content-type": "application/x-www-form-urlencoded",
+      "cache-control": "no-cache"
+    }
+  };
+
+  var req = http.request(options, res => {
+    var chunks = [];
+
+    res.on("data", chunk => {
+      chunks.push(chunk);
+    });
+
+    res.on("end", () => {
+      var body = Buffer.concat(chunks);
+      console.log(body.toString());
+    });
+  });
+  req.write(
+    '{"message": "Your code is ' +
+      code +
+      " (Ref: " +
+      refCode +
+      ')", "phone_number": "' +
+      phoneNumber +
+      '"}'
+  );
+  req.end();
+  let ref = admin.firestore().collection("users_claim");
+  return ref
+    .doc(user_id)
+    .collection('claim_period')
+    .doc(String(claim_id))
+    .update({ ref_code: refCode, code: code, valid_until: validUntil })
+    .then(() => {
+      return { success: true, refCode: refCode, validUntil: validUntil };
+    })
+    .catch(err => {
+      return { success: false, message: err.message };
+    });
+}
 
 function generatePhoneVerificationCode(phoneNumber) {
   let refCode = Math.random()
