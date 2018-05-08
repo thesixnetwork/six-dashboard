@@ -470,7 +470,7 @@ function proceedToIco() {
     gtag('event','click',{'event_category':'button','event_label':'finish-kyc'});
     if (Date.now() > endtimeOfIco) {
       window.location.href = '/dashboard'+window.location.search
-    }    
+    }
     setEnable([icoBtn])
     $("#icoPage").addClass("show-detail")
     $('#icoStep').addClass('current')
@@ -478,7 +478,7 @@ function proceedToIco() {
   }).catch(() => {
     if (Date.now() > endtimeOfIco) {
       window.location.href = '/dashboard'+window.location.search
-    }    
+    }
     setEnable([icoBtn])
     $("#icoPage").addClass("show-detail")
     $('#icoStep').addClass('current')
@@ -499,10 +499,10 @@ function submitKyc() {
     fbq('trackCustom', 'Certified');
   }
 
-  var strUser = firebase.auth().currentUser.uid;      
+  var strUser = firebase.auth().currentUser.uid;
   window._paq = window._paq || [];
   _paq.push(['track_code',"3bf5292d-0432-4171-896f-13f513b2ba19"]);
-  _paq.push(['user_id',SHA1(strUser)]); 
+  _paq.push(['user_id',SHA1(strUser)]);
   _paq.push(['event_name','CA_CONVERSION']);
   _paq.push(['send_event']);
   (function() { var u="//image.cauly.co.kr/script/"; var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0]; g.type='text/javascript'; g.async=true; g.defer=true; g.src=u+'caulytracker_async.js'; s.parentNode.insertBefore(g,s); }
@@ -645,7 +645,9 @@ function uploadFile(fileNumber, file) {
   if ($("#sampleImage"+fileNumber).css('display') == 'block') {
     $("#sampleImage"+fileNumber).fadeToggle(400, function() { $("#sampleImage"+fileNumber).attr("src", "") })
   }
-  $("#kycPicName"+fileNumber).html(file.name)
+  //$("#kycPicName"+fileNumber).html(file.name)
+  //$("#kycPicName"+fileNumber).html(escape(file.name))
+  $("#kycPicName"+fileNumber).text(file.name)
   $("#kycPic"+fileNumber+"Alert").removeClass("invalid")
   let user = firebase.auth().currentUser
   let storageRef = firebase.storage().ref()
@@ -864,4 +866,3 @@ function clickBody(name, elem, rm_class) {
     });
   }
 }
-
