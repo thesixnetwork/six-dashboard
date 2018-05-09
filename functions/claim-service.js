@@ -53,7 +53,7 @@ const handleCreateStellarAccount = (req, res) => {
     .catch(error => {
       console.log(error)
       return res.status(503).json({
-        error
+        'error': error.message
       })
     })
 }
@@ -176,12 +176,15 @@ function findClaim ({ uid, claim_id: claimId, user }) {
     .get()
     .then(claim => {
       if (claim.exists) {
-        return {
-          uid,
-          claim: claim.data(),
-          claim_id: claimId,
-          user
-        }
+        const claimData = claim.data()
+        return claimData.claimed === true
+          ? Promise.reject(new Error('User already claimed.'))
+          : {
+            uid,
+            claim: claimData,
+            claim_id: claimId,
+            user
+          }
       }
       return Promise.reject(new Error('User not found'))
     })
