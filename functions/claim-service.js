@@ -15,19 +15,17 @@ if (functions.config().campaign.is_production === 'true') {
 
 const server = new StellarSdk.Server(stellarUrl)
 
-const issuerKey = StellarSdk.Keypair.fromSecret(
-  functions.config().xlm.issuer_low_secret
-)
 const distKey = StellarSdk.Keypair.fromSecret(
   functions.config().xlm.ico_distributor_secret
 )
 
-const sixAsset = new StellarSdk.Asset('six', issuerKey.publicKey())
+const ASSET_CODE = 'SIX'
+const sixAsset = new StellarSdk.Asset(ASSET_CODE, functions.config().xlm.issuer_public)
 
 const startingBalance = '2.5'
 
 const handleCreateStellarAccount = (req, res) => {
-  if (!issuerKey || !distKey) {
+  if (!distKey) {
     return res.status(503).json({
       error: 'not yet config stellar params'
     })
@@ -54,9 +52,9 @@ const handleCreateStellarAccount = (req, res) => {
       })
     })
     .catch(error => {
-      console.dir(error)
+      console.log(error)
       return res.status(503).json({
-        error
+        'error': error.message
       })
     })
 }
@@ -120,7 +118,7 @@ const updateUserCreatedAccount = ({ uid }) => {
 }
 
 const handleClaimSix = (req, res) => {
-  if (!issuerKey || !distKey) {
+  if (!distKey) {
     return res.status(503).json({
       error: 'not yet config stellar params'
     })
@@ -140,8 +138,6 @@ const handleClaimSix = (req, res) => {
     claim_id: claimId
   })
     .then(findClaim)
-    .then(allowTrust)
-    .then(updateAllowTrust)
     .then(sendSix)
     .then(updateClaim)
     .then(() => {
@@ -150,7 +146,7 @@ const handleClaimSix = (req, res) => {
       })
     })
     .catch(error => {
-      console.dir(error)
+      console.log(error)
       return res.status(503).json({
         'error': error.message
       })
@@ -185,74 +181,17 @@ function findClaim ({ uid, claim_id: claimId, user }) {
     .get()
     .then(claim => {
       if (claim.exists && (claim.data() || {}).claimed === false) {
-        return {
-          uid,
-          claim: claim.data(),
-          claim_id: claimId,
-          user
-        }
+        const claimData = claim.data()
+        return claimData.claimed === true
+          ? Promise.reject(new Error('User already claimed.'))
+          : {
+            uid,
+            claim: claimData,
+            claim_id: claimId,
+            user
+          }
       }
       return Promise.reject(new Error('Data not found'))
-    })
-}
-
-function allowTrust ({ uid, claim_id: claimId, user, claim }) {
-  console.log('allowTrust')
-  function createTransaction (issuerAccount) {
-    console.log("createTransaction")
-    const transaction = new StellarSdk.TransactionBuilder(issuerAccount)
-      .addOperation(
-        StellarSdk.Operation.allowTrust({
-          trustor: user.public_key,
-          assetCode: 'six',
-          authorize: true
-        })
-      )
-      .build()
-
-    transaction.sign(issuerKey)
-    return {
-      uid,
-      claim,
-      claim_id: claimId,
-      user,
-      transaction
-    }
-  }
-
-  function submitTransaction ({ uid, public_key: publicKey, transaction }) {
-    console.log("submitTransaction")
-    console.log(transaction)
-    return server.submitTransaction(transaction).then(() => {
-      return {
-        uid,
-        claim,
-        claimId,
-        user
-      }
-    })
-  }
-
-  return server
-    .loadAccount(issuerKey.publicKey())
-    .then(createTransaction)
-    .then(submitTransaction)
-}
-
-const updateAllowTrust = ({ uid, claim, claim_id: claimId, user }) => {
-  console.log("updateAllowTrust")
-  return claimRef
-    .doc(uid)
-    .update({
-      'allow_trust': true
-    })
-    .then(() => {
-      return {
-        uid,
-        claim,
-        claim_id: claimId,
-        user
-      }
     })
 }
 
