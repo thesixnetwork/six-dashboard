@@ -1028,6 +1028,41 @@ function submitWalletWay() {
   }
 }
 
+function automatedChangeTrustToSix() {
+
+  let stellarUrl, issuerKey
+  var domain = window.location.href
+  if (domain.match('localhost')) {
+    stellarUrl = 'https://horizon-testnet.stellar.org'
+    StellarSdk.Network.useTestNetwork()
+    issuerKey = "GBVX36SLDLLXCVMGFLKNQ5XB76Z4SIXCFKYHKMSJTLANXB6AH27LUKEP"
+  } else if (domain.match('six-dashboard')) {
+    stellarUrl = 'https://horizon-testnet.stellar.org'
+    StellarSdk.Network.useTestNetwork()
+    issuerKey = "GBVX36SLDLLXCVMGFLKNQ5XB76Z4SIXCFKYHKMSJTLANXB6AH27LUKEP"
+  } else if (domain.match('ico.six.network')) {
+    stellarUrl = 'https://horizon.stellar.org'
+    StellarSdk.Network.usePublicNetwork()
+  } else {
+    stellarUrl = 'https://horizon-testnet.stellar.org'
+    StellarSdk.Network.useTestNetwork()
+    issuerKey = "GBVX36SLDLLXCVMGFLKNQ5XB76Z4SIXCFKYHKMSJTLANXB6AH27LUKEP"
+  }
+
+  const server = new StellarSdk.Server(stellarUrl)
+
+  let transaction = new StellarSdk.TransactionBuilder(server.loadAccount(generatedWallet.getPublicKey(0)))
+      .addOperation(
+        StellarSdk.Operation.changeTrust({
+          asset: new StellarSdk.Asset("SIX", "GB243OQXZOE6GAAZIDIXHBSPAIOOVYE4PVC546GQBS3CBC4FUMUIMZ3M")
+        })
+      )
+      .build()
+
+  transaction.sign(issuerKey)
+  server.submitTransaction(transaction).then(() => { console.log("success") }).catch(err => { console.log(err) })
+}
+
 function submitOldAccount() {
   if ($("#oldWalletAlert").css("display") === 'block') {
     $("#oldWalletAlert").slideToggle()
@@ -1099,6 +1134,7 @@ doc.save('stellar_wallet_credentials.pdf')
 }
 
 var toggleSecretshow = false
+var toggleSecretMnemonicShow = false
 
 function toggleSecret() {
   if (toggleSecretshow == false) {
@@ -1109,6 +1145,18 @@ function toggleSecret() {
     $("#toggleSecret").removeClass("fa-eye-slash").addClass("fa-eye")
     $("#genS").attr("type", "password")
     toggleSecretshow = false
+  }
+}
+
+function toggleSecretMnemonic() {
+  if (toggleSecretMnemonicShow == false) {
+    $("#toggleSecretMnemonic").removeClass("fa-eye").addClass("fa-eye-slash")
+    $("#genM").attr("type", "text")
+    toggleSecretMnemonicShow = true
+  } else {
+    $("#toggleSecretMnemonic").removeClass("fa-eye-slash").addClass("fa-eye")
+    $("#genM").attr("type", "password")
+    toggleSecretMnemonicShow = false
   }
 }
 
