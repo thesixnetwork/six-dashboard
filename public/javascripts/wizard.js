@@ -1,3 +1,33 @@
+let rejectNote = {
+  need_more: `We appreciate that you took the time for the registration. However, we received insufficient information regarding your KYC/ AML documents and/ or information.
+
+We would highly appreciate if you could resubmit the documents and/ or information through the link below.
+
+Thank you for your interest in our ICO.
+
+SIX.network`,
+  restricted: `We highly appreciate that you took the time for the registration. After reviewing your submitted application materials, the KYC/AML result does not match with our requirements.
+
+We highly appreciate that you are interested in our ICO. Please do support us in the secondary market soon.
+
+Thank you for your interest in SIX.network and our ICO.
+
+SIX.network`,
+  incorrect: `We appreciate that you took the time for the registration. However, we received insufficient information regarding your KYC/ AML documents and/ or information.
+
+We would highly appreciate if you could resubmit the documents and/ or information through the link below.
+
+Thank you for your interest in our ICO.
+
+SIX.network`,
+  photo_corrupted: `We appreciate that you took the time for the registration. However, we received incorrect or unclear information regarding your selfie picture.
+
+We would highly appreciate if you could resubmit your selfie through the link below.`,
+  other: `We appreciate that you took the time for the registration. However, we received insufficient information regarding your KYC/ AML documents and/ or information.
+
+Thank you for your interest in our ICO. `
+}
+
 // Log out function using in Wizardd page to sign current user out
 function logOut () {
   console.log('logout')
@@ -387,7 +417,27 @@ function setupUserData() {
     $("#sampleImage5").toggle()
   }
   if (userData.kyc_status === 'rejected') {
-    $("#rejectReason").html(String(userData.reject_note).split("\n").join("<br>"))
+    let rejectReason
+    switch (userData.reject_type) {
+      case 'need_more':
+        rejectReason = rejectNote['need_more']
+        break
+      case 'restricted':
+        rejectReason = rejectNote['restricted']
+        break
+      case 'incorrect':
+        rejectReason = rejectNote['incorrect']
+        break
+      case 'photo_corrupted':
+        rejectReason = rejectNote['photo_corrupted']
+        break
+      case 'other':
+        rejectReason = rejectNote['other']
+        break
+    }
+    rejectReason = String(rejectReason).split("\n").join("<br>")
+    $("#rejectReason").html(rejectReason)
+
     if (userData.reject_note_extend !== null && userData.reject_note_extend !== '' && userData.reject_note_extend !== undefined) {
       $("#rejectReasonExtend").html(String(userData.reject_note_extend))
       $("#extendRejectNote").css("display", "block")

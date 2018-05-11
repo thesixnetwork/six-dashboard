@@ -145,8 +145,9 @@ exports.phoneVerificationRequest = functions.https.onCall((data, context) => {
         if (doc.data().is_verified === true) {
           return {
             success: false,
-            error_message: "Phone number has already been used"
-          };
+            error_message: 'Phone number has already been used',
+            error_code: 100
+          }
         } else {
           return generatePhoneVerificationCode(phoneNumber)
             .then(data => {
@@ -205,13 +206,13 @@ exports.phoneVerificationRequest = functions.https.onCall((data, context) => {
 });
 
 exports.phoneVerificationSubmit = functions.https.onCall((data, context) => {
-  let ref = admin.firestore().collection("phone-verifications");
-  let userRef = admin.firestore().collection("users");
-  let phoneNumber = data.phone_number;
-  let country = data.country;
-  let refCode = data.ref_code;
-  let code = data.code;
-  const uid = context.auth.uid;
+  let ref = admin.firestore().collection('phone-verifications')
+  let userRef = admin.firestore().collection('users')
+  let phoneNumber = data.phone_number
+  let country = data.country
+  let refCode = data.ref_code
+  let code = data.code
+  const uid = context.auth.uid
   return ref
     .doc(phoneNumber)
     .get()
@@ -220,38 +221,41 @@ exports.phoneVerificationSubmit = functions.https.onCall((data, context) => {
         if (doc.data().is_verified === true) {
           return {
             success: false,
-            error_message: "Phone number has already been used"
-          };
+            error_message: 'Phone number has already been used',
+            error_code: 100
+          }
         } else {
           if (
             doc.data().valid_until > Math.round(new Date().getTime() / 1000)
           ) {
             if (doc.data().ref_code === refCode && doc.data().code === code) {
-              let batch = admin.firestore().batch();
-              batch.set(ref.doc(phoneNumber), { is_verified: true });
+              let batch = admin.firestore().batch()
+              batch.set(ref.doc(phoneNumber), { is_verified: true })
               batch.update(userRef.doc(uid), {
                 phone_number: phoneNumber,
                 phone_verified: true,
                 country: country
-              });
+              })
               return batch
                 .commit()
                 .then(() => {
-                  return { success: true };
+                  return { success: true }
                 })
                 .catch(err => {
-                  return { success: false, error_message: err.message };
-                });
+                  return { success: false, error_message: err.message }
+                })
             } else {
               return {
                 success: false,
-                error_message: "Invalid verification code"
-              };
+                error_message: 'Invalid verification code',
+                error_code: 200
+              }
             }
           } else {
             return {
               success: false,
-              error_message: "Verification session expired"
+              error_message: "Verification session expired",
+              error_code: 300
             };
           }
         }
@@ -481,7 +485,7 @@ function genKycReadyEmail({ email }) {
                             </table>
                           </td>
                         </tr>
-      
+
                         <tr>
                           <td id="layout-row-margin109" valign="top" style="padding-top:5px;padding-bottom:5px;padding-right:5px;padding-left:5px;">
                             <table width="100%" border="0" cellpadding="0" cellspacing="0" style="font-size:13px;min-width:100%;mso-table-lspace:0pt;mso-table-rspace:0pt;border-collapse:initial !important;">
@@ -514,7 +518,7 @@ function genKycReadyEmail({ email }) {
                                             <span style="color:#000000;font-size:inherit;font-weight:400;line-height:inherit;text-decoration:inherit;font-family:arial;text-align:inherit;">
                                             :</span>
                                           </div>
-      
+
                                         </div>
                                       </td>
                                     </tr>
@@ -903,7 +907,7 @@ exports.autoSendKycReadyEmail = functions.firestore
                         <a href="https://goo.gl/H14G3B" target="_blank"  class="button" style="font-family: &quot;Prompt&quot;, sans-serif;color: #FFF;background: #3B409E;font-size: 16px;padding: 15px 20px;float: center;border-radius: 5px;margin-top: 10px;margin-bottom: 10px">ส่งเอกสาร</a>
                     </div>
                     <!-- end-thai -->
-            
+
                     <!-- english -->
                     <h2 class="title" style="font-family: &quot;Prompt&quot;, sans-serif;color: rgba(33, 33, 33, 1)">Hello !</h2>
                     <h3 class="subtitle" style="font-family: &quot;Prompt&quot;, sans-serif;color: rgba(33, 33, 33, 1)">Thank you for your interest in SIX.network</h3>
@@ -972,7 +976,7 @@ exports.autoSendKycReadyEmail = functions.firestore
                     <!-- thai -->
                     <h2 class="title" style="font-family: &quot;Prompt&quot;, sans-serif;color: rgba(33, 33, 33, 1)">เรียน ผู้ร่วมลงทุน</h2>
                     <dd> <p style="text-indent: 2.5em;font-family: &quot;Prompt&quot;, sans-serif;color: rgba(33, 33, 33, 1);font-size: 14px">    ทาง ซิคซ์ เนทเวิร์ค ขอแสดงความขอบคุณ ท่านผู้ร่วมลงทุนที่สนใจลงทุนในเหรียญ SIX Token จากการลงทะเบียนรอบ Pre-Sale SIX Token เพื่อรับโบนัส 6% ในช่วงต้นเดือนเมษายน 2561 ที่ผ่านมา อย่างไรก็ตามทางเรายังไม่ได้รับยอดโอนเงินจากท่านและมีความจำเป็นต้องเรียนแจ้ง ผู้ร่วมลงทุน ทราบว่า โบนัส 6% ใกล้จะสิ้นสุดและปิดการขายแล้ว</p>
-                    <p style="font-family: &quot;Prompt&quot;, sans-serif;color: rgba(33, 33, 33, 1);font-size: 14px"> ขอความกรุณาท่านผู้ร่วมลงทุนกรุณาทำการส่ง ETH ตามจำนวนที่ท่านได้ลงทะเบียนไว้และถ้าหากท่านผู้ร่วมลงทุนทำการโอนเหรียญ ETH เพื่อซื้อ SIX Token หลังจากนี้ ทางบริษัทขอเรียนแจ้งว่า ท่านผู้ร่วมลงทุนจะไม่ได้รับโบนัส 6% ตามที่กำหนด 
+                    <p style="font-family: &quot;Prompt&quot;, sans-serif;color: rgba(33, 33, 33, 1);font-size: 14px"> ขอความกรุณาท่านผู้ร่วมลงทุนกรุณาทำการส่ง ETH ตามจำนวนที่ท่านได้ลงทะเบียนไว้และถ้าหากท่านผู้ร่วมลงทุนทำการโอนเหรียญ ETH เพื่อซื้อ SIX Token หลังจากนี้ ทางบริษัทขอเรียนแจ้งว่า ท่านผู้ร่วมลงทุนจะไม่ได้รับโบนัส 6% ตามที่กำหนด
 
                       bonus 6% ก่อนที่จะหมดลงนะครับ</p></dd>
                     <dd> <p style="text-indent: 2.5em;font-family: &quot;Prompt&quot;, sans-serif;color: rgba(33, 33, 33, 1);font-size: 14px">  ทั้งนี้ทางบริษัทต้องขออภัย หากท่านผู้ร่วมลงทุนได้ทำการโอนเหรียญ ETH หรือ XLM มาเพื่อทำการซื้อ SIX Token เรียบร้อยแล้ว </p>
@@ -982,7 +986,7 @@ exports.autoSendKycReadyEmail = functions.firestore
                       <br style="font-family: &quot;Prompt&quot;, sans-serif;color: rgba(33, 33, 33, 1)"/>
                       <span style="font-family: &quot;Prompt&quot;, sans-serif;color: rgba(33, 33, 33, 1);font-size: 14px">ทีมงาน SIX network</span>
                     </div>
-    
+
                   </div>
             </div>
           </div>
