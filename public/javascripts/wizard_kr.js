@@ -1,3 +1,33 @@
+let rejectNote = {
+  need_more: `등록을 신청해주셔서 감사합니다. 그러나 KYC/AML 관련 자료 및 정보가 충분히 제출되지 않았습니다.
+
+아래 링크를 통해 빠진 서류 및 정보를 채워 다시 제출해주시기를 바랍니다.
+
+식스 네트워크 ICO에 관심을 보내주셔서 감사합니다.
+
+SIX.network`,
+  restricted: `등록을 신청해주셔서 감사합니다.
+
+식스 네트워크 ICO에 관심을 보내주셔서 정말 감사합니다.
+
+식스 네트워크와 식스 네트워크 ICO에 관심을 보내주셔서 감사합니다.
+
+SIX.network`,
+  incorrect: `등록을 신청해주셔서 감사합니다. 그러나 KYC/AML 관련 자료 및 정보가 충분히 제출되지 않았습니다.
+
+아래 링크를 통해 빠진 서류 및 정보를 채워 다시 제출해주시기를 바랍니다.
+
+식스 네트워크 ICO에 관심을 보내주셔서 감사합니다.
+
+SIX.network`,
+  photo_corrupted: `등록을 신청해주셔서 감사합니다. 그러나 셀카 사진 속 정보가 정확하지 않거나 불명확합니다.
+
+아래 링크를 통해 셀카 사진을 다시 제출해주시기를 바랍니다.`,
+  other: `등록을 신청해주셔서 감사합니다. 그러나 KYC/AML 관련 자료 및 정보가 충분히 제출되지 않았습니다.
+
+식스 네트워크 ICO에 관심을 보내주셔서 감사합니다. `
+}
+
 // Log out function using in Wizardd page to sign current user out
 function logOut () {
   console.log('logout')
@@ -131,7 +161,7 @@ function submitPhoneNumber() {
   let btnDOM = document.getElementById('verifyPhoneBtn')
   setDisable([phoneNumberDOM, btnDOM, countryPhoneDOM])
   if (parseData.valid === false) {
-    $("#verifyPhoneError").html("Invalid phone number format")
+    $("#verifyPhoneError").html("올바르지 않은 전화번호 형식입니다.")
     if ($("#verifyPhoneError").css("display", "none")) {
       $("#verifyPhoneError").slideToggle()
     }
@@ -179,7 +209,12 @@ function submitPhoneNumber() {
       let countDownNum = response.data.valid_until - Math.round((new Date()).getTime() / 1000)
       countdown({ fromNumber: countDownNum })
     } else {
-      $("#verifyPhoneError").html(response.data.error_message)
+      if (response.data.error_code == 100) {
+        $("#verifyPhoneError").html('이미 사용된 전화번호입니다.')
+      } else {
+        $("#verifyPhoneError").html(response.data.error_message)
+      }
+
       if ($("#verifyPhoneError").css("display", "none")) {
         $("#verifyPhoneError").slideToggle()
       }
@@ -242,7 +277,14 @@ function submitPhoneNumberCode() {
       document.getElementById("kycCountry").value = countryPhone
       goToKYCStep()
     } else {
-      $("#verifyPhoneSubmitError").html(response.data.error_message)
+      if(response.data.error_code == 100) {
+        $("#verifyPhoneSubmitError").html('이미 사용된 전화번호입니다.')
+      } else if (response.data.error_code == 200) {
+        $("#verifyPhoneSubmitError").html('올바르지 않은 인증 코드입니다.')
+      } else {
+        $("#verifyPhoneSubmitError").html(response.data.error_message)
+      }
+
       if ($("#verifyPhoneSubmitError").css("display", "none")) {
         $("#verifyPhoneSubmitError").slideToggle()
       }
@@ -310,7 +352,7 @@ function resendVerifyEmail() {
     let currentUser = firebase.auth().currentUser
     currentUser.sendEmailVerification().then(() => {
       if ($("#verifyNotice").css("display") == "none") {
-        $("#verifyNotice").html("Email successfully sent to your inbox.")
+        $("#verifyNotice").html("성공적으로 이메일이 수신함으로 전송되었습니다..")
         setEnable([resendDOM])
         $("#verifyNotice").slideToggle(400, resolve)
       }
@@ -387,7 +429,26 @@ function setupUserData() {
     $("#sampleImage5").toggle()
   }
   if (userData.kyc_status === 'rejected') {
-    $("#rejectReason").html(String(userData.reject_note).split("\n").join("<br>"))
+    let rejectReason
+    switch (userData.reject_type) {
+      case 'need_more':
+        rejectReason = rejectNote['need_more']
+        break
+      case 'restricted':
+        rejectReason = rejectNote['restricted']
+        break
+      case 'incorrect':
+        rejectReason = rejectNote['incorrect']
+        break
+      case 'photo_corrupted':
+        rejectReason = rejectNote['photo_corrupted']
+        break
+      case 'other':
+        rejectReason = rejectNote['other']
+        break
+    }
+    rejectReason = String(rejectReason).split("\n").join("<br>")
+    $("#rejectReason").html(rejectReason)
     if (userData.reject_note_extend !== null && userData.reject_note_extend !== '' && userData.reject_note_extend !== undefined) {
       $("#rejectReasonExtend").html(String(userData.reject_note_extend))
       $("#extendRejectNote").css("display", "block")
@@ -555,7 +616,7 @@ function submitKyc() {
     if ($("#kycFormAlert").css('display') == 'none') {
       $("#kycFormAlert").slideToggle()
     }
-    $("#kycFormAlertText").html("Sorry, Civils in the jurisdiction of the US, China, and Singapore are not able to join this ICO contribution according to the laws. Apologize for inconvenience this may cause.")
+    $("#kycFormAlertText").html("죄송합니다. 미국과 중국, 싱가포르 국적자들께서는 관련 법에 따라 ICO에 참여하실 수 없습니다. 이로 인해 발생할 수 있는 불편에 대해 사과 드립니다.")
     validate = false
   }
   if ((citizen_id == '' || citizen_id == undefined) && country === 'TH') { $('#kycCitizenIdAlert').addClass('invalid'); validate = false }

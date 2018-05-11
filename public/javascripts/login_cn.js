@@ -18,14 +18,14 @@ function forgotPassword () {
   setDisable([emailDOM, btnDOM])
   return firebase.auth().sendPasswordResetEmail(email)
     .then(() => {
-      $('#forgotPasswordText').html('Email sent to inbox')
+      $('#forgotPasswordText').html('승인을 대기 중입니다.')
       if ($('#forgotPasswordText').css('display') == 'none') {
         $('#forgotPasswordText').slideToggle()
       }
       setEnable([emailDOM, btnDOM])
     })
     .catch(err => {
-      $('#forgotPasswordText').html('Email sent to inbox')
+      $('#forgotPasswordText').html('승인을 대기 중입니다.')
       if ($('#forgotPasswordText').css('display') == 'none') {
         $('#forgotPasswordText').slideToggle()
       }
@@ -62,7 +62,7 @@ function login () {
     .catch(err => {
       console.log(err)
       if (err.code == 'auth/wrong-password' || err.code == 'auth/user-not-found') {
-        $('#signInAlertText').html('Invalid email or password')
+        $('#signInAlertText').html('邮箱地址或密码无效')
       } else {
         $('#signInAlertText').html(err.message)
       }
@@ -140,7 +140,7 @@ function signUp () {
   lockSignupForm()
   const parseData = libphonenumber.parse(phone_number_temp, country, {extended: true })
   if (parseData.valid === false) {
-    $('#signUpAlertText').html("Invalid phone number format")
+    $('#signUpAlertText').html("手机号码格式无效")
     if ($('#signUpAlert').css('display') == 'none') {
       $('#signUpAlert').slideToggle()
     }

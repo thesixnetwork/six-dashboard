@@ -1,3 +1,32 @@
+let rejectNote = {
+  need_more: `感谢您的注册。但我们收到的关于您的KYC/ AML文件和/或信息的不完整。
+
+我们将非常感激如果您能通过下面的链接重新提交文件和/或信息。
+
+感谢您对我们公开销售的关注。
+
+SIX.network`,
+  restricted: `感谢您的注册。在审核完您提交的申请材料后，您的KYC/AML结果与我们的要求不符。
+
+感谢您对我们公开销售的关注。希望您会继续在二级市场支持我们。
+
+感谢您对SIX.network和我们公开销售的关注。
+
+SIX.network`,
+  incorrect: `感谢您的注册。但我们收到的关于您的KYC/ AML文件和/或信息的不完整。
+
+我们将非常感激如果您能通过下面的链接重新提交文件和/或信息。
+
+感谢您对我们公开销售的关注。
+
+SIX.network`,
+  photo_corrupted: `感谢您的注册。但我们收到的您自拍照片的信息不正确或不清楚。
+
+我们将非常感激如果您能通过下面的链接重新提交您的自拍照片。`,
+  other: `感谢您的注册。但我们收到的关于您的KYC/ AML文件和/或信息的不完整。
+
+感谢您对我们公开销售的关注。 `
+}
 // Log out function using in Wizardd page to sign current user out
 function logOut () {
   console.log('logout')
@@ -131,7 +160,7 @@ function submitPhoneNumber() {
   let btnDOM = document.getElementById('verifyPhoneBtn')
   setDisable([phoneNumberDOM, btnDOM, countryPhoneDOM])
   if (parseData.valid === false) {
-    $("#verifyPhoneError").html("Invalid phone number format")
+    $("#verifyPhoneError").html("手机号码格式无效")
     if ($("#verifyPhoneError").css("display", "none")) {
       $("#verifyPhoneError").slideToggle()
     }
@@ -179,7 +208,11 @@ function submitPhoneNumber() {
       let countDownNum = response.data.valid_until - Math.round((new Date()).getTime() / 1000)
       countdown({ fromNumber: countDownNum })
     } else {
-      $("#verifyPhoneError").html(response.data.error_message)
+      if (response.data.error_code == 100) {
+        $("#verifyPhoneError").html('手机号码已被使用')
+      } else {
+        $("#verifyPhoneError").html(response.data.error_message)
+      }
       if ($("#verifyPhoneError").css("display", "none")) {
         $("#verifyPhoneError").slideToggle()
       }
@@ -242,7 +275,13 @@ function submitPhoneNumberCode() {
       document.getElementById("kycCountry").value = countryPhone
       goToKYCStep()
     } else {
-      $("#verifyPhoneSubmitError").html(response.data.error_message)
+      if(response.data.error_code == 100) {
+        $("#verifyPhoneSubmitError").html('手机号码已被使用')
+      } else if (response.data.error_code == 200) {
+        $("#verifyPhoneSubmitError").html('验证码无效')
+      } else {
+        $("#verifyPhoneSubmitError").html(response.data.error_message)
+      }
       if ($("#verifyPhoneSubmitError").css("display", "none")) {
         $("#verifyPhoneSubmitError").slideToggle()
       }
@@ -310,7 +349,7 @@ function resendVerifyEmail() {
     let currentUser = firebase.auth().currentUser
     currentUser.sendEmailVerification().then(() => {
       if ($("#verifyNotice").css("display") == "none") {
-        $("#verifyNotice").html("Email successfully sent to your inbox.")
+        $("#verifyNotice").html("邮件已成功发送到您的收件箱")
         setEnable([resendDOM])
         $("#verifyNotice").slideToggle(400, resolve)
       }
@@ -387,7 +426,26 @@ function setupUserData() {
     $("#sampleImage5").toggle()
   }
   if (userData.kyc_status === 'rejected') {
-    $("#rejectReason").html(String(userData.reject_note).split("\n").join("<br>"))
+    let rejectReason
+    switch (userData.reject_type) {
+      case 'need_more':
+        rejectReason = rejectNote['need_more']
+        break
+      case 'restricted':
+        rejectReason = rejectNote['restricted']
+        break
+      case 'incorrect':
+        rejectReason = rejectNote['incorrect']
+        break
+      case 'photo_corrupted':
+        rejectReason = rejectNote['photo_corrupted']
+        break
+      case 'other':
+        rejectReason = rejectNote['other']
+        break
+    }
+    rejectReason = String(rejectReason).split("\n").join("<br>")
+    $("#rejectReason").html(rejectReason)
     if (userData.reject_note_extend !== null && userData.reject_note_extend !== '' && userData.reject_note_extend !== undefined) {
       $("#rejectReasonExtend").html(String(userData.reject_note_extend))
       $("#extendRejectNote").css("display", "block")
@@ -555,7 +613,7 @@ function submitKyc() {
     if ($("#kycFormAlert").css('display') == 'none') {
       $("#kycFormAlert").slideToggle()
     }
-    $("#kycFormAlertText").html("Sorry, Civils in the jurisdiction of the US, China, and Singapore are not able to join this ICO contribution according to the laws. Apologize for inconvenience this may cause.")
+    $("#kycFormAlertText").html("抱歉，美国、中国和新加坡的公民根据相关法律无法参与此次公开销售。由此造成的不便我们深表歉意。")
     validate = false
   }
   if ((citizen_id == '' || citizen_id == undefined) && country === 'TH') { $('#kycCitizenIdAlert').addClass('invalid'); validate = false }
