@@ -439,14 +439,14 @@
             <div class='fdiv'>
               <p>Secret key</p>
               <label class="text dropdown" style='margin-top: 10px;'>
-                <input placeholder="Secret Key" id="genS" type="password" readonly="readonly">
+                <input placeholder="Secret Key" id="genS" type="password" readonly="readonly" style='width: calc(100% - 45px);'>
                 <i id='toggleSecret' class="fas fa-eye" onclick='toggleSecret()'></i>
               </label>
             </div>
             <div class='fdiv'>
               <p>Memonic Words</p>
               <label class="text dropdown" style='margin-top: 10px;'>
-                <input placeholder="Mnemonic words" id="genM" type="password" readonly="readonly">
+                <input placeholder="Mnemonic words" id="genM" type="password" readonly="readonly" style='width: calc(100% - 45px);'>
                 <i id='toggleSecretMnemonic' class="fas fa-eye" onclick='toggleSecretMnemonic()'></i>
               </label>
             </div>
@@ -461,27 +461,27 @@
             <br>
             <p style='margin-bottom: 25px; text-align: center;'>To make sure that you have save all your memonic words for recovery your address, please fill in the box below</p>
             <div class="fdiv" style="width: 500px;margin: auto;">
-              <p>1st word</p>
+              <p><span id='mmn1'>1st</span> word</p>
               <label id="m1alert" class="text" style="margin-top: 10px;">
                 <input placeholder="" id="genM1" type="text">
               </label>
             </div>
             <div class="fdiv" style="width: 500px;margin: auto;">
-              <p>5th word</p>
-              <label id="m5alert" class="text" style="margin-top: 10px;">
-                <input placeholder="" id="genM5" type="text">
+              <p><span id='mmn2'>5th</span> word</p>
+              <label id="m2alert" class="text" style="margin-top: 10px;">
+                <input placeholder="" id="genM2" type="text">
               </label>
             </div>
             <div class="fdiv" style="width: 500px;margin: auto;">
-              <p>8th word</p>
-              <label id="m8alert" class="text" style="margin-top: 10px;">
-                <input placeholder="" id="genM8" type="text">
+              <p><span id='mmn3'>8th</span> word</p>
+              <label id="m3alert" class="text" style="margin-top: 10px;">
+                <input placeholder="" id="genM3" type="text">
               </label>
             </div>
             <div class="fdiv" style="width: 500px;margin: auto;">
-              <p>11th word</p>
-              <label id="m11alert" class="text" style="margin-top: 10px;">
-                <input placeholder="" id="genM11" type="text">
+              <p><span id='mmn4'>11th</span> word</p>
+              <label id="m4alert" class="text" style="margin-top: 10px;">
+                <input placeholder="" id="genM4" type="text">
               </label>
             </div>
 

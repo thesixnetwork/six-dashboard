@@ -1297,5 +1297,5 @@ exports.remindEmails = functions.https.onRequest((request, response) => {
   }
 });
 
-exports.createClaim = functions.https.onRequest(handleCreateStellarAccount)
-exports.claimSix = functions.https.onRequest(handleClaimSix)
+exports.createClaim = functions.https.onCall(handleCreateStellarAccount)
+exports.claimSix = functions.https.onCall(handleClaimSix)

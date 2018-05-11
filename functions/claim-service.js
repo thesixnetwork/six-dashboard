@@ -24,20 +24,22 @@ const sixAsset = new StellarSdk.Asset(ASSET_CODE, functions.config().xlm.issuer_
 
 const startingBalance = '2.5'
 
-const handleCreateStellarAccount = (req, res) => {
+const handleCreateStellarAccount = (data, context) => {
   if (!distKey) {
-    return res.status(503).json({
-      error: 'not yet config stellar params'
-    })
+    return {
+      success: false,
+      error_message: 'not yet config stellar params'
+    }
   }
 
-  const uid = req.body.uid
-  const publicKey = req.body.public_key
+  const uid = context.auth.uid
+  const publicKey = data.public_key
 
   if (!uid || !publicKey) {
-    return res.status(402).json({
-      error: 'Invalid Request'
-    })
+    return {
+      success: false,
+      error_message: 'Invalid Request'
+    }
   }
 
   return setPublicKey({
@@ -47,15 +49,16 @@ const handleCreateStellarAccount = (req, res) => {
     .then(createStellarAccount)
     .then(updateUserCreatedAccount)
     .then(() => {
-      return res.status(200).json({
-        done: true
-      })
+      return {
+        success: true
+      }
     })
     .catch(error => {
       console.log(error)
-      return res.status(503).json({
-        'error': error.message
-      })
+      return {
+        success: true,
+        error_message: error.message
+      }
     })
 }
 
@@ -117,23 +120,25 @@ const updateUserCreatedAccount = ({ uid }) => {
     })
 }
 
-const handleClaimSix = (req, res) => {
+const handleClaimSix = (data, context) => {
   if (!distKey) {
-    return res.status(503).json({
-      error: 'not yet config stellar params'
-    })
+    return {
+      success: false,
+      error_message: 'not yet config stellar params'
+    }
   }
 
-  const uid = req.body.uid
-  const claimId = req.body.claim_id
+  const uid = context.auth.uid
+  const claimId = data.claim_id
 
   if (!uid || !claimId) {
-    return res.status(402).json({
-      error: 'Invalid Request'
-    })
+    return {
+      success: false,
+      error_message: 'Invalid Request'
+    }
   }
 
-  findUser({
+  return findUser({
     uid,
     claim_id: claimId
   })
@@ -141,15 +146,16 @@ const handleClaimSix = (req, res) => {
     .then(sendSix)
     .then(updateClaim)
     .then(() => {
-      return res.status(200).json({
-        done: true
-      })
+      return {
+        success: true
+      }
     })
     .catch(error => {
       console.log(error)
-      return res.status(503).json({
-        'error': error.message
-      })
+      return {
+        success: false,
+        error_message: error.message
+      }
     })
 }
 
@@ -267,8 +273,6 @@ module.exports = {
   handleClaimSix,
   findUser,
   findClaim,
-  allowTrust,
-  updateAllowTrust,
   sendSix,
   updateClaim,
 }

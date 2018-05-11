@@ -250,6 +250,6 @@
   margin: auto;
 }
 
-#toggleSecret {
+#toggleSecret, #toggleSecretMnemonic {
   cursor: pointer;
 }

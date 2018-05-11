@@ -704,6 +704,8 @@ function copyToClipboard (el, y, x) {
   setTimeout(function() { $("#copiedTooltip").removeClass("showToolTip") } , 400)
 }
 
+var randomedWords
+
 $(document).ready(function(){
   document.getElementById('oldP').onkeydown = function() {
     $('#oldAddress').removeClass("invalid")
@@ -712,14 +714,14 @@ $(document).ready(function(){
   document.getElementById('genM1').onkeydown = function() {
     $('#m1alert').removeClass("invalid")
   }
-  document.getElementById('genM5').onkeydown = function() {
-    $('#m5alert').removeClass("invalid")
+  document.getElementById('genM2').onkeydown = function() {
+    $('#m2alert').removeClass("invalid")
   }
-  document.getElementById('genM8').onkeydown = function() {
-    $('#m8alert').removeClass("invalid")
+  document.getElementById('genM3').onkeydown = function() {
+    $('#m3alert').removeClass("invalid")
   }
-  document.getElementById('genM11').onkeydown = function() {
-    $('#m11alert').removeClass("invalid")
+  document.getElementById('genM4').onkeydown = function() {
+    $('#m4alert').removeClass("invalid")
   }
   let clipboard = new ClipboardJS('.blinkTooltip')
   clipboard.on('success', function(e) {
@@ -869,6 +871,16 @@ $(document).ready(function(){
       })
     }
   })
+
+  var mnemonicSample = [0,1,2,3,4,5,6,7,8,9,10,11]
+  randomedWords = getRandom(mnemonicSample, 4)
+  randomedWords.sort(sortNumber)
+  var mnomonicOrderWord = ['1st', '2nd', '3rd', '4th', '5th', '6th', '7th', '8th', '9th', '10th', '11th', '12th']
+  $("#mmn1").text(mnomonicOrderWord[randomedWords[0]])
+  $("#mmn2").text(mnomonicOrderWord[randomedWords[1]])
+  $("#mmn3").text(mnomonicOrderWord[randomedWords[2]])
+  $("#mmn4").text(mnomonicOrderWord[randomedWords[3]])
+
 });
 
 function goToClaim() {
@@ -906,23 +918,23 @@ function submitGeneratedAccount() {
   const btn2DOM = document.getElementById('backGAccountBtn')
   let splittedWords = mnemonicWords.split(" ")
   const genM1DOM = document.getElementById('genM1')
-  if (genM1DOM.value !== splittedWords[0]) {
+  if (genM1DOM.value !== splittedWords[randomedWords[0]]) {
     $("#m1alert").addClass("invalid")
     return false
   }
-  const genM5DOM = document.getElementById('genM5')
-  if (genM5DOM.value !== splittedWords[4]) {
-    $("#m5alert").addClass("invalid")
+  const genM2DOM = document.getElementById('genM2')
+  if (genM2DOM.value !== splittedWords[randomedWords[1]]) {
+    $("#m2alert").addClass("invalid")
     return false
   }
-  const genM8DOM = document.getElementById('genM8')
-  if (genM8DOM.value !== splittedWords[7]) {
-    $("#m8alert").addClass("invalid")
+  const genM3DOM = document.getElementById('genM3')
+  if (genM3DOM.value !== splittedWords[randomedWords[2]]) {
+    $("#m3alert").addClass("invalid")
     return false
   }
-  const genM11DOM = document.getElementById('genM11')
-  if (genM11DOM.value !== splittedWords[10]) {
-    $("#m11alert").addClass("invalid")
+  const genM4DOM = document.getElementById('genM4')
+  if (genM4DOM.value !== splittedWords[randomedWords[3]]) {
+    $("#m4alert").addClass("invalid")
     return false
   }
   setDisable([btnDOM, btn2DOM])
@@ -931,11 +943,12 @@ function submitGeneratedAccount() {
     setTimeout(function(){
       $("#accountPg").css('width', '54%')
       $("#progressText").html("Activate your address")
-      setTimeout(function(){
+      requestFunction = firebase.functions().httpsCallable('createClaim')
+      requestFunction({public_key: generatedWallet.getPublicKey(0)}).then(response => {
         $("#accountPg").css('width', '79%')
         $("#trustlineStep").addClass("current")
-        $("#progressText").html("Adding trustline")
-        setTimeout(function(){
+        $("#progressText").html("Changing trustline")
+        automatedChangeTrustToSix().then(response => {
           $("#accountPg").css('width', '100%')
           $("#progressText").html("Yay ! Your address is now ready")
           setTimeout(function(){
@@ -943,8 +956,12 @@ function submitGeneratedAccount() {
             $("#makeSureBoxNew").slideToggle()
             $("#rewardClaimBox").slideToggle()
           }, 2000);
-        }, 1200);
-      }, 1200);
+        }).catch(err => {
+          console.log(err)
+        })
+      }).catch(err => {
+        console.log(err)
+      })
     }, 1200);
   })
 }
@@ -1017,7 +1034,7 @@ function submitWalletWay() {
   if (wallet == 'new') {
     mnemonic = StellarHDWallet.generateMnemonic({entropyBits: 128})
     mnemonicWords = mnemonic
-    generatedwallet = StellarHDWallet.fromMnemonic(mnemonic)
+    let generatedwallet = StellarHDWallet.fromMnemonic(mnemonic)
     generatedWallet = generatedwallet
     $("#genS").val(generatedwallet.getSecret(0))
     $("#genP").val(generatedwallet.getPublicKey(0))
@@ -1051,16 +1068,19 @@ function automatedChangeTrustToSix() {
 
   const server = new StellarSdk.Server(stellarUrl)
 
-  let transaction = new StellarSdk.TransactionBuilder(server.loadAccount(generatedWallet.getPublicKey(0)))
+  let userWallet = StellarSdk.Keypair.fromSecret(generatedWallet.getSecret(0))
+  return server.loadAccount(generatedWallet.getPublicKey(0)).then(account => {
+    let transaction = new StellarSdk.TransactionBuilder(account)
       .addOperation(
         StellarSdk.Operation.changeTrust({
-          asset: new StellarSdk.Asset("SIX", "GB243OQXZOE6GAAZIDIXHBSPAIOOVYE4PVC546GQBS3CBC4FUMUIMZ3M")
+          asset: new StellarSdk.Asset("SIX", issuerKey)
         })
       )
       .build()
 
-  transaction.sign(issuerKey)
-  server.submitTransaction(transaction).then(() => { console.log("success") }).catch(err => { console.log(err) })
+    transaction.sign(userWallet)
+    return server.submitTransaction(transaction)
+  })
 }
 
 function submitOldAccount() {
@@ -1197,4 +1217,22 @@ function requestOTP() {
   }
 //  let countDownNum = response.data.valid_until - Math.round((new Date()).getTime() / 1000)
   countdown({ fromNumber: 180 })
+}
+
+function getRandom(arr, n) {
+  var result = new Array(n),
+    len = arr.length,
+    taken = new Array(len);
+  if (n > len)
+    throw new RangeError("getRandom: more elements taken than available");
+  while (n--) {
+    var x = Math.floor(Math.random() * len);
+    result[n] = arr[x in taken ? taken[x] : x];
+    taken[x] = --len in taken ? taken[len] : len;
+  }
+  return result;
+}
+
+function sortNumber(a,b) {
+    return a - b;
 }
