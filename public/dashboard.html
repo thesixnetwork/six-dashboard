@@ -378,6 +378,37 @@
             <div id='loadmoreBtn' style='display: none;' class="loader-more"><a href="#">More</a></div>
           </section>
         </div>
+        <section class="claim-welcome-box" id='claimWelcomeBox' style='display: none'>
+          <header>
+            <h2>Welcome to token claim process</h2>
+          </header>
+          <main class='wizard new_wizard'>
+            <div class="step" style='background: white;'>
+              <div class="container">
+                <ul>
+                  <li class='current'><div class="circle"></div><p>&nbsp;</p></li>
+                  <li class='current'><div class="circle"></div><p>&nbsp;</p></li>
+                  <li class='current'><div class="circle"></div><p>&nbsp;</p></li>
+                </ul>
+              </div>
+            </div>
+          </main>
+          <p id='mainClaimWelcomeContent'>
+            <span>In this step, we will distribute SIX token to all investors.</span>
+            <br>
+            <span>In order to claim the token, there will be 3 types of claim process you need to continue</span>
+            <br>
+            <br>
+            <span>1. Create a new wallet - This process will generate new SIX wallet for you.</span>
+            <br>
+            <br>
+            <span>2. Transfer SIX token to your wallet - This process will transfer SIX token to your current Stellar wallet as a new asset. You need to setup Trustline process for your wallet manually.</span>
+            <br>
+            <br>
+            <span>Note: For security reasons, we DO NOT store any Public key, Private key and Recovery words (Mnemonic words) on our site. So you can create a new wallet with us and responsible on your own Public key.</span>
+            <div id="cwcbtn"><button id="welcomeClaimNextBtn" onclick='wcNext()'>Next</button></div>
+          </p>
+        </section>
         <section class="claim-box" id='claimBox' style='display: none;'>
           <header>
             <h2>Claim your SIX tokens</h2>
@@ -394,7 +425,47 @@
             </div>
           </main>
           <div id='walletSelectBox'>
-            <fieldset id='newWalletSelect'>
+            <ul id='walletSelection'>
+              <li>
+                <a href='#'>
+                  <div class='choiceText'>
+                    <h2>Generate new wallet address</h2>
+                    <span>This process will generate new SIX wallet for you.</span><br>
+                    <span>Note: For security reason, we DO NOT save any your Public key and Private Key</span>
+                  </div>
+                  <div class='choiceIcon'>
+                    <svg id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 1000"><defs><style>.cls-1{fill:#4a5ca9;}.cls-2{fill:#fff;}</style></defs><title>Claim process</title><path class="cls-1" d="M844.1,463.18H812.45V338.77a21.69,21.69,0,0,0-22.08-22.08h-53V206.27a21.69,21.69,0,0,0-22.08-22.08H283.19a88.59,88.59,0,0,0-88.33,88.33v5.15h0V703.88c0,41.22,33.86,75.08,75.08,75.08H791.1a21.69,21.69,0,0,0,22.08-22.08V628.06H844.1A21.69,21.69,0,0,0,866.18,606V485.26A21.69,21.69,0,0,0,844.1,463.18ZM283.19,228.36h410v22.82H283.92a22.08,22.08,0,0,0,0,44.17H693.2v21.35h-410c-25,0-44.17-19.14-44.17-44.17S258.16,228.36,283.19,228.36ZM769,734.8H269.94c-17.67,0-30.92-13.25-30.92-30.92V349.08a89.94,89.94,0,0,0,44.17,11.78h485.1V463.18H677a21.69,21.69,0,0,0-22.08,22.08V606A21.69,21.69,0,0,0,677,628.06h92Zm53-150.9H699.09V507.34H822V583.9Z"/><circle class="cls-2" cx="287.43" cy="678.02" r="161.79"/><path class="cls-1" d="M287.43,540.22c-76,0-137.8,61.82-137.8,137.8s61.81,137.8,137.8,137.8S425.23,754,425.23,678s-61.82-137.8-137.8-137.8Zm0,257.53A119.73,119.73,0,1,1,407.16,678,119.86,119.86,0,0,1,287.43,797.75Zm0,0"/><path class="cls-1" d="M342.19,669H296.46V623.26a9,9,0,0,0-18.07,0V669H232.67a9,9,0,0,0,0,18.07h45.72v45.72a9,9,0,0,0,18.07,0V687.06h45.73a9,9,0,0,0,0-18.07Zm0,0"/></svg>
+                  </div>
+                </a>
+              </li>
+
+              <li>
+                <a href='#'>
+                  <div class='choiceText'>
+                    <h2>Transfer SIX token to my Stellar wallet</h2>
+                    <span>This process will transfer SIX token to your current Stellar wallet as a new asset. You need to setup trustline process for your wallet manually</span>
+                  </div>
+                  <div class='choiceIcon'>
+                    <svg id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 1000"><defs><style>.cls-1{fill:#4a5ca9;}</style></defs><title>Claim process</title><rect class="cls-1" x="362.31" y="352.25" width="415.13" height="34.24" rx="1.18" ry="1.18"/><path class="cls-1" d="M855.26,356.08l-66.52-66.52c-6.5-6.5-17.2-7.46-24-1.3A17,17,0,0,0,764,312.9l30.15,30.16a5.4,5.4,0,0,1-3.82,9.22H681.65c-9.2,0-17.44,6.89-17.92,16.07a17,17,0,0,0,17,17.9H790.37a5.4,5.4,0,0,1,3.82,9.22l-29.47,29.48c-6.5,6.5-7.46,17.2-1.31,24a17,17,0,0,0,24.64.67l67.2-67.2A18.64,18.64,0,0,0,855.26,356.08Z"/><path class="cls-1" d="M206.06,449.42a80.05,80.05,0,1,1,80.06-80.05A80.14,80.14,0,0,1,206.06,449.42Zm0-145.57a65.51,65.51,0,1,0,65.52,65.51A65.58,65.58,0,0,0,206.06,303.85Z"/><rect class="cls-1" x="216.56" y="643.07" width="415.13" height="34.24" rx="1.18" ry="1.18" transform="translate(848.25 1320.38) rotate(-180)"/><path class="cls-1" d="M138.74,673.48,205.26,740c6.5,6.5,17.2,7.46,24,1.3a17,17,0,0,0,.66-24.64L199.8,686.5a5.4,5.4,0,0,1,3.82-9.22H312.35c9.2,0,17.44-6.89,17.92-16.07a17,17,0,0,0-17-17.9H203.62a5.4,5.4,0,0,1-3.82-9.22l29.47-29.48c6.5-6.5,7.46-17.2,1.31-24a17,17,0,0,0-24.64-.67l-67.2,67.2A18.64,18.64,0,0,0,138.74,673.48Z"/><path class="cls-1" d="M787.94,740.24a80.05,80.05,0,1,1,80-80.05A80.15,80.15,0,0,1,787.94,740.24Zm0-145.57a65.51,65.51,0,1,0,65.51,65.51A65.59,65.59,0,0,0,787.94,594.68Z"/><path class="cls-1" d="M206.06,418.15a48.79,48.79,0,1,1,48.79-48.79A48.85,48.85,0,0,1,206.06,418.15Zm0-93.21a44.43,44.43,0,1,0,44.42,44.43A44.47,44.47,0,0,0,206.06,324.94Z"/><path class="cls-1" d="M787.94,709a48.79,48.79,0,1,1,48.79-48.79A48.85,48.85,0,0,1,787.94,709Zm0-93.21a44.43,44.43,0,1,0,44.42,44.43A44.47,44.47,0,0,0,787.94,615.76Z"/></svg>
+                  </div>
+                </a>
+
+              </li>
+
+              <li>
+                <a href='#'>
+                  <div class='choiceText'>
+                    <h2>Transfer SIX token to my Ledger Nano device</h2>
+                    <span>This process will transfer SIX token to your connected Ledger Nano device as a new asset. You need to setup trustline process for your wallet manually</span><br>
+                  </div>
+                  <div class='choiceIcon'>
+                    <svg id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 1000"><defs><style>.cls-1{fill:#4a5ca9;}</style></defs><title>Claim process</title><path class="cls-1" d="M806.6,366l-157-157a18.51,18.51,0,0,0-26.17,0l-93.83,93.83a55.6,55.6,0,0,0-63.17,10.83L229.22,550.83a166.52,166.52,0,0,0,235.5,235.5L701.94,549.12A55.59,55.59,0,0,0,712.77,486l93.83-93.83A18.5,18.5,0,0,0,806.6,366ZM675.77,523,438.56,760.17a129.44,129.44,0,0,1-183.16,0h0a129.44,129.44,0,0,1,0-183.16L492.61,339.79a18.52,18.52,0,0,1,26.17,0l157,157h0A18.52,18.52,0,0,1,675.77,523Zm13.08-65.42L558,326.7l78.5-78.5,26.17,26.17-39.25,39.25a18.5,18.5,0,0,0,26.17,26.17l39.25-39.25L715,326.7,675.77,366a18.5,18.5,0,0,0,26.17,26.17l39.25-39.25L767.35,379Z"/><path class="cls-1" d="M561.24,454.32a18.5,18.5,0,0,0-26.17,0l-83.5,83.5-13.08-39.25,44.25-44.25a18.5,18.5,0,1,0-26.17-26.17l-52.33,52.33a18.5,18.5,0,0,0-4.47,18.93l22.55,67.65-59.58,59.58a55.51,55.51,0,1,0,26.17,26.17l8.9-8.9h98A18.51,18.51,0,0,0,509,638.37L561.36,585a18.5,18.5,0,0,0-26.42-25.91l-46.89,47.8H434.82L561.24,480.49A18.5,18.5,0,0,0,561.24,454.32ZM351.91,689.82a18.5,18.5,0,1,1,0-26.17A18.52,18.52,0,0,1,351.91,689.82Z"/></svg>
+                  </div>
+                </a>
+
+              </li>
+            </ul>
+            <fieldset id='newWalletSelect' style='display: none;'>
               <dl>
                 <dd>
                   <label class="dropdown kycinput" id="walletSelectAlert">
@@ -407,7 +478,7 @@
                 </dd>
               </dl>
             </fieldset>
-            <div id="swbtn"><button id="submitWalletWayBtn" onclick='submitWalletWay()'>Next</button></div>
+            <div style='display: none;' id="swbtn"><button id="submitWalletWayBtn" onclick='submitWalletWay()'>Next</button></div>
 
           </div>
           <div id='divClaimBoxOld' style='display: none;'>

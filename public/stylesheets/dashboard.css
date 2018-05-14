@@ -253,3 +253,76 @@
 #toggleSecret, #toggleSecretMnemonic {
   cursor: pointer;
 }
+
+.new_wizard .step ul li {
+  width: 7%!important;
+}
+
+.new_wizard .step ul li.current::before, .new_wizard .step ul li.current .circle {
+  background: #dddfe6!important;
+}
+
+#claimWelcomeBox {
+  max-width: 800px;
+  margin: auto;
+}
+
+#cwcbtn {
+  max-width: 200px;
+  margin: auto;
+  margin-top: 50px;
+}
+
+.new_wizard .step {
+  padding: 30px 0 0px 0!important;
+}
+
+#walletSelection {
+  max-width: 800px;
+  margin: auto;
+  margin-top: 20px;
+}
+
+#walletSelection li {
+  width: 100%;
+  border: 1px solid rgb(210,210,210);
+  border-radius: 11px;
+  padding: 20px;
+  margin-bottom: 30px;
+  min-height: 120px;
+}
+
+#walletSelection li a {
+  display: flex;
+}
+
+#walletSelection li:hover {
+  border: 1px solid #4a5ab5;
+}
+
+#walletSelection li h2 {
+  font-size: 19px;
+  color: rgb(74, 74, 72);
+  margin-bottom: 0px;
+  text-align: left;
+}
+
+.choiceText {
+  border-right: 1px solid rgb(210, 210, 210);
+  padding-right: 20px;
+  max-width: 530px;
+}
+
+#walletSelection li:hover .choiceText {
+  border-right: 1px solid #4a5ab5;
+}
+
+#walletSelection li:hover h2 {
+  color: #4a5ab5;
+}
+
+.choiceIcon {
+  max-width: 100px;
+  padding-left: 20px;
+  margin: auto;
+}

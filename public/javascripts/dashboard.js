@@ -894,7 +894,10 @@ function goToClaim() {
   $("#congratulationBox").css("display", "none")
   $("#walletBox").css("display", "none")
   $("#warnBox").css("display", "none")
-  $("#claimBox").css("display", "block")
+  $("section.video").css("display", "none")
+  $("section#myWallet").css("display", "none")
+  $("#claimBox").css("display", "none")
+  $("#claimWelcomeBox").css("display", "block")
 }
 
 function generateNewAccount() {
@@ -1252,4 +1255,9 @@ function getRandom(arr, n) {
 
 function sortNumber(a,b) {
     return a - b;
+}
+
+function wcNext() {
+  $("#claimBox").css("display", "block")
+  $("#claimWelcomeBox").css("display", "none")
 }
