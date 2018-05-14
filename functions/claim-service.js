@@ -3,6 +3,7 @@ const StellarSdk = require('stellar-sdk')
 const admin = require('firebase-admin')
 const db = admin.firestore()
 const claimRef = db.collection('users_claim')
+const userRef = db.collection('users')
 
 let stellarUrl
 if (functions.config().campaign.is_production === 'true') {
@@ -47,6 +48,7 @@ const handleCreateStellarAccount = (data, context) => {
     public_key: publicKey
   })
     .then(createStellarAccount)
+    .then(updateUserWalletAccount)
     .then(updateUserCreatedAccount)
     .then(() => {
       return {
@@ -110,6 +112,20 @@ const createStellarAccount = ({ uid, public_key: publicKey }) => {
     .loadAccount(distKey.publicKey())
     .then(createTransaction)
     .then(submitTransaction)
+}
+
+const updateUserWalletAccount = ({ uid, public_key }) => {
+  return userRef
+    .doc(uid)
+    .update({
+      submit_xlm_wallet: true,
+      xlm_address: public_key
+    }).then(() => {
+      return {
+        uid,
+        public_key
+      }
+    })
 }
 
 const updateUserCreatedAccount = ({ uid }) => {

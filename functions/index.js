@@ -528,6 +528,19 @@ exports.updateETHWallet = functions.https.onCall((data, context) => {
   }
 });
 
+exports.updateTrustline = functions.https.onCall((data, context) => {
+  const uid = context.auth.uid
+  return admin.firestore().collection('users').doc(uid).update({
+      add_trust_line: true
+    }).then(admin.firestore().collection('users_claim').doc(uid).update({
+      trustline: true
+    })).then(() => {
+      return {
+        success: true
+      }
+    })
+})
+
 exports.updateXLMWallet = functions.https.onCall((data, context) => {
   const uid = context.auth.uid;
   const xlm_address = data.xlm_address;

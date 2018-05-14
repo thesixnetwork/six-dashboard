@@ -939,23 +939,27 @@ function submitGeneratedAccount() {
   }
   setDisable([btnDOM, btn2DOM])
   $("#progressContainer").slideToggle(function() {
-    $("#accountPg").css('width', '15%')
+    $("#accountPg").css('width', '25%')
     setTimeout(function(){
-      $("#accountPg").css('width', '54%')
+      $("#accountPg").css('width', '50%')
       $("#progressText").html("Activate your address")
       requestFunction = firebase.functions().httpsCallable('createClaim')
       requestFunction({public_key: generatedWallet.getPublicKey(0)}).then(response => {
-        $("#accountPg").css('width', '79%')
+        $("#accountPg").css('width', '75%')
         $("#trustlineStep").addClass("current")
         $("#progressText").html("Changing trustline")
         automatedChangeTrustToSix().then(response => {
-          $("#accountPg").css('width', '100%')
-          $("#progressText").html("Yay ! Your address is now ready")
-          setTimeout(function(){
-            $("#claimStep").addClass("current")
-            $("#makeSureBoxNew").slideToggle()
-            $("#rewardClaimBox").slideToggle()
-          }, 2000);
+          markTrustlineUser().then(() => {
+            $("#accountPg").css('width', '100%')
+            $("#progressText").html("Yay ! Your address is now ready")
+            setTimeout(function(){
+              $("#claimStep").addClass("current")
+              $("#makeSureBoxNew").slideToggle()
+              $("#rewardClaimBox").slideToggle()
+            }, 2000);
+          }).catch(err => {
+            console.log(err)
+          })
         }).catch(err => {
           console.log(err)
         })
@@ -966,10 +970,23 @@ function submitGeneratedAccount() {
   })
 }
 
+function markTrustlineUser() {
+  const requestFunction = firebase.functions().httpsCallable('updateTrustline')
+  return requestFunction({})
+}
+
 function submitOTP(id) {
   const btnDOM = document.getElementById('otpSubmitBtn')
   setDisable([btnDOM])
-  console.log(id)
+  const requestFunction = firebase.functions().httpsCallable('claimOTPSubmit')
+  requestFunction({ref_code: $("#refVerify").text(), code: $("#otpCode").val(), claim_id: String(id)}).then(response => {
+    console.log(response)
+    $("#otpDialog").removeClass('show-dialog');
+    $("#claim-"+id).removeClass("avail").addClass("claimed")
+    setDisable([$("#claim-"+id)[0]])
+    $("#claim-"+id).text("Claimed")
+    setEnable([btnDOM])
+  }).catch(err => { alert(err); setEnable([btnDOM]); $("#otpDialog").removeClass('show-dialog'); })
 }
 
 function claimSix(id) {
