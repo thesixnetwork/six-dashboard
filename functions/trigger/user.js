@@ -4,8 +4,9 @@ const nodemailer = require('nodemailer')
 const axios = require('axios')
 const path = '/users/{uid}'
 const http = require('http')
+const FormData = require('form-data')
 
-module.exports = function (functions, fireStore) {
+module.exports = function (admin, functions, fireStore) {
   const events = functions.firestore.document(path)
   return [{
     'name': 'sendCampaignEmailRegistration',
@@ -21,14 +22,15 @@ module.exports = function (functions, fireStore) {
     'module': events.onUpdate(event => checkPresaleDiscount(event, functions, fireStore))
   }, {
     'name': 'checkKYCStatus',
-    'module': events.onUpdate(event => checkKYCStatus(event, functions, fireStore))
+    'module': events.onUpdate(event => checkKYCStatus(event, admin, functions, fireStore))
   }, {
     'name': 'checkAddressETH',
     'module': events.onUpdate(event => checkAddressETH(event, functions, fireStore))
-  }]
+  }
+  ]
 }
 
-function checkKYCStatus (event, functions, fireStore) {
+function checkKYCStatus (event, admin, functions, fireStore) {
   const mailTransport = nodemailer.createTransport({
     host: functions.config().email.host,
     port: functions.config().email.port,
@@ -47,6 +49,7 @@ function checkKYCStatus (event, functions, fireStore) {
   if (userData.kyc_status === 'pending' && previousUserData.kyc_status !== 'pending') {
     mailOptions.subject = 'KYC pending for approval.'
     mailOptions.html = emailTemplate.pending({name: userData.first_name, lastname: userData.last_name})
+    kycArtemis(admin, functions, userData)
   } else if (userData.kyc_status === 'approved' && previousUserData.kyc_status !== 'approved') {
     mailOptions.subject = 'KYC already approved.'
     mailOptions.html = emailTemplate.approved({})
@@ -204,4 +207,198 @@ function checkAddressETH (event, functions, fireStore) {
   } else {
     return Promise.resolve()
   }
+}
+
+class ArtemisAPI {
+  constructor (host, app, token) {
+    this.host = host
+    this.app = app
+    this.token = token
+    this.header = {
+      'Content-Type': 'application/json',
+      'WEB2PY-USER-TOKEN': token
+    }
+  }
+
+  apiUrl () {
+    return this.host + '/' + this.app
+  }
+
+  createIndividualCustomer (data) {
+    let apiCall = axios.create({
+      baseURL: this.apiUrl(),
+      headers: this.header
+    })
+    return apiCall.post('/default/individual_risk', data)
+  }
+
+  updateIndividualCustomer (data) {
+    let apiCall = axios.create({
+      baseURL: this.apiUrl(),
+      headers: this.header
+    })
+    return apiCall.put('/api/individual_customer', data)
+  }
+
+  getIndividualCustomer (data) {
+    let apiCall = axios.create({
+      baseURL: this.apiUrl(),
+      headers: this.header
+    })
+    return apiCall.get('/api/individual_customer', {params: data})
+  }
+
+  // data is formdata type
+  createIndividualCustomerDoc (imageUrl, data) {
+    let headers = data.getHeaders()
+    headers['WEB2PY-USER-TOKEN'] = this.token
+    let apiCall = axios.create({
+      baseURL: this.apiUrl(),
+      headers: headers
+
+    })
+    return axios.get(imageUrl, { responseType: 'stream' }).then(response => {
+      // data.append('file', fs.createReadStream('golf.jpg'), 'golf.jpg')
+      data.append('file', response.data, 'golf.jpg')
+      return apiCall.post('/api/individual_doc', data)
+    })
+  }
+
+  checkIndividualFaceCustomer (data) {
+    let apiCall = axios.create({
+      baseURL: this.apiUrl(),
+      headers: this.header
+    })
+    return apiCall.post('/api/individual_face', data)
+  }
+
+  createIndividualCustomerReport (data) {
+    let apiCall = axios.create({
+      baseURL: this.apiUrl(),
+      headers: this.header
+    })
+    return apiCall.post('/api/individual_customer_report', data)
+  }
+
+  checkCustomApproveStatus (data) {
+    let apiCall = axios.create({
+      baseURL: this.apiUrl(),
+      headers: this.header
+    })
+    return apiCall.get('/default/check_status.json', {params: data})
+  }
+}
+
+function kycArtemis (admin, functions, userData) {
+  if (userData.kyc_status !== 'pending' ||
+    userData.kyc_error_count === 3 ||
+    userData.country === 'TH'
+  ) {
+    return false
+  }
+  let artemis = new ArtemisAPI(functions.config().astemis.host, functions.config().astemis.app, functions.config().astemis.token)
+  admin.database().ref(`/country/${userData.country}/`).on('value', function (snapshot) {
+    let artemisData = {
+      domain_name: functions.config().astemis.domain_name,
+      rfrID: userData.uid,
+      first_name: userData.first_name,
+      last_name: userData.last_name,
+      nationality: snapshot.val().nationality,
+      country_of_residence: snapshot.val().country,
+      ssic_code: 'UNKNOWN',
+      ssoc_code: 'UNKNOWN',
+      onboarding_mode: 'NON FACE-TO-FACE',
+      payment_mode: 'VIRTUAL CURRENCY',
+      product_service_complexity: 'COMPLEX',
+      addresses: userData.address,
+      identification_number: userData.citizen_id,
+      telephone_numbers: [
+        userData.phone_number
+      ],
+      emails: [
+        userData.email
+      ]
+    }
+    artemis.getIndividualCustomer({cust_rfr_id: userData.uid}).then(data => {
+      console.log('Update Profile')
+      artemisData.cust_rfr_id = userData.uid
+      delete artemisData['rfrID']
+      return artemis.updateIndividualCustomer(artemisData)
+    }).catch(err => {
+      console.log(err.response.data.errors)
+      console.log('Create Profile')
+      return artemis.createIndividualCustomer(artemisData)
+    }).then(astermisUser => {
+      console.log('Upload Doc')
+      let photoId = new FormData()
+      photoId.append('document_type', 'PASSPORT')
+      photoId.append('authenticity', 'SIGHTED ORIGINAL')
+      photoId.append('cust_rfr_id', userData.uid)
+      let astemisPhoto = artemis.createIndividualCustomerDoc(userData.pic4, photoId)
+      let selfie = new FormData()
+      selfie.append('document_type', 'SELFIE')
+      selfie.append('authenticity', 'SIGHTED ORIGINAL')
+      selfie.append('cust_rfr_id', userData.uid)
+      let astemisSelfie = artemis.createIndividualCustomerDoc(userData.pic2, selfie)
+      return Promise.all([astemisPhoto, astemisSelfie])
+    }).then(values => {
+      console.log('Check Face')
+      let [astemisPhoto, astemisSelfie] = values
+      console.log(astemisPhoto.data.id)
+      console.log(astemisSelfie.data.id)
+      let faceId = {
+        cust_rfr_id: userData.uid,
+        source_doc_id: astemisPhoto.data.id,
+        target_doc_id: astemisSelfie.data.id
+      }
+      return artemis.checkIndividualFaceCustomer(faceId)
+    }).then(face => {
+      console.log('Create Invidividual Report')
+      if (typeof (userData.kyc_error_count) === 'undefined') {
+        userData.kyc_error_count = 0
+      }
+      let updateData = {
+        kyc_status: 'rejected',
+        reject_type: 'photo_corrupted',
+        updater: 'auto',
+        update_time: Date.now(),
+        kyc_error_count: userData.kyc_error_count + 1
+      }
+      console.log(face.data.compare_result)
+      switch (face.data.compare_result) {
+        case 'MATCH':
+          return artemis.createIndividualCustomerReport({cust_rfr_id: userData.uid}).then(report => {
+            if (report.data.approval_status === 'CLEARED') {
+              updateData = {
+                kyc_status: 'approved',
+                updater: 'auto',
+                update_time: Date.now()
+              }
+              return admin.firestore().collection('users').doc(userData.uid).update(updateData)
+            }
+          })
+        case 'NO MATCH':
+          return admin.firestore().collection('users').doc(userData.uid).update(updateData)
+        case 'UNCERTAIN':
+          return admin.firestore().collection('users').doc(userData.uid).update(updateData)
+      }
+    }).catch(err => {
+      if (typeof (userData.kyc_error_count) === 'undefined') {
+        userData.kyc_error_count = 0
+      }
+      let updateData = {
+        kyc_status: 'rejected',
+        reject_type: 'photo_corrupted',
+        updater: 'auto',
+        update_time: Date.now(),
+        kyc_error_count: userData.kyc_error_count + 1
+      }
+      switch (err.response.data.compare_result) {
+        case 'UNCERTAIN':
+          return admin.firestore().collection('users').doc(userData.uid).update(updateData)
+      }
+    })
+  }, function (errorObject) {
+    console.log('The read failed: ' + errorObject.code)
+  })
 }

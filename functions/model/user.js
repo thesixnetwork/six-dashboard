@@ -20,21 +20,21 @@ class User {
   }
 
   static signUp (data, context) {
-    //let promise = new Promise(function (resolve, reject) {
-      let isXss = false
-      for (var key in data) {
-        if (/script.*src/.test(data[key]) || /img.*src/.test(data[key])) {
-          isXss = true
-        }
+    // let promise = new Promise(function (resolve, reject) {
+    let isXss = false
+    for (var key in data) {
+      if (/script.*src/.test(data[key]) || /img.*src/.test(data[key])) {
+        isXss = true
       }
-      if (isXss == false) {
-        return User.collection.doc(context.auth.uid).set(Object.assign(data, {kyc_status: 'not_complete'}), {merge: true})
-          .then((data) => { return data })
-      } else {
-        Error('Script detected')
-      }
-    //})
-    //return promise
+    }
+    if (isXss === false) {
+      return User.collection.doc(context.auth.uid).set(Object.assign(data, {kyc_status: 'not_complete'}), {merge: true})
+        .then((data) => { return data })
+    } else {
+      Error('Script detected')
+    }
+    // })
+    // return promise
   }
 
   static updateUser (data, context) {
@@ -71,7 +71,7 @@ class User {
             isXss = true
           }
         }
-        if ((isXss == false) && (data.kyc_status === 'pending' ||
+        if ((isXss === false) && (data.kyc_status === 'pending' ||
           (data.kyc_status === null && currentUser.kyc_status === 'rejected') ||
            User.arrayContainsArray([
              'first_name',

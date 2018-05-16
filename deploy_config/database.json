@@ -1,0 +1,262 @@
+{
+	"AF": {
+		"country": "AFGHANISTAN",
+		"nationality": "AFGHANI"
+	},
+	"AX": {
+		"country": "ALAND ISLANDS",
+		"nationality": "ALANDIC"
+	},
+	"AL":{
+		"country": "ALBANIA",
+		"nationality": "ALBANIAN"
+	},
+	"DZ": {
+		"country": "ALGERIA",
+		"nationality": "ALGERIAN"
+	},
+	"AS": {
+		"country": "AMERICAN SAMOA",
+		"nationality": "U.S. TERRITORY"
+	},
+	"AD": {
+		"country": "ANDORRA",
+		"nationality": "ANDORRAN"
+	},
+	"AO": {
+		"country": "ANGOLA",
+		"nationality": "ANGOLAN"
+	},
+	"AI": {
+		"country": "ANGUILLA",
+		"nationality": "BRITISH OVERSEAS TERRITORY"
+	},
+	"AQ": {
+		"country": "ANTARCTICA",
+		"nationality": "ANTARCTIC"
+	},
+	"AG": {
+		"country": "ANTIGUA AND BARBUDA",
+		"nationality": "ANTIGUAN"
+	},
+	"AR": {
+		"country": "ARGENTINA",
+		"nationality": "ARGENTINE"
+	},
+	"AM": {
+		"country": "ARMENIA",
+		"nationality": "ARMENIAN"
+	},
+	"AW": {
+		"country": "ARUBA",
+		"nationality": "ARUBIAN"
+	},
+	"AU": {
+		"country": "AUSTRALIA",
+		"nationality": "AUSTRALIAN"
+	},
+	"AT": {
+		"country": "AUSTRIA",
+		"nationality": "AUSTRIAN"
+	},
+	"AZ": {
+		"country": "AZERBAIJAN",
+		"nationality": "AZERBAIJANI"
+	},
+	"BS": {
+		"country": "BAHAMAS",
+		"nationality": "BAHAMEESE"
+	},
+	"BH": {
+		"country": "BAHRAIN",
+		"nationality": "BAHRAINIAN"
+	},
+	"BD": {
+		"country": "BANGLADESH",
+		"nationality": "BANGLADESHI"
+	},
+	"BB": {
+		"country": "BARBADOS",
+		"nationality": "BARBADIAN"
+	},
+	"BY": {
+		"country": "BELARUS",
+		"nationality": "BELARUSIAN"
+	},
+	"BE": {
+		"country": "BELGIUM",
+		"nationality": "BELGIAN"
+	},
+	"BZ": {
+		"country": "BELIZE",
+		"nationality": "BELIZEAN"
+	},
+	"BJ": {
+		"country": "BENIN",
+		"nationality": "BENINESE"
+	},
+	"BM": {
+		"country": "BERMUDA",
+		"nationality": "BRITISH OVERSEAS TERRITORY"
+	},
+	"BT": {
+		"country": "BHUTAN",
+		"nationality": "BHUTANESE"
+	},
+	"BO": {
+		"country": "BOLIVIA",
+		"nationality": "BOLIVIAN"
+	},
+	"BA": {
+		"country": "BOSNIA AND HERZEGOVINA",
+		"nationality": "BOSNIAN"
+	},
+	"BW": {
+		"country": "BOTSWANA",
+		"nationality": "MOTSWANA"
+	},
+	"BV": {
+		"country": "BENIN",
+		"nationality": "BENINESE"
+	},
+	"BR": {
+		"country": "BRAZIL",
+		"nationality": "BRAZILIAN"
+	},
+	"IO": {
+		"country": "BRITISH INDIAN OCEAN TERRITORY",
+		"nationality": "BRITISH INDIAN OCEAN TERRITORY"
+	},
+	"BN": {
+		"country": "BRUNEI",
+		"nationality": "BRUNEIAN"
+	},
+	"BG": {
+		"country": "BULGARIA",
+		"nationality": "BULGARIAN"
+	},
+	"BF": {
+		"country": "BURKINA FASO",
+		"nationality": "BURKINABE"
+	},
+	"BI": {
+		"country": "BURUNDI",
+		"nationality": "BURUNDIAN"
+	},
+	"KH": {
+		"country": "CAMBODIA",
+		"nationality": "CAMBODIAN"
+	},
+	"CM": {
+		"country": "CAMEROON",
+		"nationality": "CAMEROONIAN"
+	},
+	"CA": {
+		"country": "CANADA",
+		"nationality": "CANADIAN"
+	},
+	"CV": {
+		"country": "CAPE VERDE",
+		"nationality": "CAPE VERDEAN"
+	},
+	"KY": {
+		"country": "CAYMAN ISLANDS",
+		"nationality": "BRITISH OVERSEAS TERRITORY"
+	},
+	"CF": {
+		"country": "CENTRAL AFRICAN REPUBLIC",
+		"nationality": "CENTRAL AFRICAN"
+	},
+	"TD": {
+		"country": "CHAD",
+		"nationality": "CHADIAN"
+	},
+	"CL": {
+		"country": "CHILE",
+		"nationality": "CHILEAN"
+	},
+	"CN": {
+		"country": "CHINA",
+		"nationality": "CHINESE"
+	},
+	"CX": {
+		"country": "CHRISTMAS ISLAND",
+		"nationality": "AUSTRALIAN EXTERNAL TERRITORY"
+	},
+	"CC": {
+		"country": "COCOS (KEELING) ISLANDS",
+		"nationality": "AUSTRALIAN EXTERNAL TERRITORY"
+	},
+	"CO": {
+		"country": "COLOMBIA",
+		"nationality": "COLOMBIAN"
+	},
+	"KM": {
+		"country": "COMOROS",
+		"nationality": "COMORAN"
+	},
+	"CG": {
+		"country": "CONGO (REPUBLIC OF)",
+		"nationality": "CONGOLESE"
+	},
+	"CD": {
+		"country": "DEMOCRATIC REPUBLIC OF THE CONGO",
+		"nationality": "CONGOLESE"
+	},
+	"CK": {
+		"country": "COOK ISLANDS",
+		"nationality": "COOK ISLANDER"
+	},
+	"CR": {
+		"country": "COSTA RICA",
+		"nationality": "COSTA RICAN"
+	},
+	"CI": {
+		"country": "COTE D'IVOIRE (IVORY COAST)",
+		"nationality": "IVORIAN"
+	},
+	"HR": {
+		"country": "CROATIA",
+		"nationality": "CROATIAN"
+	},
+	"CU": {
+		"country": "CUBA",
+		"nationality": "CUBAN"
+	},
+	"CY": {
+		"country": "CYPRUS",
+		"nationality": "CYPRIOT"
+	},
+	"CZ": {
+		"country": "CZECH REPUBLIC",
+		"nationality": "CZECH"
+	},
+	"DK": {
+		"country": "DENMARK",
+		"nationality": "DANISH"
+	},
+	"DJ": {
+		"country": "DJIBOUTI",
+		"nationality": "DJIBOUTIAN"
+	},
+	"TH": {
+		"country": "THAILAND",
+		"nationality": "THAI"
+	},
+	"KR": {
+		"country": "SOUTH KOREA",
+		"nationality": "SOUTH KOREAN"
+	},
+	"GB": {
+		"country": "UNITED KINGDOM",
+		"nationality": "BRITISH"
+	},
+	"US": {
+		"country": "UNITED STATES OF AMERICA",
+		"nationality": "AMERICAN"
+	},
+	"TH": {
+		"country": "THAILAND",
+		"nationality": "THAI"
+	}
+}
