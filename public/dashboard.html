@@ -28,6 +28,8 @@
     <link rel="stylesheet" href="stylesheets/dashboard.css">
     <script src="javascripts/clipboard.js"></script>
     <script src="javascripts/jquery-3.2.1.min.js"></script>
+    <script src="javascripts/external/jquery/jquery.js"></script>
+    <script src="javascripts/jquery-ui.js"></script>
     <script src="javascripts/url_replacer.js"></script>
     <script src="javascripts/jquery.animateNumber.min.js"></script>
     <script src="javascripts/config.js"></script>
@@ -125,7 +127,7 @@
     </header>
   </body>
   <main class="dashboard-2">
-      <aside>
+      <aside style='padding: 0px;'>
         <section class="user-detail">
           <span class="avatar" id='firstCharName'>V</span>
           <p class='truncate'>Hello&nbsp;<span id='displayName'>Vachara A.</span></p>
@@ -178,7 +180,10 @@
           </p>
         </section>
         <a href="#" onclick='backToDashboard()' id='backToTxHis' style='display: none;'><i class="fas fa-arrow-left"></i> Back to Dashboard</a>
-        <a href="#" onclick='goToClaim()' id='goToClaim' style='display: none;'>Claim your six</a>
+        <a href="#" onclick='showXLMWallet()' id='showXLMWalletBtn' style='display: none;' class='noWallet'>
+          <svg id="xlmWalletIcon" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 816.02 792"><defs><style>.cls-3{fill:#bbb;}</style></defs><title>icon</title><path class="cls-3" d="M723.59,371.89H691.94V247.49a21.69,21.69,0,0,0-22.08-22.08h-53V115A21.69,21.69,0,0,0,594.78,92.9H162.68a88.59,88.59,0,0,0-88.33,88.33v5.15h0V612.6c0,41.22,33.86,75.08,75.08,75.08H670.59a21.69,21.69,0,0,0,22.08-22.08V536.78h30.92a21.69,21.69,0,0,0,22.08-22.08V394A21.69,21.69,0,0,0,723.59,371.89ZM162.68,137.07h410v22.82H163.42a22.08,22.08,0,1,0,0,44.17H572.69V225.4h-410c-25,0-44.17-19.14-44.17-44.17S137.65,137.07,162.68,137.07ZM648.51,643.51H149.43c-17.67,0-30.92-13.25-30.92-30.92V257.79a89.94,89.94,0,0,0,44.17,11.78h485.1V371.89H556.5A21.69,21.69,0,0,0,534.41,394V514.69a21.69,21.69,0,0,0,22.08,22.08h92Zm53-150.9H578.58V416.05H701.51v76.56Z"/></svg>
+          <span id='xlmWalletText'>Show your wallet</span>
+        </a>
         <section class="static-link" style='margin-top: 7px;'>
           <a href="https://six.network/faq.html" class='faqMenu'><strong>FAQ</strong></a>
           <a href="https://six.network/faq.html#howtobuy" class='faqMenu'><strong>How to buy ?</strong></a>
@@ -427,7 +432,7 @@
           <div id='walletSelectBox'>
             <ul id='walletSelection'>
               <li>
-                <a href='#'>
+                <a href='#' onclick='goToGenerateNewWallet()'>
                   <div class='choiceText'>
                     <h2>Generate new wallet address</h2>
                     <span>This process will generate new SIX wallet for you.</span><br>
@@ -440,7 +445,7 @@
               </li>
 
               <li>
-                <a href='#'>
+                <a href='#' onclick='goToOldWallet()'>
                   <div class='choiceText'>
                     <h2>Transfer SIX token to my Stellar wallet</h2>
                     <span>This process will transfer SIX token to your current Stellar wallet as a new asset. You need to setup trustline process for your wallet manually</span>
@@ -465,20 +470,6 @@
 
               </li>
             </ul>
-            <fieldset id='newWalletSelect' style='display: none;'>
-              <dl>
-                <dd>
-                  <label class="dropdown kycinput" id="walletSelectAlert">
-                    <select id='walletSelect' name="value" id="value">
-                      <option value="new">Generate new wallet address</option>
-                      <option value="old">I already have a wallet address</option>
-                    </select>
-                    <i class="fas fa-angle-down"></i>
-                  </label>
-                </dd>
-              </dl>
-            </fieldset>
-            <div style='display: none;' id="swbtn"><button id="submitWalletWayBtn" onclick='submitWalletWay()'>Next</button></div>
 
           </div>
           <div id='divClaimBoxOld' style='display: none;'>
@@ -501,64 +492,41 @@
           <div id='divClaimBoxNew' style='display: none;'>
             <br>
             <br>
-            <div class='fdiv'>
-              <p>Public key</p>
-              <label class="text" style='margin-top: 10px;'>
-                <input placeholder="Public Address" id="genP" type="text" readonly="readonly">
-              </label>
-            </div>
-            <div class='fdiv'>
-              <p>Secret key</p>
-              <label class="text dropdown" style='margin-top: 10px;'>
-                <input placeholder="Secret Key" id="genS" type="password" readonly="readonly" style='width: calc(100% - 45px);'>
-                <i id='toggleSecret' class="fas fa-eye" onclick='toggleSecret()'></i>
-              </label>
-            </div>
-            <div class='fdiv'>
-              <p>Memonic Words</p>
-              <label class="text dropdown" style='margin-top: 10px;'>
-                <input placeholder="Mnemonic words" id="genM" type="password" readonly="readonly" style='width: calc(100% - 45px);'>
-                <i id='toggleSecretMnemonic' class="fas fa-eye" onclick='toggleSecretMnemonic()'></i>
-              </label>
-            </div>
-            <br>
-            <p>Please note, saving a secret is very important. To keep your token safe, make sure that you hide your secret key away from unauthorized parties.</p>
-            <div class="btn">
-              <button id='DownloadGAccountBtn' onclick='downloadGeneratedAccount()' style='width: auto; margin-top: 20px; margin-bottom: 20px; min-width: 150px; margin-right: 40px; background: white; color: #4a5ab5; border: solid;'> Download </button>
-              <button id='submitG2AccountBtn' onclick='nextGeneratedAccount()' style='width: auto; margin-top: 20px; margin-bottom: 20px; min-width: 150px;'> Next </button>
-            </div>
-          </div>
-          <div id='makeSureBoxNew' style='display: none;'>
-            <br>
-            <p style='margin-bottom: 25px; text-align: center;'>To make sure that you have save all your memonic words for recovery your address, please fill in the box below</p>
-            <div class="fdiv" style="width: 500px;margin: auto;">
-              <p><span id='mmn1'>1st</span> word</p>
-              <label id="m1alert" class="text" style="margin-top: 10px;">
-                <input placeholder="" id="genM1" type="text">
-              </label>
-            </div>
-            <div class="fdiv" style="width: 500px;margin: auto;">
-              <p><span id='mmn2'>5th</span> word</p>
-              <label id="m2alert" class="text" style="margin-top: 10px;">
-                <input placeholder="" id="genM2" type="text">
-              </label>
-            </div>
-            <div class="fdiv" style="width: 500px;margin: auto;">
-              <p><span id='mmn3'>8th</span> word</p>
-              <label id="m3alert" class="text" style="margin-top: 10px;">
-                <input placeholder="" id="genM3" type="text">
-              </label>
-            </div>
-            <div class="fdiv" style="width: 500px;margin: auto;">
-              <p><span id='mmn4'>11th</span> word</p>
-              <label id="m4alert" class="text" style="margin-top: 10px;">
-                <input placeholder="" id="genM4" type="text">
-              </label>
-            </div>
+            <div id="accordion">
+              <h3 class='accordionHeader'>Save your recovery words</h3>
+              <div class='accordionContent'>
+                <p style='text-align: center;'>Please store your recovery words in a safe place. <br>If you loss it, your tokens will permanently be lost.</p><br>
+                <p style='font-weight: bold; line-height: 15px; text-align: center;'>Recovery words</p>
+                <span style="text-align: center; display: block; font-size: 11px;">(Mnemonic words)</span><br>
+                <div id='mnemonicWordContainer'>
+                  <span id='mnemonicShowing'>
+                  </span>
+                </div>
+                <br>
+                <div class="btn">
+                  <button id='submitG2AccountBtn' onclick='nextGeneratedAccount()' style='width: auto; margin-bottom: 10px; min-width: 150px;'> Next </button>
+                </div>
 
-            <div class="btn">
-              <button id='backGAccountBtn' onclick='backGeneratedAccount()' style='width: auto; margin-top: 20px; margin-bottom: 20px; min-width: 150px; margin-right: 40px; background: #9a9ca3;'> Back </button>
-              <button id='submitGAccountBtn' onclick='submitGeneratedAccount()' style='width: auto; margin-top: 20px; margin-bottom: 20px; min-width: 150px;'> Submit </button>
+              </div>
+              <h3 class='accordionHeader'>Repeat your recovery words</h3>
+              <div class='accordionContent'>
+                <p style='text-align: center;'>Please choose your recovery words in their original order, to ensure you stored, or saved them correctly.</p><br>
+                <p style='font-weight: bold; line-height: 15px; text-align: center;'>Recovery words</p>
+                <span style="text-align: center; display: block; font-size: 11px;">(Mnemonic words)</span><br>
+                <div id='mnemonicWordAnswerContainer'>
+                  <span id='mnemonicAnswerShowing'>
+                  </span>
+                </div>
+                <br>
+                <div id='answerMnemonicContainer'>
+                  <span id='answerMnemonicShowing'>
+                  </span>
+                </div>
+                <div class="btn">
+                  <button id='backAccountBtn' onclick='goBackToMnemonic()' style='width: auto; margin-bottom: 10px; min-width: 150px; background: #C7C7C7; margin-right: 70px;'> Previous </button>
+                  <button id='submitGAccountBtn' onclick='submitGeneratedAccount()' style='width: auto; margin-bottom: 10px; min-width: 150px;'> Submit </button>
+                </div>
+              </div>
             </div>
             <div style='max-width: 650px; margin: auto;'>
               <div id='progressContainer' style='display: none;'>

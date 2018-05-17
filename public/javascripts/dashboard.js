@@ -243,7 +243,6 @@ function initializeAdmin () {
     let db = firebase.firestore()
     db.collection('admins').get()
       .then(() => {
-        $("#goToClaim").css("display", "block")
         resolve()
       })
       .catch(() => {
@@ -711,18 +710,6 @@ $(document).ready(function(){
     $('#oldAddress').removeClass("invalid")
     $("#alertOldAddress").html("")
   }
-  document.getElementById('genM1').onkeydown = function() {
-    $('#m1alert').removeClass("invalid")
-  }
-  document.getElementById('genM2').onkeydown = function() {
-    $('#m2alert').removeClass("invalid")
-  }
-  document.getElementById('genM3').onkeydown = function() {
-    $('#m3alert').removeClass("invalid")
-  }
-  document.getElementById('genM4').onkeydown = function() {
-    $('#m4alert').removeClass("invalid")
-  }
   let clipboard = new ClipboardJS('.blinkTooltip')
   clipboard.on('success', function(e) {
     let bodyRect = document.body.getBoundingClientRect()
@@ -872,15 +859,6 @@ $(document).ready(function(){
     }
   })
 
-  var mnemonicSample = [0,1,2,3,4,5,6,7,8,9,10,11]
-  randomedWords = getRandom(mnemonicSample, 4)
-  randomedWords.sort(sortNumber)
-  var mnomonicOrderWord = ['1st', '2nd', '3rd', '4th', '5th', '6th', '7th', '8th', '9th', '10th', '11th', '12th']
-  $("#mmn1").text(mnomonicOrderWord[randomedWords[0]])
-  $("#mmn2").text(mnomonicOrderWord[randomedWords[1]])
-  $("#mmn3").text(mnomonicOrderWord[randomedWords[2]])
-  $("#mmn4").text(mnomonicOrderWord[randomedWords[3]])
-
 });
 
 function goToClaim() {
@@ -896,6 +874,9 @@ function goToClaim() {
   $("#warnBox").css("display", "none")
   $("section.video").css("display", "none")
   $("section#myWallet").css("display", "none")
+  $(".dashboard-2 aside hr").css("display", "none")
+  $("section#progressContent").css("display", "none")
+  $("#showXLMWalletBtn").css("display", "flex")
   $("#claimBox").css("display", "none")
   $("#claimWelcomeBox").css("display", "block")
 }
@@ -907,8 +888,21 @@ function generateNewAccount() {
 }
 
 function nextGeneratedAccount() {
-  $("#divClaimBoxNew").css("display", "none")
-  $("#makeSureBoxNew").css("display", "block")
+  $( "#accordion" ).accordion({
+    active: 1
+  });
+}
+
+function goBackToMnemonic() {
+  $( "#accordion" ).accordion({
+    active: 0
+  });
+}
+
+function goToRepeat() {
+  $( "#accordion" ).accordion({
+    active: 2
+  });
 }
 
 function backGeneratedAccount() {
@@ -918,58 +912,56 @@ function backGeneratedAccount() {
 
 function submitGeneratedAccount() {
   const btnDOM = document.getElementById('submitGAccountBtn')
-  const btn2DOM = document.getElementById('backGAccountBtn')
+  const btn2DOM = document.getElementById('backAccountBtn')
   let splittedWords = mnemonicWords.split(" ")
-  const genM1DOM = document.getElementById('genM1')
-  if (genM1DOM.value !== splittedWords[randomedWords[0]]) {
-    $("#m1alert").addClass("invalid")
-    return false
+  let validate = true
+  for(var key in answerMnemonic) {
+    if (splittedWords[answerMnemonic[key]] != key) {
+      validate = false
+      $("#mnemonicAnswerShowing").addClass("customAlert")
+    }
   }
-  const genM2DOM = document.getElementById('genM2')
-  if (genM2DOM.value !== splittedWords[randomedWords[1]]) {
-    $("#m2alert").addClass("invalid")
-    return false
+  if (Object.keys(answerMnemonic).length != 12) {
+    validate = false
+    $("#mnemonicAnswerShowing").addClass("customAlert")
   }
-  const genM3DOM = document.getElementById('genM3')
-  if (genM3DOM.value !== splittedWords[randomedWords[2]]) {
-    $("#m3alert").addClass("invalid")
-    return false
-  }
-  const genM4DOM = document.getElementById('genM4')
-  if (genM4DOM.value !== splittedWords[randomedWords[3]]) {
-    $("#m4alert").addClass("invalid")
+  if (validate === false) {
     return false
   }
   setDisable([btnDOM, btn2DOM])
-  $("#progressContainer").slideToggle(function() {
-    $("#accountPg").css('width', '25%')
-    setTimeout(function(){
-      $("#accountPg").css('width', '50%')
-      $("#progressText").html("Activate your address")
-      requestFunction = firebase.functions().httpsCallable('createClaim')
-      requestFunction({public_key: generatedWallet.getPublicKey(0)}).then(response => {
-        $("#accountPg").css('width', '75%')
-        $("#trustlineStep").addClass("current")
-        $("#progressText").html("Changing trustline")
-        automatedChangeTrustToSix().then(response => {
-          markTrustlineUser().then(() => {
-            $("#accountPg").css('width', '100%')
-            $("#progressText").html("Yay ! Your address is now ready")
-            setTimeout(function(){
-              $("#claimStep").addClass("current")
-              $("#makeSureBoxNew").slideToggle()
-              $("#rewardClaimBox").slideToggle()
-            }, 2000);
+  $("#accordion").fadeToggle(100, function() {
+
+    $("#progressContainer").fadeToggle(function() {
+      $("#accountPg").css('width', '25%')
+      setTimeout(function(){
+        $("#accountPg").css('width', '50%')
+        $("#progressText").html("Activate your address")
+        requestFunction = firebase.functions().httpsCallable('createClaim')
+        requestFunction({public_key: generatedWallet.getPublicKey(0)}).then(response => {
+          $("#accountPg").css('width', '75%')
+          $("#trustlineStep").addClass("current")
+          $("#progressText").html("Changing trustline")
+          automatedChangeTrustToSix().then(response => {
+            markTrustlineUser().then(() => {
+              $("#accountPg").css('width', '100%')
+              $("#progressText").html("Yay ! Your address is now ready")
+              setTimeout(function(){
+                $("#claimStep").addClass("current")
+                $("#divClaimBoxNew").slideToggle()
+                $("#rewardClaimBox").slideToggle()
+              }, 2000);
+            }).catch(err => {
+              console.log(err)
+            })
           }).catch(err => {
             console.log(err)
           })
         }).catch(err => {
           console.log(err)
         })
-      }).catch(err => {
-        console.log(err)
-      })
-    }, 1200);
+      }, 1200);
+    })
+
   })
 }
 
@@ -1045,24 +1037,98 @@ function claimSix(id) {
   })
 }
 
+function shuffle(array) {
+  var currentIndex = array.length, temporaryValue, randomIndex;
+  while (0 !== currentIndex) {
+    randomIndex = Math.floor(Math.random() * currentIndex);
+    currentIndex -= 1;
+
+    temporaryValue = array[currentIndex];
+    array[currentIndex] = array[randomIndex];
+    array[randomIndex] = temporaryValue;
+  }
+  return array;
+}
+
 var generatedWallet
 var mnemonicWords
-function submitWalletWay() {
-  const walletSelectDOM = document.getElementById('walletSelect')
-  const wallet = walletSelectDOM.value
+function goToGenerateNewWallet() {
   $("#walletSelectBox").css("display", 'none')
-  if (wallet == 'new') {
-    mnemonic = StellarHDWallet.generateMnemonic({entropyBits: 128})
-    mnemonicWords = mnemonic
-    let generatedwallet = StellarHDWallet.fromMnemonic(mnemonic)
-    generatedWallet = generatedwallet
-    $("#genS").val(generatedwallet.getSecret(0))
-    $("#genP").val(generatedwallet.getPublicKey(0))
-    $("#genM").val(mnemonic)
-    $("#divClaimBoxNew").css("display", 'block')
-  } else {
-    $("#divClaimBoxOld").css("display", 'block')
+  mnemonic = StellarHDWallet.generateMnemonic({entropyBits: 128})
+  mnemonicWords = mnemonic
+  let splittedWords = mnemonicWords.split(" ")
+  let showDOM = document.getElementById("mnemonicShowing")
+  let choiceDOM = document.getElementById("answerMnemonicShowing")
+  let shuffleWords = splittedWords.slice(0)
+  shuffleWords = shuffle(shuffleWords)
+  for(let i = 0; i < splittedWords.length; i++) {
+    let span = document.createElement("span")
+    let txt = document.createTextNode((i+1)+"."+splittedWords[i]+"\n")
+    span.append(txt)
+    showDOM.append(span)
   }
+  for(let j = 0; j < shuffleWords.length; j++) {
+    let span2 = document.createElement("span")
+    let adom = document.createElement("a")
+    adom.href = '#'
+    let txt2 = document.createTextNode(shuffleWords[j]+"\n")
+    span2.append(txt2)
+    adom.append(span2)
+    adom.className = "unusedWord"
+    adom.id = 'choiceAnswer'+shuffleWords[j]
+    adom.onclick = function() { submitAnswerMnemonic(shuffleWords[j]) }
+    choiceDOM.append(adom)
+  }
+
+  let generatedwallet = StellarHDWallet.fromMnemonic(mnemonic)
+  generatedWallet = generatedwallet
+  $("#genS").val(generatedwallet.getSecret(0))
+  $("#genP").val(generatedwallet.getPublicKey(0))
+  $("#genM").val(mnemonic)
+  $("#divClaimBoxNew").css("display", 'block')
+  $( "#accordion" ).accordion();
+}
+
+var answerMnemonic = {}
+var indexAnswerMnemonic = {}
+var lastIndexMnemonic = 0
+function submitAnswerMnemonic(word) {
+  $("#mnemonicAnswerShowing").removeClass("customAlert")
+  if (answerMnemonic[word] === undefined) {
+    let newSpan = document.createElement("span")
+    let newTxt = document.createTextNode((lastIndexMnemonic+1)+"."+word+"\n")
+    newSpan.append(newTxt)
+    newSpan.id = 'mnemonicAnswer'+word
+    let answerBoard = document.getElementById('mnemonicAnswerShowing')
+    answerBoard.append(newSpan)
+    answerMnemonic[word] = lastIndexMnemonic
+    indexAnswerMnemonic[lastIndexMnemonic] = word
+    let btnDom = document.getElementById('choiceAnswer'+word)
+    $(btnDom).removeClass("unusedWord").addClass("usedWord")
+    lastIndexMnemonic++
+  } else {
+    let oldDom = document.getElementById('mnemonicAnswer'+word)
+    oldDom.remove()
+    let thisIndex = answerMnemonic[word]
+    answerMnemonic[word] = undefined
+    indexAnswerMnemonic[thisIndex] = undefined
+    for(let i = (thisIndex+1); i < lastIndexMnemonic; i++) {
+      let thisWord = indexAnswerMnemonic[i]
+      answerMnemonic[thisWord] = i-1
+      indexAnswerMnemonic[i-1] = thisWord
+      indexAnswerMnemonic[i] = undefined
+      let oldElement = document.getElementById('mnemonicAnswer'+thisWord)
+      oldElement.textContent = oldElement.textContent.replace(String(i+1), String(i))
+    }
+    let btnDom = document.getElementById('choiceAnswer'+word)
+    $(btnDom).removeClass("usedWord").addClass("unusedWord")
+    lastIndexMnemonic--
+  }
+}
+
+function goToOldWallet() {
+  $("#walletSelectBox").css("display", 'none')
+  $("#divClaimBoxOld").css("display", 'block')
 }
 
 function automatedChangeTrustToSix() {
@@ -1174,6 +1240,8 @@ doc.save('stellar_wallet_credentials.pdf')
 }
 
 var toggleSecretshow = false
+var toggleSecretshow2 = false
+var toggleSecretMnemonicShow2 = false
 var toggleSecretMnemonicShow = false
 
 function toggleSecret() {
@@ -1196,6 +1264,30 @@ function toggleSecretMnemonic() {
   } else {
     $("#toggleSecretMnemonic").removeClass("fa-eye-slash").addClass("fa-eye")
     $("#genM").attr("type", "password")
+    toggleSecretMnemonicShow = false
+  }
+}
+
+function toggleSecret2() {
+  if (toggleSecretshow == false) {
+    $("#toggleSecret2").removeClass("fa-eye").addClass("fa-eye-slash")
+    $("#reS").attr("type", "text")
+    toggleSecretshow = true
+  } else {
+    $("#toggleSecret2").removeClass("fa-eye-slash").addClass("fa-eye")
+    $("#reS").attr("type", "password")
+    toggleSecretshow = false
+  }
+}
+
+function toggleSecretMnemonic2() {
+  if (toggleSecretMnemonicShow == false) {
+    $("#toggleSecretMnemonic2").removeClass("fa-eye").addClass("fa-eye-slash")
+    $("#reM").attr("type", "text")
+    toggleSecretMnemonicShow = true
+  } else {
+    $("#toggleSecretMnemonic2").removeClass("fa-eye-slash").addClass("fa-eye")
+    $("#reM").attr("type", "password")
     toggleSecretMnemonicShow = false
   }
 }
@@ -1237,24 +1329,6 @@ function requestOTP() {
   }
 //  let countDownNum = response.data.valid_until - Math.round((new Date()).getTime() / 1000)
   countdown({ fromNumber: 180 })
-}
-
-function getRandom(arr, n) {
-  var result = new Array(n),
-    len = arr.length,
-    taken = new Array(len);
-  if (n > len)
-    throw new RangeError("getRandom: more elements taken than available");
-  while (n--) {
-    var x = Math.floor(Math.random() * len);
-    result[n] = arr[x in taken ? taken[x] : x];
-    taken[x] = --len in taken ? taken[len] : len;
-  }
-  return result;
-}
-
-function sortNumber(a,b) {
-    return a - b;
 }
 
 function wcNext() {

@@ -180,7 +180,7 @@
 .fdiv p {
   width: 170px;
   line-height: 58px;
-  font-size: 16px;
+  font-size: 15px;
 }
 
 #accountPgB {
@@ -250,7 +250,7 @@
   margin: auto;
 }
 
-#toggleSecret, #toggleSecretMnemonic {
+#toggleSecret, #toggleSecretMnemonic, #toggleSecret2, #toggleSecretMnemonic2 {
   cursor: pointer;
 }
 
@@ -289,7 +289,7 @@
   border-radius: 11px;
   padding: 20px;
   margin-bottom: 30px;
-  min-height: 120px;
+  min-height: 160px;
 }
 
 #walletSelection li a {
@@ -325,4 +325,127 @@
   max-width: 100px;
   padding-left: 20px;
   margin: auto;
+}
+
+#accordion {
+  margin-bottom: 50px;
+}
+
+.accordionContent {
+  padding: 20px;
+  border: 1px solid rgb(210, 210, 210);
+}
+
+h3.accordionHeader {
+  background: #4a5ab5;
+  color: white;
+  font-size: 15px;
+  padding: 5px;
+  padding-left: 20px;
+  padding-right: 20px;
+  text-align: center;
+  cursor: pointer;
+  margin-top: 1px;
+}
+
+h3.accordionHeader:first-of-type {
+  border-top-left-radius: 5px;
+  border-top-right-radius: 5px;
+}
+
+.wizard .step ul li .circle::before {
+  content: "";
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  position: absolute;
+  top: 4px;
+  left: 4px;
+  background: #fff;
+}
+
+.dashboard-2 aside {
+  padding: 0px!important;
+}
+
+section.user-detail {
+  padding: 32px 24px 24px 24px!important;
+}
+
+section#progressContent {
+  padding: 32px 56px 32px 56px!important;
+}
+
+.dashboard-2 section {
+  padding: 24px 48px 24px 48px!important;
+}
+
+.noWallet {
+  display: flex;
+  font-size: 17px;
+  padding: 12px;
+  text-align: center;
+  color: #BBBBBB;
+  border-bottom: 1px solid #e3e3e3;
+}
+
+#xlmWalletIcon {
+  width: 30px;
+  margin-left: auto;
+  margin-right: 15px;
+}
+
+#xlmWalletText {
+  margin-right: auto;
+}
+
+#mnemonicWordContainer, #mnemonicWordAnswerContainer, #answerMnemonicContainer {
+  text-align: justify;
+  -moz-text-align-last: center;
+  text-align-last: center;
+  word-spacing: 35px;
+}
+
+#mnemonicShowing, #mnemonicAnswerShowing, #answerMnemonicShowing {
+  font-size: 14px;
+  background: #f1f4f9;
+  padding: 10px 30px;
+  display: block;
+  margin: 0 55px;
+}
+
+#mnemonicAnswerShowing {
+  min-height: 72px;
+}
+
+#answerMnemonicShowing {
+  background: unset;
+  line-height: 38px;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: space-between;
+}
+
+#answerMnemonicShowing a {
+  border: 1px solid #D3D3D3;
+  padding: 5px 10px;
+  border-radius: 3px;
+  margin: 5px 12px;
+  line-height: 20px;
+}
+
+#answerMnemonicShowing a.unusedWord:hover {
+  border: 1px solid #4a5ab5;
+  color: #4a5ab5;
+}
+
+#answerMnemonicShowing a.usedWord {
+  background: #F5F5F5;
+  border: 1px solid #EFEFEF;
+  color: rgb(150, 150, 150);
+}
+
+.customAlert {
+  border: 1px solid red;
 }
