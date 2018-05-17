@@ -31,7 +31,7 @@
     <script src="javascripts/url_replacer.js"></script>
     <script src="javascripts/libphonenumber-js.min.js"></script>
     <script src="javascripts/config.js"></script>
-    <script src="javascripts/wizard.js"></script>
+    <script src="javascripts/wizard_cn.js"></script>
     <!-- Global site tag (gtag.js) - Google Analytics -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=GTM-N5DKTMD"></script>
     <script src="javascripts/google-analytic.js"></script>
@@ -80,7 +80,7 @@
            fjs.parentNode.insertBefore(js, fjs);
          }(document, 'script', 'facebook-jssdk'));
      </script>
-    
+
     <div id='preLoader'>
       <div id='preloadWrapper'>
         <img id='preloadImage'src="images/six_network.png">
@@ -111,6 +111,7 @@
             <a><img src="images/united-kingdom.png"><i class="fas fa-angle-down"></i></a>
             <ul style="z-index: 9999;">
               <li><a href="/wizard-kr"><img src="images/south-korea.png">&nbsp;&nbsp;KR</a></li>
+              <li><a href="/wizard-cn"><img src="images/chinese.png">&nbsp;&nbsp;CN</a></li>
             </ul>
           </div>
         </li>
@@ -433,11 +434,11 @@
                 <dt>姓名 （名 姓）</dt>
                 <dd class="combine">
                   <label class="text kycinput" id='kycFirstNameAlert'>
-                    <input type="text" id='kycFirstName' placeholder="First name"/>
+                    <input type="text" id='kycFirstName' placeholder="名"/>
                     <p id='kycFirstNameError' style='display: none;'></p>
                   </label>
                   <label class="text kycinput" id='kycLastNameAlert'>
-                    <input type="text" id='kycLastName' placeholder="Last Name"/>
+                    <input type="text" id='kycLastName' placeholder="姓"/>
                     <p id='kycLastNameError' style='display: none;'></p>
                   </label>
                 </dd>
@@ -805,8 +806,8 @@
               </dl>
               <dl>
                 <dt>
-                  <i id='idHelper' class="animate-flicker fas fa-question-circle" style='cursor: pointer; color: #555555; font-size: 17px; display: none;' onclick='showSample6()'></i><i id='passportHelper' class="animate-flicker fas fa-question-circle" style='cursor: pointer; color: #555555; font-size: 17px;' onclick='showSample3()'></i> &nbsp;&nbsp;Photo of you holding a <holding id='itemHoldingHead'>Passport</holding>
-                  <span>A selfie of you holding your official <holding id='itemHolding'>passport showing the passport photo page</holding> and a paper with the word "for SIX.network on the date of registration"</span>
+                  <i id='idHelper' class="animate-flicker fas fa-question-circle" style='cursor: pointer; color: #555555; font-size: 17px; display: none;' onclick='showSample6()'></i><i id='passportHelper' class="animate-flicker fas fa-question-circle" style='cursor: pointer; color: #555555; font-size: 17px;' onclick='showSample3()'></i> &nbsp;&nbsp;上传您手持护照的照片身份证<holding id='itemHoldingHead'></holding>
+                  <span>您手持护照和一张带有“for SIX.network”字样和注册日期的自拍<holding id='itemHolding'></holding></span>
                 </dt>
                 <dd>
                   <label class="file kycinput" id="kycPic2Alert">
@@ -835,11 +836,11 @@
               </dl>
             </fieldset>
             <fieldset>
-              <legend>Contribution amount</legend>
+              <legend>投资额</legend>
               <dl>
                 <dd>
                   <dt>
-                    <span id='estimateDescription'>Please input your desire contribution amount in ETH currency, you should enter a least 0.2 ETH to get the minimum of SIX token</span>
+                    <span id='estimateDescription'>请填写您在以太坊的期望投资额，您至少要填写0.2ETH以获得最小数目的SIX代币</span>
                   </dt>
                   <dd class="combine">
                     <label class="text kycinput" id="kycEstimateAlert" style='width: 100%;'>
@@ -861,7 +862,7 @@
               <p id='kycFormAlertText'>Sorry, Civils in the jurisdiction of the US, China, and Singapore are not able to join this ICO contribution according to the laws. Apologize for inconvenience this may cause.</p>
             </div>
             <dl>
-              <dd><button id='kycSubmitBtn' onclick='submitKyc()'>Submit</button></dd>
+              <dd><button id='kycSubmitBtn' onclick='submitKyc()'>提交</button></dd>
             </dl>
           </article>
 

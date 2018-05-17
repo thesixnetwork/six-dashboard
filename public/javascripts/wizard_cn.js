@@ -111,9 +111,9 @@ function currencyChange() {
   $("#kycEstimateAlert").removeClass('invalid')
   const estimate_currency = estimateCurrencyDOM.value
   if (estimate_currency === "ETH") {
-    $("#estimateDescription").html("Please input your desire contribution amount in ETH currency, you should enter a least 0.2 ETH to get the minimum of SIX token")
+    $("#estimateDescription").html("请填写您在以太坊的期望投资额，您至少要填写0.2ETH以获得最小数目的SIX代币")
   } else if (estimate_currency === "XLM") {
-    $("#estimateDescription").html("Please input your desire contribution amount in XLM currency, you should enter a least 410 XLM to get the minimum of SIX token")
+    $("#estimateDescription").html("请填写您在以太坊的期望投资额，您至少要填写410XLM以获得最小数目的SIX代币")
   }
 }
 
@@ -203,8 +203,8 @@ function kycCountryChange() {
     $("#citizenIdPhotoBack").css("display", "block")
     $("#passportNumberPhoto").css("display", "none")
     $("#passportNumber").css("display", "none")
-    $("#itemHoldingHead").html("ID-card")
-    $("#itemHolding").html("ID-card")
+    $("#itemHoldingHead").html("")
+    $("#itemHolding").html("")
     $("#samplePassportSelfie").css('display', 'none')
     $("#sampleIDSelfie").css('display', 'block')
     $("#idHelper").css('display', 'inline-block')
@@ -215,8 +215,8 @@ function kycCountryChange() {
     $("#citizenIdPhotoBack").css("display", "none")
     $("#passportNumberPhoto").css("display", "block")
     $("#passportNumber").css("display", "block")
-    $("#itemHoldingHead").html("Passport")
-    $("#itemHolding").html("passport showing the passport photo page")
+    $("#itemHoldingHead").html("")
+    $("#itemHolding").html("")
     $("#samplePassportSelfie").css('display', 'block')
     $("#sampleIDSelfie").css('display', 'none')
     $("#idHelper").css('display', 'none')
@@ -409,7 +409,7 @@ function initializeStep() {
       db.collection('users').doc(firebase.auth().currentUser.uid).get().then(doc => {
         userData = doc.data()
         if (Date.now() > endtimeOfIco && userData.all_done) {
-          window.location.href = '/dashboard'+window.location.search
+          window.location.href = '/dashboard-cn'+window.location.search
         }
         setupUserData()
         if (doc.data().phone_verified === true) {
@@ -469,7 +469,7 @@ function proceedToIco() {
     }
     gtag('event','click',{'event_category':'button','event_label':'finish-kyc'});
     if (Date.now() > endtimeOfIco) {
-      window.location.href = '/dashboard'+window.location.search
+      window.location.href = '/dashboard-cn'+window.location.search
     }
     setEnable([icoBtn])
     $("#icoPage").addClass("show-detail")
@@ -477,7 +477,7 @@ function proceedToIco() {
     $("#congratulationPage").removeClass("show-detail")
   }).catch(() => {
     if (Date.now() > endtimeOfIco) {
-      window.location.href = '/dashboard'+window.location.search
+      window.location.href = '/dashboard-cn'+window.location.search
     }
     setEnable([icoBtn])
     $("#icoPage").addClass("show-detail")
@@ -645,8 +645,6 @@ function uploadFile(fileNumber, file) {
   if ($("#sampleImage"+fileNumber).css('display') == 'block') {
     $("#sampleImage"+fileNumber).fadeToggle(400, function() { $("#sampleImage"+fileNumber).attr("src", "") })
   }
-  //$("#kycPicName"+fileNumber).html(file.name)
-  //$("#kycPicName"+fileNumber).html(escape(file.name))
   $("#kycPicName"+fileNumber).text(file.name)
   $("#kycPic"+fileNumber+"Alert").removeClass("invalid")
   let user = firebase.auth().currentUser
@@ -835,7 +833,7 @@ $(document).ready(function () {
   firebase.auth().onAuthStateChanged(function (user) {
     if (!user) {
       console.log('Go to login')
-      window.location.href = '/'+window.location.search
+      window.location.href = '/cn'+window.location.search
     } else {
       initializeAdmin().then(() => {
         $('#adminShortcut').css('display', 'block')

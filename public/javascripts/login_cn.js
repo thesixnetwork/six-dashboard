@@ -140,7 +140,7 @@ function signUp () {
   lockSignupForm()
   const parseData = libphonenumber.parse(phone_number_temp, country, {extended: true })
   if (parseData.valid === false) {
-    $('#signUpAlertText').html('Invalid phone number format')
+    $('#signUpAlertText').html("Invalid phone number format")
     if ($('#signUpAlert').css('display') == 'none') {
       $('#signUpAlert').slideToggle()
     }
@@ -360,26 +360,26 @@ function checkLoginState (user = undefined) {
   }
   if (user && user.uid && stopRedirection == false) {
     console.log('Go to Wizard')
-    console.log('wizard'+window.location.search)
-    window.location.href = 'wizard-kr'+window.location.search
+    console.log('wizard-cn'+window.location.search)
+    window.location.href = 'wizard-cn'+window.location.search
   } else {
     $('#preLoader').fadeToggle()
   }
 }
 
 $(document).ready(function () {
-  // Sign up, Sign in
+  // Sign up, 登录
   $('body').on('click', '.login header .btn-tool a', function () {
     if ($(this).hasClass('open-sign-up')) {
       $(this).parents('section').find('.sign-in, .forgot').removeClass('show-detail')
       $(this).parents('section').find('.sign-up').addClass('show-detail')
-      $(this).parent('.btn-tool').find('p').text('회원이신가요?')
-      $(this).removeClass('open-sign-up').addClass('open-sign-in').text('로그인하기')
+      $(this).parent('.btn-tool').find('p').text('已有帐号？')
+      $(this).removeClass('open-sign-up').addClass('open-sign-in').text('登录')
     } else if ($(this).hasClass('open-sign-in')) {
       $(this).parents('section').find('.sign-up, .forgot').removeClass('show-detail')
       $(this).parents('section').find('.sign-in').addClass('show-detail')
-      $(this).parent('.btn-tool').find('p').text('아직 회원이 아니신가요?')
-      $(this).removeClass('open-sign-in').addClass('open-sign-up').text('가입하기')
+      $(this).parent('.btn-tool').find('p').text("没有帐号？")
+      $(this).removeClass('open-sign-in').addClass('open-sign-up').text('立即注册')
     }
   })
 
@@ -454,6 +454,7 @@ $(document).ready(function () {
     e.preventDefault()
     signUp()
   })
+
   $('body').on('click', '.dropdown a', function() {
     var dropdown = $(this).parent(".dropdown");
 
@@ -461,7 +462,6 @@ $(document).ready(function () {
 
     clickBody('dropdown', dropdown, 'show-dropdown');
   });
-
 })
 
 // Click body for close
