@@ -21,12 +21,7 @@ const fireStore = admin.firestore();
 
 require("./initialFireStoreData")(fireStore);
 
-const account = {
-  user: "apikey",
-  pass: "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"
-};
-
-const SENDGRID_API_KEY = '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'
+const SENDGRID_API_KEY = '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'
 
 const sgOptions = {
   auth: {
@@ -931,9 +926,6 @@ exports.autoSendKycReadyEmail = functions.firestore
                   </div>
             </div>
           </div>
-          <div class="footer" style="font-family: &quot;Prompt&quot;, sans-serif;color: rgba(33, 33, 33, 1);text-align: center;padding: 20px;margin-top: 50px">
-              <span class="credit" style="font-family: &quot;Prompt&quot;, sans-serif;color: rgba(33, 33, 33, 1);font-size: 14px">© Copyright Media Maxx Advertising</span>
-          </div>
         </div>
       </div>
       `
@@ -981,6 +973,55 @@ exports.autoSendKycReadyEmail = functions.firestore
                       <span style="font-family: &quot;Prompt&quot;, sans-serif;color: rgba(33, 33, 33, 1);font-size: 14px">จึงเรียนมาเพื่อโปรดทราบ</span>
                       <br style="font-family: &quot;Prompt&quot;, sans-serif;color: rgba(33, 33, 33, 1)"/>
                       <span style="font-family: &quot;Prompt&quot;, sans-serif;color: rgba(33, 33, 33, 1);font-size: 14px">ทีมงาน SIX network</span>
+                    </div>
+                  </div>
+            </div>
+          </div
+        </div>
+      </div>
+      `
+      }]
+    }
+      resolve(mailOptions);
+    });
+  }
+
+  function genRemindBonusExpireEmailEN(emails) {
+    return new Promise((resolve, reject) => {
+      let personalizations = []
+      emails.forEach(email => {
+        if (email && email.email !== null) {
+          personalizations.push({
+            "to": [{ email: email.email }],
+            "subject": "SIX.network - Remind Customer to contribute"
+          })
+        }
+      })
+      const mailOptions = {
+        personalizations,
+        from: {email: 'no-reply@six.network'},
+        content: [{
+          type: 'text/html',
+          value: `<div style="font-family: &quot;Prompt&quot;, sans-serif;color: rgba(33, 33, 33, 1);margin: 0;background: #F6F6F6">
+          <div class="section" style="font-family: &quot;Prompt&quot;, sans-serif;color: rgba(33, 33, 33, 1);position: relative;background: #F6F6F6;padding-bottom: 10px;height: 100%;z-index: 1">
+          <!-- <img class="top-header" src="https://firebasestorage.googleapis.com/v0/b/devson-f46f4.appspot.com/o/public%2Fheader.png?alt=media&token=9f32b7f1-6def-45f2-bf1a-2cea15326450"
+            alt=""> -->
+          <div class="card" style="font-family: &quot;Prompt&quot;, sans-serif;color: rgba(33, 33, 33, 1);width: 80%;padding: 0;padding-top: 2%;z-index: 100;margin-left: 10%;background: transparent">
+            <div class="card-header" style="font-family: &quot;Prompt&quot;, sans-serif;color: rgba(33, 33, 33, 1);position: relative;padding: 0;background: transparent;width: 100%">
+              <img class="header-img" src="https://firebasestorage.googleapis.com/v0/b/devson-f46f4.appspot.com/o/public%2Fcover2.png?alt=media&amp;token=74bc44f8-f8e2-4a0d-aeca-6ee76ab2befb" alt="" style="font-family: &quot;Prompt&quot;, sans-serif;color: rgba(33, 33, 33, 1);width: 100%;box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);z-index: 10"/>
+            </div>
+            <div class="card-content" style="font-family: &quot;Prompt&quot;, sans-serif;color: rgba(33, 33, 33, 1);padding: 5px;margin-top: -20px;box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);background: #FFF">
+                <div class="container" style="font-family: &quot;Prompt&quot;, sans-serif;color: rgba(33, 33, 33, 1);padding: 2%">
+                    <!-- thai -->
+                    <h2 class="title" style="font-family: &quot;Prompt&quot;, sans-serif;color: rgba(33, 33, 33, 1)">To Investor</h2>
+                    <dd> <p style="text-indent: 2.5em;font-family: &quot;Prompt&quot;, sans-serif;color: rgba(33, 33, 33, 1);font-size: 14px">      SIX Network is appreciate for your interesting to invest in SIX Token that by your registered for a Pre-Sale SIX Token to get 6% BONUS in early April. However SIX Network (Thailand) has not received the transfer amount for a Pre-Sale SIX Token yet.</p>
+                    <p style="font-family: &quot;Prompt&quot;, sans-serif;color: rgba(33, 33, 33, 1);font-size: 14px">      We to inform that 6% BONUS will be effective up to the short time for closing soon.</p></dd>
+                    <dd> <p style="text-indent: 2.5em;font-family: &quot;Prompt&quot;, sans-serif;color: rgba(33, 33, 33, 1);font-size: 14px">  Please doing the transaction following our ETH address to buy SIX Token completely. If after this. SIX Network want to tell you that you will not loss 6% BONUS. Sorry if you are already transfer to ETH or XLM or if this e-mail is delay.</p>
+                    <div class="p-group" style="font-family: &quot;Prompt&quot;, sans-serif;color: rgba(33, 33, 33, 1)">
+                    <div class="p-group" style="font-family: &quot;Prompt&quot;, sans-serif;color: rgba(33, 33, 33, 1)">
+                      <span style="font-family: &quot;Prompt&quot;, sans-serif;color: rgba(33, 33, 33, 1);font-size: 14px">Please be informed accordingly</span>
+                      <br style="font-family: &quot;Prompt&quot;, sans-serif;color: rgba(33, 33, 33, 1)"/>
+                      <span style="font-family: &quot;Prompt&quot;, sans-serif;color: rgba(33, 33, 33, 1);font-size: 14px">SIX network</span>
                     </div>
     
                   </div>
@@ -1102,14 +1143,55 @@ exports.remindBonusExpireEmail = functions.https.onRequest((request, response) =
       let sendList = []
       docs.forEach(doc => {
         const user = doc.data();
-        const { remind_status, email, kyc_status, last_send_remind, eth_address, estimate } = user;
+        const { remind_status, email, kyc_status, last_send_remind, eth_address, estimate, country } = user;
         const notFoundEstimate = !estimate || estimate === null || estimate === ''
-        if (eth_address && eth_address !== null && notFoundEstimate) {
+        const isTH = country === 'TH'
+        if (isTH && eth_address && eth_address !== null && notFoundEstimate) {
           sendList.push({ email })
         }
       });
       if (sendList && sendList.length > 0) {
         return genRemindBonusExpireEmail(sendList)
+        .then(mailOptions => {
+          return axios.post('https://api.sendgrid.com/v3/mail/send', mailOptions, { headers: { Authorization: `Bearer ${SENDGRID_API_KEY}`}})
+        })
+        .then(res => {
+          return response.json({ success: true, sendList })
+        })
+        .catch(err => {
+          console.log((err.response || {}).data, 'err')
+          console.log(err.message, 'err.message')
+          return response.status(400).json({ error: (err.reponse || {}).data })
+        })
+      } else {
+        return response.send({ success: true, sendList })
+      }
+    });
+  } else {
+    return response.status(400).json(new Error("Password not match"));
+  }
+});
+
+exports.remindBonusExpireEmailEN = functions.https.onRequest((request, response) => {
+  cors(request, response, () => {});
+  const db = admin.firestore().collection("users")
+  const { password } = request.query
+  if (password === "ineedtosendemail") {
+    db.get().then(docs => {
+      let emailsList = []
+      let sendList = []
+      console.log(sendList, 'sendList...')
+      docs.forEach(doc => {
+        const user = doc.data();
+        const { remind_status, email, kyc_status, last_send_remind, eth_address, estimate, country } = user;
+        const notFoundEstimate = !estimate || estimate === null || estimate === ''
+        const notThandKr = country !== 'TH' && country !== 'KR'
+        if (notThandKr && eth_address && eth_address !== null && notFoundEstimate) {
+          sendList.push({ email })
+        }
+      });
+      if (sendList && sendList.length > 0) {
+        return genRemindBonusExpireEmailEN(sendList)
         .then(mailOptions => {
           return axios.post('https://api.sendgrid.com/v3/mail/send', mailOptions, { headers: { Authorization: `Bearer ${SENDGRID_API_KEY}`}})
         })
