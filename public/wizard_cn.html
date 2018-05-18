@@ -108,10 +108,10 @@
         <li id='adminShortcut' style='display: none;'><a href="/kyc_manager">Admin</a></li>
         <li>
           <div class="dropdown">
-            <a><img src="images/united-kingdom.png"><i class="fas fa-angle-down"></i></a>
+            <a><img src="images/chinese.png"><i class="fas fa-angle-down"></i></a>
             <ul style="z-index: 9999;">
               <li><a href="/wizard-kr"><img src="images/south-korea.png">&nbsp;&nbsp;KR</a></li>
-              <li><a href="/wizard-cn"><img src="images/chinese.png">&nbsp;&nbsp;CN</a></li>
+              <li><a href="/wizard"><img src="images/united-kingdom.png">&nbsp;&nbsp;EN</a></li>
             </ul>
           </div>
         </li>
@@ -413,7 +413,7 @@
           </article>
           <article id='verifyCodeContent2' class="verify-code">
             <h1>Enter the code</h1>
-            <p>An SMS message with verification code is sent to you (<span id='refPhoneNumber'></span>). Ref: <span id='refVerify'></span></p>
+            <p>条带有验证码的短信已发送给您 (<span id='refPhoneNumber'></span>). Ref: <span id='refVerify'></span></p>
             <div class="countdown-verify"></div>
             <fieldset>
               <dl>
@@ -711,7 +711,7 @@
 
               <dl id='passportNumber'>
                 <dt>护照号
-                  <span>As SIX.network is registered in Singapore, we require your passport ID to do the KYC process</span>
+                  <span>SIX.network在新加坡注册，所以我们需要您的护照号做KYC程序</span>
                 </dt>
                 <dd><label class="text kycinput" id="kycPassportNumberAlert">
                   <input type="text" id='kycPassportNumber' placeholder="护照号">
@@ -859,7 +859,7 @@
               </dl>
             </fieldset>
             <div id='kycFormAlert' class="alert-error">
-              <p id='kycFormAlertText'>Sorry, Civils in the jurisdiction of the US, China, and Singapore are not able to join this ICO contribution according to the laws. Apologize for inconvenience this may cause.</p>
+              <p id='kycFormAlertText'>抱歉，美国、中国和新加坡的公民根据相关法律无法参与此次公开销售。由此造成的不便我们深表歉意。</p>
             </div>
             <dl>
               <dd><button id='kycSubmitBtn' onclick='submitKyc()'>提交</button></dd>
@@ -867,28 +867,28 @@
           </article>
 
           <article class="approved" id='kycContentPending'>
-            <h1>Waiting for approval</h1>
-            <p>The approval process takes up to 72 business hours. After we review your account information and KYC/ AML documents, you will receive an email confirmation on your KYC/ AML result.</p>
+            <h1>等待审批</h1>
+            <p>审批过程需要72个小时。我们审核完您的帐户信息和KYC/ AML文件后，您将会收到关于您KYC/ AML结果的确认邮件。</p>
             <img id='headerEmailSample'src="images/header_email_sample.png">
             <img id='bodyEmailSample'src="images/body_email_sample.png">
           </article>
 
           <article class="rejected" id='kycContentRejected'>
-            <h1>Your submission has been rejected</h1>
+            <h1>您的提交已被拒绝</h1>
             <p><span id='rejectReason'></span></p>
             <div id='extendRejectNote' style='display: none'>
               <br>
-              <p><strong>Note</strong> : <span id='rejectReasonExtend'></span></p>
+              <p><strong>注意</strong> : <span id='rejectReasonExtend'></span></p>
             </div>
-            <a href='javascript:;' onclick='resubmission()' class="back" id='resubmission' >Resubmission</a>
+            <a href='javascript:;' onclick='resubmission()' class="back" id='resubmission' >重新提交</a>
           </article>
         </section>
 
         <section class="finished" id='congratulationPage'>
-          <h1>Congratulation</h1>
-          <p id='presale_congrat'>You are now listed in our exclusive pre-sale list. You are eligible for 6% bonus by contributing to our project.</p>
-          <p id='normal_congrat'>Your KYC application was APPROVED. Next step, please proceed on ICO contribution by click on the button below.</p>
-          <dl><dd><button id='toIcoBtn' onclick='proceedToIco()'>Proceed to ICO</button></dd></dl>
+          <h1>恭喜</h1>
+          <p id='presale_congrat'>您现在已被列入我们专门的预售名单。通过参与我们的项目您可以获得6％的奖金。</p>
+          <p id='normal_congrat'>您的KYC申请获得批准。下一步，请点击下面的按钮进行公开销售。</p>
+          <dl><dd><button id='toIcoBtn' onclick='proceedToIco()'>进行公开销售</button></dd></dl>
         </section>
 
         <section class="starting-ico" id='icoPage'>
