@@ -542,6 +542,31 @@
               </div>
             </div>
           </div>
+          <div id='congratBox' style='display: none;'>
+            <div id='congratContainer'>
+              <i id='correctIcon' class="fas fa-check-circle"></i>
+              <h3>Congrats Wallet Generated Successfully</h3>
+              <p>Transaction is pending blockchain confirmation.<br>Check your wallet in a few minutes.</p>
+              <br>
+              <p>Your wallet address is</p><br>
+              <div class='fdiv'>
+                <label class="text dropdown" style='margin-top: 10px;'>
+                  <input placeholder="Public Key" id="genP" type="text" readonly="readonly" style='width: calc(100% - 45px);'>
+                  <i id='copyPk' class="fas fa-copy" onclick='copyPk()'></i>
+                </label>
+              </div>
+              <div class='fdiv'>
+                <label class="text dropdown" style='margin-top: 10px;'>
+                  <input placeholder="Secret Key" id="genS" type="password" readonly="readonly" style='width: calc(100% - 45px);'>
+                  <i id='toggleSecret' class="fas fa-copy" onclick='toggleSecret()'></i>
+                </label>
+              </div>
+              <div class="btn">
+                <button id='DownloadGAccountBtn' onclick='downloadGeneratedAccount()' style='width: auto; margin-top: 20px; margin-bottom: 20px; min-width: 150px; margin-right: 40px; background: white; color: #4a5ab5; border: solid;'> Download </button>
+                <button id='submitG2AccountBtn' onclick='nextGeneratedAccount()' style='width: auto; margin-top: 20px; margin-bottom: 20px; min-width: 150px;'> Go to my wallet </button>
+              </div>
+            </div>
+          </div>
           <div id='manualTrustlineBox' style='display: none;'>
             <h3>To add a trustline to SIX assets, please follow the steps below:</h3>
             <p>Some information or link</p>

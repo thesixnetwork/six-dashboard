@@ -449,3 +449,21 @@ section#progressContent {
 .customAlert {
   border: 1px solid red;
 }
+
+#congratContainer {
+  border: 1px solid #D3D3D3;
+  padding: 40px;
+  max-width: 500px;
+  margin: auto;
+  border-radius: 20px;
+}
+
+#congratBox {
+  text-align: center;
+}
+
+#correctIcon {
+  font-size: 50px;
+  margin-bottom: 25px;
+  color: #3DCC5E;
+}

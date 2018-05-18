@@ -837,13 +837,31 @@ $(document).ready(function(){
           if (userData.submit_xlm_wallet === true) {
             $("#trustlineStep").addClass("current")
             $("#walletSelectBox").css("display", "none")
+            $("#claimWelcomeBox").css("display", "none")
+            $("#claimBox").css("display", "block")
+            $("#claimWelcomeBox").css("display", "none")
             $("#manualTrustlineBox").css("display", "block")
           }
           if (userData.add_trust_line === true) {
             $("#trustlineStep").addClass("current")
             $("#claimStep").addClass("current")
-            $("#rewardClaimBox").css("display", "block")
+            $("#claimBox").css("display", "block")
+            $("#claimWelcomeBox").css("display", "none")
+            $("#rewardClaimBox").css("display", "none")
+            $("#congratBox").css("display", "block")
             $("#walletSelectBox").css("display", "none")
+            $("#claimWelcomeBox").css("display", "none")
+            $("#manualTrustlineBox").css("display", "none")
+          }
+          if (userData.seen_wallet_congrat === true) {
+            $("#trustlineStep").addClass("current")
+            $("#claimStep").addClass("current")
+            $("#claimBox").css("display", "block")
+            $("#claimWelcomeBox").css("display", "none")
+            $("#rewardClaimBox").css("display", "block")
+            $("#congratBox").css("display", "none")
+            $("#walletSelectBox").css("display", "none")
+            $("#claimWelcomeBox").css("display", "none")
             $("#manualTrustlineBox").css("display", "none")
           }
         }).then(getCurrentTotal).then(() => {
@@ -948,7 +966,7 @@ function submitGeneratedAccount() {
               setTimeout(function(){
                 $("#claimStep").addClass("current")
                 $("#divClaimBoxNew").slideToggle()
-                $("#rewardClaimBox").slideToggle()
+                $("#congratBox").slideToggle()
               }, 2000);
             }).catch(err => {
               console.log(err)
