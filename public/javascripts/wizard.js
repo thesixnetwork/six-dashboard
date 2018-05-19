@@ -637,6 +637,7 @@ function submitKyc() {
       dataToUpdate.passport_number = passport_number
     }
     return updateUser(dataToUpdate).then(response => {
+      debugger
       if (response.data.success) {
         if (response.data.code === 205) {
           $('#kycContentForm').removeClass('show-detail')
@@ -645,7 +646,6 @@ function submitKyc() {
           window.location.href = '/dashboard'+window.location.search
         }
       } else {
-        debugger
         alert('error')
       }
       setEnable([btnDOM, firstNameDOM, lastNameDOM, countryDOM, citizenIdDOM, passportNumberDOM, addressDOM, pic1DOM, pic2DOM, pic4DOM, pic5DOM])
