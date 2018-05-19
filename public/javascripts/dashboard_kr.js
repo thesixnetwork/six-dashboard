@@ -349,11 +349,7 @@ function submitDepositXLMTran() {
   const xlm_value = (parseFloat(xlmToSixInput.value) || 0)
   setDisable([btnDOM])
   let amount = 0
-  if (userData.is_presale === true) {
-    amount = Number((xlm_value*xlmPrice.six_per_xlm).toFixed(7))
-  } else {
-    amount = Number((xlm_value*xlmPrice.six_per_xlm).toFixed(7))*1.06
-  }
+  amount = Number((xlm_value*xlmPrice.six_per_xlm).toFixed(7))
   window.dataLayer = window.dataLayer || [];
   function gtag () {
     dataLayer.push(arguments);
@@ -387,11 +383,7 @@ function submitDepositETHTran() {
   const eth_value = (parseFloat(ethToSixInput.value) || 0)
   setDisable([btnDOM])
   let amount = 0
-  if (userData.is_presale === true) {
-    amount = Number((eth_value*ethPrice.six_per_eth).toFixed(7))
-  } else {
-    amount = Number((eth_value*ethPrice.six_per_eth).toFixed(7))*1.06
-  }
+  amount = Number((eth_value*ethPrice.six_per_eth).toFixed(7))
   window.dataLayer = window.dataLayer || [];
   function gtag () {
     dataLayer.push(arguments);
