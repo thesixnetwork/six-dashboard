@@ -37,8 +37,9 @@ function StellarService(event) {
 
               tx.operations()
                 .then((operations) => {
-                  const records = operations._embedded.records
-                  const operationLength = operations._embedded.records.length
+
+                  const records = (operations._embedded === undefined ? operations : operations._embedded).records
+                  const operationLength = (operations._embedded === undefined ? operations : operations._embedded).records.length
                   const operationTxs = []
 
                   console.log('j length', operationLength)
