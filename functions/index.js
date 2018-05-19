@@ -349,10 +349,6 @@ exports.hourly_btc = functions.pubsub.topic("hourly-btc").onPublish(event => {
   return handleHourlyEvent(event, baseToken);
 });
 
-exports.kyc_korea = functions.pubsub.topic('kyc-korea').onPublish(event => {
-
-})
-
 function handleHourlyEvent(event, baseToken) {
   const time = getTime();
   const uri = getBasePriceURI(baseToken.toUpperCase());

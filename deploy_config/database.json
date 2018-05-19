@@ -239,6 +239,56 @@
 		"country": "DJIBOUTI",
 		"nationality": "DJIBOUTIAN"
 	},
+	"DM": {
+		"country": "DOMINICA",
+		"nationality": "DOMINICAN"
+	},
+	"DO": {
+		"country": "DOMINICAN REPUBLIC",
+		"nationality": "DOMINICAN"
+	},
+	"EC": {
+		"country": "ECUADOR",
+		"nationality": "ECUADOREAN"
+	},
+	"EG": {
+		"country": "EGYPT",
+		"nationality": "EGYPTIAN"
+	},
+	"SV": {
+		"country": "EL SALVADOR",
+		"nationality": "SALVADOREAN"
+	},
+	"GQ": {
+		"country": "EQUATORIAL GUINEA",
+		"nationality": "EQUATORIAL GUINEAN"
+	},
+	"ER": {
+		"country": "ERITREA",
+		"nationality": "ERITREAN"
+	},
+	"EE": {
+		"country": "ESTONIA",
+		"nationality": "ESTONIAN"
+	},
+	"ET": {
+		"country": "ETHIOPIA",
+		"nationality": "ETHIOPIAN"
+	},
+	"FK": {
+		"country": "FALKLAND ISLANDS",
+		"nationality": "BRITISH OVERSEAS TERRITORY"
+	},
+
+
+
+
+
+
+
+
+
+
 	"TH": {
 		"country": "THAILAND",
 		"nationality": "THAI"
