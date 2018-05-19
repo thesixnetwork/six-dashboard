@@ -486,6 +486,14 @@ function proceedToIco() {
   })
 }
 
+function testFunction(user) {
+  var updateUserOncall = firebase.functions().httpsCallable('testFunction')
+  return updateUserOncall(user).then(data => {
+    debugger
+    console.log(data)
+  })
+}
+
 function submitKyc() {
   if ($("#kycFormAlert").css('display') == 'block') {
     $("#kycFormAlert").slideToggle()
@@ -627,14 +635,24 @@ function submitKyc() {
       dataToUpdate.pic4 = pic4Url
       dataToUpdate.passport_number = passport_number
     }
-    updateUser(dataToUpdate).then(() => {
-      $("#kycContentForm").removeClass("show-detail")
-      $("#kycContentPending").addClass("show-detail")
+    return updateUser(dataToUpdate).then(response => {
+      if (response.data.success) {
+        if (response.data.code === 205) {
+          $('#kycContentForm').removeClass('show-detail')
+          $('#kycContentPending').addClass('show-detail')
+        } else {
+          window.location.href = '/dashboard'+window.location.search
+        }
+      } else {
+        debugger
+        alert('error')
+      }
       setEnable([btnDOM, firstNameDOM, lastNameDOM, countryDOM, citizenIdDOM, passportNumberDOM, addressDOM, pic1DOM, pic2DOM, pic4DOM, pic5DOM, estimateDOM, estimateCurrencyDOM])
     }).catch(err => {
       console.log(err.message)
       setEnable([btnDOM, firstNameDOM, lastNameDOM, countryDOM, citizenIdDOM, passportNumberDOM, addressDOM, pic1DOM, pic2DOM, pic4DOM, pic5DOM, estimateDOM, estimateCurrencyDOM])
     })
+    //return testFunction(dataToUpdate)
   }
 }
 
