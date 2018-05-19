@@ -731,11 +731,6 @@ $(document).ready(function () {
     $("#kycAddressError").html('')
     $("#kycAddressError").css('display', 'none')
   }
-  document.getElementById('kycEstimate').onkeydown = function() {
-    $('#kycEstimateAlert').removeClass("invalid")
-    $("#kycEstimateError").html('')
-    $("#kycEstimateError").css('display', 'none')
-  }
   $('#kycPic1').change(function () {
     uploadFile(1, this.files[0])
   })
