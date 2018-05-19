@@ -18,9 +18,6 @@ module.exports = function (admin, functions, fireStore) {
     'name': 'addUserNumber',
     'module': events.onCreate(event => addUserNumber(event, functions, fireStore))
   }, {
-    'name': 'checkPresaleDiscount',
-    'module': events.onUpdate(event => checkPresaleDiscount(event, functions, fireStore))
-  }, {
     'name': 'checkKYCStatus',
     'module': events.onUpdate(event => checkKYCStatus(event, admin, functions, fireStore))
   }, {
@@ -86,27 +83,27 @@ function setNullToRejectType (event, fireStore) {
   return fireStore.runTransaction(tx => tx.get(userRef).then(user => tx.update(userRef, {reject_type: null})))
 }
 
-function checkPresaleDiscount (event, functions, fireStore) {
-  const uid = event.params.uid
-  const userData = event.data.data()
-  const previousUserData = event.data.previous.data()
-  const estimate = (+userData.estimate || 0) // force estimate from string to number (default 0)
-  if (userData.kyc_status !== 'approved' || previousUserData.kyc_status === 'approved' || estimate <= 0) return Promise.resolve() // do nothing
-  const userRef = fireStore.collection('users').doc(uid)
-  const presaleUserRef = fireStore.collection('presale').doc('supply').collection('reserve').doc(uid)
-  const totalEthRef = fireStore.collection('presale').doc('supply')
-  return fireStore.runTransaction(tx => tx.get(presaleUserRef).then(userReserve => {
-    if (userReserve.exists) {
-      return Promise.reject(new Error(`uid:${uid} already reserved`))
-    }
-    return tx.get(totalEthRef).then(doc => {
-      const totalETH = doc.data().total_eth
-      const latestTotalETH = totalETH + estimate
-      if (totalETH > 15000) return Promise.resolve('Presale is soldout.')
-      return Promise.all([tx.update(totalEthRef, {total_eth: latestTotalETH}), tx.set(presaleUserRef, {total_eth: estimate}), tx.update(userRef, {is_presale: true})])
-    })
-  }))
-}
+// function checkPresaleDiscount (event, functions, fireStore) {
+//   const uid = event.params.uid
+//   const userData = event.data.data()
+//   const previousUserData = event.data.previous.data()
+//   const estimate = (+userData.estimate || 0) // force estimate from string to number (default 0)
+//   if (userData.kyc_status !== 'approved' || previousUserData.kyc_status === 'approved' || estimate <= 0) return Promise.resolve() // do nothing
+//   const userRef = fireStore.collection('users').doc(uid)
+//   const presaleUserRef = fireStore.collection('presale').doc('supply').collection('reserve').doc(uid)
+//   const totalEthRef = fireStore.collection('presale').doc('supply')
+//   return fireStore.runTransaction(tx => tx.get(presaleUserRef).then(userReserve => {
+//     if (userReserve.exists) {
+//       return Promise.reject(new Error(`uid:${uid} already reserved`))
+//     }
+//     return tx.get(totalEthRef).then(doc => {
+//       const totalETH = doc.data().total_eth
+//       const latestTotalETH = totalETH + estimate
+//       if (totalETH > 15000) return Promise.resolve('Presale is soldout.')
+//       return Promise.all([tx.update(totalEthRef, {total_eth: latestTotalETH}), tx.set(presaleUserRef, {total_eth: estimate}), tx.update(userRef, {is_presale: true})])
+//     })
+//   }))
+// }
 
 function addUserNumber (event, functions, fireStore) {
   const uid = event.params.uid

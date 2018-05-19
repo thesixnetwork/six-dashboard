@@ -413,7 +413,7 @@
           </article>
           <article id='verifyCodeContent2' class="verify-code">
             <h1>Enter the code</h1>
-            <p>An SMS message with verification code is sent to you (<span id='refPhoneNumber'></span>). Ref: <span id='refVerify'></span></p>
+            <p>인증번호가 담긴 SMS 메시지가 전송되었습니다.(<span id='refPhoneNumber'></span>). Ref: <span id='refVerify'></span></p>
             <div class="countdown-verify"></div>
             <fieldset>
               <dl>
@@ -711,7 +711,7 @@
 
               <dl id='passportNumber'>
                 <dt>여권번호
-                  <span>As SIX.network is registered in Singapore, we require your passport ID to do the KYC process</span>
+                  <span>식스 네트워크의 법인은 싱가포르에 있기 때문에 KYC 인증을 위해서는 여권이 필요합니다.</span>
                 </dt>
                 <dd><label class="text kycinput" id="kycPassportNumberAlert">
                   <input type="text" id='kycPassportNumber' placeholder="여권번호">
@@ -835,31 +835,8 @@
                 </dd>
               </dl>
             </fieldset>
-            <fieldset>
-              <legend>참여 금액</legend>
-              <dl>
-                <dd>
-                  <dt>
-                    <span id='estimateDescription'>참여 예상 금액을 ETH 기준으로 써주셔야 하며, 최소 참여 가능한 금액은 0.2 ETH입니다.</span>
-                  </dt>
-                  <dd class="combine">
-                    <label class="text kycinput" id="kycEstimateAlert" style='width: 100%;'>
-                      <input type="text" id='kycEstimate' placeholder="0.2">
-                      <p id='kycEstimateError' style='display: none;'></p>
-                    </label>
-                    <label class="dropdown kycinput" id="kycCurrencyAlert" style="width: 30%;">
-                      <select id='kycCurrency' name="value" id="value" onchange="currencyChange()">
-                        <option value="ETH">ETH</option>
-                        <option value="XLM">XLM</option>
-                      </select>
-                      <i class="fas fa-angle-down"></i>
-                    </label>
-                  </dd>
-                </dd>
-              </dl>
-            </fieldset>
             <div id='kycFormAlert' class="alert-error">
-              <p id='kycFormAlertText'>Sorry, Civils in the jurisdiction of the US, China, and Singapore are not able to join this ICO contribution according to the laws. Apologize for inconvenience this may cause.</p>
+              <p id='kycFormAlertText'>죄송합니다. 미국과 중국, 싱가포르 국적자들께서는 관련 법에 따라 ICO에 참여하실 수 없습니다. 이로 인해 발생할 수 있는 불편에 대해 사과 드립니다.</p>
             </div>
             <dl>
               <dd><button id='kycSubmitBtn' onclick='submitKyc()'>보내기</button></dd>
@@ -867,28 +844,28 @@
           </article>
 
           <article class="approved" id='kycContentPending'>
-            <h1>Waiting for approval</h1>
-            <p>The approval process takes up to 72 business hours. After we review your account information and KYC/ AML documents, you will receive an email confirmation on your KYC/ AML result.</p>
+            <h1>승인을 대기 중입니다.</h1>
+            <p>승인 절차는 영업일 기준 72시간 정도 소요됩니다. 계정 정보 및 KYC/AML 관련 서류를 검토한 후, KYC/AML 결과에 대한 이메일이 전송됩니다.</p>
             <img id='headerEmailSample'src="images/header_email_sample.png">
             <img id='bodyEmailSample'src="images/body_email_sample.png">
           </article>
 
           <article class="rejected" id='kycContentRejected'>
-            <h1>Your submission has been rejected</h1>
+            <h1>승인이 거부되었습니다.</h1>
             <p><span id='rejectReason'></span></p>
             <div id='extendRejectNote' style='display: none'>
               <br>
               <p><strong>Note</strong> : <span id='rejectReasonExtend'></span></p>
             </div>
-            <a href='javascript:;' onclick='resubmission()' class="back" id='resubmission' >Resubmission</a>
+            <a href='javascript:;' onclick='resubmission()' class="back" id='resubmission' >다시 제출</a>
           </article>
         </section>
 
         <section class="finished" id='congratulationPage'>
-          <h1>Congratulation</h1>
-          <p id='presale_congrat'>You are now listed in our exclusive pre-sale list. You are eligible for 6% bonus by contributing to our project.</p>
-          <p id='normal_congrat'>Your KYC application was APPROVED. Next step, please proceed on ICO contribution by click on the button below.</p>
-          <dl><dd><button id='toIcoBtn' onclick='proceedToIco()'>Proceed to ICO</button></dd></dl>
+          <h1>축하합니다</h1>
+          <p id='presale_congrat'>프리세일 리스트에 등록되셨습니다. 프로젝트에 참여하면 6%의 보너스를 받으실 수 있습니다.</p>
+          <p id='normal_congrat'>KYC 신청이 승인되었습니다. 아래 버튼을 누른 후 다음 ICO 단계로 진행하세요.</p>
+          <dl><dd><button id='toIcoBtn' onclick='proceedToIco()'>ICO로 진행하기</button></dd></dl>
         </section>
 
         <section class="starting-ico" id='icoPage'>
