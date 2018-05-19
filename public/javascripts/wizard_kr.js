@@ -436,7 +436,6 @@ function setupUserData() {
   if (userData.is_restricted === true) {
     $("#resubmission").css("display", "none")
   }
-  currencyChange()
 }
 
 // Steps
