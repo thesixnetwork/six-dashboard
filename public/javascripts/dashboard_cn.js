@@ -634,7 +634,6 @@ $(document).ready(function(){
   document.getElementById('xlmToSixInput').onkeyup = function () {
     let number = parseFloat(this.value) || 0
     $("#xlmToSix").html(Number((number*xlmPrice.six_per_xlm).toFixed(7)).toLocaleString())
-    $("#bonusXLM").html(Number(((number*xlmPrice.six_per_xlm)*0.06).toFixed(7)))
     $("#xlmToSixInputAlertText").html("")
     $("#xlmToSixInputAlertText").css("display", "none")
     $("#xlmToSixInputAlert").removeClass("invalid")
@@ -643,7 +642,6 @@ $(document).ready(function(){
   document.getElementById('ethToSixInput').onkeyup = function() {
     let number = parseFloat(this.value) || 0
     $("#ethToSix").html(Number((number*ethPrice.six_per_eth).toFixed(7)).toLocaleString())
-    $("#bonusETH").html(Number(((number*ethPrice.six_per_eth)*0.06).toFixed(7)))
     $("#ethToSixInputAlertText").html("")
     $("#ethToSixInputAlertText").css("display", "none")
     $("#ethToSixInputAlert").removeClass("invalid")
@@ -732,10 +730,6 @@ $(document).ready(function(){
             $("#myETHWalletAddress").html('-')
             $("#myETHWalletAddress").attr('data-clipboard-text', '-')
             $("#myAddressBtn").attr('data-clipboard-text', '-')
-          }
-          if (userData.is_presale === true) {
-            $("#bonusXLMText").css('display', 'block')
-            $("#bonusETHText").css('display', 'block')
           }
         }).then(getCurrentTotal).then(() => {
           getTxs()
