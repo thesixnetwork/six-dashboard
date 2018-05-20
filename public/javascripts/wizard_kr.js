@@ -109,7 +109,9 @@ function initializeAdmin () {
   })
   return promise
 }
-
+function closeErrorMatch() {
+  $("div.error-not-match, div.overlay").hide()
+}
 // Update User
 function updateUser (data) {
   var updateUserOncall = firebase.functions().httpsCallable('updateUser')
@@ -639,9 +641,19 @@ function submitKyc() {
       dataToUpdate.pic4 = pic4Url
       dataToUpdate.passport_number = passport_number
     }
-    updateUser(dataToUpdate).then(() => {
-      $("#kycContentForm").removeClass("show-detail")
-      $("#kycContentPending").addClass("show-detail")
+    $(".overlay, div.loader-checker").show()
+    return updateUser(dataToUpdate).then(response => {
+      if (response.data.success) {
+        if (response.data.code === 205) {
+          $('#kycContentForm').removeClass('show-detail')
+          $('#kycContentPending').addClass('show-detail')
+        } else {
+          window.location.href = '/dashboard-kr'+window.location.search
+        }
+     } else {
+       $("div.loader-checker").hide()
+       $("div.error-not-match").show()
+     }
       setEnable([btnDOM, firstNameDOM, lastNameDOM, countryDOM, citizenIdDOM, passportNumberDOM, addressDOM, pic1DOM, pic2DOM, pic4DOM, pic5DOM])
     }).catch(err => {
       console.log(err.message)
