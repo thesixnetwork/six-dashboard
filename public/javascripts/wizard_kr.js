@@ -647,6 +647,7 @@ function submitKyc() {
         if (response.data.code === 205) {
           $('#kycContentForm').removeClass('show-detail')
           $('#kycContentPending').addClass('show-detail')
+          $(".overlay, div.loader-checker").hide()
         } else {
           window.location.href = '/dashboard-kr'+window.location.search
         }
