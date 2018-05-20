@@ -279,23 +279,637 @@
 		"country": "FALKLAND ISLANDS",
 		"nationality": "BRITISH OVERSEAS TERRITORY"
 	},
-
-
-
-
-
-
-
-
-
-
-	"TH": {
-		"country": "THAILAND",
-		"nationality": "THAI"
+	"FO": {
+		"country": "FAROE ISLANDS",
+		"nationality": "FAROESE"
+	},
+	"FJ": {
+		"country": "FIJI",
+		"nationality": "FIJIAN"
+	},
+	"FI": {
+		"country": "FINLAND",
+		"nationality": "FINNISH"
+	},
+	"FR": {
+		"country": "FRANCE",
+		"nationality": "FRENCH"
+	},
+	"GF": {
+		"country": "FRENCH GUIANA",
+		"nationality": "FRENCH GUIANESE"
+	},
+	"PF": {
+		"country": "FRENCH POLYNESIA",
+		"nationality": "FRENCH OVERSEAS COLLECTIVITY"
+	},
+	"TF": {
+		"country": "FRENCH SOUTHERN TERRITORIES",
+		"nationality": "FRENCH SOUTHERN TERRITORIES"
+	},
+	"GA": {
+		"country": "GABON",
+		"nationality": "GABONESE"
+	},
+	"GM": {
+		"country": "GAMBIA",
+		"nationality": "GAMBIAN"
+	},
+	"GE": {
+		"country": "GEORGIA",
+		"nationality": "GEORGIAN"
+	},
+	"DE": {
+		"country": "GERMANY",
+		"nationality": "GERMAN"
+	},
+	"GH": {
+		"country": "GHANA",
+		"nationality": "GHANAIAN"
+	},
+	"GI": {
+		"country": "GIBRALTAR",
+		"nationality": "GIBRALTARIAN"
+	},
+	"GR": {
+		"country": "GREECE",
+		"nationality": "GREEK"
+	},
+	"GL": {
+		"country": "GREENLAND",
+		"nationality": "GREENLANDER"
+	},
+	"GD": {
+		"country": "GRENADA",
+		"nationality": "GRENADIAN"
+	},
+	"GP": {
+		"country": "GUADELOUPE",
+		"nationality": "GUADELOUPEAN"
+	},
+	"GU": {
+		"country": "GUAM",
+		"nationality": "GUAMANIAN"
+	},
+	"GT": {
+		"country": "GUATEMALA",
+		"nationality": "GUATEMALAN"
+	},
+	"GG": {
+		"country": "GUERNSEY",
+		"nationality": "GUERNSEY"
+	},
+	"GN": {
+		"country": "GUINEA",
+		"nationality": "GUINEAN"
+	},
+	"GW": {
+		"country": "GUINEA-BISSAU",
+		"nationality": "GUINEAN"
+	},
+	"GY": {
+		"country": "GUYANA",
+		"nationality": "GUYANESE"
+	},
+	"HT": {
+		"country": "HAITI",
+		"nationality": "HAITIAN"
+	},
+	"HM": {
+		"country": "HEARD AND MCDONALD ISLANDS",
+		"nationality": "AUSTRALIAN EXTERNAL TERRITORY"
+	},
+	"VA": {
+		"country": "VATICAN",
+		"nationality": "VATICAN"
+	},
+	"HN": {
+		"country": "HONDURAS",
+		"nationality": "HONDURAN"
+	},
+	"HK": {
+		"country": "HONG KONG",
+		"nationality": "HONG KONG"
+	},
+	"HU": {
+		"country": "HUNGARY",
+		"nationality": "HUNGARIAN"
+	},
+	"IS": {
+		"country": "ICELAND",
+		"nationality": "ICELANDER"
+	},
+	"IN": {
+		"country": "INDIA",
+		"nationality": "INDIAN"
+	},
+	"ID": {
+		"country": "INDONESIA",
+		"nationality": "INDONESIAN"
+	},
+	"IR": {
+		"country": "IRAN",
+		"nationality": "IRANIAN"
+	},
+	"IQ": {
+		"country": "IRAQ",
+		"nationality": "IRAQI"
+	},
+	"IE": {
+		"country": "IRELAND",
+		"nationality": "IRISH"
+	},
+	"IM": {
+		"country": "ISLE OF MAN",
+		"nationality": "MANX"
+	},
+	"IL": {
+		"country": "ISRAEL",
+		"nationality": "ISRAELI"
+	},
+	"IT": {
+		"country": "ITALY",
+		"nationality": "ITALIAN"
+	},
+	"JM": {
+		"country": "JAMAICA",
+		"nationality": "JAMAICAN"
+	},
+	"JP": {
+		"country": "JAPAN",
+		"nationality": "JAPANESE"
+	},
+	"JE": {
+		"country": "JERSEY",
+		"nationality": "JERSEY"
+	},
+	"JO": {
+		"country": "JORDAN",
+		"nationality": "JORDANIAN"
+	},
+	"KZ": {
+		"country": "KAZAKHSTAN",
+		"nationality": "KAZAKHSTANI"
+	},
+	"KE": {
+		"country": "KENYA",
+		"nationality": "KENYAN"
+	},
+	"KI": {
+		"country": "KIRIBATI",
+		"nationality": "I-KIRIBATI"
+	},
+	"KP": {
+		"country": "NORTH KOREA",
+		"nationality": "NORTH KOREAN"
 	},
 	"KR": {
 		"country": "SOUTH KOREA",
 		"nationality": "SOUTH KOREAN"
+	},
+	"KW": {
+		"country": "KUWAIT",
+		"nationality": "KUWAITI"
+	},
+	"KG": {
+		"country": "KYRGYZSTAN",
+		"nationality": "KYRGYZSTANI"
+	},
+	"LA": {
+		"country": "LAOS",
+		"nationality": "LAOTIAN"
+	},
+	"LV": {
+		"country": "LATVIA",
+		"nationality": "LATVIAN"
+	},
+	"LB": {
+		"country": "LEBANON",
+		"nationality": "LEBANESE"
+	},
+	"LS": {
+		"country": "LESOTHO",
+		"nationality": "MOSOTHO"
+	},
+	"LR": {
+		"country": "LIBERIA",
+		"nationality": "LIBERIAN"
+	},
+	"LY": {
+		"country": "LIBYA",
+		"nationality": "LIBYAN"
+	},
+	"LI": {
+		"country": "LIECHTENSTEIN",
+		"nationality": "LIECHTENSTEINER"
+	},
+	"LT": {
+		"country": "LITHUANIA",
+		"nationality": "LITHUNIAN"
+	},
+	"LU": {
+		"country": "LUXEMBOURG",
+		"nationality": "LUXEMBOURGER"
+	},
+	"MO": {
+		"country": "MACAU",
+		"nationality": "MACANESE"
+	},
+	"MK": {
+		"country": "MACEDONIA",
+		"nationality": "MACEDONIAN"
+	},
+	"MG": {
+		"country": "MADAGASCAR",
+		"nationality": "MALAGASY"
+	},
+	"MW": {
+		"country": "MALAWI",
+		"nationality": "MALAWIAN"
+	},
+	"MY": {
+		"country": "MALAYSIA",
+		"nationality": "MALAYSIAN"
+	},
+	"MV": {
+		"country": "MALDIVES",
+		"nationality": "MALDIVAN"
+	},
+	"ML": {
+		"country": "MALI",
+		"nationality": "MALIAN"
+	},
+	"MT": {
+		"country": "MALTA",
+		"nationality": "MALTESE"
+	},
+	"MH": {
+		"country": "MARSHALL ISLANDS",
+		"nationality": "MARSHALLESE"
+	},
+	"MQ": {
+		"country": "MARTINIQUE",
+		"nationality": "MARTINICAN"
+	},
+	"MR": {
+		"country": "MAURITANIA",
+		"nationality": "MAURITANIAN"
+	},
+	"MU": {
+		"country": "MAURITIUS",
+		"nationality": "MAURITIAN"
+	},
+	"YT": {
+		"country": "MAYOTTE",
+		"nationality": "MAHORAN"
+	},
+	"MX": {
+		"country": "MEXICO",
+		"nationality": "MEXICAN"
+	},
+	"FM": {
+		"country": "MICRONESIA",
+		"nationality": "MICRONESIAN"
+	},
+	"MD": {
+		"country": "MOLDOVA",
+		"nationality": "MOLDOVAN"
+	},
+	"MC": {
+		"country": "MONACO",
+		"nationality": "MONACAN"
+	},
+	"MN": {
+		"country": "MONGOLIA",
+		"nationality": "MONGOLIAN"
+	},
+	"MS": {
+		"country": "MONTSERRAT",
+		"nationality": "MONTSERRATIAN"
+	},
+	"MA": {
+		"country": "MOROCCO",
+		"nationality": "MOROCCAN"
+	},
+	"MZ": {
+		"country": "MOZAMBIQUE",
+		"nationality": "MOZAMBICAN"
+	},
+	"MM": {
+		"country": "BURMA (REPUBLIC OF THE UNION OF MYANMAR)",
+		"nationality": "MYANMAR"
+	},
+	"NA": {
+		"country": "NAMIBIA",
+		"nationality": "NAMIBIAN"
+	},
+	"NR": {
+		"country": "NAURU",
+		"nationality": "NAURUAN"
+	},
+	"NP": {
+		"country": "NEPAL",
+		"nationality": "NEPALESE"
+	},
+	"NL": {
+		"country": "NETHERLANDS",
+		"nationality": "DUTCH"
+	},
+	"AN": {
+		"country": " ",
+		"nationality": " "
+	},
+	"NC": {
+		"country": "NEW CALEDONIA",
+		"nationality": "NEW CALEDONIAN"
+	},
+	"NZ": {
+		"country": "NEW ZEALAND",
+		"nationality": "NEW ZEALANDER"
+	},
+	"NI": {
+		"country": "NICARAGUA",
+		"nationality": "NICARAGUAN"
+	},
+	"NE": {
+		"country": "NIGER",
+		"nationality": "NIGERIEN"
+	},
+	"NG": {
+		"country": "NIGERIA",
+		"nationality": "NIGERIAN"
+	},
+	"NU": {
+		"country": "NIUE",
+		"nationality": "NIUEAN"
+	},
+	"NF": {
+		"country": "NORFOLK ISLAND",
+		"nationality": "U.S. TERRITORY"
+	},
+	"MP": {
+		"country": "NORTHERN MARIANA ISLANDS",
+		"nationality": "U.S. TERRITORY"
+	},
+	"NO": {
+		"country": "NORWAY",
+		"nationality": "NORWEGIAN"
+	},
+	"OM": {
+		"country": "OMAN",
+		"nationality": "OMANI"
+	},
+	"PK": {
+		"country": "PAKISTAN",
+		"nationality": "PAKISTANI"
+	},
+	"PW": {
+		"country": "PALAU",
+		"nationality": "PALAUAN"
+	},
+	"PS": {
+		"country": "PALESTINE",
+		"nationality": "PALESTINIAN"
+	},
+	"PA": {
+		"country": "PANAMA",
+		"nationality": "PANAMANIAN"
+	},
+	"PG": {
+		"country": "PAPUA NEW GUINEA",
+		"nationality": "PAPUA NEW GUINEAN"
+	},
+	"PY": {
+		"country": "PARAGUAY",
+		"nationality": "PARAGUAYAN"
+	},
+	"PE": {
+		"country": "PERU",
+		"nationality": "PERUVIAN"
+	},
+	"PH": {
+		"country": "PHILIPPINES",
+		"nationality": "FILIPINO"
+	},
+	"PN": {
+		"country": "PITCAIRN",
+		"nationality": "PITCAIRN ISLANDER"
+	},
+	"PL": {
+		"country": "POLAND",
+		"nationality": "POLISH"
+	},
+	"PT": {
+		"country": "PORTUGAL",
+		"nationality": "PORTUGUESE"
+	},
+	"PR": {
+		"country": "PUERTO RICO",
+		"nationality": "PUERTO RICAN"
+	},
+	"QA": {
+		"country": "QATAR",
+		"nationality": "QATARI"
+	},
+	"RE": {
+		"country": "REUNION",
+		"nationality": "FRENCH OVERSEAS REGION"
+	},
+	"RO": {
+		"country": "ROMANIA",
+		"nationality": "ROMANIAN"
+	},
+	"RU": {
+		"country": "RUSSIAN FEDERATION",
+		"nationality": "RUSSIAN"
+	},
+	"RW": {
+		"country": "RWANDA",
+		"nationality": "RWANDAN"
+	},
+	"SH": {
+		"country": "SAINT HELENA",
+		"nationality": "BRITISH OVERSEAS TERRITORY"
+	},
+	"KN": {
+		"country": "SAINT KITTS AND NEVIS",
+		"nationality": "KITTIAN"
+	},
+	"LC": {
+		"country": "SAINT LUCIA",
+		"nationality": "SAINT LUCIAN"
+	},
+	"PM": {
+		"country": "SAINT PIERRE AND MIQUELON",
+		"nationality": "SAINT-PIERRAIS"
+	},
+	"VC": {
+		"country": "SAINT VINCENT AND GRENADINES",
+		"nationality": "SAINT VINCENTIAN"
+	},
+	"WS": {
+		"country": "SAMOA",
+		"nationality": "SAMOAN"
+	},
+	"SM": {
+		"country": "SAN MARINO",
+		"nationality": "SANMARINESE"
+	},
+	"ST": {
+		"country": "SAO TOME AND PRINCIPE",
+		"nationality": "SAO TOMEAN"
+	},
+	"SA": {
+		"country": "SAUDI ARABIA",
+		"nationality": "SAUDI ARABIAN"
+	},
+	"SN": {
+		"country": "SENEGAL",
+		"nationality": "SENEGALESE"
+	},
+	"CS": {
+		"country": "SERBIA",
+		"nationality": "SERBIAN"
+	},
+	"SC": {
+		"country": "SEYCHELLES",
+		"nationality": "SEYCHELLOIS"
+	},
+	"SL": {
+		"country": "SIERRA LEONE",
+		"nationality": "SIERRA LEONEAN"
+	},
+	"SG": {
+		"country": "SINGAPORE",
+		"nationality": "SINGAPOREAN"
+	},
+	"SK": {
+		"country": "SLOVAKIA",
+		"nationality": "SLOVAKIAN"
+	},
+	"SI": {
+		"country": "SLOVENIA",
+		"nationality": "SLOVENIAN"
+	},
+	"SB": {
+		"country": "SOLOMON ISLANDS",
+		"nationality": "SOLOMON ISLANDER"
+	},
+	"SO": {
+		"country": "SOMALIA",
+		"nationality": "SOMALI"
+	},
+	"ZA": {
+		"country": "SOUTH AFRICA",
+		"nationality": "SOUTH AFRICAN"
+	},
+	"GS": {
+		"country": "SOUTH GEORGIA AND THE SOUTH SANDWICH ISLANDS",
+		"nationality": "BRITISH OVERSEAS TERRITORY"
+	},
+	"ES": {
+		"country": "SPAIN",
+		"nationality": "SPANISH"
+	},
+	"LK": {
+		"country": "SRI LANKA",
+		"nationality": "SRI LANKAN"
+	},
+	"SD": {
+		"country": "SUDAN",
+		"nationality": "SUDANESE"
+	},
+	"SR": {
+		"country": "SURINAME",
+		"nationality": "SURINAMER"
+	},
+	"SJ": {
+		"country": "SVALBARD AND JAN MAYEN ISLANDS",
+		"nationality": "SVALBARD AND JAN MAYEN ISLANDS"
+	},
+	"SZ": {
+		"country": "SWAZILAND",
+		"nationality": "SWAZI"
+	},
+	"SE": {
+		"country": "SWEDEN",
+		"nationality": "SWEDISH"
+	},
+	"CH": {
+		"country": "SWITZERLAND",
+		"nationality": "SWISS"
+	},
+	"SY": {
+		"country": "SYRIA",
+		"nationality": "SYRIAN"
+	},
+	"TW": {
+		"country": "TAIWAN",
+		"nationality": "TAIWANESE"
+	},
+	"TJ": {
+		"country": "TAJIKISTAN",
+		"nationality": "TAJIKISTANI"
+	},
+	"TZ": {
+		"country": "TANZANIA",
+		"nationality": "TANZANIAN"
+	},
+	"TH": {
+		"country": "THAILAND",
+		"nationality": "THAI"
+	},
+	"TL": {
+		"country": "TIMOR-LESTE",
+		"nationality": "TIMORESE"
+	},
+	"TG": {
+		"country": "TOGO",
+		"nationality": "TOGOLESE"
+	},
+	"TK": {
+		"country": "TOKELAU",
+		"nationality": "TOKELAUAN"
+	},
+	"TO": {
+		"country": "TONGA",
+		"nationality": "TONGAN"
+	},
+	"TT": {
+		"country": "TRINIDAD AND TOBAGO",
+		"nationality": "TRINIDADIAN"
+	},
+	"TN": {
+		"country": "TUNISIA",
+		"nationality": "TUNISIAN"
+	},
+	"TR": {
+		"country": "TURKEY",
+		"nationality": "TURKISH"
+	},
+	"TM": {
+		"country": "TURKMENISTAN",
+		"nationality": "TURKMEN"
+	},
+	"TC": {
+		"country": "TURKS AND CAICOS ISLANDS",
+		"nationality": "BRITISH OVERSEAS TERRITORY"
+	},
+	"TV": {
+		"country": "TUVALU",
+		"nationality": "TUVALUAN"
+	},
+	"UG": {
+		"country": "UGANDA",
+		"nationality": "UGANDAN"
+	},
+	"UA": {
+		"country": "UKRAINE",
+		"nationality": "UKRAINIAN"
+	},
+	"AE": {
+		"country": "UNITED ARAB EMIRATES",
+		"nationality": "EMIRIAN"
 	},
 	"GB": {
 		"country": "UNITED KINGDOM",
@@ -305,8 +919,56 @@
 		"country": "UNITED STATES OF AMERICA",
 		"nationality": "AMERICAN"
 	},
-	"TH": {
-		"country": "THAILAND",
-		"nationality": "THAI"
+	"UM": {
+		"country": "UNITED STATES MINOR OUTLYING ISLANDS",
+		"nationality": "U.S. TERRITORY"
+	},
+	"UY": {
+		"country": "URUGUAY",
+		"nationality": "URUGUAYAN"
+	},
+	"UZ": {
+		"country": "UZBEKISTAN",
+		"nationality": "UZBEKISTANI"
+	},
+	"VU": {
+		"country": "VANUATU",
+		"nationality": "NI-VANUATU"
+	},
+	"VE": {
+		"country": "VENEZUELA",
+		"nationality": "VENEZUELAN"
+	},
+	"VN": {
+		"country": "VIETNAM",
+		"nationality": "VIETNAMESE"
+	},
+	"VG": {
+		"country": "BRITISH VIRGIN ISLANDS",
+		"nationality": "BRITISH OVERSEAS TERRITORY"
+	},
+	"VI": {
+		"country": "UNITED STATES VIRGIN ISLANDS",
+		"nationality": "U.S. TERRITORY"
+	},
+	"WF": {
+		"country": "WALLIS AND FUTUNA ISLANDS",
+		"nationality": "FRENCH OVERSEAS COLLECTIVITY"
+	},
+	"EH": {
+		"country": "WESTERN SAHARAN",
+		"nationality": "WESTERN SAHARAN"
+	},
+	"YE": {
+		"country": "YEMEN",
+		"nationality": "YEMENI"
+	},
+	"ZM": {
+		"country": "ZAMBIA",
+		"nationality": "ZAMBIAN"
+	},
+	"ZW": {
+		"country": "ZIMBABWE",
+		"nationality": "ZIMBABWEAN"
 	}
 }
