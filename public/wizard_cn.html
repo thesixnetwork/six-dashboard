@@ -55,32 +55,79 @@
     <!-- End Facebook Pixel Code -->
   </head>
   <body>
-    <script>
-        var s = document.createElement('div')
-        s.className = 'fb-customerchat'
-        var att = document.createAttribute("page_id")
-        att.value = pageId
-        s.setAttributeNode(att)
-        document.body.appendChild(s)
+  <script>
+      var s = document.createElement('div')
+      s.className = 'fb-customerchat'
+      var att = document.createAttribute("page_id")
+      att.value = pageId
+      s.setAttributeNode(att)
+      document.body.appendChild(s)
 
-        window.fbAsyncInit = function() {
-          FB.init({
-            appId            : appId,
-            autoLogAppEvents : true,
-            xfbml            : true,
-            version          : 'v2.11'
-          });
-        };
+      window.fbAsyncInit = function() {
+        FB.init({
+          appId            : appId,
+          autoLogAppEvents : true,
+          xfbml            : true,
+          version          : 'v2.11'
+        });
+      };
 
-        (function(d, s, id){
-           var js, fjs = d.getElementsByTagName(s)[0];
-           if (d.getElementById(id)) {return;}
-           js = d.createElement(s); js.id = id;
-           js.src = "https://connect.facebook.net/en_US/sdk.js";
-           fjs.parentNode.insertBefore(js, fjs);
-         }(document, 'script', 'facebook-jssdk'));
-     </script>
+      (function(d, s, id){
+         var js, fjs = d.getElementsByTagName(s)[0];
+         if (d.getElementById(id)) {return;}
+         js = d.createElement(s); js.id = id;
+         js.src = "https://connect.facebook.net/en_US/sdk.js";
+         fjs.parentNode.insertBefore(js, fjs);
+       }(document, 'script', 'facebook-jssdk'));
+   </script>
 
+   <div class="overlay" style="display:none">
+        	<div class="error-not-match" style="display:none">
+        		<img src="./images/exclamation-mark.png" alt="Data not match">
+        		<p>Face detection not match</p>
+        		<p>We can not match your photo. Please try again</p>
+        		<a href="#" onclick="closeErrorMatch()" class="close">Close this window</a>
+        	</div>
+        	<div class="loader-checker" style="display:none">
+        		<div class="loading-pulse"></div>
+        		<p>Data has been loading.</p>
+        	</div>
+        </div>
+        <style>
+        	.overlay { background-color: rgba(0,0,0,0.5); position: fixed; left: 0; top: 0; width: 100%; height: 100%; display: flex; justify-content: center; align-items: center; z-index: 1}
+        	.loader-checker { width: 320px; padding: 60px 40px; background-color: rgba(0,0,0,0.25); border-radius: 4px; }
+        	.loader-checker p { text-align: center; color: #FFFFFF; }
+        	.error-not-match { width: 480px; padding: 60px 40px; background-color: #FFFFFF; border-radius: 4px; }
+        	.error-not-match img { display: block; width: 64px; margin: 0 auto 40px auto; }
+        	.error-not-match p { text-align: center; }
+        	.error-not-match p:nth-of-type(01) { color: #F44336; font-size: 24px; font-weight: bold; margin-bottom: 10px; }
+        	.error-not-match p:nth-of-type(02) { color: #777777; margin-bottom: 20px; }
+        	.error-not-match a.close { display: block; text-align: center; font-size: 12px; color: #777777; opacity: 0.75; }
+        	.loading-pulse { margin-left: auto; margin-right: auto; margin-bottom: 30px; display: block; position: relative; width: 6px; height: 24px; background: rgba(255, 255, 255, 0.2); -webkit-animation: pulse 750ms infinite; animation: pulse 750ms infinite; -webkit-animation-delay: 250ms; animation-delay: 250ms; }
+        	.loading-pulse:before, .loading-pulse:after { content: ''; position: absolute; display: block; height: 16px; width: 6px; background: rgba(255, 255, 255, 0.2); top: 50%; -webkit-transform: translateY(-50%); transform: translateY(-50%); -webkit-animation: pulse 750ms infinite; animation: pulse 750ms infinite; }
+        	.loading-pulse:before { left: -12px; }
+        	.loading-pulse:after { left: 12px; -webkit-animation-delay: 500ms; animation-delay: 500ms; }
+        		@keyframes spin {
+        			0% {
+        				-webkit-transform: rotate(0deg);
+        				transform: rotate(0deg);
+        			}
+        		100% {
+        				-webkit-transform: rotate(360deg);
+        				transform: rotate(360deg);
+        			}
+        		}
+        		@-webkit-keyframes pulse {
+        			50% {
+        				background: white;
+        			}
+        		}
+        		@keyframes pulse {
+        			50% {
+        				background: white;
+        			}
+        		}
+    </style>
     <div id='preLoader'>
       <div id='preloadWrapper'>
         <img id='preloadImage'src="images/six_network.png">

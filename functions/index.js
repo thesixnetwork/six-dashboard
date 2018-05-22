@@ -32,12 +32,12 @@ const sgOptions = {
 
 const mailTransport = nodemailer.createTransport(sgTransport(sgOptions));
 
-const triggers = require("./trigger")(functions, fireStore);
+const triggers = require("./trigger")(admin, functions, fireStore)
 for (let trigger of triggers) {
   exports[trigger.name] = trigger.module;
 }
 
-const userModels = require("./model/user")(functions, fireStore);
+const userModels = require("./model/user")(functions, fireStore)
 for (let trigger of userModels) {
   exports[trigger.name] = trigger.module;
 }
