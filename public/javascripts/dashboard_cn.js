@@ -499,6 +499,9 @@ function getTxs () {
     .then(snapshot => {
       return firebase.firestore().collection('presale').doc('supply').collection('purchased_presale_tx').doc(firebase.auth().currentUser.uid).get().then(preDoc => {
         let preDocData = preDoc.data()
+        if (preDocData === undefined) {
+          preDocData = {}
+        }
         $('#userTxs').empty()
         let allDoc = []
         snapshot.forEach(d => {
@@ -523,6 +526,15 @@ function getTxs () {
                 numberStep: percent_number_step
               }
             );
+          } else {
+            data.six_amount = Number((data.six_amount).toFixed(7))
+            totalSix += data.six_amount
+            $('#totalSix').animateNumber(
+              {
+                number: totalSix.toFixed(7),
+                numberStep: percent_number_step
+              }
+            )
           }
           const elem = buildListTx(data)
           $("#userTxs")[0].appendChild(elem)
