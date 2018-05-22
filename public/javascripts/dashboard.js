@@ -452,6 +452,37 @@ function gotoCurrency() {
   $("#warnBox").css("display", "none")
 }
 
+function buildFreeTx() {
+  var tr = document.createElement("tr");
+  var td1 = document.createElement("td");
+  var txt1 = document.createTextNode('-')
+  td1.appendChild(txt1);
+
+  var td2 = document.createElement("td");
+  var txt2 = document.createTextNode("20 SIX");
+  td2.appendChild(txt2);
+
+  var td3 = document.createElement("td");
+  var txt3 = document.createTextNode("-");
+  td3.appendChild(txt3)
+
+  var td4 = document.createElement("td");
+  var txt4 = document.createTextNode("free");
+  td4.appendChild(txt4)
+
+  var td5 = document.createElement("td");
+  var txt5 = document.createTextNode("-");
+  td5.appendChild(txt5)
+
+  tr.appendChild(td1);
+  tr.appendChild(td2);
+  tr.appendChild(td3);
+  tr.appendChild(td4);
+  tr.appendChild(td5);
+
+  return tr
+}
+
 function buildListTx(doc) {
   const { time: t, native_amount, type: currency_type, to, id, time, six_amount, tx_status } = doc
   let date = new Date(parseFloat(t));
@@ -489,7 +520,7 @@ function buildListTx(doc) {
   return tr
 }
 
-let totalSix = 0
+let totalSix = 20
 
 function getTxs () {
   if (firebase.auth().currentUser !== null) {
@@ -564,6 +595,8 @@ function getTxs () {
         const elem = buildListTx({ time: userData.alloc_time, native_amount: userData.alloc_transaction_amount, type: userData.alloc_transaction_type, to: '-', id: '-', six_amount: userData.alloc_transaction_six_amount, alloc_time: userData.alloc_time, tx_status: 'pending' })
         $("#userTxs")[0].prepend(elem)
       }
+      const elem = buildFreeTx()
+      $("#userTxs")[0].appendChild(elem)
     })
   }
 }
