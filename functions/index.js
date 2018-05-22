@@ -13,6 +13,7 @@ admin.initializeApp(functions.config().firebase);
 const EthereumService = require("./service-ethereum");
 const stellarService = require("./stellar-service");
 const claimService= require('./claim-service')
+const activecampaign_subscriber = require('./activecampaign_subscriber')
 
 const handleCreateStellarAccount = claimService.handleCreateStellarAccount
 const handleClaimSix = claimService.handleClaimSix
@@ -766,35 +767,39 @@ var sendEmail = (function() {
   };
 })();
 
-function _asyncToGenerator(fn) {
-  return function() {
-    var gen = fn.apply(this, arguments);
-    return new Promise(function(resolve, reject) {
-      function step(key, arg) {
-        try {
-          var info = gen[key](arg);
-          var value = info.value;
-        } catch (error) {
-          reject(error);
-          return;
-        }
-        if (info.done) {
-          resolve(value);
-        } else {
-          return Promise.resolve(value).then(
-            function(value) {
-              step("next", value);
-            },
-            function(err) {
-              step("throw", err);
-            }
-          );
-        }
-      }
-      return step("next");
-    });
-  };
-}
+// f_toConsumableArrayunction (arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
+
+function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, arguments); return new Promise(function (resolve, reject) { function step(key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { return Promise.resolve(value).then(function (value) { step("next", value); }, function (err) { step("throw", err); }); } } return step("next"); }); }; }
+
+// function _asyncToGenerator(fn) {
+//   return function() {
+//     var gen = fn.apply(this, arguments);
+//     return new Promise(function(resolve, reject) {
+//       function step(key, arg) {
+//         try {
+//           var info = gen[key](arg);
+//           var value = info.value;
+//         } catch (error) {
+//           reject(error);
+//           return;
+//         }
+//         if (info.done) {
+//           resolve(value);
+//         } else {
+//           return Promise.resolve(value).then(
+//             function(value) {
+//               step("next", value);
+//             },
+//             function(err) {
+//               step("throw", err);
+//             }
+//           );
+//         }
+//       }
+//       return step("next");
+//     });
+//   };
+// }
 
 // Upper function convert from this function should not remove.
 // async function sendEmail  (emails) {
@@ -1214,3 +1219,464 @@ exports.remindBonusExpireEmailEN = functions.https.onRequest((request, response)
 
 exports.createClaim = functions.https.onRequest(handleCreateStellarAccount)
 exports.claimSix = functions.https.onRequest(handleClaimSix)
+
+
+function genLastBonusEmail(emails) {
+  return new Promise((resolve, reject) => {
+    let personalizations = []
+    console.log(emails, 'emails....')
+    emails.forEach(email => {
+      if (email && email !== null) {
+        personalizations.push({
+          "to": [{ email }],
+          "subject": "[SIX network] - Our 6% bonus campaign has been closed!"
+        })
+      }
+    })
+    const mailOptions = {
+      personalizations,
+      from: {email: 'no-reply@six.network'},
+      content: [{
+        type: 'text/html',
+        value: `
+        <div style="font-family: &quot;Prompt&quot;, sans-serif;color: rgba(33, 33, 33, 1);margin: 0;background: #F6F6F6">
+        <div class="section" style="font-family: &quot;Prompt&quot;, sans-serif;color: rgba(33, 33, 33, 1);position: relative;background: #F6F6F6;padding-bottom: 10px;height: 100%;z-index: 1">
+          <!-- <img class="top-header" src="https://firebasestorage.googleapis.com/v0/b/devson-f46f4.appspot.com/o/public%2Fheader.png?alt=media&token=9f32b7f1-6def-45f2-bf1a-2cea15326450"
+            alt=""> -->
+          <div class="card" style="font-family: &quot;Prompt&quot;, sans-serif;color: rgba(33, 33, 33, 1);width: 80%;padding: 0;padding-top: 2%;z-index: 100;margin-left: 10%;background: transparent">
+            <div class="card-header" style="font-family: &quot;Prompt&quot;, sans-serif;color: rgba(33, 33, 33, 1);position: relative;padding: 0;background: transparent;width: 100%">
+              <img class="header-img" src="https://firebasestorage.googleapis.com/v0/b/six-dashboard.appspot.com/o/public%2FS__18350212.jpg?alt=media&token=fd19f8af-b64a-4115-b14d-3e070c31039c"
+                alt="" style="font-family: &quot;Prompt&quot;, sans-serif;color: rgba(33, 33, 33, 1);width: 100%;box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);z-index: 10"
+              />
+            </div>
+            <div class="card-content" style="font-family: &quot;Prompt&quot;, sans-serif;color: rgba(33, 33, 33, 1);padding: 5px;margin-top: -20px;box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);background: #FFF">
+              <div class="container" style="font-family: &quot;Prompt&quot;, sans-serif;color: rgba(33, 33, 33, 1);padding: 2%">
+                <!-- thai -->
+                <h2 class="title" style="font-family: &quot;Prompt&quot;, sans-serif;color: rgba(33, 33, 33, 1)">Hi everyone,</h2>
+                <span>(Korean version below)</span>
+                <p style="font-family: &quot;Prompt&quot;, sans-serif;color: rgba(33, 33, 33, 1);font-size: 14px">Thanks to the high demand, our pre-sale has been ended. </p>
+                <p style="font-family: &quot;Prompt&quot;, sans-serif;color: rgba(33, 33, 33, 1);font-size: 14px">6% bonus will automatically be added to at the account of those who make a contribution within 19 May 2018 at 23.59 GMT+9. </p>
+    
+                <p style="font-family: &quot;Prompt&quot;, sans-serif;color: rgba(33, 33, 33, 1);font-size: 14px">However, you can contribute to our ICO until 31 May 2018.</p>
+      
+                  <div class="p-group" style="font-family: &quot;Prompt&quot;, sans-serif;color: rgba(33, 33, 33, 1)">
+                      <div class="p-group" style="font-family: &quot;Prompt&quot;, sans-serif;color: rgba(33, 33, 33, 1)">
+                        <br />
+                        <span style="font-family: &quot;Prompt&quot;, sans-serif;color: rgba(33, 33, 33, 1);font-size: 14px">Cheers!</span>
+                        <br style="font-family: &quot;Prompt&quot;, sans-serif;color: rgba(33, 33, 33, 1)" />
+                        <span style="font-family: &quot;Prompt&quot;, sans-serif;color: rgba(33, 33, 33, 1);font-size: 14px">SIX network team</span>
+                      </div>
+                    </div>
+              </div>
+            </div>
+          </div>
+          <div class="card" style="font-family: &quot;Prompt&quot;, sans-serif;color: rgba(33, 33, 33, 1);width: 80%;padding: 0;padding-top: 2%;z-index: 100;margin-left: 10%;background: transparent">
+              <div class="card-content" style="font-family: &quot;Prompt&quot;, sans-serif;color: rgba(33, 33, 33, 1);padding: 5px;margin-top: -20px;box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);background: #FFF">
+                <div class="container" style="font-family: &quot;Prompt&quot;, sans-serif;color: rgba(33, 33, 33, 1);padding: 2%">
+                  <!-- thai -->
+                  <p style="font-family: &quot;Prompt&quot;, sans-serif;color: rgba(33, 33, 33, 1);font-size: 14px">여러분의 많은 관심과 성원 덕분에 프리세일이 마감되었습니다.</p>
+                  <p style="font-family: &quot;Prompt&quot;, sans-serif;color: rgba(33, 33, 33, 1);font-size: 14px">2018년 5월 19일 23시 59분 GMT+9 이내로 이체를 완료해주신 분들께는 자동으로 6% 보너스 혜택이 적용됩니다.</p>
+      
+                  <p style="font-family: &quot;Prompt&quot;, sans-serif;color: rgba(33, 33, 33, 1);font-size: 14px">보너스 혜택 기간은 끝났지만, 2018년 5월 31일까지 ICO에 참여하실 수 있습니다.</p>
+        
+                    <div class="p-group" style="font-family: &quot;Prompt&quot;, sans-serif;color: rgba(33, 33, 33, 1)">
+                        <div class="p-group" style="font-family: &quot;Prompt&quot;, sans-serif;color: rgba(33, 33, 33, 1)">
+                          <br />
+                          <span style="font-family: &quot;Prompt&quot;, sans-serif;color: rgba(33, 33, 33, 1);font-size: 14px">감사합니다</span>
+                          <br style="font-family: &quot;Prompt&quot;, sans-serif;color: rgba(33, 33, 33, 1)" />
+                          <span style="font-family: &quot;Prompt&quot;, sans-serif;color: rgba(33, 33, 33, 1);font-size: 14px">식스네트워크팀 드림</span>
+                        </div>
+                      </div>
+                </div>
+              </div>
+            </div>
+        </div>
+      </div>
+    `
+    }]
+  }
+    resolve(mailOptions);
+  });
+}
+
+
+exports.sendLastBonusToSubscriber = functions.https.onRequest(function () {
+  var _ref = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee(request, response) {
+    var password, emailsList, sendList, initial, list_send, i, from, to, t, mailOptions;
+    return regeneratorRuntime.wrap(function _callee$(_context) {
+      while (1) {
+        switch (_context.prev = _context.next) {
+          case 0:
+            _context.prev = 0;
+
+            cors(request, response, function () {});
+            password = request.query.password;
+
+            if (!(password === "ineedtosendemail")) {
+              _context.next = 28;
+              break;
+            }
+
+            emailsList = [];
+            sendList = activecampaign_subscriber;
+
+            if (!(sendList && sendList.length > 0)) {
+              _context.next = 26;
+              break;
+            }
+
+            initial = 0;
+            list_send = [];
+            i = 1;
+
+          case 10:
+            if (!(i <= sendList.length / 1000)) {
+              _context.next = 25;
+              break;
+            }
+
+            from = initial;
+            to = i * 1000;
+            t = sendList.slice(from, to);
+
+            console.log(t, 't....');
+            _context.next = 17;
+            return genLastBonusEmail(t);
+
+          case 17:
+            mailOptions = _context.sent;
+            _context.next = 20;
+            return axios.post('https://api.sendgrid.com/v3/mail/send', mailOptions, { headers: { Authorization: 'Bearer ' + SENDGRID_API_KEY } });
+
+          case 20:
+            list_send.push(t);
+            initial = to;
+
+          case 22:
+            i++;
+            _context.next = 10;
+            break;
+
+          case 25:
+            return _context.abrupt('return', response.send({ success: true, list_send: list_send }));
+
+          case 26:
+            _context.next = 29;
+            break;
+
+          case 28:
+            return _context.abrupt('return', response.status(400).json(new Error("Password not match")));
+
+          case 29:
+            _context.next = 34;
+            break;
+
+          case 31:
+            _context.prev = 31;
+            _context.t0 = _context['catch'](0);
+            return _context.abrupt('return', response.status(400).json(_context.t0));
+
+          case 34:
+          case 'end':
+            return _context.stop();
+        }
+      }
+    }, _callee, undefined, [[0, 31]]);
+  }));
+
+  return function (_x, _x2) {
+    return _ref.apply(this, arguments);
+  };
+}());
+
+exports.sendLastBonusToUser = functions.https.onRequest((request, response) => {
+  cors(request, response, () => {});
+  const db = admin.firestore().collection("users");
+  const { password } = request.query
+  if (password === "ineedtosendemail") {
+    db.get().then(docs => {
+      let emailsList = []
+      let sendList = []
+      docs.forEach(doc => {
+        if (email && email !== null) {
+          sendList.push({ email })
+        }
+      });
+      if (sendList && sendList.length > 0) {
+        return genLastBonusEmail(sendList)
+        .then(mailOptions => {
+          return axios.post('https://api.sendgrid.com/v3/mail/send', mailOptions, { headers: { Authorization: `Bearer ${SENDGRID_API_KEY}`}})
+        })
+        .then(res => {
+          return response.json({ success: true, sendList })
+        })
+        .catch(err => {
+          console.log((err.response || {}).data, 'err')
+          console.log(err.message, 'err.message')
+          return response.status(400).json({ error: (err.reponse || {}).data })
+        })
+      } else {
+        return response.send({ success: true, sendList })
+      }
+    });
+  } else {
+    return response.status(400).json(new Error("Password not match"));
+  }
+});
+
+// ico close 
+function genICOCloseEmail(emails) {
+  return new Promise((resolve, reject) => {
+    let personalizations = []
+    console.log(emails, 'emails....')
+    emails.forEach(email => {
+      if (email && email !== null) {
+        if (typeof email === 'string') {
+          console.log(email, 'email...')
+          personalizations.push({
+            "to": [{ email: email }],
+            "subject": "[SIX network] Free 20 SIX token for those who passed the KYC process by this Saturday"
+          })
+        } else {
+          console.log(email, 'email...')
+          personalizations.push({
+            "to": [{ email: email.email }],
+            "subject": "[SIX network] Free 20 SIX token for those who passed the KYC process by this Saturday"
+          })
+        }
+      }
+    })
+    const mailOptions = {
+      personalizations,
+      from: {email: 'no-reply@six.network'},
+      content: [{
+        type: 'text/html',
+        value: `
+        <div style="font-family: &quot;Prompt&quot;, sans-serif;color: rgba(33, 33, 33, 1);margin: 0;background: #F6F6F6">
+        <div class="section" style="font-family: &quot;Prompt&quot;, sans-serif;color: rgba(33, 33, 33, 1);position: relative;background: #F6F6F6;padding-bottom: 10px;height: 100%;z-index: 1">
+          <!-- <img class="top-header" src="https://firebasestorage.googleapis.com/v0/b/devson-f46f4.appspot.com/o/public%2Fheader.png?alt=media&token=9f32b7f1-6def-45f2-bf1a-2cea15326450"
+            alt=""> -->
+          <div class="card" style="font-family: &quot;Prompt&quot;, sans-serif;color: rgba(33, 33, 33, 1);width: 80%;padding: 0;padding-top: 2%;z-index: 100;margin-left: 10%;background: transparent">
+            <div class="card-header" style="font-family: &quot;Prompt&quot;, sans-serif;color: rgba(33, 33, 33, 1);position: relative;padding: 0;background: transparent;width: 100%">
+              <img class="header-img" src="https://firebasestorage.googleapis.com/v0/b/six-dashboard.appspot.com/o/public%2FS__18628690.jpg?alt=media&token=80f74e49-347f-4bbf-abe0-7594c281e876"
+                alt="" style="font-family: &quot;Prompt&quot;, sans-serif;color: rgba(33, 33, 33, 1);width: 100%;box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);z-index: 10"
+              />
+            </div>
+            <div class="card-content" style="font-family: &quot;Prompt&quot;, sans-serif;color: rgba(33, 33, 33, 1);padding: 5px;margin-top: -20px;box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);background: #FFF">
+              <div class="container" style="font-family: &quot;Prompt&quot;, sans-serif;color: rgba(33, 33, 33, 1);padding: 2%">
+                <!-- thai -->
+                <h2 class="title" style="font-family: &quot;Prompt&quot;, sans-serif;color: rgba(33, 33, 33, 1)">Hi there,</h2>
+                <span>(Korean version below)</span>
+                <p style="font-family: &quot;Prompt&quot;, sans-serif;color: rgba(33, 33, 33, 1);font-size: 14px">There are 9 days left before our ICO will close.</p>
+                <p style="font-family: &quot;Prompt&quot;, sans-serif;color: rgba(33, 33, 33, 1);font-size: 14px">We have a good news to the person who did not finish the document submission. </p>
+      
+                <p style="font-family: &quot;Prompt&quot;, sans-serif;color: rgba(33, 33, 33, 1);font-size: 14px">From 22 May 2018 21.00 GMT+9 to 27 May 2018 23.59 GMT+9, every person who successfully submit their document and get approved on KYC process will get free 20 SIX token automatically added to their account.</p>
+                <p style="font-family: &quot;Prompt&quot;, sans-serif;color: rgba(33, 33, 33, 1);font-size: 14px">
+                  But don't worry, for the people who have already got approved to our KYC before this "KYC Bounty Campaign" will get this reward as well.
+                </p>
+                <br />
+      
+              <div class="p-group" style="font-family: &quot;Prompt&quot;, sans-serif;color: rgba(33, 33, 33, 1)">
+                <div class="p-group" style="font-family: &quot;Prompt&quot;, sans-serif;color: rgba(33, 33, 33, 1)">
+                  <span style="font-family: &quot;Prompt&quot;, sans-serif;color: rgba(33, 33, 33, 1);font-size: 14px">Thank you for your always supporting on us!</span>
+                  <br />
+                  <br />
+                  <span style="font-family: &quot;Prompt&quot;, sans-serif;color: rgba(33, 33, 33, 1);font-size: 14px">Cheers!</span>
+                  <br style="font-family: &quot;Prompt&quot;, sans-serif;color: rgba(33, 33, 33, 1)" />
+                  <span style="font-family: &quot;Prompt&quot;, sans-serif;color: rgba(33, 33, 33, 1);font-size: 14px">SIX network team</span>
+                </div>
+              </div>
+              </div>
+            </div>
+          </div>
+          <div class="card" style="font-family: &quot;Prompt&quot;, sans-serif;color: rgba(33, 33, 33, 1);width: 80%;padding: 0;padding-top: 2%;z-index: 100;margin-left: 10%;background: transparent">
+            <div class="card-content" style="font-family: &quot;Prompt&quot;, sans-serif;color: rgba(33, 33, 33, 1);padding: 5px;margin-top: -20px;box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);background: #FFF">
+              <div class="container" style="font-family: &quot;Prompt&quot;, sans-serif;color: rgba(33, 33, 33, 1);padding: 2%">
+                <!-- thai -->
+                <h2 class="title" style="font-family: &quot;Prompt&quot;, sans-serif;color: rgba(33, 33, 33, 1)">안녕하세요 여러분.</h2>
+                <p style="font-family: &quot;Prompt&quot;, sans-serif;color: rgba(33, 33, 33, 1);font-size: 14px">식스 네트워크 종료일까지 9일이 남았습니다.</p>
+                <p style="font-family: &quot;Prompt&quot;, sans-serif;color: rgba(33, 33, 33, 1);font-size: 14px">아직 KYC 관련 서류를 제출하지 못한 분들께 좋은 소식이 있습니다.</p>
+      
+                <p style="font-family: &quot;Prompt&quot;, sans-serif;color: rgba(33, 33, 33, 1);font-size: 14px">2018년 5월 22일 21시부터 2018년 5월 27일 23시 59분까지, KYC에 필요한 서류를 제출하고 KYC 인증이 성공적으로 승인된 모든 분들께 20 SIX 토큰을 식스 계정으로 자동 지급하는 캠페인을 진행합니다. </p>
+                <p style="font-family: &quot;Prompt&quot;, sans-serif;color: rgba(33, 33, 33, 1);font-size: 14px">
+                  "KYC 바운티 캠페인" 이전에 KYC에 승인된 분들께도 보상이 지급되니 걱정하지 않으셔도 됩니다.
+                </p>
+                <br />
+      
+              <div class="p-group" style="font-family: &quot;Prompt&quot;, sans-serif;color: rgba(33, 33, 33, 1)">
+                <div class="p-group" style="font-family: &quot;Prompt&quot;, sans-serif;color: rgba(33, 33, 33, 1)">
+                  <br />
+                  <span style="font-family: &quot;Prompt&quot;, sans-serif;color: rgba(33, 33, 33, 1);font-size: 14px">항상 보내주시는 성원과 지지에 감사드립니다!</span>
+                  <br style="font-family: &quot;Prompt&quot;, sans-serif;color: rgba(33, 33, 33, 1)" />
+                  <span style="font-family: &quot;Prompt&quot;, sans-serif;color: rgba(33, 33, 33, 1);font-size: 14px">식스 네트워크 드림</span>
+                </div>
+              </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    `
+    }]
+  }
+    resolve(mailOptions);
+  });
+}
+
+exports.sendICOCloseToSubscribers = functions.https.onRequest(function () {
+  var _ref = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee(request, response) {
+    var password, emailsList, sendList, initial, list_send, i, from, to, t, mailOptions;
+    return regeneratorRuntime.wrap(function _callee$(_context) {
+      while (1) {
+        switch (_context.prev = _context.next) {
+          case 0:
+            _context.prev = 0;
+
+            cors(request, response, function () {});
+            password = request.query.password;
+
+            if (!(password === "ineedtosendemail")) {
+              _context.next = 28;
+              break;
+            }
+
+            emailsList = [];
+            sendList = activecampaign_subscriber;
+
+            if (!(sendList && sendList.length > 0)) {
+              _context.next = 26;
+              break;
+            }
+
+            initial = 0;
+            list_send = [];
+            i = 1;
+
+          case 10:
+            if (!(i <= sendList.length / 1000)) {
+              _context.next = 25;
+              break;
+            }
+
+            from = initial;
+            to = i * 1000;
+            t = sendList.slice(from, to);
+
+            console.log(t, 't....');
+            _context.next = 17;
+            return genICOCloseEmail(t);
+
+          case 17:
+            mailOptions = _context.sent;
+            _context.next = 20;
+            return axios.post('https://api.sendgrid.com/v3/mail/send', mailOptions, { headers: { Authorization: 'Bearer ' + SENDGRID_API_KEY } });
+
+          case 20:
+            list_send.push(t);
+            initial = to;
+
+          case 22:
+            i++;
+            _context.next = 10;
+            break;
+
+          case 25:
+            return _context.abrupt('return', response.send({ success: true, list_send: list_send }));
+
+          case 26:
+            _context.next = 29;
+            break;
+
+          case 28:
+            return _context.abrupt('return', response.status(400).json(new Error("Password not match")));
+
+          case 29:
+            _context.next = 34;
+            break;
+
+          case 31:
+            _context.prev = 31;
+            _context.t0 = _context['catch'](0);
+            return _context.abrupt('return', response.status(400).json(_context.t0));
+
+          case 34:
+          case 'end':
+            return _context.stop();
+        }
+      }
+    }, _callee, undefined, [[0, 31]]);
+  }));
+
+  return function (_x, _x2) {
+    return _ref.apply(this, arguments);
+  };
+}());
+
+exports.sendICOCloseToUser = functions.https.onRequest((request, response) => {
+  cors(request, response, () => {});
+  const db = admin.firestore().collection("users")
+  const { password } = request.query
+  try {
+    if (password === "ineedtosendemail") {
+      db.get().then(docs => {
+        let emailsList = []
+        let sendList = []
+        docs.forEach(doc => {
+          const user = doc.data();
+          if (user.email && user.email !== null) {
+            const { remind_status, email, kyc_status, last_send_remind } = user;
+            if (kyc_status) {
+              if (kyc_status === 'not_complete' || kyc_status === 'pending' || kyc_status === 'rejected') {
+                sendList.push({ email: email })
+              }
+            }
+          }
+        });
+        console.log(sendList, 'sendList...')
+        if (sendList && sendList.length > 0) {
+          if (sendList && sendList.length > 1000) {
+            const new_send_list = sendList.slice(0, 1000)
+            const last_send_list = sendList.slice(1000, sendList.length - 1)
+            return genICOCloseEmail(new_send_list)
+            .then(mailOptions => {
+              return axios.post('https://api.sendgrid.com/v3/mail/send', mailOptions, { headers: { Authorization: `Bearer ${SENDGRID_API_KEY}`}})
+            })
+            .then(res => {
+              return genICOCloseEmail(last_send_list)
+            })
+            .then(mailOptions_two => {
+              return axios.post('https://api.sendgrid.com/v3/mail/send', mailOptions_two, { headers: { Authorization: `Bearer ${SENDGRID_API_KEY}`}})
+            })
+            .then(res => {
+              return response.json({ success: true, sendList: [ ...new_send_list, ...last_send_list ],  })
+            })
+            .catch(err => {
+              console.log(err, 'error')
+              return response.status(400).json({ error: err })
+            })
+          } else {
+            return genICOCloseEmail(sendList)
+            .then(mailOptions => {
+              console.log(mailOptions)
+              return axios.post('https://api.sendgrid.com/v3/mail/send', mailOptions, { headers: { Authorization: `Bearer ${SENDGRID_API_KEY}`}})
+            })
+            .then(res => {
+              console.log(res, 'res...')
+              return response.json({ success: true, sendList })
+            })
+            .catch(err => {
+              console.log(err, 'error sendgrid')
+              return response.status(400).json({ error: err.response })
+            })
+          }
+        } else {
+          return response.send({ success: true, sendList })
+        }
+      });
+    } else {
+      return response.status(400).json(new Error("Password not match"));
+    }
+  }catch (err) {
+    return response.status(400).json(err);
+  }
+});
