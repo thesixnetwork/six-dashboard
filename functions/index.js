@@ -561,7 +561,8 @@ exports.updateXLMWallet = functions.https.onCall((data, context) => {
           batch.set(ref.doc(xlm_address), { uid: uid });
           batch.update(userRef.doc(uid), {
             xlm_address: xlm_address,
-            submit_wallet: true
+            submit_xlm_wallet: true,
+            use_old_account: true
           });
           return batch
             .commit()

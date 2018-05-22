@@ -583,6 +583,15 @@ function getClaims() {
         console.log(doc.id)
         console.log(doc.data())
       })
+      Morris.Donut({
+        element: 'donut-graph',
+        data: [
+          {label: "Ready to claim", value: 12},
+          {label: "Claimed", value: 30},
+          {label: "Not Available", value: 20}
+        ],
+        colors: ['#4a5ab5', '#B7B7B7', '#7e8ee9']
+      })
     })
   }
 }
@@ -704,8 +713,9 @@ function copyToClipboard (el, y, x) {
 }
 
 var randomedWords
-
+var qrcode
 $(document).ready(function(){
+  qrcode = new QRCode("qrcode");
   document.getElementById('oldP').onkeydown = function() {
     $('#oldAddress').removeClass("invalid")
     $("#alertOldAddress").html("")
@@ -835,25 +845,35 @@ $(document).ready(function(){
             goToClaim()
           }
           if (userData.submit_xlm_wallet === true) {
-            $("#trustlineStep").addClass("current")
-            $("#walletSelectBox").css("display", "none")
-            $("#claimWelcomeBox").css("display", "none")
-            $("#claimBox").css("display", "block")
-            $("#claimWelcomeBox").css("display", "none")
-            $("#manualTrustlineBox").css("display", "block")
+            if (userData.add_trust_line !== true) {
+              if (userData.use_old_account !== true) {
+                $(".dialog-reset").addClass("show-dialog")              
+                $("#claimBox").css("display", "block")
+                $("#claimWelcomeBox").css("display", "none")
+              } else {
+                $("#trustlineStep").addClass("current")
+                $("#walletSelectBox").css("display", "none")
+                $("#claimWelcomeBox").css("display", "none")
+                $("#claimBox").css("display", "block")
+                $("#claimWelcomeBox").css("display", "none")
+                $("#manualTrustlineBox").css("display", "block")
+                $(".noWallet").removeClass("noWallet").addClass("haveWallet")
+                qrcode.makeCode(userData.xlm_address);
+                $("#myXlmPublicAddress").text(userData.xlm_address)
+              }
+            } else {
+              $("#trustlineStep").addClass("current")
+              $("#walletSelectBox").css("display", "none")
+              $("#claimWelcomeBox").css("display", "none")
+              $("#claimBox").css("display", "block")
+              $("#claimWelcomeBox").css("display", "none")
+              $("#manualTrustlineBox").css("display", "block")
+              $(".noWallet").removeClass("noWallet").addClass("haveWallet")
+              qrcode.makeCode(userData.xlm_address);
+              $("#myXlmPublicAddress").text(userData.xlm_address)
+            }
           }
           if (userData.add_trust_line === true) {
-            $("#trustlineStep").addClass("current")
-            $("#claimStep").addClass("current")
-            $("#claimBox").css("display", "block")
-            $("#claimWelcomeBox").css("display", "none")
-            $("#rewardClaimBox").css("display", "none")
-            $("#congratBox").css("display", "block")
-            $("#walletSelectBox").css("display", "none")
-            $("#claimWelcomeBox").css("display", "none")
-            $("#manualTrustlineBox").css("display", "none")
-          }
-          if (userData.seen_wallet_congrat === true) {
             $("#trustlineStep").addClass("current")
             $("#claimStep").addClass("current")
             $("#claimBox").css("display", "block")
@@ -905,6 +925,11 @@ function generateNewAccount() {
   $("#genS").val(pair.secret())
 }
 
+function goToClaimTable() {
+  $("#congratBox").slideToggle()
+  $("#rewardClaimBox").slideToggle()
+}
+
 function nextGeneratedAccount() {
   $( "#accordion" ).accordion({
     active: 1
@@ -926,6 +951,45 @@ function goToRepeat() {
 function backGeneratedAccount() {
   $("#divClaimBoxNew").css("display", "block")
   $("#makeSureBoxNew").css("display", "none")
+}
+
+function checkTrustAccount() {
+  let stellarUrl
+  var domain = window.location.href
+  if (domain.match('localhost')) {
+    stellarUrl = 'https://horizon-testnet.stellar.org'
+    StellarSdk.Network.useTestNetwork()
+  } else if (domain.match('six-dashboard')) {
+    stellarUrl = 'https://horizon-testnet.stellar.org'
+    StellarSdk.Network.useTestNetwork()
+  } else if (domain.match('ico.six.network')) {
+    stellarUrl = 'https://horizon.stellar.org'
+    StellarSdk.Network.usePublicNetwork()
+  } else {
+    stellarUrl = 'https://horizon-testnet.stellar.org'
+    StellarSdk.Network.useTestNetwork()
+  }
+
+  const server = new StellarSdk.Server(stellarUrl)
+  let accountCaller = server.accounts()
+  accountCaller.accountId(userData.xlm_address)
+  let btnDOM = document.getElementById("checkTrustAccountBtn")
+  setDisable([btnDOM])
+  accountCaller.call().then(account => {
+    let sixAsset = account.balances.find(x => { return x.asset_code == 'SIX' })
+    if (sixAsset !== undefined) {
+      markTrustlineUser().then(() => {
+        $("#manualTrustlineBox").slideToggle()
+        $("#rewardClaimBox").slideToggle()
+        $("#claimStep").addClass("current")
+      }).catch(err => { 
+        setEnable([btnDOM])
+        console.log(err) 
+      })
+    } else {
+      setEnable([btnDOM])
+    }
+  }).catch(err => { console.log(err) })
 }
 
 function submitGeneratedAccount() {
@@ -964,9 +1028,15 @@ function submitGeneratedAccount() {
               $("#accountPg").css('width', '100%')
               $("#progressText").html("Yay ! Your address is now ready")
               setTimeout(function(){
+                $("#genP").val(generatedWallet.getPublicKey(0))
+                $("#genS").val(generatedWallet.getSecret(0))
                 $("#claimStep").addClass("current")
                 $("#divClaimBoxNew").slideToggle()
+                $('.dialog-congrat').addClass('show-dialog')
                 $("#congratBox").slideToggle()
+                qrcode.makeCode(generatedWallet.getPublicKey(0));
+                $("#myXlmPublicAddress").text(generatedWallet.getPublicKey(0))
+                $(".noWallet").removeClass("noWallet").addClass("haveWallet")
               }, 2000);
             }).catch(err => {
               console.log(err)
@@ -1071,6 +1141,8 @@ function shuffle(array) {
 var generatedWallet
 var mnemonicWords
 function goToGenerateNewWallet() {
+  $('.dialog-recovery').addClass('show-dialog')
+  $("#trustlineStep").addClass("current")
   $("#walletSelectBox").css("display", 'none')
   mnemonic = StellarHDWallet.generateMnemonic({entropyBits: 128})
   mnemonicWords = mnemonic
@@ -1102,6 +1174,8 @@ function goToGenerateNewWallet() {
   generatedWallet = generatedwallet
   $("#genS").val(generatedwallet.getSecret(0))
   $("#genP").val(generatedwallet.getPublicKey(0))
+  $("#copyGenP").attr("data-clipboard-text", generatedwallet.getPublicKey(0))
+  $("#copyGenS").attr("data-clipboard-text", generatedwallet.getSecret(0))
   $("#genM").val(mnemonic)
   $("#divClaimBoxNew").css("display", 'block')
   $( "#accordion" ).accordion();
@@ -1145,6 +1219,7 @@ function submitAnswerMnemonic(word) {
 }
 
 function goToOldWallet() {
+  $("#trustlineStep").addClass("current")
   $("#walletSelectBox").css("display", 'none')
   $("#divClaimBoxOld").css("display", 'block')
 }
@@ -1218,14 +1293,9 @@ function submitOldAccount() {
   })
 }
 
-function downloadGeneratedAccount() {
+function downloadMnemonic() {
   let splittedWords = mnemonicWords.split(" ")
-  let data = `Public Key :
-   ${generatedWallet.getPublicKey(0)}
-Secret Key :
-   ${generatedWallet.getSecret(0)}
-
-Mnemonic words :
+  let data = `Recovery words (Mnemonic words) :
 ${mnemonicWords}
 
 1. ${splittedWords[0]}
@@ -1240,6 +1310,21 @@ ${mnemonicWords}
 10. ${splittedWords[9]}
 11. ${splittedWords[10]}
 12. ${splittedWords[11]}`
+
+var doc = new jsPDF()
+doc.setFontSize(12)
+doc.text(data,10,10)
+doc.save('stellar_wallet_recovery_words.pdf')
+
+}
+
+function downloadGeneratedAccount() {
+  let nextBtnDOM = document.getElementById("submitG3AccountBtn")
+  setEnable([nextBtnDOM])
+  let data = `Public Key :
+   ${generatedWallet.getPublicKey(0)}
+Secret Key :
+   ${generatedWallet.getSecret(0)}`
 
 var doc = new jsPDF()
 doc.setFontSize(12)
@@ -1352,4 +1437,32 @@ function requestOTP() {
 function wcNext() {
   $("#claimBox").css("display", "block")
   $("#claimWelcomeBox").css("display", "none")
+}
+
+function submitDialog() {
+  $('[class^="dialog-"]').removeClass('show-dialog')
+}
+
+function nextDialog() {
+  $("#congratDialogContent1").fadeToggle(100, () => { $("#congratDialogContent2").fadeToggle(100) })
+}
+
+function backDialog() {
+  $("#congratDialogContent2").fadeToggle(100, () => { $("#congratDialogContent1").fadeToggle(100) })
+}
+
+var walletOpen = false
+function showXLMWallet() {
+  if ($(".noWallet").length == 0) {
+    if (walletOpen == true) {
+      $("#xlmWalletIcon2").removeClass("fa-caret-down").addClass("fa-caret-left")
+      walletOpen = false
+      $("#showXLMWalletSection").css("display", "none");
+    } else {
+      $("#xlmWalletIcon2").removeClass("fa-caret-left").addClass("fa-caret-down")
+      walletOpen = true
+      $("#showXLMWalletSection").css("display", "block");
+    }
+  } else {
+  }
 }

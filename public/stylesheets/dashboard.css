@@ -216,6 +216,8 @@
   width: 100%;
   text-align: center;
   display: block;
+  height: 40px;
+  border-radius: 20px;
 }
 
 .notAvail {
@@ -224,6 +226,35 @@
 
 #claimTableContainer {
   overflow-x: auto;
+  border-radius: 10px;
+  border: 1px solid #CFCFCF;
+}
+
+#claimTxs tr {
+  line-height: 40px;
+}
+
+#claimTxs tr td {
+  text-align: center;
+}
+
+#claimTable tbody tr {
+  border-bottom: 1px solid #CFCFCF;
+}
+
+#claimTable tbody tr:last-of-type {
+  border-bottom: none;
+}
+
+#claimTable thead tr {
+  background: #4a5ab5;
+  color: white;
+  text-align: center;
+}
+
+#claimTable thead tr th {
+  opacity: 1;
+  text-align: center;
 }
 
 #otpContent {
@@ -414,6 +445,10 @@ section#progressContent {
   margin: 0 55px;
 }
 
+#mnemonicShowing {
+  position: relative;
+}
+
 #mnemonicAnswerShowing {
   min-height: 72px;
 }
@@ -466,4 +501,140 @@ section#progressContent {
   font-size: 50px;
   margin-bottom: 25px;
   color: #3DCC5E;
+}
+
+#manualTrustlineBox {
+  text-align: center;
+}
+
+#mnemonicWordDownloadContainer {
+  background: #4a5ab5;
+  position: absolute;
+  width: 35px;
+  height: 30px;
+  padding: 3px;
+  right: -35px;
+  top: 21px;
+  border-top-right-radius: 15px;
+  border-bottom-right-radius: 15px;
+  padding-right: 10px;
+  cursor: pointer;
+}
+
+#recoverWordDialogContent, #congratDialogContent1, #congratDialogContent2 {
+  max-width: 500px;
+}
+
+.dialogHeader {
+  max-height: 200px;
+  text-align: center;
+  background: #4a5ab5;
+  border-top-right-radius: 15px;
+  border-top-left-radius: 15px;
+}
+
+.dialogHeader svg {
+  height: 200px;
+  margin: auto;
+  position: relative;
+  padding: 18px;
+}
+
+.dialogContent {
+  text-align: center;
+  background: white;
+  padding: 30px;
+  color: #494949;
+  border-bottom-right-radius: 15px;
+  border-bottom-left-radius: 15px;
+}
+
+.haveWallet {
+  display: flex;
+  font-size: 17px;
+  padding: 12px;
+  text-align: center;
+  color: white;
+  background: #4a5ab5;
+  border-bottom: 1px solid #e3e3e3;
+}
+
+.haveWallet svg .cls-3 {
+  fill: #FFFFFF;
+}
+
+#showXLMWalletSection {
+  text-align: center;
+}
+
+#myWalletMenuContainer {
+  display: flex;
+}
+
+.myWalletItem {
+  margin: auto;
+  cursor: pointer;
+}
+
+#donut-container {
+  max-height: 350px;
+  display: flex;
+}
+
+#donut-graph {
+  max-height: 250px;
+  max-width: 250px;
+  margin: auto;
+}
+
+#donutGraphContainer, #donutText {
+  margin: auto:
+}
+
+#donutGraphContainer {
+  min-width: 400px;
+}
+
+#donutText {
+  margin-top: 25px;
+  margin: auto;
+}
+
+.contractType {
+  border: solid 1px #CCCCCC;
+  padding: 20px;
+  border-radius: 10px;
+  line-height: 20px;
+  margin-bottom: 10px;
+}
+
+.circleB {
+  display: inline-block;
+  width: 15px;
+  height: 15px;
+  border-radius: 50%;
+  top: 3px;
+  position: relative;
+  left: -5px;
+}
+
+.legend {
+  margin: auto;
+  display: inline-block;
+}
+
+#donutLegend {
+  display: flex;
+}
+
+#CBready {
+  background: #4a5ab5;
+}
+
+#CBclaim {
+  background: #B7B7B7;
+}
+
+#CBnotAvail {
+  background: #7e8ee9;
 }
