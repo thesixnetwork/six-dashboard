@@ -467,7 +467,7 @@ function buildFreeTx() {
   td3.appendChild(txt3)
 
   var td4 = document.createElement("td");
-  var txt4 = document.createTextNode("free");
+  var txt4 = document.createTextNode("airdrop");
   td4.appendChild(txt4)
 
   var td5 = document.createElement("td");
