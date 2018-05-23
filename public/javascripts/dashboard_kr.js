@@ -489,7 +489,7 @@ function buildListTx(doc) {
   return tr
 }
 
-let totalSix = 0
+let totalSix = 20
 
 function getTxs () {
   if (firebase.auth().currentUser !== null) {
