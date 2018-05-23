@@ -192,7 +192,7 @@ class User {
               userData.kyc_error_count = 0
             }
             let updateData = {
-              kyc_status: null,
+              kyc_status: 'not_complete',
               reject_type: null,
               updater: 'auto',
               update_time: Date.now(),

@@ -345,10 +345,11 @@ function kycArtemis (admin, functions, userData) {
 
 function checkKycAstemis (admin, functions, fireStore) {
   let artemis = new ArtemisAPI(functions.config().astemis.host, functions.config().astemis.app, functions.config().astemis.token)
-  fireStore.collection('users').where('kyc_error_count', '<', '3').where('kyc_status', '==', 'pending').get().then(users => {
+  fireStore.collection('users').where('kyc_status', '==', 'pending').get().then(users => {
+    let checkUsers = []
     users.forEach(user => {
       let userData = user.data()
-      artemis.checkIndividualCustomer({rfrID: userData.uid}).then(report => {
+      checkUsers.push(artemis.checkIndividualCustomer({rfrID: userData.uid}).then(report => {
         if (report.data.approval_status === 'CLEARED') {
           let updateData = {
             kyc_status: 'approved',
@@ -356,8 +357,16 @@ function checkKycAstemis (admin, functions, fireStore) {
             update_time: Date.now()
           }
           return admin.firestore().collection('users').doc(userData.uid).update(updateData)
+        } else if (report.data.approval_status === 'REJECTED') {
+          let updateData = {
+            kyc_status: 'rejected',
+            updater: 'auto',
+            update_time: Date.now()
+          }
+          return admin.firestore().collection('users').doc(userData.uid).update(updateData)
         }
-      })
+      }))
     })
+    return Promise.all(checkUsers)
   })
 }
