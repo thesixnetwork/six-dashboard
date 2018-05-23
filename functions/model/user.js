@@ -207,7 +207,8 @@ class User {
                       kyc_status: 'approved',
                       updater: 'auto',
                       update_time: Date.now(),
-                      all_done: true
+                      all_done: true,
+                      approved_by: 'auto'
                     }
                     return admin.firestore().collection('users').doc(userData.uid).update(updateData).then(data => {
                       return {success: true}
