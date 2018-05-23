@@ -507,7 +507,7 @@ function buildListTx(doc) {
 }
 
 function buildListClaim(doc, id) {
-  const { amount, claimed, valid_after } = doc
+  const { amount, claimed, valid_after, tx_id } = doc
   var tr = document.createElement("tr")
   var td1 = document.createElement("td");
   var txt1 = document.createTextNode(formatDate(valid_after))
@@ -518,38 +518,68 @@ function buildListClaim(doc, id) {
   td2.appendChild(txt2)
 
   var td3 = document.createElement("td");
-  var txt3 = document.createTextNode("-")
+  var txt3 = document.createTextNode('-')
   td3.appendChild(txt3)
 
-  var td4 = document.createElement("td")
+  var td4 = document.createElement("td");
+  var txt4 = document.createTextNode(tx_id)
+  td4.appendChild(txt4)
+
+  var td5 = document.createElement("td")
   var thisbtn = document.createElement("button")
   thisbtn.id = "claim-"+id
   if ((new Date) > valid_after) {
     if (claimed === true) {
       thisbtn.className = "claimMoneyBtn claimed"
-      var txt4 = document.createTextNode("Claimed")
-      thisbtn.appendChild(txt4)
+      var txt5 = document.createTextNode("Claimed")
+      thisbtn.appendChild(txt5)
       thisbtn.disabled = true
     } else {
       thisbtn.className = "claimMoneyBtn avail"
-      var txt4 = document.createTextNode("Claim")
-      thisbtn.appendChild(txt4)
+      var txt5 = document.createTextNode("Claim")
+      thisbtn.appendChild(txt5)
       thisbtn.onclick = function() { claimSix(id) }
     }
   } else {
     thisbtn.className = "claimMoneyBtn notAvail"
     var txt4 = document.createTextNode("Not Available")
-    thisbtn.appendChild(txt4)
+    thisbtn.appendChild(txt5)
     thisbtn.disabled = true
   }
-  td4.appendChild(thisbtn)
+  td5.appendChild(thisbtn)
 
   tr.appendChild(td1)
   tr.appendChild(td2)
   tr.appendChild(td3)
   tr.appendChild(td4)
+  tr.appendChild(td5)
 
   return tr
+}
+
+const privateTypeName = {
+  'free': {
+    name: 'Airdrop',
+    description: 'Airdrop SIX Token for one who was submitted KYC before 25 June 2018. '
+  },
+  'presale': {
+    name: 'Presale',
+    description: '+6% is added for everyone who contributed SIX Token in the Pre-ICO period.',
+  'public': 'Public',
+  'A': 'Private Sale contract A',
+  'B': 'Private Sale contract B',
+  'C': 'Private Sale contract C',
+  'D': 'Private Sale contract D',
+  'E': 'Private Sale contract E',
+  'F': 'Private Sale contract F',
+  'G': 'Private Sale contract G',
+  'H': 'Private Sale contract H',
+  'I': 'Private Sale contract I',
+  'J': 'Private Sale contract J',
+  'K': 'Private Sale contract K',
+  'L': 'Private Sale contract L',
+  'M': 'Private Sale contract M',
+  'N': 'Private Sale contract N,
 }
 
 function formatDate(date) {
@@ -928,11 +958,12 @@ function showGraph() {
   Morris.Donut({
     element: 'donut-graph',
     data: [
-      {label: "Ready to claim", value: 12},
+      {label: "2018-03-10", value: 12},
+      {label: "2018-03-11", value: 12},
       {label: "Claimed", value: 30},
       {label: "Not Available", value: 20}
     ],
-    colors: ['#4a5ab5', '#B7B7B7', '#7e8ee9']
+    colors: ['#4a5ab5', '#4a5ab5', '#B7B7B7', '#A3ABD9']
   })
 }
 

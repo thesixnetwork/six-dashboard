@@ -224,7 +224,7 @@
   background: #b7b7b7;
 }
 
-#claimTableContainer {
+.claimTableContainer {
   overflow-x: auto;
   border-radius: 10px;
   border: 1px solid #CFCFCF;
@@ -577,35 +577,39 @@ section#progressContent {
 }
 
 #donut-container {
-  max-height: 350px;
+  max-height: 300px;
   display: flex;
 }
 
 #donut-graph {
-  max-height: 250px;
-  max-width: 250px;
+  max-height: 180px;
+  max-width: 180px;
   margin: auto;
 }
 
-#donutGraphContainer, #donutText {
+#donutGraphContainer, .donutText {
   margin: auto:
+}
+
+#donutGraphContainer {
+  margin: auto!important;
 }
 
 #donutGraphContainer {
   min-width: 400px;
 }
 
-#donutText {
+.donutText {
   margin-top: 25px;
   margin: auto;
 }
 
 .contractType {
-  border: solid 1px #CCCCCC;
-  padding: 20px;
+  padding: 9px;
   border-radius: 10px;
   line-height: 20px;
   margin-bottom: 10px;
+  border: 1px solid #CCCC;
 }
 
 .circleB {
@@ -636,5 +640,21 @@ section#progressContent {
 }
 
 #CBnotAvail {
-  background: #7e8ee9;
+  background: #A3ABD9;
+}
+
+.groupStatus {
+  display: inline-block;
+  width: 15px;
+  height: 15px;
+  border-radius: 50%;
+  top: 2px;
+  position: relative;
+  left: -5px;
+  background: #4a5ab5;
+  margin-left: 10px;
+}
+
+.contractType h4 {
+  display: inline-block;
 }
