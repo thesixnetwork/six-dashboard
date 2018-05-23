@@ -520,13 +520,11 @@
                 <span style="text-align: center; display: block; font-size: 11px;">(Mnemonic words)</span><br>
                 <div id='mnemonicWordContainer'>
                   <span id='mnemonicShowing'>
-                    <div id='mnemonicWordDownloadContainer' onclick='downloadMnemonic()'>
-                      <svg id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 820.14 796"><defs><style>.cls-100{fill:#fff;}</style></defs><title>icon</title><path class="cls-100" d="M302.56,346.09a17.85,17.85,0,0,0,0,25.33l95,95a18,18,0,0,0,12.6,5.3,17.46,17.46,0,0,0,12.59-5.3l95-95a17.91,17.91,0,1,0-25.33-25.33L428,410.4V103a17.9,17.9,0,1,0-35.81,0V410.4l-64.32-64.31a17.84,17.84,0,0,0-25.33,0Zm0,0"/><path class="cls-100" d="M702.78,492.76,640.46,267.32a18.16,18.16,0,0,0-9.82-11.54l-1.72-.8a18.26,18.26,0,0,0-7.43-1.59H509.17a17.9,17.9,0,0,0,0,35.81H609.42l52.65,190.7H522.83a17.83,17.83,0,0,0-17.9,17.9V514a43,43,0,0,1-43,43H352.69a43,43,0,0,1-43-43V497.8a17.82,17.82,0,0,0-17.9-17.9H158l52.92-191.1H311.18a17.9,17.9,0,0,0,0-35.8H198.73a18.34,18.34,0,0,0-7.43,1.59l-1.72.8a17.77,17.77,0,0,0-9.82,11.54L117.43,492.36a19.91,19.91,0,0,0-.66,4.77v94c0,71.21,58,129.16,129.17,129.16H574.28c71.21,0,129.17-58,129.17-129.16V497.53a13.86,13.86,0,0,0-.67-4.77Zm-35.14,98.4a93.5,93.5,0,0,1-93.36,93.36H245.94a93.5,93.5,0,0,1-93.36-93.36V515.7h121.6A78.84,78.84,0,0,0,353,592.61H462.22A78.85,78.85,0,0,0,541,515.7H667.91v75.45Zm0,0"/></svg>
-                    </div>
                   </span>
                 </div>
                 <br>
                 <div class="btn">
+                  <button id='submitG2AccountBtn5' onclick='downloadMnemonic()' style='width: auto; margin-bottom: 10px; min-width: 150px; margin-right: 50px; color: #4a5ab5; border: 2px solid #4a5ab5; background: white;'> Download </button>
                   <button id='submitG2AccountBtn' onclick='nextGeneratedAccount()' style='width: auto; margin-bottom: 10px; min-width: 150px;'> Next </button>
                 </div>
 
@@ -584,9 +582,9 @@
                   <a href='#' data-clipboard-text="gas2" class='blinkTooltip' id='copyGenS'><i class="far fa-copy"></i></a>
                 </label>
               </div>
-              <div class="btn">
-                <button id='DownloadGAccountBtn' onclick='downloadGeneratedAccount()' style='width: auto; margin-top: 20px; margin-bottom: 20px; min-width: 150px; margin-right: 40px;'> Download </button>
-                <button id='submitG3AccountBtn' onclick='goToClaimTable()' disabled class='not avail' style='cursor: default; width: auto; margin-top: 20px; margin-bottom: 20px; min-width: 150px;'> Go to my wallet </button>
+              <div class="btn" style='display: block;'>
+                <button id='DownloadGAccountBtn' onclick='downloadGeneratedAccount()' style='width: auto; min-width: 150px; margin: auto; margin-top: 20px;'> Print Backup </button>
+                <button id='submitG3AccountBtn' onclick='goToClaimTable()' disabled class='not avail' style='cursor: default; width: auto; min-width: 150px; margin: auto; margin-top: 15px;'> Go to my wallet </button>
               </div>
             </div>
           </div>

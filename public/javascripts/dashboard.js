@@ -583,15 +583,6 @@ function getClaims() {
         console.log(doc.id)
         console.log(doc.data())
       })
-      Morris.Donut({
-        element: 'donut-graph',
-        data: [
-          {label: "Ready to claim", value: 12},
-          {label: "Claimed", value: 30},
-          {label: "Not Available", value: 20}
-        ],
-        colors: ['#4a5ab5', '#B7B7B7', '#7e8ee9']
-      })
     })
   }
 }
@@ -883,6 +874,7 @@ $(document).ready(function(){
             $("#walletSelectBox").css("display", "none")
             $("#claimWelcomeBox").css("display", "none")
             $("#manualTrustlineBox").css("display", "none")
+            showGraph()
           }
         }).then(getCurrentTotal).then(() => {
           getTxs()
@@ -926,8 +918,22 @@ function generateNewAccount() {
 }
 
 function goToClaimTable() {
-  $("#congratBox").slideToggle()
-  $("#rewardClaimBox").slideToggle()
+  $("#congratBox").slideToggle(100)
+  $("#rewardClaimBox").slideToggle(100, function() {
+    showGraph()
+  })
+}
+
+function showGraph() {
+  Morris.Donut({
+    element: 'donut-graph',
+    data: [
+      {label: "Ready to claim", value: 12},
+      {label: "Claimed", value: 30},
+      {label: "Not Available", value: 20}
+    ],
+    colors: ['#4a5ab5', '#B7B7B7', '#7e8ee9']
+  })
 }
 
 function nextGeneratedAccount() {
@@ -979,8 +985,10 @@ function checkTrustAccount() {
     let sixAsset = account.balances.find(x => { return x.asset_code == 'SIX' })
     if (sixAsset !== undefined) {
       markTrustlineUser().then(() => {
-        $("#manualTrustlineBox").slideToggle()
-        $("#rewardClaimBox").slideToggle()
+        $("#manualTrustlineBox").slideToggle(100)
+        $("#rewardClaimBox").slideToggle(100, function() {
+          showGraph()
+        })
         $("#claimStep").addClass("current")
       }).catch(err => { 
         setEnable([btnDOM])
@@ -1144,7 +1152,20 @@ function goToGenerateNewWallet() {
   $('.dialog-recovery').addClass('show-dialog')
   $("#trustlineStep").addClass("current")
   $("#walletSelectBox").css("display", 'none')
-  mnemonic = StellarHDWallet.generateMnemonic({entropyBits: 128})
+  for (;;) {
+    mnemonic = StellarHDWallet.generateMnemonic({entropyBits: 128})
+    let arr = mnemonic.split(" ")
+    var sorted_arr = arr.slice().sort(); 
+    var results = [];
+    for (var i = 0; i < sorted_arr.length - 1; i++) {
+      if (sorted_arr[i + 1] == sorted_arr[i]) {
+        results.push(sorted_arr[i]);
+      }
+    }
+    if (results.length == 0) {
+      break
+    }
+  }
   mnemonicWords = mnemonic
   let splittedWords = mnemonicWords.split(" ")
   let showDOM = document.getElementById("mnemonicShowing")
@@ -1160,7 +1181,7 @@ function goToGenerateNewWallet() {
   for(let j = 0; j < shuffleWords.length; j++) {
     let span2 = document.createElement("span")
     let adom = document.createElement("a")
-    adom.href = '#'
+    adom.href = 'javascript:;'
     let txt2 = document.createTextNode(shuffleWords[j]+"\n")
     span2.append(txt2)
     adom.append(span2)
@@ -1179,6 +1200,19 @@ function goToGenerateNewWallet() {
   $("#genM").val(mnemonic)
   $("#divClaimBoxNew").css("display", 'block')
   $( "#accordion" ).accordion();
+  $( "#accordion" ).accordion({
+    beforeActivate: function( event, ui ) {
+      answerMnemonic = {}
+      indexAnswerMnemonic = {}
+      lastIndexMnemonic = 0
+      let usedWord = $(".usedWord")
+      for(let i = 0; i < usedWord.length; i++) {
+        let oldDom = document.getElementById('mnemonicAnswer'+usedWord[i].text.trim())
+        oldDom.remove()
+      }
+      $(".usedWord").removeClass("usedWord").addClass("unusedWord")
+    }
+  })
 }
 
 var answerMnemonic = {}
