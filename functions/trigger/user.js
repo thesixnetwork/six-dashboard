@@ -310,7 +310,8 @@ function kycArtemis (admin, functions, userData) {
                 updateData = {
                   kyc_status: 'approved',
                   updater: 'auto',
-                  update_time: Date.now()
+                  update_time: Date.now(),
+                  approved_by: 'auto'
                 }
                 return admin.firestore().collection('users').doc(userData.uid).update(updateData)
               }
@@ -345,19 +346,31 @@ function kycArtemis (admin, functions, userData) {
 
 function checkKycAstemis (admin, functions, fireStore) {
   let artemis = new ArtemisAPI(functions.config().astemis.host, functions.config().astemis.app, functions.config().astemis.token)
-  fireStore.collection('users').where('kyc_error_count', '<', '3').where('kyc_status', '==', 'pending').get().then(users => {
+  console.log('checkKycAstermis')
+  return admin.firestore().collection('users').where('kyc_status', '==', 'pending').get().then(users => {
+    let checkUsers = []
     users.forEach(user => {
       let userData = user.data()
-      artemis.checkIndividualCustomer({rfrID: userData.uid}).then(report => {
-        if (report.data.approval_status === 'CLEARED') {
+      console.log(userData.uid)
+      checkUsers.push(artemis.checkCustomApproveStatus({rfrID: userData.uid}).then(report => {
+        if (report.data.approval_status === 'CLEARED' || report.data.approval_status === 'ACCEPTED') {
           let updateData = {
             kyc_status: 'approved',
+            updater: 'auto',
+            update_time: Date.now(),
+            approved_by: 'manual'
+          }
+          return admin.firestore().collection('users').doc(userData.uid).update(updateData)
+        } else if (report.data.approval_status === 'REJECTED') {
+          let updateData = {
+            kyc_status: 'rejected',
             updater: 'auto',
             update_time: Date.now()
           }
           return admin.firestore().collection('users').doc(userData.uid).update(updateData)
         }
-      })
+      }))
     })
+    return Promise.all(checkUsers)
   })
 }
