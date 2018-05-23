@@ -16,4 +16,4 @@ cron:
   schedule: every 1 minutes from 00:00 to 23:59
 - description: Push a "tick" onto pubsub every 30 minutes
   url: /publish/check-kyc-astemis
-  schedule: every 5 minutes
+  schedule: every 30 minutes
