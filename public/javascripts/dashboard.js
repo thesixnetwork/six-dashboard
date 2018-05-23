@@ -27,6 +27,13 @@ function compare_valid_after(a,b) {
   return 0;
 }
 
+function compare_type_order(a,b) {
+  if (typeOrder[a] > typeOrder[b])
+    return -1;
+  if (typeOrder[a] < typeOrder[b])
+    return 1;
+  return 0;
+}
 
 // Remove disabled from dom
 function setEnable (doms) {
@@ -506,6 +513,79 @@ function buildListTx(doc) {
   return tr
 }
 
+allClaimTable = {}
+
+function buildTableType(type) {
+  if (allClaimTable[type] === undefined) {
+    var overallDiv = document.createElement("div")
+    var div = document.createElement("div")
+    div.id = 'table-container-'+type
+    div.className = "claimTableContainer"
+    var table = document.createElement("table")
+    table.className = "claimTable"
+    var thead = document.createElement("thead")
+    var tr = document.createElement("tr")
+    var th1 = document.createElement("th")
+    var txt1 = document.createTextNode("Available Date")
+    $(th1).attr("width", "150")
+    var th2 = document.createElement("th")
+    var txt2 = document.createTextNode("Amount")
+    $(th2).attr("width", "180")
+    var th3 = document.createElement("th")
+    var txt3 = document.createTextNode("Bonus")
+    $(th3).attr("width", "180")
+    var th4 = document.createElement("th")
+    var txt4 = document.createTextNode("Transaction ID")
+    $(th4).attr("width", "400")
+    var th5 = document.createElement("th")
+    var txt5 = document.createTextNode("Status")
+    $(th5).attr("width", "200")
+    var tbody = document.createElement("tbody")
+    tbody.className = "claimTxs"
+    tbody.id = 'table-'+type
+
+    var div1 = document.createElement("div")
+    div1.className = 'donutText'
+    var div2 = document.createElement("div")
+    div2.className = 'contractType'
+    var div3 = document.createElement("div")
+    div3.className = 'groupStatus'
+    var h4 = document.createElement("h4")
+    var txt6 = document.createTextNode(privateType[type].name)
+    var pDom = document.createElement("p")
+    var txt7 = document.createTextNode(privateType[type].description)
+
+    h4.appendChild(txt6)
+    pDom.appendChild(txt7)
+    div2.appendChild(div3)
+    div2.appendChild(h4)
+    div2.appendChild(pDom)
+    div1.appendChild(div2)
+
+    th1.appendChild(txt1)
+    th2.appendChild(txt2)
+    th3.appendChild(txt3)
+    th4.appendChild(txt4)
+    th5.appendChild(txt5)
+    tr.appendChild(th1)
+    tr.appendChild(th2)
+    tr.appendChild(th3)
+    tr.appendChild(th4)
+    tr.appendChild(th5)
+    thead.appendChild(tr)
+    table.appendChild(thead)
+    table.appendChild(tbody)
+    div.appendChild(table)
+    overallDiv.appendChild(div1)
+    overallDiv.appendChild(div)
+
+    allClaimTable[type] = true
+    return overallDiv
+  } else {
+    return undefined
+  }
+}
+
 function buildListClaim(doc, id) {
   const { amount, claimed, valid_after, tx_id } = doc
   var tr = document.createElement("tr")
@@ -522,7 +602,7 @@ function buildListClaim(doc, id) {
   td3.appendChild(txt3)
 
   var td4 = document.createElement("td");
-  var txt4 = document.createTextNode(tx_id)
+  var txt4 = document.createTextNode(tx_id || '-')
   td4.appendChild(txt4)
 
   var td5 = document.createElement("td")
@@ -557,29 +637,95 @@ function buildListClaim(doc, id) {
   return tr
 }
 
-const privateTypeName = {
+const typeOrder = {
+  'free': 0,
+  'presale': 1,
+  'public': 2,
+  'A': 3,
+  'B': 4,
+  'C': 5,
+  'D': 6,
+  'E': 7,
+  'F': 8,
+  'G': 9,
+  'H': 10,
+  'I': 11,
+  'J': 12,
+  'K': 13,
+  'L': 14,
+  'M': 15,
+  'N': 16
+}
+
+const privateType = {
   'free': {
     name: 'Airdrop',
-    description: 'Airdrop SIX Token for one who was submitted KYC before 25 June 2018. '
+    description: 'An airdrop SIX Token for one who was submitted KYC before 25 June 2018.'
   },
   'presale': {
     name: 'Presale',
     description: '+6% is added for everyone who contributed SIX Token in the Pre-ICO period.',
-  'public': 'Public',
-  'A': 'Private Sale contract A',
-  'B': 'Private Sale contract B',
-  'C': 'Private Sale contract C',
-  'D': 'Private Sale contract D',
-  'E': 'Private Sale contract E',
-  'F': 'Private Sale contract F',
-  'G': 'Private Sale contract G',
-  'H': 'Private Sale contract H',
-  'I': 'Private Sale contract I',
-  'J': 'Private Sale contract J',
-  'K': 'Private Sale contract K',
-  'L': 'Private Sale contract L',
-  'M': 'Private Sale contract M',
-  'N': 'Private Sale contract N,
+  },
+  'public': {
+    name: 'Public',
+    description: 'General Token contract.',
+  },
+  'A': {
+    name: 'Private Sale contract A',
+    description: '15% Discount private sale contract.',
+  },
+  'B': {
+    name: 'Private Sale contract B',
+    description: '20% Discount private sale contract.',
+  },
+  'C': {
+    name: 'Private Sale contract C',
+    description: '40% Discount private sale contract.',
+  },
+  'D': {
+    name: 'Private Sale contract D',
+    description: '50% Discount private sale contract which seperated into three transactions; The first can be claimed after the ending of ICO. The second can be claimed on 30 days after the ending of ICO. The third can be claimed on 60 days after the ending of ICO.',
+  },
+  'E': {
+    name: 'Private Sale contract E',
+    description: '50% Bonus private sale contract.',
+  },
+  'F': {
+    name: 'Private Sale contract F',
+    description: '67% Discount private sale contract. Can be claimed on 1 years after the ending of ICO.',
+  },
+  'G': {
+    name: 'Private Sale contract G',
+    description: 'Founding Member contract.',
+  },
+  'H': {
+    name: 'Private Sale contract H',
+    description: 'Advisor contract.',
+  },
+  'I': {
+    name: 'Private Sale contract I',
+    description: 'Founder contract.',
+  },
+  'J': {
+    name: 'Private Sale contract J',
+    description: 'Bounty contract.',
+  },
+  'K': {
+    name: 'Private Sale contract K',
+    description: 'Pool token contract.',
+  },
+  'L': {
+    name: 'Private Sale contract L',
+    description: 'Crowd contract.',
+  },
+  'M': {
+    name: 'Private Sale contract M',
+    description: '20% Bonus.',
+  },
+  'N': {
+    name: 'Private Sale contract N',
+    description: '35% Bonus.',
+  }
 }
 
 function formatDate(date) {
@@ -596,23 +742,44 @@ function formatDate(date) {
 
 let totalSix = 0
 
+function uniqArray(arrArg) {
+  return arrArg.filter(function(elem, pos,arr) {
+    return arr.indexOf(elem) == pos;
+  });
+};
+
 function getClaims() {
   if (firebase.auth().currentUser !== null) {
     firebase.firestore().collection('users_claim').doc(firebase.auth().currentUser.uid).collection('claim_period').get().then(docs => {
-      docs.forEach(doc => {
-        let allDoc = []
-        docs.forEach(doc => {
-          allDoc.push(doc)
-        })
-        allDoc.sort(compare_valid_after)
-        allDoc.forEach(d => {
+      let allData = []
+      docs.forEach(function(doc) {
+        allData.push(doc)
+      })
+      let allType = allData.map(function(doc) { return doc.data().type })
+      let uniqType = uniqArray(allType)
+      uniqType.sort(compare_type_order)
+      let targetDiv = document.getElementById("forClaimTable")
+      uniqType.forEach(tableType => {
+        let newTable = buildTableType(tableType)
+        if (newTable !== undefined) {
+          targetDiv.appendChild(newTable)
+        }
+      })
+//      allData.forEach(doc => {
+//        let allDoc = []
+//        docs.forEach(doc => {
+//          allDoc.push(doc)
+//        })
+        allData.sort(compare_valid_after)
+        allData.forEach(d => {
           let data = d.data()
           const elem = buildListClaim(data, d.id)
-          $("#claimTxs")[0].appendChild(elem)
+          let thisTable = document.getElementById("table-"+data.type)
+          thisTable.appendChild(elem)
         })
-        console.log(doc.id)
-        console.log(doc.data())
-      })
+//        console.log(doc.id)
+//        console.log(doc.data())
+//      })
     })
   }
 }

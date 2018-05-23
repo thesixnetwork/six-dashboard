@@ -230,29 +230,29 @@
   border: 1px solid #CFCFCF;
 }
 
-#claimTxs tr {
+.claimTxs tr {
   line-height: 40px;
 }
 
-#claimTxs tr td {
+.claimTxs tr td {
   text-align: center;
 }
 
-#claimTable tbody tr {
+.claimTable tbody tr {
   border-bottom: 1px solid #CFCFCF;
 }
 
-#claimTable tbody tr:last-of-type {
+.claimTable tbody tr:last-of-type {
   border-bottom: none;
 }
 
-#claimTable thead tr {
+.claimTable thead tr {
   background: #4a5ab5;
   color: white;
   text-align: center;
 }
 
-#claimTable thead tr th {
+.claimTable thead tr th {
   opacity: 1;
   text-align: center;
 }
@@ -600,7 +600,7 @@ section#progressContent {
 }
 
 .donutText {
-  margin-top: 25px;
+  margin-top: 25px!important;
   margin: auto;
 }
 
