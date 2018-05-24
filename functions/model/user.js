@@ -128,7 +128,7 @@ class User {
       if (typeof (userData.kyc_error_count) === 'undefined') {
         userData.kyc_error_count = 0
       }
-      if (data.kyc_status === 'pending' && userData.kyc_error_count < 3 && userData.country !== 'TH') {
+      if (data.kyc_status === 'pending' && userData.kyc_error_count < 2 && userData.country !== 'TH') {
         console.log('Case 1 Condition')
         return admin.database().ref('/country/' + userData.country + '/').once('value').then(function (snapshot) {
           console.log('In Realtime')

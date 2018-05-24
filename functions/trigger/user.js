@@ -232,7 +232,7 @@ function kycArtemis (admin, functions, userData) {
   if (typeof (userData.kyc_error_count) === 'undefined') {
     userData.kyc_error_count = 0
   }
-  if (userData.kyc_status === 'pending' && userData.kyc_error_count < 3) {
+  if (userData.kyc_status === 'pending' && userData.kyc_error_count < 2) {
     let artemis = new ArtemisAPI(functions.config().astemis.host, functions.config().astemis.app, functions.config().astemis.token)
     admin.database().ref(`/country/${userData.country}/`).on('value', function (snapshot) {
       let artemisData = {
