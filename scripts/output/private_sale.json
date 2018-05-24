@@ -1,0 +1,62 @@
+[
+  {
+    "firstname": "sCcIyPUK",
+    "lastname": "sCcIyPUK",
+    "email": "flash.basta@gmail.com",
+    "phone_number": "0982699766",
+    "claim_periods": [
+      {
+        "amount": 480000,
+        "valid_after": 1529020800000,
+        "type": "D"
+      },
+      {
+        "amount": 144000,
+        "valid_after": 1531612800000,
+        "type": "D"
+      },
+      {
+        "amount": 144000,
+        "valid_after": 1534204800000,
+        "type": "D"
+      },
+      {
+        "amount": 192000,
+        "valid_after": 1536796800000,
+        "type": "D"
+      }
+    ],
+    "tx_ids": [
+      "0x1dec60758927dd102f8c75171df13fd0d15d7f5df3f044b409c687e6c5fd79f5"
+    ]
+  },
+  {
+    "firstname": "PCiIqggF",
+    "lastname": "PCiIqggF",
+    "email": "prach@cochain.co",
+    "phone_number": "0982699766",
+    "claim_periods": [
+      {
+        "amount": 240000,
+        "valid_after": 1529020800000,
+        "type": "D"
+      },
+      {
+        "amount": 72000,
+        "valid_after": 1531612800000,
+        "type": "D"
+      },
+      {
+        "amount": 72000,
+        "valid_after": 1534204800000,
+        "type": "D"
+      },
+      {
+        "amount": 96000,
+        "valid_after": 1536796800000,
+        "type": "D"
+      }
+    ],
+    "tx_ids": []
+  }
+]
