@@ -1,6 +1,7 @@
 const admin = require('firebase-admin')
 const uuid = require('uuid/v5')
 const _ = require('lodash')
+const R = require('ramda')
 
 const configPath = __dirname + '/config/config.json'
 const privateUserPath = __dirname + '/output/private_sale.json'
@@ -15,8 +16,7 @@ admin.initializeApp({
 const db = admin.firestore();
 
 try {
-  //updateUsers(privateUsers)
-  updateUser(privateUsers[0])
+  main()
 } catch (error) {
   console.log(error)
 }
@@ -25,10 +25,15 @@ try {
  * main
  */
 
+async function main() {
+    await updateUsers(privateUsers)
+    console.log('done')
+}
+
 async function updateUsers(privateUsers) {
   return await Promise.all(privateUsers.map(async (privateUser) => {
-    return updateUser(privateUser)
-  }))
+      return updateUser(privateUser)
+    }))
 }
 
 /**
@@ -50,14 +55,31 @@ async function updateUser(privateUser) {
         return await insertClaimPeriods(i.toString(), uid, claimDatum)
       }))
   } else if (userData !== null
-      && userPeriods.length === 0
-      && claimData.length > 0
+    && userPeriods.length === 0
+    && claimData.length > 0
   ) {
     return await Promise.all(claimData.map(async (claimDatum, i) => {
         return await insertClaimPeriods(i.toString(), uid, claimDatum)
       }))
   } else {
-    console.log('user period', userPeriods)
+    // find extra clai from userPeriods then insert
+    const mapIndexed = R.addIndex(R.map);
+    const filter = R.pipe(
+      mapIndexed((claim, i) => {
+        return {
+          i,
+          dup: !!_.find(userPeriods, claim),
+          claim
+        }
+      }),
+      R.filter((claim) => {
+        return !claim.dup
+      })
+    )
+    const extra = filter(claimData)
+    return await Promise.all(extra.map(async ({i, claim}) => {
+        return await insertClaimPeriods(i.toString(), uid, claim)
+    }))
   }
 }
 
