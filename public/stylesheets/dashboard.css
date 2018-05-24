@@ -521,7 +521,7 @@ section#progressContent {
   cursor: pointer;
 }
 
-#recoverWordDialogContent, #congratDialogContent1, #congratDialogContent2 {
+#recoverWordDialogContent, #congratDialogContent1, #congratDialogContent2, #feeDialogContent {
   max-width: 500px;
 }
 
@@ -651,11 +651,11 @@ section#progressContent {
   background: #4a5ab5;
 }
 
-#CBclaim {
+#CBnotAvail {
   background: #B7B7B7;
 }
 
-#CBnotAvail {
+#CBclaim {
   background: #A3ABD9;
 }
 

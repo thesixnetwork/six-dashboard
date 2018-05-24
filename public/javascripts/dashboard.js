@@ -1141,7 +1141,7 @@ function showGraph() {
       {label: "Claimed", value: 30},
       {label: "Not Available", value: 20}
     ],
-    colors: ['#4a5ab5', '#4a5ab5', '#B7B7B7', '#A3ABD9']
+    colors: ['#4a5ab5', '#4a5ab5', '#A3ABD9', '#B7B7B7']
   })
 }
 
@@ -1249,7 +1249,6 @@ function submitGeneratedAccount() {
                 $("#genS").val(generatedWallet.getSecret(0))
                 $("#claimStep").addClass("current")
                 $("#divClaimBoxNew").slideToggle()
-                $('.dialog-congrat').addClass('show-dialog')
                 $("#congratBox").slideToggle()
                 qrcode.makeCode(generatedWallet.getPublicKey(0));
                 $("#myXlmPublicAddress").text(generatedWallet.getPublicKey(0))
@@ -1564,6 +1563,7 @@ doc.save('stellar_wallet_recovery_words.pdf')
 function downloadGeneratedAccount() {
   let nextBtnDOM = document.getElementById("submitG3AccountBtn")
   setEnable([nextBtnDOM])
+  $('.dialog-congrat').addClass('show-dialog')
   let data = `Public Key :
    ${generatedWallet.getPublicKey(0)}
 Secret Key :
@@ -1692,6 +1692,10 @@ function nextDialog() {
 
 function backDialog() {
   $("#congratDialogContent2").fadeToggle(100, () => { $("#congratDialogContent1").fadeToggle(100) })
+}
+
+function goToFee() {
+  $("#recoverWordDialogContent").fadeToggle(100, () => { $("#feeDialogContent").fadeToggle(100) })
 }
 
 var walletOpen = false

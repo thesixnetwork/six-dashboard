@@ -130,8 +130,6 @@ exports.claimOTPSubmit = functions.https.onCall((data, context) => {
                 claim_id: claimId
               })
               .then(claimService.findClaim)
-              .then(claimService.allowTrust)
-              .then(claimService.updateAllowTrust)
               .then(claimService.sendSix)
               .then(claimService.updateClaim)
               .then(() => {
@@ -140,10 +138,10 @@ exports.claimOTPSubmit = functions.https.onCall((data, context) => {
                 }
               })
               .catch(error => {
-                console.dir(error)
+                console.log(error)
                 return {
                   success: false,
-                  error_message: error.message
+                  error_message: error
                 }
              })
 
