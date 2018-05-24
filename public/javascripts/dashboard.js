@@ -1713,3 +1713,19 @@ function showXLMWallet() {
   } else {
   }
 }
+
+function changeToPublicTable() {
+  $("#privateTablebtn").removeClass("currentActive")
+  $("#publicTablebtn").addClass("currentActive")
+}
+
+function changeToPrivateTable() {
+  $("#publicTablebtn").removeClass("currentActive")
+  $("#privateTablebtn").addClass("currentActive")
+}
+
+function goToLedgerWallet() {
+  $("#trustlineStep").addClass("current")
+  $("#walletSelectBox").css("display", 'none')
+  $("#divClaimBoxLedger").css("display", 'block')
+}

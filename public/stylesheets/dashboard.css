@@ -168,7 +168,7 @@
   background: #ffffff;
 }
 
-#divClaimBoxNew, #divClaimBoxOld {
+#divClaimBoxNew, #divClaimBoxOld, #divClaimBoxLedger {
   max-width: 800px;
   margin: auto;
 }
@@ -674,3 +674,41 @@ section#progressContent {
 .contractType h4 {
   display: inline-block;
 }
+
+#menuContainer {
+  display: flex;
+}
+
+.tableMenu a {
+  display: flex;
+  margin: 20px;
+  padding: 20px;
+  border: 1px solid rgb(210, 210, 210);
+  border-radius: 10px;
+}
+
+.tableMenu a div h2 {
+  font-size: 17px;
+  text-align: left;
+  margin-bottom: 0px;
+  color: rgb(74, 74, 72);
+}
+
+.tableMenu a:hover {
+  border: 1px solid #4a5ab5;
+}
+
+.tableMenu a.currentActive {
+  background: #4a5ab5;
+  color: white;
+}
+
+.tableMenu a.currentActive  div h2 {
+  color: white;
+}
+
+.tableMenu a.currentActive .cls-161, .tableMenu a.currentActive .cls-171{
+  fill: #fff;
+}
+
+
