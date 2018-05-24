@@ -69,6 +69,7 @@ papa.parse(file, {
     times(3)(() => shift(results.data))
     const r = _.compact(toJSON(results.data))
     const json = JSON.stringify(r, null, 2)
+    console.log(json)
     if (!fs.existsSync(outputPath)) fs.mkdirSync(outputPath)
     fs.writeFile(outputPath + '/private_sale.json', json, (err) => {
       if (err) throw err
