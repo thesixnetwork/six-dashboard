@@ -1,4 +1,4 @@
 **/node_modules/*
 **/.firebaserc
-scripts/output/*
+**/scripts/output/*
 firebase-debug.log
