@@ -20,17 +20,17 @@ function compare(a,b) {
 }
 
 function compare_valid_after(a,b) {
-  if (a.data().valid_after > b.data().valid_after)
-    return -1;
   if (a.data().valid_after < b.data().valid_after)
+    return -1;
+  if (a.data().valid_after > b.data().valid_after)
     return 1;
   return 0;
 }
 
 function compare_type_order(a,b) {
-  if (typeOrder[a] > typeOrder[b])
-    return -1;
   if (typeOrder[a] < typeOrder[b])
+    return -1;
+  if (typeOrder[a] > typeOrder[b])
     return 1;
   return 0;
 }
@@ -586,19 +586,31 @@ function buildTableType(type) {
   }
 }
 
+function getFlooredFixed(v, d) {
+  return (Math.floor(v * Math.pow(10, d)) / Math.pow(10, d)).toFixed(d);
+}
+
 function buildListClaim(doc, id) {
-  const { amount, claimed, valid_after, tx_id } = doc
+  const { amount, claimed, valid_after, tx_id, type } = doc
   var tr = document.createElement("tr")
   var td1 = document.createElement("td");
   var txt1 = document.createTextNode(formatDate(valid_after))
   td1.appendChild(txt1)
 
   var td2 = document.createElement("td");
-  var txt2 = document.createTextNode(amount)
-  td2.appendChild(txt2)
-
+  var txt2
   var td3 = document.createElement("td");
-  var txt3 = document.createTextNode('-')
+  var txt3
+  if (privateBonus[type] !== undefined) {
+    let bonusPercent = privateBonus[type]
+    let rawAmount = (amount*100)/(100+bonusPercent)
+    var txt2 = document.createTextNode(parseFloat(getFlooredFixed(rawAmount, 7)).toString())
+    var txt3 = document.createTextNode(parseFloat(getFlooredFixed((amount-rawAmount), 7)).toString())
+  } else {
+    txt2 = document.createTextNode(parseFloat(getFlooredFixed(amount, 7)).toString())
+    txt3 = document.createTextNode('-')
+  }
+  td2.appendChild(txt2)
   td3.appendChild(txt3)
 
   var td4 = document.createElement("td");
@@ -622,7 +634,7 @@ function buildListClaim(doc, id) {
     }
   } else {
     thisbtn.className = "claimMoneyBtn notAvail"
-    var txt4 = document.createTextNode("Not Available")
+    var txt5 = document.createTextNode("Not Available")
     thisbtn.appendChild(txt5)
     thisbtn.disabled = true
   }
@@ -655,6 +667,13 @@ const typeOrder = {
   'L': 14,
   'M': 15,
   'N': 16
+}
+
+const privateBonus = {
+  'presale': 6,
+  'E': 50,
+  'M': 20,
+  'N': 35
 }
 
 const privateType = {
@@ -720,11 +739,11 @@ const privateType = {
   },
   'M': {
     name: 'Private Sale contract M',
-    description: '20% Bonus.',
+    description: '20% Bonus private sale contract.',
   },
   'N': {
     name: 'Private Sale contract N',
-    description: '35% Bonus.',
+    description: '35% Bonus private sale contract.',
   }
 }
 
@@ -765,21 +784,13 @@ function getClaims() {
           targetDiv.appendChild(newTable)
         }
       })
-//      allData.forEach(doc => {
-//        let allDoc = []
-//        docs.forEach(doc => {
-//          allDoc.push(doc)
-//        })
-        allData.sort(compare_valid_after)
-        allData.forEach(d => {
-          let data = d.data()
-          const elem = buildListClaim(data, d.id)
-          let thisTable = document.getElementById("table-"+data.type)
-          thisTable.appendChild(elem)
-        })
-//        console.log(doc.id)
-//        console.log(doc.data())
-//      })
+      allData.sort(compare_valid_after)
+      allData.forEach(d => {
+        let data = d.data()
+        const elem = buildListClaim(data, d.id)
+        let thisTable = document.getElementById("table-"+data.type)
+        thisTable.appendChild(elem)
+      })
     })
   }
 }

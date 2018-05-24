@@ -572,8 +572,24 @@ section#progressContent {
 }
 
 .myWalletItem {
-  margin: auto;
   cursor: pointer;
+  width: 30px;
+  height: 30px;
+  display: block;
+  background: #4a5ab5;
+  color: white;
+  border-radius: 2px;
+  line-height: 30px;
+  margin-left: 5px;
+  margin-right: 5px;
+}
+
+.myWalletItem:first-of-type {
+  margin-left: auto;
+}
+
+.myWalletItem:last-of-type {
+  margin-right: auto;
 }
 
 #donut-container {
