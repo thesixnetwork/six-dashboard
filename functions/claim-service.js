@@ -177,6 +177,12 @@ function findClaim ({ uid, claim_id: claimId, user }) {
     .then(claim => {
       if (claim.exists) {
         const claimData = claim.data()
+
+        const currentTime = new Date().getTime()
+        if (currentTime < claimData.valid_after) {
+            return Promise.reject(new Error('Claim is not ready'))
+        }
+
         return claimData.claimed === true
           ? Promise.reject(new Error('User already claimed.'))
           : {
