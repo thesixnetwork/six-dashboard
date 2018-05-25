@@ -1069,7 +1069,7 @@ $(document).ready(function(){
           if (userData.submit_xlm_wallet === true) {
             if (userData.add_trust_line !== true) {
               if (userData.use_old_account !== true) {
-                $(".dialog-reset").addClass("show-dialog")              
+                $(".dialog-reset").addClass("show-dialog")
                 $("#claimBox").css("display", "block")
                 $("#claimWelcomeBox").css("display", "none")
               } else {
@@ -1159,7 +1159,7 @@ var mainGraph
 function updateGraph() {
   let allClaim = 0
   let allAvailable = 0
-  
+
   let claimedItems = $(".claimListItem.stillClaimed")
   for(let i = 0; i < claimedItems.length; i++) {
     allClaim += parseFloat($(claimedItems[i]).attr("total-amount"))
@@ -1258,9 +1258,9 @@ function checkTrustAccount() {
           updateGraph()
         })
         $("#claimStep").addClass("current")
-      }).catch(err => { 
+      }).catch(err => {
         setEnable([btnDOM])
-        console.log(err) 
+        console.log(err)
       })
     } else {
       setEnable([btnDOM])
@@ -1425,7 +1425,7 @@ function goToGenerateNewWallet() {
   for (;;) {
     mnemonic = StellarHDWallet.generateMnemonic({entropyBits: 128})
     let arr = mnemonic.split(" ")
-    var sorted_arr = arr.slice().sort(); 
+    var sorted_arr = arr.slice().sort();
     var results = [];
     for (var i = 0; i < sorted_arr.length - 1; i++) {
       if (sorted_arr[i + 1] == sorted_arr[i]) {
@@ -1794,4 +1794,8 @@ function goToLedgerWallet() {
   $("#trustlineStep").addClass("current")
   $("#walletSelectBox").css("display", 'none')
   $("#divClaimBoxLedger").css("display", 'block')
+  clickStrPublicKey(function(){
+    const btnDOM = document.getElementById('submitLedgerBtn')
+    setEnable([btnDOM])
+  })
 }
