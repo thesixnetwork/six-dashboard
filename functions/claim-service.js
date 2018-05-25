@@ -49,6 +49,7 @@ const handleCreateStellarAccount = (data, context) => {
   })
     .then(createStellarAccount)
     .then(updateUserWalletAccount)
+    .then(updateUserCreatedAccount)
     .then(() => {
       return {
         success: true
@@ -112,10 +113,14 @@ const createStellarAccount = ({ uid, public_key: publicKey }) => {
         .loadAccount(distKey.publicKey())
         .then(createTransaction)
         .then(submitTransaction)
-        .then(updateUserCreatedAccount)
     }else {
       return { uid, public_key: publicKey }
     }
+  }).catch(() => {
+    return server
+        .loadAccount(distKey.publicKey())
+        .then(createTransaction)
+        .then(submitTransaction)
   })
 }
 
