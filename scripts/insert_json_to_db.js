@@ -12,6 +12,39 @@ const airdropUsers = require(airdropUserPath)
 const serviceAccount = require(configPath)
 const allUsers = [...privateUsers, ...publicUsers, ...airdropUsers]
 
+function merge(allUsers) {
+  const sortWithUid = R.sortWith([
+    R.ascend(R.prop('uid'))
+  ])
+
+  const sortedUsers = sortWithUid(allUsers);
+  const mergedUsers = []
+
+  // ไม่ได้ handle กรณี valid after ตรงกัน แต่เอาไป concat กันหมดเลย
+  const sum = (k, l, r) => k == 'claim_periods' ? l.concat(r) : r
+
+  while (sortedUsers.length > 0) {
+    let l = sortedUsers.pop()
+    let r = mergedUsers.pop()
+
+    if (!r) {
+      r = l
+      l = sortedUsers.pop()
+    }
+
+    if (l.uid === r.uid) {
+      const c = R.mergeWithKey(sum, l, r)
+      mergedUsers.push(c)
+      continue
+    }
+
+    mergedUsers.push(r)
+    mergedUsers.push(l)
+  }
+
+  return mergedUsers
+}
+
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
   databaseURL: 'https://six-dashboard.firebaseio.com'
@@ -29,23 +62,24 @@ try {
  * main
  */
 
-async function main () {
-  await updateUsers(allUsers)
+async function main() {
+  const mergeUsers = merge(allUsers)
+  await updateUsers(mergeUsers)
   console.log('done')
   process.exit(0)
 }
 
-async function updateUsers (privateUsers) {
+async function updateUsers(privateUsers) {
   return await Promise.all(privateUsers.map(async (privateUser) => {
-    return updateUser(privateUser)
-  }))
+      return updateUser(privateUser)
+    }))
 }
 
 /**
  * update each user
  * @return Promise()
  */
-async function updateUser (privateUser) {
+async function updateUser(privateUser) {
   const email = privateUser.email
   let uid = privateUser.uid || null
 
@@ -62,15 +96,15 @@ async function updateUser (privateUser) {
   if (userData === null) {
     await insertUser(uid)
     return await Promise.all(claimData.map(async (claimDatum, i) => {
-      return await insertClaimPeriods(i.toString(), uid, claimDatum)
-    }))
+        return await insertClaimPeriods(i.toString(), uid, claimDatum)
+      }))
   } else if (userData !== null &&
     userPeriods.length === 0 &&
     claimData.length > 0
   ) {
     return await Promise.all(claimData.map(async (claimDatum, i) => {
-      return await insertClaimPeriods(i.toString(), uid, claimDatum)
-    }))
+        return await insertClaimPeriods(i.toString(), uid, claimDatum)
+      }))
   } else {
     // find extra clai from userPeriods then insert
     const mapIndexed = R.addIndex(R.map)
@@ -88,15 +122,15 @@ async function updateUser (privateUser) {
     )
     const extra = filter(claimData)
     return await Promise.all(extra.map(async ({i, claim}) => {
-      return await insertClaimPeriods(i.toString(), uid, claim)
-    }))
+        return await insertClaimPeriods(i.toString(), uid, claim)
+      }))
   }
 }
 
 /**
  * @return user
  */
-async function getUserByEmail (email) {
+async function getUserByEmail(email) {
   return admin
     .auth()
     .getUserByEmail(email)
@@ -105,7 +139,7 @@ async function getUserByEmail (email) {
 /**
  * @return userData
  */
-async function getUserFromDB (uid) {
+async function getUserFromDB(uid) {
   // db.users_claim.uid
   const docRef = db
     .collection('users_claim')
@@ -133,8 +167,8 @@ async function getUserFromDB (uid) {
         return [doc.data(), periods]
       }
     }).catch((error) => {
-      throw error
-    })
+    throw error
+  })
   return {
     user,
     periods
@@ -144,7 +178,7 @@ async function getUserFromDB (uid) {
 /**
  * insert user to uid in users_clim collection
  */
-async function insertUser (uid) {
+async function insertUser(uid) {
   // insert user
   const insertUserData = {
     public_key: '',
@@ -161,7 +195,7 @@ async function insertUser (uid) {
 /**
  * insert claim period
  */
-async function insertClaimPeriods (periodId, uid, claimData) {
+async function insertClaimPeriods(periodId, uid, claimData) {
   return db
     .collection('users_claim')
     .doc(uid)
