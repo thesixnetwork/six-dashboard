@@ -5,8 +5,11 @@ const R = require('ramda')
 
 const configPath = __dirname + '/config/config.json'
 const privateUserPath = __dirname + '/output/private_sale.json'
+const publicUserPath = __dirname + '/output/public_sale.json'
 const privateUsers = require(privateUserPath)
+const publicUsers = require(publicUserPath)
 const serviceAccount = require(configPath)
+const allUsers = [...privateUsers, ...publicUsers]
 
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
@@ -26,8 +29,9 @@ try {
  */
 
 async function main() {
-    await updateUsers(privateUsers)
+    await updateUsers(allUsers)
     console.log('done')
+    process.exit(0)
 }
 
 async function updateUsers(privateUsers) {
