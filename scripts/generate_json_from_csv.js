@@ -75,7 +75,6 @@ papa.parse(file, {
     const r = _.compact(toJSON(results.data))
     const json = JSON.stringify(r, null, 2)
     const txsJson = JSON.stringify(privateSaleTxIds, null, 2)
-    console.log(json)
     if (!fs.existsSync(outputPath)) fs.mkdirSync(outputPath)
     fs.writeFile(outputPath + '/private_sale.json', json, (err) => {
       if (err) throw err
@@ -83,7 +82,7 @@ papa.parse(file, {
     })
     fs.writeFile(outputPath + '/private_sale_txs.json', txsJson, (err) => {
       if (err) throw err
-      console.log('The file private_sale.json has been saved!')
+      console.log('The file private_sale_txs.json has been saved!')
     })
   }
 })

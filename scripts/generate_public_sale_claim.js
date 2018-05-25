@@ -64,6 +64,7 @@ async function listAllUsers (nextPageToken) {
           const jsonUser = JSON.stringify(publicUser, null, 2)
           fs.writeFileSync(publicTxsPath, jsonUser)
           console.log('done')
+          process.exit()
         }
       })
     })
@@ -82,7 +83,7 @@ function findTxByUid (uid) {
         querySnapshot
           .forEach(function (doc) {
             const data = doc.data()
-            data.buy_period_type = 'ICO'
+            data.buy_period_type = 'ico'
             txs.push(data)
           })
         resolve(txs)
@@ -110,7 +111,7 @@ function groupTxs (icoTxs, presaleTxs, privateTxs) {
   })
   return validTxs.map(tx => {
     if (presaleTxs[tx.id]) {
-      tx.buy_period_type = 'PRESALE'
+      tx.buy_period_type = 'presale'
       tx.bonus = presaleTxs[tx.id].bonus
       tx.total = presaleTxs[tx.id].total
     }
@@ -141,8 +142,8 @@ function formatTxs (txs, uid) {
       type: tx.buy_period_type,
       tx_id: tx.id
     }
-    if (tx.buy_period_type === 'ICO') txObj.amount = tx.six_amount
-    if (tx.buy_period_type === 'PRESALE') txObj.amount = tx.six_amount + tx.bonus
+    if (tx.buy_period_type === 'ico') txObj.amount = tx.six_amount
+    if (tx.buy_period_type === 'presale') txObj.amount = tx.six_amount + tx.bonus
     obj.claim_periods.push(txObj)
   })
   return obj
