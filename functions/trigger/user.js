@@ -114,8 +114,6 @@ function addUserNumber (event, functions, fireStore) {
     const buf = Buffer.from(JSON.stringify({n: newLatestNumber}))
     const memo = '0x' + buf.toString('hex')
     const userUpdate = {user_number: newLatestNumber, memo, uid}
-    console.log(typeof uid, uid)
-    if (uid.substr(0, 4) === 'pri-') userUpdate.private_user = true
     return Promise.all([tx.update(userRef, userUpdate), tx.update(userNumberRef, {latest_number: newLatestNumber})])
   })
   )
