@@ -33,7 +33,7 @@ async function generateUser (user) {
   const newUser = {
     uid: `pri-${uuid(user.email, uuid.URL)}`,
     email: user.email,
-    emailVerified: false,
+    emailVerified: true,
     phoneNumber: user.phone_number,
     password: Math.random().toString(36).slice(-8),
     displayName: `${user.firstname} ${user.lastname}`,

@@ -579,12 +579,24 @@ exports.updateXLMWallet = functions.https.onCall((data, context) => {
 
 exports.initializeUserDoc = functions.auth.user().onCreate(event => {
   const user = event.data;
-  const email = user.email;
+  const uid = user.uid;
+  console.log(user)
+  const setUser = {
+    email: user.email,
+    registration_time: Date.now()
+  }
+  if (uid.substr(0, 4) === 'pri-') {
+    const name = user.displayName.split(' ')
+    setUser.private_user = true
+    setUser.first_name = name[0]
+    setUser.last_name = name[1]
+    setUser.phone_number = user.phoneNumber
+  }
   let ref = admin
     .firestore()
     .collection("users")
     .doc(user.uid);
-  return ref.set({ email: email, registration_time: Date.now() }, { merge: true }).then(() => {
+  return ref.set(setUser, { merge: true }).then(() => {
     return true;
   });
 });
