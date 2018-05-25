@@ -598,6 +598,7 @@ function getFlooredFixed(v, d) {
 function buildListClaim(doc, id) {
   const { amount, claimed, valid_after, tx_id, type } = doc
   var tr = document.createElement("tr")
+  $(tr).attr("total-amount", amount)
   var td1 = document.createElement("td");
   var txt1 = document.createTextNode(formatDate(valid_after))
   td1.appendChild(txt1)
@@ -627,17 +628,20 @@ function buildListClaim(doc, id) {
   thisbtn.id = "claim-"+id
   if ((new Date) > valid_after) {
     if (claimed === true) {
+      tr.className = 'claimListItem stillClaimed'
       thisbtn.className = "claimMoneyBtn claimed"
       var txt5 = document.createTextNode("Claimed")
       thisbtn.appendChild(txt5)
       thisbtn.disabled = true
     } else {
+      tr.className = 'claimListItem stillAvail'
       thisbtn.className = "claimMoneyBtn avail"
       var txt5 = document.createTextNode("Claim")
       thisbtn.appendChild(txt5)
       thisbtn.onclick = function() { claimSix(id) }
     }
   } else {
+    tr.className = 'claimListItem stillNotAvail'
     thisbtn.className = "claimMoneyBtn notAvail"
     var txt5 = document.createTextNode("Not Available")
     thisbtn.appendChild(txt5)
@@ -811,8 +815,8 @@ function getClaims() {
           targetDiv.appendChild(newTable)
         }
       })
-      if (foundPrivate !== true) {
-        $("#menuContainer").css("display", "none")
+      if (foundPrivate === true) {
+        $("#menuContainer").css("display", "flex")
       }
       $("#table-container-private").css("display", "none")
       allData.sort(compare_valid_after)
@@ -822,6 +826,7 @@ function getClaims() {
         let thisTable = document.getElementById("table-"+privateType[data.type].type)
         thisTable.appendChild(elem)
       })
+      updateGraph()
     })
   }
 }
@@ -1113,7 +1118,7 @@ $(document).ready(function(){
             $("#walletSelectBox").css("display", "none")
             $("#claimWelcomeBox").css("display", "none")
             $("#manualTrustlineBox").css("display", "none")
-            showGraph()
+            updateGraph()
           }
         }).then(getCurrentTotal).then(() => {
           getTxs()
@@ -1166,21 +1171,57 @@ function generateNewAccount() {
 function goToClaimTable() {
   $("#congratBox").slideToggle(100)
   $("#rewardClaimBox").slideToggle(100, function() {
-    showGraph()
+    updateGraph()
   })
 }
 
-function showGraph() {
-  Morris.Donut({
-    element: 'donut-graph',
-    data: [
-      {label: "2018-03-10", value: 12},
-      {label: "2018-03-11", value: 12},
-      {label: "Claimed", value: 30},
-      {label: "Not Available", value: 20}
-    ],
-    colors: ['#4a5ab5', '#4a5ab5', '#A3ABD9', '#B7B7B7']
-  })
+var mainGraph
+function updateGraph() {
+  let allClaim = 0
+  let allAvailable = 0
+  
+  let claimedItems = $(".claimListItem.stillClaimed")
+  for(let i = 0; i < claimedItems.length; i++) {
+    allClaim += parseFloat($(claimedItems[i]).attr("total-amount"))
+  }
+  let notAvailItems = $(".claimListItem.stillNotAvail")
+  for(let i = 0; i < notAvailItems.length; i++) {
+    allAvailable += parseFloat($(notAvailItems[i]).attr("total-amount"))
+  }
+
+  let availItems = $(".claimListItem.stillAvail")
+  for(let i = 0; i < availItems.length; i++) {
+    allAvailable += parseFloat($(availItems[i]).attr("total-amount"))
+  }
+
+  if (mainGraph === undefined) {
+    mainGraph = Morris.Donut({
+      element: 'donut-graph',
+      data: [
+        {label: "Claimed", value: 0},
+        {label: "Not Claimed", value: 0}
+      ],
+      colors: ['#4a5ab5', '#B7B7B7']
+    })
+  } else {
+    mainGraph.setData([
+      {
+        label: "Claimed",
+        value: allClaim
+      },
+      {
+        label: "Not Claimed",
+        value: allAvailable
+      }
+    ])
+  }
+  var percent_number_step = $.animateNumber.numberStepFactories.append(' SIX')
+  $('#totalClaimedSix').animateNumber(
+    {
+      number: allClaim.toFixed(7),
+      numberStep: percent_number_step
+    }
+  );
 }
 
 function nextGeneratedAccount() {
@@ -1234,7 +1275,7 @@ function checkTrustAccount() {
       markTrustlineUser().then(() => {
         $("#manualTrustlineBox").slideToggle(100)
         $("#rewardClaimBox").slideToggle(100, function() {
-          showGraph()
+          updateGraph()
         })
         $("#claimStep").addClass("current")
       }).catch(err => { 
@@ -1322,8 +1363,11 @@ function submitOTP(id) {
     $("#claim-"+id).removeClass("avail").addClass("claimed")
     setDisable([$("#claim-"+id)[0]])
     $("#claim-"+id).text("Claimed")
-    setEnable([btnDOM])
-  }).catch(err => { alert(err); setEnable([btnDOM]); $("#otpDialog").removeClass('show-dialog'); })
+    $("#claim-"+id).parent().parent().removeClass("stillAvail").addClass("stillClaimed")
+    updateGraph()
+    $("#otpCode").val("")
+    //setEnable([btnDOM])
+  }).catch(err => { alert(err); setEnable([btnDOM]); $("#otpDialog").removeClass('show-dialog'); $("#otpCode").val(""); })
 }
 
 function claimSix(id) {

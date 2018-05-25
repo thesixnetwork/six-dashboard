@@ -142,7 +142,8 @@
         <section class="user-detail">
           <span class="avatar" id='firstCharName'>V</span>
           <p class='truncate'>Hello&nbsp;<span id='displayName'>Vachara A.</span></p>
-          <p>Balance :&nbsp;<span><span id='totalSix'>Loading</span></span></p>
+          <p>Total SIX :&nbsp;<span><span id='totalSix'>Loading</span></span></p>
+          <p>Claimed :&nbsp;<span><span id='totalClaimedSix'>Loading</span></span></p>
         </section>
         <section class="video">
           <div class="tab-header">
@@ -629,23 +630,18 @@
                   <div class='legend'>
                     <div class='circleB' id='CBready'>
                     </div>
-                    <span>Ready to claim</span>
-                  </div>
-                  <div class='legend'>
-                    <div class='circleB' id='CBclaim'>
-                    </div> 
                     <span>Claimed</span>
                   </div>
                   <div class='legend'>
                     <div class='circleB' id='CBnotAvail'>
                     </div> 
-                    <span>Not available</span>
+                    <span>Not Claimed</span>
                   </div>
                 </div>
               </div>
             </div>
             <br>
-            <div id='menuContainer'>
+            <div id='menuContainer' style='display: none;'>
               <div class='tableMenu'>
                 <a href='#' onclick='changeToPublicTable()' class='currentActive' id='publicTablebtn'>
                   <div class='choiceText'>
