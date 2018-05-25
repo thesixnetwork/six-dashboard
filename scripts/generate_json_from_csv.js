@@ -20,12 +20,12 @@ const model = {
   'phone_number': 4,
   'total_six': 5,
   'type': 5,
-  'd+0': 6,
-  'd+30': 7,
-  'd+60': 8,
-  'd+90': 9,
-  'd+365': 10,
-  'tx_ids': 11
+  'd+0': 7,
+  'd+30': 8,
+  'd+60': 9,
+  'd+90': 10,
+  'd+365': 11,
+  'tx_ids': 12
 }
 
 const conditions = {
