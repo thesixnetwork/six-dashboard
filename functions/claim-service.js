@@ -48,8 +48,7 @@ const handleCreateStellarAccount = (data, context) => {
     public_key: publicKey
   })
     .then(createStellarAccount)
-    .then(updateUserWalletAccount)
-    .then(updateUserCreatedAccount)
+    .then(updateUserWalletAccount)    
     .then(() => {
       return {
         success: true
@@ -107,11 +106,17 @@ const createStellarAccount = ({ uid, public_key: publicKey }) => {
       }
     })
   }
-
-  return server
-    .loadAccount(distKey.publicKey())
-    .then(createTransaction)
-    .then(submitTransaction)
+  return server.loadAccount(publicKey).then(an_account => {
+    if(!checkBalanceForTrust(an_account)) {
+      return server
+        .loadAccount(distKey.publicKey())
+        .then(createTransaction)
+        .then(submitTransaction)
+        .then(updateUserCreatedAccount)
+    }else {
+      return { uid, public_key: publicKey }
+    }
+  })
 }
 
 const updateUserWalletAccount = ({ uid, public_key }) => {
@@ -296,3 +301,13 @@ module.exports = {
   updateClaim,
 }
 
+const checkBalanceForTrust = (distributorAccount){
+  let balancesCount = (distributorAccount.balances.length - 1)
+  let leastXLM = (balances_count * 0.5) + 2
+  let xlmBlance = distributorAccount.balances.filter(balance => {if(balance.asset_type === 'native'){return true} } )[0].balance
+  if(parseFloat(xlmBlance) > leastXLM) {
+    return true
+  } else {
+    return false
+  }
+}
