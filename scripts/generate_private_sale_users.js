@@ -11,7 +11,11 @@ admin.initializeApp({
 })
 const db = admin.firestore()
 Promise.all(privateUsers.map(generateUser))
-  .then(val => console.log(val))
+  .then(val => {
+    console.log(JSON.stringify(val, null, 2))
+    console.log('done')
+    process.exit(0)
+  })
 
 async function generateUser (user) {
   const uid = await getUIDByEmail(user.email)
@@ -20,7 +24,6 @@ async function generateUser (user) {
     return db.collection('users').doc(uid)
       .update({private_user: true})
       .then(() => {
-        console.log('update private_user = true instant.')
         return message
       })
   }
