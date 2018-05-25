@@ -48,8 +48,7 @@ const handleCreateStellarAccount = (data, context) => {
     public_key: publicKey
   })
     .then(createStellarAccount)
-    .then(updateUserWalletAccount)
-    .then(updateUserCreatedAccount)
+    .then(updateUserWalletAccount)    
     .then(() => {
       return {
         success: true
@@ -107,11 +106,17 @@ const createStellarAccount = ({ uid, public_key: publicKey }) => {
       }
     })
   }
-
-  return server
-    .loadAccount(distKey.publicKey())
-    .then(createTransaction)
-    .then(submitTransaction)
+  return server.loadAccount(publicKey).then(an_account => {
+    if(!checkBalanceForTrust(an_account)) {
+      return server
+        .loadAccount(distKey.publicKey())
+        .then(createTransaction)
+        .then(submitTransaction)
+        .then(updateUserCreatedAccount)
+    }else {
+      return { uid, public_key: publicKey }
+    }
+  })
 }
 
 const updateUserWalletAccount = ({ uid, public_key }) => {
@@ -192,30 +197,33 @@ function findUser ({ uid, claim_id: claimId }) {
     })
 }
 
-function findClaim ({ uid, claim_id: claimId, user }) {
-  console.log("find claim")
-  console.log(uid)
-  console.log(claimId)
-  return claimRef
-    .doc(uid)
-    .collection('claim_period')
-    .doc(String(claimId))
-    .get()
-    .then(claim => {
-      if (claim.exists && (claim.data() || {}).claimed === false) {
-        const claimData = claim.data()
-        return claimData.claimed === true
-          ? Promise.reject(new Error('User already claimed.'))
-          : {
-            uid,
-            claim: claimData,
-            claim_id: claimId,
-            user
-          }
-      }
-      return Promise.reject(new Error('Data not found'))
-    })
-}
+ function findClaim ({ uid, claim_id: claimId, user }) {
+   return claimRef
+     .doc(uid)
+     .collection('claim_period')
+     .doc(claimId)
+     .get()
+     .then(claim => {
+       if (claim.exists) {
+         const claimData = claim.data()
+
+         const currentTime = new Date().getTime()
+         if (currentTime < claimData.valid_after) {
+             return Promise.reject(new Error('Claim is not ready'))
+         }
+
+         return claimData.claimed === true
+           ? Promise.reject(new Error('User already claimed.'))
+           : {
+             uid,
+             claim: claimData,
+             claim_id: claimId,
+             user
+           }
+       }
+       return Promise.reject(new Error('User not found'))
+     })
+ }
 
 function sendSix ({ uid, claim_id: claimId, user, claim }) {
   console.log("sendSix")
@@ -293,3 +301,13 @@ module.exports = {
   updateClaim,
 }
 
+const checkBalanceForTrust = (distributorAccount){
+  let balancesCount = (distributorAccount.balances.length - 1)
+  let leastXLM = (balances_count * 0.5) + 2
+  let xlmBlance = distributorAccount.balances.filter(balance => {if(balance.asset_type === 'native'){return true} } )[0].balance
+  if(parseFloat(xlmBlance) > leastXLM) {
+    return true
+  } else {
+    return false
+  }
+}
