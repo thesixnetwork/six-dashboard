@@ -785,8 +785,6 @@ function formatDate(date) {
     return [year, month, day].join('-');
 }
 
-let totalSix = 0
-
 function uniqArray(arrArg) {
   return arrArg.filter(function(elem, pos,arr) {
     return arr.indexOf(elem) == pos;
@@ -795,6 +793,7 @@ function uniqArray(arrArg) {
 
 function getClaims() {
   if (firebase.auth().currentUser !== null) {
+    let totalSix = 0
     firebase.firestore().collection('users_claim').doc(firebase.auth().currentUser.uid).collection('claim_period').get().then(docs => {
       let allData = []
       docs.forEach(function(doc) {
@@ -823,10 +822,19 @@ function getClaims() {
       allData.forEach(d => {
         let data = d.data()
         const elem = buildListClaim(data, d.id)
+        totalSix = totalSix + data.amount
         let thisTable = document.getElementById("table-"+privateType[data.type].type)
         thisTable.appendChild(elem)
       })
       updateGraph()
+    }).then(() => {
+      var percent_number_step = $.animateNumber.numberStepFactories.append(' SIX')
+      $('#totalSix').animateNumber(
+        {
+          number: totalSix.toFixed(7),
+          numberStep: percent_number_step
+        }
+      );
     })
   }
 }
@@ -845,24 +853,10 @@ function getTxs () {
           allDoc.push(d)
         })
         allDoc.sort(compare)
-        var percent_number_step = $.animateNumber.numberStepFactories.append(' SIX')
-        $('#totalSix').animateNumber(
-          {
-            number: totalSix.toFixed(7),
-            numberStep: percent_number_step
-          }
-        );
         allDoc.forEach(d => {
           let data = d.data()
           if (preDocData[d.id] !== undefined && preDocData[d.id] !== null) {
             data.six_amount = Number((data.six_amount * 1.06).toFixed(7))
-            totalSix += data.six_amount
-            $('#totalSix').animateNumber(
-              {
-                number: totalSix.toFixed(7),
-                numberStep: percent_number_step
-              }
-            );
           }
           const elem = buildListTx(data)
           $("#userTxs")[0].appendChild(elem)
@@ -874,13 +868,6 @@ function getTxs () {
           allDoc.push(d)
         })
         allDoc.sort(compare)
-        var percent_number_step = $.animateNumber.numberStepFactories.append(' SIX')
-        $('#totalSix').animateNumber(
-          {
-            number: totalSix.toFixed(7),
-            numberStep: percent_number_step
-          }
-        );
         allDoc.forEach(d => {
           const data = d.data()
           const elem = buildListTx(data)
