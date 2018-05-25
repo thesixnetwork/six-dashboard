@@ -68,9 +68,9 @@ const setPublicKey = ({ uid, public_key: publicKey }) => {
   // @TODO check is users_claim exists?
   return claimRef
     .doc(uid)
-    .update({
+    .set({
       'public_key': publicKey
-    })
+    }, { merge: true })
     .then(() => {
       return {
         uid,
@@ -136,9 +136,9 @@ const updateUserWalletAccount = ({ uid, public_key }) => {
 const updateUserCreatedAccount = ({ uid }) => {
   return claimRef
     .doc(uid)
-    .update({
+    .set({
       'sent_xlm': true
-    })
+    }, { merge: true })
 }
 
 const handleClaimSix = (data, context) => {
