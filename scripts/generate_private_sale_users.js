@@ -1,5 +1,6 @@
 const admin = require('firebase-admin')
 const uuid = require('uuid/v5')
+const fs = require('fs')
 const configPath = __dirname + '/config/config.json'
 const privateUserPath = __dirname + '/output/private_sale.json'
 const privateUsers = require(privateUserPath)
@@ -13,6 +14,7 @@ const db = admin.firestore()
 Promise.all(privateUsers.map(generateUser))
   .then(val => {
     console.log(JSON.stringify(val, null, 2))
+    fs.writeFileSync(privateUserPath, JSON.stringify(privateUsers, null, 2))
     console.log('done')
     process.exit(0)
   })
@@ -20,6 +22,7 @@ Promise.all(privateUsers.map(generateUser))
 async function generateUser (user) {
   const uid = await getUIDByEmail(user.email)
   if (uid) {
+    user.uid = uid
     const message = `email ${user.email} already exists.`
     return db.collection('users').doc(uid)
       .update({private_user: true})
@@ -40,6 +43,7 @@ async function generateUser (user) {
   .then(function (userRecord) {
     // See the UserRecord reference doc for the contents of userRecord.
     console.log('Successfully created new user:', userRecord.uid, user.email)
+    user.uid = userRecord.uid
     return userRecord
   })
   .catch(function (error) {
