@@ -117,10 +117,10 @@ const createStellarAccount = ({ uid, public_key: publicKey }) => {
 const updateUserWalletAccount = ({ uid, public_key }) => {
   return userRef
     .doc(uid)
-    .update({
+    .set({
       submit_xlm_wallet: true,
       xlm_address: public_key
-    }).then(() => {
+    }, { merge: true }).then(() => {
       return {
         uid,
         public_key

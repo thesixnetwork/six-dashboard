@@ -403,46 +403,49 @@ function setupUserData() {
 function initializeStep() {
   let promise = new Promise(function (resolve, reject) {
     let currentUser = firebase.auth().currentUser
-    if (currentUser.emailVerified == true) {
-      goToVerifyPhoneStep()
-      let db = firebase.firestore()
-      db.collection('users').doc(firebase.auth().currentUser.uid).get().then(doc => {
-        userData = doc.data()
+    let db = firebase.firestore()
+    db.collection('users').doc(firebase.auth().currentUser.uid).get().then(doc => {
+      userData = doc.data()
+      if (userData.private_user === true) {
+        window.location.href = '/dashboard'+window.location.search
+      } else if (currentUser.emailVerified == true) {
+        goToVerifyPhoneStep()
         if (Date.now() > endtimeOfIco && userData.all_done) {
           window.location.href = '/dashboard'+window.location.search
-        }
-        setupUserData()
-        if (doc.data().phone_verified === true) {
-          goToKYCStep()
-          if (userData.kyc_status === 'pending') {
-            $("#kycContentForm").removeClass("show-detail")
-            $("#kycContentPending").addClass("show-detail")
-            resolve()
-          } else if (userData.kyc_status === 'rejected') {
-            $("#kycContentForm").removeClass("show-detail")
-            $("#kycContentRejected").addClass("show-detail")
-            resolve()
-          } else if (userData.kyc_status === 'approved') {
-            goToFinishStep()
-            if (userData.all_done === true) {
-              goToICOStep()
+        } else {
+          setupUserData()
+          if (doc.data().phone_verified === true) {
+            goToKYCStep()
+            if (userData.kyc_status === 'pending') {
+              $("#kycContentForm").removeClass("show-detail")
+              $("#kycContentPending").addClass("show-detail")
               resolve()
+            } else if (userData.kyc_status === 'rejected') {
+              $("#kycContentForm").removeClass("show-detail")
+              $("#kycContentRejected").addClass("show-detail")
+              resolve()
+            } else if (userData.kyc_status === 'approved') {
+              goToFinishStep()
+              if (userData.all_done === true) {
+                goToICOStep()
+                resolve()
+              } else {
+                resolve()
+              }
             } else {
               resolve()
             }
           } else {
             resolve()
           }
-        } else {
-          resolve()
         }
-      }).catch(() => {
+      } else {
+        $("#emailToVerify").html(currentUser.email)
         resolve()
-      })
-    } else {
-      $("#emailToVerify").html(currentUser.email)
+      }
+    }).catch(() => {
       resolve()
-    }
+    })
   })
   return promise
 }
@@ -468,21 +471,10 @@ function proceedToIco() {
       dataLayer.push(arguments);
     }
     gtag('event','click',{'event_category':'button','event_label':'finish-kyc'});
-    if (Date.now() > endtimeOfIco) {
-      window.location.href = '/dashboard'+window.location.search
-    }    
+    window.location.href = '/dashboard'+window.location.search
     setEnable([icoBtn])
-    $("#icoPage").addClass("show-detail")
-    $('#icoStep').addClass('current')
-    $("#congratulationPage").removeClass("show-detail")
   }).catch(() => {
-    if (Date.now() > endtimeOfIco) {
-      window.location.href = '/dashboard'+window.location.search
-    }    
     setEnable([icoBtn])
-    $("#icoPage").addClass("show-detail")
-    $('#icoStep').addClass('current')
-    $("#congratulationPage").removeClass("show-detail")
   })
 }
 
