@@ -48,7 +48,7 @@ const handleCreateStellarAccount = (data, context) => {
     public_key: publicKey
   })
     .then(createStellarAccount)
-    .then(updateUserWalletAccount)    
+    .then(updateUserWalletAccount)
     .then(() => {
       return {
         success: true
@@ -298,14 +298,18 @@ module.exports = {
   findUser,
   findClaim,
   sendSix,
-  updateClaim,
+  updateClaim
 }
 
-const checkBalanceForTrust = (distributorAccount){
+const checkBalanceForTrust = (distributorAccount) => {
   let balancesCount = (distributorAccount.balances.length - 1)
-  let leastXLM = (balances_count * 0.5) + 2
-  let xlmBlance = distributorAccount.balances.filter(balance => {if(balance.asset_type === 'native'){return true} } )[0].balance
-  if(parseFloat(xlmBlance) > leastXLM) {
+  let leastXLM = (balancesCount * 0.5) + 2
+  let xlmBlance = distributorAccount.balances.filter(balance => {
+    if (balance.asset_type === 'native') {
+      return true
+    }
+  })[0].balance
+  if (parseFloat(xlmBlance) > leastXLM) {
     return true
   } else {
     return false
