@@ -14,19 +14,23 @@ sleep 1
 npm install n
 #sudo ./node_modules/n/bin/n stable
 
-echo '4 STEP Generate Claim service'
+echo '5 STEP Generate Claim service'
 echo ''
-sleep 1
-echo '#1 (1/4) Generate JSON FROM CSV'
+echo '#1 (1/5) Generate JSON FROM CSV'
 node generate_json_from_csv.js 
-sleep 1
 echo ''
-echo '#2 (2/4) Generate Private sale user to JSON'
+echo '#2 (2/5) Generate Private sale user to JSON and Create User'
+sleep 5
 node generate_private_sale_users.js
-sleep 1
 echo ''
-echo '#3 (3/4) Generate Public sale user to JSON'
+echo '#3 (3/5) Generate Public sale user to JSON'
+sleep 3
 node generate_public_sale_claim.js 
 echo ''
-echo '#4 (4/4) Insert all claim user into FireStore'
+echo '#4 (4/5) Generate airdrop user to JSON'
+sleep 3
+node generate_airdrop_claim.js 
+echo ''
+echo '#5 (5/5) Insert all claim user into FireStore'
+sleep 3
 node insert_json_to_db.js
