@@ -42,12 +42,17 @@ async function updateUsers(privateUsers) {
  */
 async function updateUser(privateUser) {
   const email = privateUser.email
-  const user = await getUserByEmail(email)
-  const {user: userData, periods: userPeriods} = await getUserFromDB(user)
+  let uid = privateUser.uid || null
+
+  if (!uid) {
+    const user = await getUserByEmail(email)
+    uid = user.uid
+  }
+
+  const {user: userData, periods: userPeriods} = await getUserFromDB(uid)
 
   // insert if userData not exists
   const claimData = privateUser.claim_periods
-  const uid = user.uid
 
   if (userData === null) {
     await insertUser(uid)
@@ -95,7 +100,7 @@ async function getUserByEmail(email) {
 /**
  * @return userData
  */
-async function getUserFromDB({uid}) {
+async function getUserFromDB(uid) {
   //db.users_claim.uid
   const docRef = db
     .collection('users_claim')
