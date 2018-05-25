@@ -526,7 +526,12 @@ function buildTableType(type) {
     var thead = document.createElement("thead")
     var tr = document.createElement("tr")
     var th1 = document.createElement("th")
-    var txt1 = document.createTextNode("Available Date")
+    var txt1
+    if (type == 'private') {
+      txt1 = document.createTextNode("Unlock Date")
+    } else {
+      txt1 = document.createTextNode("Available Date")
+    }
     $(th1).attr("width", "150")
     var th2 = document.createElement("th")
     var txt2 = document.createTextNode("Amount")
@@ -544,23 +549,23 @@ function buildTableType(type) {
     tbody.className = "claimTxs"
     tbody.id = 'table-'+type
 
-    var div1 = document.createElement("div")
-    div1.className = 'donutText'
-    var div2 = document.createElement("div")
-    div2.className = 'contractType'
-    var div3 = document.createElement("div")
-    div3.className = 'groupStatus'
-    var h4 = document.createElement("h4")
-    var txt6 = document.createTextNode(privateType[type].name)
-    var pDom = document.createElement("p")
-    var txt7 = document.createTextNode(privateType[type].description)
+//    var div1 = document.createElement("div")
+//    div1.className = 'donutText'
+//    var div2 = document.createElement("div")
+//    div2.className = 'contractType'
+//    var div3 = document.createElement("div")
+//    div3.className = 'groupStatus'
+//    var h4 = document.createElement("h4")
+//    var txt6 = document.createTextNode(privateType[type].name)
+//    var pDom = document.createElement("p")
+//    var txt7 = document.createTextNode(privateType[type].description)
 
-    h4.appendChild(txt6)
-    pDom.appendChild(txt7)
-    div2.appendChild(div3)
-    div2.appendChild(h4)
-    div2.appendChild(pDom)
-    div1.appendChild(div2)
+//    h4.appendChild(txt6)
+//    pDom.appendChild(txt7)
+//    div2.appendChild(div3)
+//    div2.appendChild(h4)
+//    div2.appendChild(pDom)
+//    div1.appendChild(div2)
 
     th1.appendChild(txt1)
     th2.appendChild(txt2)
@@ -576,7 +581,7 @@ function buildTableType(type) {
     table.appendChild(thead)
     table.appendChild(tbody)
     div.appendChild(table)
-    overallDiv.appendChild(div1)
+//    overallDiv.appendChild(div1)
     overallDiv.appendChild(div)
 
     allClaimTable[type] = true
@@ -679,71 +684,88 @@ const privateBonus = {
 const privateType = {
   'free': {
     name: 'Airdrop',
-    description: 'An airdrop SIX Token for one who was submitted KYC before 25 June 2018.'
+    description: 'An airdrop SIX Token for one who was submitted KYC before 25 June 2018.',
+    type: 'public'
   },
   'presale': {
     name: 'Presale',
     description: '+6% is added for everyone who contributed SIX Token in the Pre-ICO period.',
+    type: 'public'
   },
   'public': {
     name: 'Public',
     description: 'General Token contract.',
+    type: 'public'
   },
   'A': {
     name: 'Private Sale contract A',
     description: '15% Discount private sale contract.',
+    type: 'private'
   },
   'B': {
     name: 'Private Sale contract B',
     description: '20% Discount private sale contract.',
+    type: 'private'
   },
   'C': {
     name: 'Private Sale contract C',
     description: '40% Discount private sale contract.',
+    type: 'private'
   },
   'D': {
     name: 'Private Sale contract D',
     description: '50% Discount private sale contract which seperated into three transactions; The first can be claimed after the ending of ICO. The second can be claimed on 30 days after the ending of ICO. The third can be claimed on 60 days after the ending of ICO.',
+    type: 'private'
   },
   'E': {
     name: 'Private Sale contract E',
     description: '50% Bonus private sale contract.',
+    type: 'private'
   },
   'F': {
     name: 'Private Sale contract F',
     description: '67% Discount private sale contract. Can be claimed on 1 years after the ending of ICO.',
+    type: 'private'
   },
   'G': {
     name: 'Private Sale contract G',
     description: 'Founding Member contract.',
+    type: 'private'
   },
   'H': {
     name: 'Private Sale contract H',
     description: 'Advisor contract.',
+    type: 'private'
   },
   'I': {
     name: 'Private Sale contract I',
     description: 'Founder contract.',
+    type: 'private'
   },
   'J': {
     name: 'Private Sale contract J',
     description: 'Bounty contract.',
+    type: 'private'
   },
   'K': {
     name: 'Private Sale contract K',
     description: 'Pool token contract.',
+    type: 'private'
   },
   'L': {
     name: 'Private Sale contract L',
     description: 'Crowd contract.',
+    type: 'private'
   },
   'M': {
     name: 'Private Sale contract M',
     description: '20% Bonus private sale contract.',
+    type: 'private'
   },
   'N': {
     name: 'Private Sale contract N',
     description: '35% Bonus private sale contract.',
+    type: 'private'
   }
 }
 
@@ -774,9 +796,14 @@ function getClaims() {
       docs.forEach(function(doc) {
         allData.push(doc)
       })
-      let allType = allData.map(function(doc) { return doc.data().type })
-      let uniqType = uniqArray(allType)
-      uniqType.sort(compare_type_order)
+      let allType = allData.map(function(doc) { return privateType[doc.data().type].type })
+      let foundPrivate = false
+      allType.forEach(function(thisType) {
+        if (thisType === 'private') {
+          foundPrivate = true
+        }
+      })
+      let uniqType = ['public', 'private']
       let targetDiv = document.getElementById("forClaimTable")
       uniqType.forEach(tableType => {
         let newTable = buildTableType(tableType)
@@ -784,11 +811,15 @@ function getClaims() {
           targetDiv.appendChild(newTable)
         }
       })
+      if (foundPrivate !== true) {
+        $("#menuContainer").css("display", "none")
+      }
+      $("#table-container-private").css("display", "none")
       allData.sort(compare_valid_after)
       allData.forEach(d => {
         let data = d.data()
         const elem = buildListClaim(data, d.id)
-        let thisTable = document.getElementById("table-"+data.type)
+        let thisTable = document.getElementById("table-"+privateType[data.type].type)
         thisTable.appendChild(elem)
       })
     })
@@ -1004,7 +1035,7 @@ $(document).ready(function(){
       }).catch(() => {}).then(() => {
         return firebase.firestore().collection('users').doc(user.uid).get().then(doc => {
           const endtime = endtimeOfIco
-          if (!(Date.now() > endtime && doc.data().all_done)) {
+          if (!(Date.now() > endtime && doc.data().all_done) && doc.data().private_user !== true) {
             window.location.href = '/wizard'+window.location.search
           }
           userData = doc.data()
@@ -1724,11 +1755,15 @@ function showXLMWallet() {
 function changeToPublicTable() {
   $("#privateTablebtn").removeClass("currentActive")
   $("#publicTablebtn").addClass("currentActive")
+  $("#table-container-private").css("display", "none")
+  $("#table-container-public").css("display", "block")
 }
 
 function changeToPrivateTable() {
   $("#publicTablebtn").removeClass("currentActive")
   $("#privateTablebtn").addClass("currentActive")
+  $("#table-container-public").css("display", "none")
+  $("#table-container-private").css("display", "block")
 }
 
 function goToLedgerWallet() {
