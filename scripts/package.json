@@ -1,0 +1,17 @@
+{
+  "name": "scripts",
+  "version": "1.0.0",
+  "description": "",
+  "main": "generate_json_from_csv.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "firebase-admin": "^5.12.1",
+    "papaparse": "^4.4.0",
+    "underscore": "^1.9.0",
+    "uuid": "^3.2.1"
+  }
+}
