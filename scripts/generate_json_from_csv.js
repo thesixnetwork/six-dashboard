@@ -5,6 +5,7 @@ const path = __dirname + '/token_distribution.csv'
 const file = fs.readFileSync(path).toString()
 const outputPath = __dirname + '/output'
 const shift = d => d.shift()
+const privateSaleTxIds = []
 
 const times = (x) => f => {
   if (x > 0) {
@@ -59,7 +60,11 @@ const toJSON = (d) => {
     if (roll[model['d+60']]) addClaimPeriod(obj.claim_periods, 60, parseFloat(roll[model['d+60']].replace(/,/g, '')), type)
     if (roll[model['d+90']]) addClaimPeriod(obj.claim_periods, 90, parseFloat(roll[model['d+90']].replace(/,/g, '')), type)
     if (roll[model['d+365']]) addClaimPeriod(obj.claim_periods, 365, parseFloat(roll[model['d+365']].replace(/,/g, '')), type)
-    if (roll[model['tx_ids']]) { obj.tx_ids = roll[model['tx_ids']].split(',') } else obj.tx_ids = []
+    if (roll[model['tx_ids']]) {
+      const txs = roll[model['tx_ids']].split(',')
+      obj.tx_ids = roll[model['tx_ids']].split(',')
+      privateSaleTxIds.push(...txs)
+    } else obj.tx_ids = []
     if (obj.claim_periods.length > 0) return obj
   })
 }
@@ -69,11 +74,16 @@ papa.parse(file, {
     times(3)(() => shift(results.data))
     const r = _.compact(toJSON(results.data))
     const json = JSON.stringify(r, null, 2)
+    const txsJson = JSON.stringify(privateSaleTxIds, null, 2)
     console.log(json)
     if (!fs.existsSync(outputPath)) fs.mkdirSync(outputPath)
     fs.writeFile(outputPath + '/private_sale.json', json, (err) => {
       if (err) throw err
-      console.log('The file has been saved!')
+      console.log('The file private_sale.json has been saved!')
+    })
+    fs.writeFile(outputPath + '/private_sale_txs.json', txsJson, (err) => {
+      if (err) throw err
+      console.log('The file private_sale.json has been saved!')
     })
   }
 })

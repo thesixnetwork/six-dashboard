@@ -197,30 +197,33 @@ function findUser ({ uid, claim_id: claimId }) {
     })
 }
 
-function findClaim ({ uid, claim_id: claimId, user }) {
-  console.log("find claim")
-  console.log(uid)
-  console.log(claimId)
-  return claimRef
-    .doc(uid)
-    .collection('claim_period')
-    .doc(String(claimId))
-    .get()
-    .then(claim => {
-      if (claim.exists && (claim.data() || {}).claimed === false) {
-        const claimData = claim.data()
-        return claimData.claimed === true
-          ? Promise.reject(new Error('User already claimed.'))
-          : {
-            uid,
-            claim: claimData,
-            claim_id: claimId,
-            user
-          }
-      }
-      return Promise.reject(new Error('Data not found'))
-    })
-}
+ function findClaim ({ uid, claim_id: claimId, user }) {
+   return claimRef
+     .doc(uid)
+     .collection('claim_period')
+     .doc(claimId)
+     .get()
+     .then(claim => {
+       if (claim.exists) {
+         const claimData = claim.data()
+
+         const currentTime = new Date().getTime()
+         if (currentTime < claimData.valid_after) {
+             return Promise.reject(new Error('Claim is not ready'))
+         }
+
+         return claimData.claimed === true
+           ? Promise.reject(new Error('User already claimed.'))
+           : {
+             uid,
+             claim: claimData,
+             claim_id: claimId,
+             user
+           }
+       }
+       return Promise.reject(new Error('User not found'))
+     })
+ }
 
 function sendSix ({ uid, claim_id: claimId, user, claim }) {
   console.log("sendSix")
