@@ -44,54 +44,53 @@ function buildOption(doc) {
 
 function buildListUser(data) {
   const {
-    first_name,
-    last_name,
-    email,
-    public_key,
-    allow_trust,
-    sent_xlm,
-    trustline
+    amount,
+    type,
+    userId,
+    valid_after,
+    claimed
   } = data
 
   // build row
   var tr = document.createElement("tr");
 
-  // name column
+  // userId
   let td1 = document.createElement('td');
-  let txt1 = document.createTextNode(`${first_name} ${last_name}`)
+  let txt1 = document.createTextNode(userId)
   td1.appendChild(txt1);
 
-  // email column
+  // amount column
   var td2 = document.createElement("td");
-  var txt2 = document.createTextNode(email);
+  var txt2 = document.createTextNode(amount);
   td2.appendChild(txt2);
 
-  // Public key column
+  // type column
   var td3 = document.createElement("td");
-  var txt3 = document.createTextNode(public_key);
+  var txt3 = document.createTextNode(type);
   td3.appendChild(txt3);
 
-  // sent xlm column
+  // valid_after column
   var td4 = document.createElement("td");
-  var txt4 = document.createTextNode(sent_xlm);
+  var txt4 = document.createTextNode(moment(valid_after).format('DD/MM/YYYY HH:mm:ss'));
   td4.appendChild(txt4);
 
   // Allow trust column
   var td5 = document.createElement("td");
-  var txt5 = document.createTextNode(allow_trust);
+  var txt5 = document.createTextNode(claimed && claimed === true ? 'TRUE' : 'FALSE');
+  td5.style.color = claimed && claimed === true ? 'green' : 'red'
   td5.appendChild(txt5);
 
-    // trustline column
-  var td6 = document.createElement("td");
-  var txt6 = document.createTextNode(trustline);
-  td6.appendChild(txt6);
+  //   // trustline column
+  // var td6 = document.createElement("td");
+  // var txt6 = document.createTextNode(trustline);
+  // td6.appendChild(txt6);
 
   tr.appendChild(td1);
   tr.appendChild(td2);
   tr.appendChild(td3);
   tr.appendChild(td4);
   tr.appendChild(td5);
-  tr.appendChild(td6)
+  // tr.appendChild(td6)
   return tr
 }
 
@@ -333,27 +332,63 @@ let current_endDate = null
 // Initialize database to query data and draw to view
 function initializeDatabase(status, country, startDate, endDate) {
   return new Promise((resolve) => {
-    const db = firebase.firestore().collection('users')
+    const db = firebase.firestore().collection('users_claim')
     const subscribe = db.onSnapshot(snapshot => {
       const { docs } = snapshot
       $('#claim_list').empty()
-      docs.forEach(raw_doc => {
-        const doc = raw_doc.data()
-        if (doc && doc.claim && doc.claim.public_key) {
-          const { first_name, last_name, email, claim } = doc
-          const { public_key, allow_trust, sent_xlm, trustline } = claim
-          const elm = buildListUser({
-            first_name,
-            last_name,
-            email,
-            public_key,
-            allow_trust,
-            sent_xlm,
-            trustline
-          })
-          $('#claim_list')[0].appendChild(elm);
-        }
+      // let promises = []
+      // docs.forEach((raw_doc) => {
+      //   const { id } = raw_doc
+      //   promises.push(db.doc(id).collection('claim_period').get());
+      // });
+
+      const promises = docs.map(raw_doc => {
+        const { id } = raw_doc
+        return db.doc(id).collection('claim_period').get().then(res => {
+          return Object.assign(res, { id })
+        })
       })
+
+      Promise.all(promises).then(snapshots => {
+        let documents = []
+        snapshots.forEach(snapshot => {
+          const { docs, id } = snapshot
+          // snapshots.forEach(snapshot => {
+          //   const { docs } = snapshot
+          //   console.log(snapshot, 'snapshot...')
+            docs.forEach(doc => {
+              const data = doc.data()
+              documents.push(Object.assign(data, { userId: id }))
+            })
+        })
+
+        documents.forEach(doc => {
+          const { amount, userId, type, valid_after, claimed } = doc
+          const elm = buildListUser({ amount, userId, type, valid_after, claimed })
+          $('#claim_list')[0].appendChild(elm)
+        })
+        
+      })
+
+      // docs.forEach(raw_doc => {
+      //   const { id } = raw_doc
+      //   const doc = raw_doc.data()
+        
+      //   // if (doc && doc.claim && doc.claim.public_key) {
+      //   //   const { first_name, last_name, email, claim } = doc
+      //   //   const { public_key, allow_trust, sent_xlm, trustline } = claim
+      //   //   const elm = buildListUser({
+      //   //     first_name,
+      //   //     last_name,
+      //   //     email,
+      //   //     public_key,
+      //   //     allow_trust,
+      //   //     sent_xlm,
+      //   //     trustline
+      //   //   })
+      //   //   $('#claim_list')[0].appendChild(elm);
+      //   // }
+      // })
       resolve()
     })
   })
