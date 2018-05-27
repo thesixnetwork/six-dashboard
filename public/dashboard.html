@@ -388,8 +388,8 @@
               <div class="btn btnInline"><button id='gotoQuestionBtn' onclick='gotoCurrency()'>Add deposit</button></div>
               <div class="btn btnInline"><button id='contactBtn' onclick='window.open("http://m.me/thesixnetwork")'>Contact Us</button></div>
             </div>
-            <div id='tableContainer'>
-              <table id='txHistoryTable'>
+            <div class='tableContainer'>
+              <table class='txHistoryTable'>
                 <thead>
                   <tr>
                     <th width="120">From</th>
@@ -993,6 +993,22 @@
             </div>
             <br>
             <div id="forClaimTable">
+            </div>
+            <br><a href='javascript:;' onclick='showPreviousTxs()' style='text-align: center; display: block; text-decoration: underline;'>View all your previous contributed transactions</a>
+            <div class='tableContainer' id='previousTableContainer' style='display: none; margin-top: 20px;'>
+              <table class='txHistoryTable'>
+                <thead>
+                  <tr>
+                    <th width="120">From</th>
+                    <th width="130">To</th>
+                    <th width="400">Transaction ID</th>
+                    <th width="120">Status</th>
+                    <th width="200">Datetime</th>
+                  </tr>
+                </thead>
+                <tbody id="userTxs2">
+                </tbody>
+              </table>
             </div>
           </div>
         </section>
