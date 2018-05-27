@@ -48,15 +48,21 @@ function buildListUser(data) {
     type,
     userId,
     valid_after,
-    claimed
+    claimed,
+    email
   } = data
 
   // build row
   var tr = document.createElement("tr");
+  
+    // userId
+  let td0 = document.createElement('td');
+  let txt0 = document.createTextNode(email)
+  td0.appendChild(txt0);
 
   // userId
   let td1 = document.createElement('td');
-  let txt1 = document.createTextNode(userId)
+  // let txt1 = document.createTextNode(`<a href='/user-dashboard.html?uid=${userId}'>${userId}</a>`)
   td1.appendChild(txt1);
 
   // amount column
@@ -85,6 +91,7 @@ function buildListUser(data) {
   // var txt6 = document.createTextNode(trustline);
   // td6.appendChild(txt6);
 
+  tr.appendChild(td0);
   tr.appendChild(td1);
   tr.appendChild(td2);
   tr.appendChild(td3);
@@ -362,10 +369,37 @@ function initializeDatabase(status, country, startDate, endDate) {
             })
         })
 
-        documents.forEach(doc => {
+        const internal_promises = documents.map(doc => {
           const { amount, userId, type, valid_after, claimed } = doc
-          const elm = buildListUser({ amount, userId, type, valid_after, claimed })
-          $('#claim_list')[0].appendChild(elm)
+          return firebase.firestore().collection('users').doc(userId).get().then(res => {
+            const d = res.data()
+            const email = d && d.email  ? d.email : ''
+            console.log(d, 'd....')
+            const claimed = doc.claimed && doc.claimed === true ? '<span style="color: green;">TRUE</span>' : '<span style="color: red;">FALSE</span>'
+            const userId = doc.userId && doc.userId !== null ? `<a href="/user-dashboard.html?uid=${doc.userId}" target="_blank">${doc.userId}</a>` : ''
+            return Object.assign(doc, { email: email, userId, claimed, valid_after: moment(doc.valid_after).format('DD/MM/YYYY HH:mm:ss') })
+          })
+        })
+        
+        Promise.all(internal_promises).then(dd => {
+          console.log(dd, 'dd...')
+          $('#claim-table').DataTable({
+            data: dd,
+            columns: [
+              { data: 'email' },
+              { data: 'userId' },
+              { data: 'amount' },
+              { data: 'type' },
+              { data: 'valid_after' },
+              { data: 'claimed' }
+            ]
+          });
+          // dd.forEach(s => {
+          //   console.log(s, 's...')
+          //   const { amount, userId, type, valid_after, claimed, email } = s
+          //   const elm = buildListUser({ amount, userId, type, valid_after, claimed, email }) 
+          //   $('#claim_list')[0].appendChild(elm) 
+          // })
         })
         
       })

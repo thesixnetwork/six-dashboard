@@ -698,43 +698,45 @@ $(document).ready(function(){
       initializeAdmin().then(() => {
         return $('#adminShortcut').css('display', 'block')
       }).finally(() => {
-        return firebase.firestore().collection('users').doc(user.uid).get().then(doc => {
-          const endtime = endtimeOfIco
-          if (!(Date.now() > endtime && doc.data().all_done)) {
-            window.location.href = '/wizard'+window.location.search
-          }
+        const { search } = window.location
+        if (search.includes('?uid=')) {
+          const uid = search.replace('?uid=', '')
+          return firebase.firestore().collection('users').doc(uid).get().then(doc => {
           userData = doc.data()
-          let name = (userData.first_name || "") + " " + (userData.last_name || "")
-          $("#displayName").html(name || "")
-          $("#firstCharName").html((userData.first_name || "").substr(0,1).toUpperCase())
-          $(".myMemo").html(userData.memo)
-          $("#memoCopy").attr('data-clipboard-text', userData.memo)
-          if (userData.first_transaction === true) {
-            if (userData.seen_congrat === true) {
-              $("#backToTxHis").css("display", "block")
-              $("#welcomeBox").css("display", "none")
-              $("#mainBox").css("display", "block")
-            } else {
-              $("#welcomeBox").css("display", "none")
-              $("#congratulationBox").css("display", "block")
+          if (userData && userData !== null) {
+            const { first_name, last_name } = userData
+            let name = (first_name || "") + " " + (last_name || "")
+            $("#displayName").html(name || "")
+            $("#firstCharName").html((userData.first_name || "").substr(0,1).toUpperCase())
+            $(".myMemo").html(userData.memo)
+            $("#memoCopy").attr('data-clipboard-text', userData.memo)
+            if (userData.first_transaction === true) {
+              if (userData.seen_congrat === true) {
+                $("#backToTxHis").css("display", "block")
+                $("#welcomeBox").css("display", "none")
+                $("#mainBox").css("display", "block")
+              } else {
+                $("#welcomeBox").css("display", "none")
+                $("#congratulationBox").css("display", "block")
+              }
             }
-          }
-          if (userData.eth_address !== undefined) {
-            $("#myWallet").css("display", "block")
-            $("#myETHaddress")[0].value = userData.eth_address
-            $("#myETHWalletAddress").html(userData.eth_address)
-            $("#myETHWalletAddress").attr('data-clipboard-text', userData.eth_address)
-            $("#myAddressBtn").attr('data-clipboard-text', userData.eth_address)
-
-          } else {
-            $("#myETHaddress")[0].value = '-'
-            $("#myETHWalletAddress").html('-')
-            $("#myETHWalletAddress").attr('data-clipboard-text', '-')
-            $("#myAddressBtn").attr('data-clipboard-text', '-')
-          }
-          if (userData.is_presale === true) {
-            $("#bonusXLMText").css('display', 'block')
-            $("#bonusETHText").css('display', 'block')
+            if (userData.eth_address !== undefined) {
+              $("#myWallet").css("display", "block")
+              $("#myETHaddress")[0].value = userData.eth_address
+              $("#myETHWalletAddress").html(userData.eth_address)
+              $("#myETHWalletAddress").attr('data-clipboard-text', userData.eth_address)
+              $("#myAddressBtn").attr('data-clipboard-text', userData.eth_address)
+  
+            } else {
+              $("#myETHaddress")[0].value = '-'
+              $("#myETHWalletAddress").html('-')
+              $("#myETHWalletAddress").attr('data-clipboard-text', '-')
+              $("#myAddressBtn").attr('data-clipboard-text', '-')
+            }
+            if (userData.is_presale === true) {
+              $("#bonusXLMText").css('display', 'block')
+              $("#bonusETHText").css('display', 'block')
+            }
           }
         }).then(getCurrentTotal).then(() => {
           getTxs()
@@ -744,6 +746,7 @@ $(document).ready(function(){
           $('#preLoader').fadeToggle()
           updatePrice()
         })
+        }
       })
     }
   })
