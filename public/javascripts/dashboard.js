@@ -848,6 +848,7 @@ function getTxs () {
       return firebase.firestore().collection('presale').doc('supply').collection('purchased_presale_tx').doc(firebase.auth().currentUser.uid).get().then(preDoc => {
         let preDocData = preDoc.data()
         $('#userTxs').empty()
+        $('#userTxs2').empty()
         let allDoc = []
         snapshot.forEach(d => {
           allDoc.push(d)
@@ -860,6 +861,7 @@ function getTxs () {
           }
           const elem = buildListTx(data)
           $("#userTxs")[0].appendChild(elem)
+          $("#userTxs2")[0].appendChild(elem)
         })
       }).catch(() => {
         $('#userTxs').empty()
@@ -872,12 +874,14 @@ function getTxs () {
           const data = d.data()
           const elem = buildListTx(data)
           $("#userTxs")[0].appendChild(elem)
+          $("#userTxs2")[0].appendChild(elem)
         })
       })
     }).then(() => {
       if (userData.alloc_transaction === true) {
         const elem = buildListTx({ time: userData.alloc_time, native_amount: userData.alloc_transaction_amount, type: userData.alloc_transaction_type, to: '-', id: '-', six_amount: userData.alloc_transaction_six_amount, alloc_time: userData.alloc_time, tx_status: 'pending' })
         $("#userTxs")[0].prepend(elem)
+        $("#userTxs2")[0].prepend(elem)
       }
     })
   }
@@ -1931,4 +1935,12 @@ function submitPhoneNumberCode() {
     }
     setEnable([codeDOM, btnDOM])
   })
+}
+
+function showPreviousTxs() {
+  if ($("#previousTableContainer").css("display") === "none") {
+    $("#previousTableContainer").css("display", "block")
+  } else {
+    $("#previousTableContainer").css("display", "none")
+  }
 }
