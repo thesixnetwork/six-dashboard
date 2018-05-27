@@ -445,7 +445,13 @@ function initializeStep() {
       goToVerifyPhoneStep()
       let db = firebase.firestore()
       db.collection('users').doc(firebase.auth().currentUser.uid).get().then(doc => {
-        userData = doc.data()
+        if (doc.data() === undefined) {
+          let requestFunction = firebase.functions().httpsCallable('reworkInitializeUserDoc')
+          requestFunction({}).then(response => {
+            console.log("rework success")
+          })
+        }
+        userData = doc.data() || {}
         if (Date.now() > endtimeOfIco && userData.all_done) {
           window.location.href = '/dashboard-cn'+window.location.search
         }
