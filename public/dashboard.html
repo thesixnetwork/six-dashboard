@@ -31,6 +31,7 @@
     <script src="javascripts/external/jquery/jquery.js"></script>
     <script src="javascripts/jquery-ui.js"></script>
     <script src="javascripts/url_replacer.js"></script>
+    <script src="javascripts/libphonenumber-js.min.js"></script>
     <script src="javascripts/jquery.animateNumber.min.js"></script>
     <script src="javascripts/config.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.18.1/moment.js"></script>
@@ -179,13 +180,13 @@
         <section id='myWallet' style='display: none;'>
           <h4>My wallet</h4>
           <p class="myETHWallet truncate" id='myETHWallet'>
-            ETH : <a href='#' id='myAddressBtn' data-clipboard-text="" class='blinkTooltip'><i class="far fa-copy"></i></a>&nbsp;
+            ETH : <a href='javascript:;' id='myAddressBtn' data-clipboard-text="" class='blinkTooltip'><i class="far fa-copy"></i></a>&nbsp;
             <span id="myETHWalletAddress" data-clipboard-text="" class='blinkTooltip'>-</span>
             <input type="text" value="" id='myHiddenETHWalletAddress' style="display:inline; color: rgba(255,255,255,0); width: 0px;">
           </p>
         </section>
-        <a href="#" onclick='backToDashboard()' id='backToTxHis' style='display: none;'><i class="fas fa-arrow-left"></i> Back to Dashboard</a>
-        <a href="#" onclick='showXLMWallet()' id='showXLMWalletBtn' style='display: none;' class='noWallet'>
+        <a href='javascript:;' onclick='backToDashboard()' id='backToTxHis' style='display: none;'><i class="fas fa-arrow-left"></i> Back to Dashboard</a>
+        <a href='javascript:;' onclick='showXLMWallet()' id='showXLMWalletBtn' style='display: none;' class='noWallet'>
           <svg id="xlmWalletIcon" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 816.02 792"><defs><style>.cls-3{fill:#bbb;}</style></defs><title>icon</title><path class="cls-3" d="M723.59,371.89H691.94V247.49a21.69,21.69,0,0,0-22.08-22.08h-53V115A21.69,21.69,0,0,0,594.78,92.9H162.68a88.59,88.59,0,0,0-88.33,88.33v5.15h0V612.6c0,41.22,33.86,75.08,75.08,75.08H670.59a21.69,21.69,0,0,0,22.08-22.08V536.78h30.92a21.69,21.69,0,0,0,22.08-22.08V394A21.69,21.69,0,0,0,723.59,371.89ZM162.68,137.07h410v22.82H163.42a22.08,22.08,0,1,0,0,44.17H572.69V225.4h-410c-25,0-44.17-19.14-44.17-44.17S137.65,137.07,162.68,137.07ZM648.51,643.51H149.43c-17.67,0-30.92-13.25-30.92-30.92V257.79a89.94,89.94,0,0,0,44.17,11.78h485.1V371.89H556.5A21.69,21.69,0,0,0,534.41,394V514.69a21.69,21.69,0,0,0,22.08,22.08h92Zm53-150.9H578.58V416.05H701.51v76.56Z"/></svg>
           <span id='xlmWalletText'>Show your wallet address <i class="fas fa-caret-left fa-fw" id='xlmWalletIcon2'></i></span>
         </a>
@@ -198,10 +199,10 @@
           <br>
           <div id='myWalletMenuContainer'>
             <div class='myWalletItem'>
-              <i class="fas fa-copy"></i>
+              <a href='javascript:;' data-clipboard-text="gas" class='blinkTooltip' id='copyMyXlmAddress'><i class="fas fa-copy"></i></a>
             </div>
             <div class='myWalletItem'>
-              <i class="fas fa-print"></i>
+              <a href='javascript:;' onclick='downloadAddress()'><i class="fas fa-print"></i></a>
             </div>
 
           </div>
@@ -402,7 +403,7 @@
                 </tbody>
               </table>
             </div>
-            <div id='loadmoreBtn' style='display: none;' class="loader-more"><a href="#">More</a></div>
+            <div id='loadmoreBtn' style='display: none;' class="loader-more"><a href='javascript:;'>More</a></div>
           </section>
         </div>
         <section class="claim-welcome-box" id='claimWelcomeBox' style='display: none'>
@@ -420,21 +421,312 @@
               </div>
             </div>
           </main>
-          <p id='mainClaimWelcomeContent'>
-            <span>In this step, we will distribute SIX token to all investors.</span>
-            <br>
-            <span>In order to claim the token, there will be 3 types of claim process you need to continue</span>
-            <br>
-            <br>
-            <span>1. Create a new wallet - This process will generate new SIX wallet for you.</span>
-            <br>
-            <br>
-            <span>2. Transfer SIX token to your wallet - This process will transfer SIX token to your current Stellar wallet as a new asset. You need to setup Trustline process for your wallet manually.</span>
-            <br>
-            <br>
-            <span>Note: For security reasons, we DO NOT store any Public key, Private key and Recovery words (Mnemonic words) on our site. So you can create a new wallet with us and responsible on your own Public key.</span>
-            <div id="cwcbtn"><button id="welcomeClaimNextBtn" onclick='wcNext()'>Next</button></div>
-          </p>
+          <div id='welcomeContentContainer'>
+            <p id='mainClaimWelcomeContent'>
+              <span>In this step, we will distribute SIX token to all investors.</span>
+              <br>
+              <span>In order to claim the token, there will be 3 types of claim process you need to continue</span>
+              <br>
+              <br>
+              <span>1. Create a new wallet - This process will generate new SIX wallet for you.</span>
+              <br>
+              <br>
+              <span>2. Transfer SIX token to your wallet - This process will transfer SIX token to your current Stellar wallet as a new asset. You need to setup Trustline process for your wallet manually.</span>
+              <br>
+              <br>
+              <span>Note: For security reasons, we DO NOT store any Public key, Private key and Recovery words (Mnemonic words) on our site. So you can create a new wallet with us and responsible on your own Public key.</span>
+              <div id="cwcbtn"><button id="welcomeClaimNextBtn" onclick='wcNext()'>Next</button></div>
+            </p>
+          </div>
+          <div class='wizard'>
+
+            <section id='verifyPhoneContent' class="verify-phone-number">
+              <article id='verifyCodeContent1' class="phone-number show-detail">
+                <h2>Add your phone number</h2>
+                <p>To proceed to next step we need to verify your phone number. If you do not recieve SMS message please try again in an hour.</p>
+                <fieldset>
+                  <dl>
+                    <dt>Country</dt>
+                    <dd>
+                      <label class="dropdown kycinput" id="kycCountryPhoneAlert">
+                        <select id='kycCountryPhone' name="value" id="value">
+                          <option value="AF">Afghanistan</option>
+                          <option value="AX">Åland Islands</option>
+                          <option value="AL">Albania</option>
+                          <option value="DZ">Algeria</option>
+                          <option value="AS">American Samoa</option>
+                          <option value="AD">Andorra</option>
+                          <option value="AO">Angola</option>
+                          <option value="AI">Anguilla</option>
+                          <option value="AQ">Antarctica</option>
+                          <option value="AG">Antigua and Barbuda</option>
+                          <option value="AR">Argentina</option>
+                          <option value="AM">Armenia</option>
+                          <option value="AW">Aruba</option>
+                          <option value="AU">Australia</option>
+                          <option value="AT">Austria</option>
+                          <option value="AZ">Azerbaijan</option>
+                          <option value="BS">Bahamas</option>
+                          <option value="BH">Bahrain</option>
+                          <option value="BD">Bangladesh</option>
+                          <option value="BB">Barbados</option>
+                          <option value="BY">Belarus</option>
+                          <option value="BE">Belgium</option>
+                          <option value="BZ">Belize</option>
+                          <option value="BJ">Benin</option>
+                          <option value="BM">Bermuda</option>
+                          <option value="BT">Bhutan</option>
+                          <option value="BO">Bolivia, Plurinational State of</option>
+                          <option value="BQ">Bonaire, Sint Eustatius and Saba</option>
+                          <option value="BA">Bosnia and Herzegovina</option>
+                          <option value="BW">Botswana</option>
+                          <option value="BV">Bouvet Island</option>
+                          <option value="BR">Brazil</option>
+                          <option value="IO">British Indian Ocean Territory</option>
+                          <option value="BN">Brunei Darussalam</option>
+                          <option value="BG">Bulgaria</option>
+                          <option value="BF">Burkina Faso</option>
+                          <option value="BI">Burundi</option>
+                          <option value="KH">Cambodia</option>
+                          <option value="CM">Cameroon</option>
+                          <option value="CA">Canada</option>
+                          <option value="CV">Cape Verde</option>
+                          <option value="KY">Cayman Islands</option>
+                          <option value="CF">Central African Republic</option>
+                          <option value="TD">Chad</option>
+                          <option value="CL">Chile</option>
+                          <option value="CN">China</option>
+                          <option value="CX">Christmas Island</option>
+                          <option value="CC">Cocos (Keeling) Islands</option>
+                          <option value="CO">Colombia</option>
+                          <option value="KM">Comoros</option>
+                          <option value="CG">Congo</option>
+                          <option value="CD">Congo, the Democratic Republic of the</option>
+                          <option value="CK">Cook Islands</option>
+                          <option value="CR">Costa Rica</option>
+                          <option value="CI">Côte d'Ivoire</option>
+                          <option value="HR">Croatia</option>
+                          <option value="CU">Cuba</option>
+                          <option value="CW">Curaçao</option>
+                          <option value="CY">Cyprus</option>
+                          <option value="CZ">Czech Republic</option>
+                          <option value="DK">Denmark</option>
+                          <option value="DJ">Djibouti</option>
+                          <option value="DM">Dominica</option>
+                          <option value="DO">Dominican Republic</option>
+                          <option value="EC">Ecuador</option>
+                          <option value="EG">Egypt</option>
+                          <option value="SV">El Salvador</option>
+                          <option value="GQ">Equatorial Guinea</option>
+                          <option value="ER">Eritrea</option>
+                          <option value="EE">Estonia</option>
+                          <option value="ET">Ethiopia</option>
+                          <option value="FK">Falkland Islands (Malvinas)</option>
+                          <option value="FO">Faroe Islands</option>
+                          <option value="FJ">Fiji</option>
+                          <option value="FI">Finland</option>
+                          <option value="FR">France</option>
+                          <option value="GF">French Guiana</option>
+                          <option value="PF">French Polynesia</option>
+                          <option value="TF">French Southern Territories</option>
+                          <option value="GA">Gabon</option>
+                          <option value="GM">Gambia</option>
+                          <option value="GE">Georgia</option>
+                          <option value="DE">Germany</option>
+                          <option value="GH">Ghana</option>
+                          <option value="GI">Gibraltar</option>
+                          <option value="GR">Greece</option>
+                          <option value="GL">Greenland</option>
+                          <option value="GD">Grenada</option>
+                          <option value="GP">Guadeloupe</option>
+                          <option value="GU">Guam</option>
+                          <option value="GT">Guatemala</option>
+                          <option value="GG">Guernsey</option>
+                          <option value="GN">Guinea</option>
+                          <option value="GW">Guinea-Bissau</option>
+                          <option value="GY">Guyana</option>
+                          <option value="HT">Haiti</option>
+                          <option value="HM">Heard Island and McDonald Islands</option>
+                          <option value="VA">Holy See (Vatican City State)</option>
+                          <option value="HN">Honduras</option>
+                          <option value="HK">Hong Kong</option>
+                          <option value="HU">Hungary</option>
+                          <option value="IS">Iceland</option>
+                          <option value="IN">India</option>
+                          <option value="ID">Indonesia</option>
+                          <option value="IR">Iran, Islamic Republic of</option>
+                          <option value="IQ">Iraq</option>
+                          <option value="IE">Ireland</option>
+                          <option value="IM">Isle of Man</option>
+                          <option value="IL">Israel</option>
+                          <option value="IT">Italy</option>
+                          <option value="JM">Jamaica</option>
+                          <option value="JP">Japan</option>
+                          <option value="JE">Jersey</option>
+                          <option value="JO">Jordan</option>
+                          <option value="KZ">Kazakhstan</option>
+                          <option value="KE">Kenya</option>
+                          <option value="KI">Kiribati</option>
+                          <option value="KR">Korea</option>
+                          <option value="KW">Kuwait</option>
+                          <option value="KG">Kyrgyzstan</option>
+                          <option value="LA">Lao People's Democratic Republic</option>
+                          <option value="LV">Latvia</option>
+                          <option value="LB">Lebanon</option>
+                          <option value="LS">Lesotho</option>
+                          <option value="LR">Liberia</option>
+                          <option value="LY">Libya</option>
+                          <option value="LI">Liechtenstein</option>
+                          <option value="LT">Lithuania</option>
+                          <option value="LU">Luxembourg</option>
+                          <option value="MO">Macao</option>
+                          <option value="MK">Macedonia, the former Yugoslav Republic of</option>
+                          <option value="MG">Madagascar</option>
+                          <option value="MW">Malawi</option>
+                          <option value="MY">Malaysia</option>
+                          <option value="MV">Maldives</option>
+                          <option value="ML">Mali</option>
+                          <option value="MT">Malta</option>
+                          <option value="MH">Marshall Islands</option>
+                          <option value="MQ">Martinique</option>
+                          <option value="MR">Mauritania</option>
+                          <option value="MU">Mauritius</option>
+                          <option value="YT">Mayotte</option>
+                          <option value="MX">Mexico</option>
+                          <option value="FM">Micronesia, Federated States of</option>
+                          <option value="MD">Moldova, Republic of</option>
+                          <option value="MC">Monaco</option>
+                          <option value="MN">Mongolia</option>
+                          <option value="ME">Montenegro</option>
+                          <option value="MS">Montserrat</option>
+                          <option value="MA">Morocco</option>
+                          <option value="MZ">Mozambique</option>
+                          <option value="MM">Myanmar</option>
+                          <option value="NA">Namibia</option>
+                          <option value="NR">Nauru</option>
+                          <option value="NP">Nepal</option>
+                          <option value="NL">Netherlands</option>
+                          <option value="NC">New Caledonia</option>
+                          <option value="NZ">New Zealand</option>
+                          <option value="NI">Nicaragua</option>
+                          <option value="NE">Niger</option>
+                          <option value="NG">Nigeria</option>
+                          <option value="NU">Niue</option>
+                          <option value="NF">Norfolk Island</option>
+                          <option value="MP">Northern Mariana Islands</option>
+                          <option value="NO">Norway</option>
+                          <option value="OM">Oman</option>
+                          <option value="PK">Pakistan</option>
+                          <option value="PW">Palau</option>
+                          <option value="PS">Palestinian Territory, Occupied</option>
+                          <option value="PA">Panama</option>
+                          <option value="PG">Papua New Guinea</option>
+                          <option value="PY">Paraguay</option>
+                          <option value="PE">Peru</option>
+                          <option value="PH">Philippines</option>
+                          <option value="PN">Pitcairn</option>
+                          <option value="PL">Poland</option>
+                          <option value="PT">Portugal</option>
+                          <option value="PR">Puerto Rico</option>
+                          <option value="QA">Qatar</option>
+                          <option value="RE">Réunion</option>
+                          <option value="RO">Romania</option>
+                          <option value="RU">Russian Federation</option>
+                          <option value="RW">Rwanda</option>
+                          <option value="BL">Saint Barthélemy</option>
+                          <option value="SH">Saint Helena, Ascension and Tristan da Cunha</option>
+                          <option value="KN">Saint Kitts and Nevis</option>
+                          <option value="LC">Saint Lucia</option>
+                          <option value="MF">Saint Martin (French part)</option>
+                          <option value="PM">Saint Pierre and Miquelon</option>
+                          <option value="VC">Saint Vincent and the Grenadines</option>
+                          <option value="WS">Samoa</option>
+                          <option value="SM">San Marino</option>
+                          <option value="ST">Sao Tome and Principe</option>
+                          <option value="SA">Saudi Arabia</option>
+                          <option value="SN">Senegal</option>
+                          <option value="RS">Serbia</option>
+                          <option value="SC">Seychelles</option>
+                          <option value="SL">Sierra Leone</option>
+                          <option value="SG">Singapore</option>
+                          <option value="SX">Sint Maarten (Dutch part)</option>
+                          <option value="SK">Slovakia</option>
+                          <option value="SI">Slovenia</option>
+                          <option value="SB">Solomon Islands</option>
+                          <option value="SO">Somalia</option>
+                          <option value="ZA">South Africa</option>
+                          <option value="GS">South Georgia and the South Sandwich Islands</option>
+                          <option value="SS">South Sudan</option>
+                          <option value="ES">Spain</option>
+                          <option value="LK">Sri Lanka</option>
+                          <option value="SD">Sudan</option>
+                          <option value="SR">Suriname</option>
+                          <option value="SJ">Svalbard and Jan Mayen</option>
+                          <option value="SZ">Swaziland</option>
+                          <option value="SE">Sweden</option>
+                          <option value="CH">Switzerland</option>
+                          <option value="SY">Syrian Arab Republic</option>
+                          <option value="TW">Taiwan, Province of China</option>
+                          <option value="TJ">Tajikistan</option>
+                          <option value="TZ">Tanzania, United Republic of</option>
+                          <option value="TH" selected="selected">Thailand</option>
+                          <option value="TL">Timor-Leste</option>
+                          <option value="TG">Togo</option>
+                          <option value="TK">Tokelau</option>
+                          <option value="TO">Tonga</option>
+                          <option value="TT">Trinidad and Tobago</option>
+                          <option value="TN">Tunisia</option>
+                          <option value="TR">Turkey</option>
+                          <option value="TM">Turkmenistan</option>
+                          <option value="TC">Turks and Caicos Islands</option>
+                          <option value="TV">Tuvalu</option>
+                          <option value="UG">Uganda</option>
+                          <option value="UA">Ukraine</option>
+                          <option value="AE">United Arab Emirates</option>
+                          <option value="GB">United Kingdom</option>
+                          <option value="US">United States</option>
+                          <option value="UM">United States Minor Outlying Islands</option>
+                          <option value="UY">Uruguay</option>
+                          <option value="UZ">Uzbekistan</option>
+                          <option value="VU">Vanuatu</option>
+                          <option value="VE">Venezuela, Bolivarian Republic of</option>
+                          <option value="VN">Viet Nam</option>
+                          <option value="VG">Virgin Islands, British</option>
+                          <option value="VI">Virgin Islands, U.S.</option>
+                          <option value="WF">Wallis and Futuna</option>
+                          <option value="EH">Western Sahara</option>
+                          <option value="YE">Yemen</option>
+                          <option value="ZM">Zambia</option>
+                          <option value="ZW">Zimbabwe</option>
+                        </select>
+                        <i class="fas fa-angle-down"></i>
+                      </label>
+                    </dd>
+                  </dl>
+    
+                  <dl>
+                    <dt>Verify Phone number</dt>
+                    <dd><label class="text"><input id='verifyPhonePhonenumber' type="tel" placeholder="Phone number"></label></dd>
+                  </dl>
+                  <dl><dd><button id='verifyPhoneBtn' onclick='submitPhoneNumber()'>Submit</button></dd></dl>
+                  <p id='verifyPhoneError' class="alert-text error" style='display: none;'></p>
+                </fieldset>
+              </article>
+              <article id='verifyCodeContent2' class="verify-code">
+                <h1>Enter the code</h1>
+                <p>An SMS message with verification code is sent to you (<span id='refPhoneNumber'></span>). Ref: <span id='refVerify'></span></p>
+                <div class="countdown-verify"></div>
+                <fieldset>
+                  <dl>
+                    <dt>Code</dt>
+                    <dd><label class="text"><input id='verifyCode' type="text" placeholder="Code" style='text-align: center;'></label></dd>
+                  </dl>
+                  <dl><dd><button id='verifyPhoneSubmitBtn' onclick='submitPhoneNumberCode()'>Verify</button></dd></dl>
+                  <p id='verifyPhoneSubmitError' class="alert-text error" style='display: none;'></p>
+                </fieldset>
+              </article>
+            </section>
+          </div>
         </section>
         <section class="claim-box" id='claimBox' style='display: none;'>
           <header>
@@ -454,7 +746,7 @@
           <div id='walletSelectBox'>
             <ul id='walletSelection'>
               <li>
-                <a href='#' onclick='goToGenerateNewWallet()'>
+                <a href='javascript:;' onclick='goToGenerateNewWallet()'>
                   <div class='choiceText'>
                     <h2>Generate new wallet address</h2>
                     <span>This process will generate new SIX wallet for you.</span><br>
@@ -467,7 +759,7 @@
               </li>
 
               <li>
-                <a href='#' onclick='goToOldWallet()'>
+                <a href='javascript:;' onclick='goToOldWallet()'>
                   <div class='choiceText'>
                     <h2>Transfer SIX token to my Stellar wallet</h2>
                     <span>This process will transfer SIX token to your current Stellar wallet as a new asset. You need to setup trustline process for your wallet manually</span>
@@ -480,7 +772,7 @@
               </li>
 
               <li>
-                <a href='#' onclick='goToLedgerWallet()'>
+                <a href='javascript:;' onclick='goToLedgerWallet()'>
                   <div class='choiceText'>
                     <h2>Transfer SIX token to my Ledger Nano device</h2>
                     <span>This process will transfer SIX token to your connected Ledger Nano device as a new asset. You need to setup trustline process for your wallet manually</span><br>
@@ -515,14 +807,55 @@
             <br>
             <br>
             <div id='ledgerBox'>
-              <h3 class='accordionHeader'>Save your recovery words</h3>
-              <div class='accordionContent' style='text-align: center;'>
+              <h3 class='accordionHeader'>Connect a Ledger Nano S</h3>
+              <div class='accordionContent' style='text-align: center; border-bottom: none;'>
                 <div id='ledgerMiniContent1'>
-                  <h3>Plug-in a Ledger Nano S</h3>
-
-                  <div class="btn">
-                    <button id='submitLedgerBtn' disabled style='width: auto; margin-top: 20px; margin-bottom: 20px; min-width: 150px;'> Submit </button>
+                  <svg id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2511.67 451.95"><defs><style>.cls-441{fill:#231f20;}.cls-442{fill:#ccc;}.cls-443{fill:#404041;}.cls-444{fill:#58595b;}.cls-445{fill:#fff;}</style></defs><title>Claim process</title><path class="cls-441" d="M1535.76,219.07A121.87,121.87,0,0,1,1657.63,97.2H949.85a5.64,5.64,0,0,0-5.62,5.62V335.32a5.64,5.64,0,0,0,5.62,5.62h707.78A121.87,121.87,0,0,1,1535.76,219.07Z"/><path class="cls-442" d="M2363,97.2H1655.26a121.87,121.87,0,1,0,0,243.74H2363a5.64,5.64,0,0,0,5.62-5.62V102.83A5.64,5.64,0,0,0,2363,97.2Z"/><polygon class="cls-443" points="1059.71 165.64 1059.71 272.51 1434.69 272.51 1434.69 264.07 1141.27 165.64 1059.71 165.64"/><polygon class="cls-444" points="1141.27 165.64 1434.69 264.07 1434.69 165.64 1141.27 165.64"/><circle class="cls-441" cx="1657.63" cy="219.07" r="76.4"/><circle class="cls-445" cx="1657.63" cy="219.07" r="66.58"/><rect class="cls-441" x="1028.1" y="86.66" width="112.9" height="40.31" rx="2" ry="2"/><rect class="cls-441" x="1360.63" y="86.66" width="112.9" height="40.31" rx="2" ry="2"/><rect class="cls-442" x="706.48" y="183.4" width="106.87" height="75.34" rx="2" ry="2"/><path class="cls-441" d="M523.67,150.17s-18.28,5.62-18.28,19.69v98.43c0,14.06,18.28,19.69,18.28,19.69h227.8V150.17Z"/><rect class="cls-441" x="451.96" y="193.76" width="67.5" height="53.44"/><rect class="cls-441" x="168.27" y="210.05" width="302.91" height="20.87"/></svg>
+                  <div id='ledgerContentContainer'>
+                    <h3>Plug-in a Ledger Nano S</h3>
+                    <div id='ledgerAgreement'>
+                      <ul class="option-list">
+                        <li>
+                          <label class="option warning-label">
+                            <input onchange="checkWarning()" id='warning1' class='warning-check-box' type="checkbox">
+                            <span class="check-mark"></span>
+                          </label>
+                          
+                          <p>I accept the Term of Use, understand the risks associated with cryptocurrencies, and know that StellarTerm does not issue or endorse any asset on the Stellar network.</p>
+                        </li>
+                      </ul>
+                    </div>
+                    <div class="btn">
+                      <button id='submitLedgerBtn' disabled style='width: auto; margin-top: 10px; margin-bottom: 10px; min-width: 150px;'> Sign in with Ledger </button>
+                    </div>
                   </div>
+                </div>
+                <div id='ledgerMiniContent2'>
+                  <div id='ledgerAllIcon'>
+                    <svg id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1899.34 680.18" style='height: 70px;'><defs><style>.cls-461{fill:#231f20;}</style></defs><title>Claim process</title><g id="squares"><path class="cls-461" d="M627.67,473.15V149.77h22.47v302H804v21.33H627.67Zm287.48,4.48c-34.85,0-61.8-11.24-82-32.57-19-21.33-29.23-51.61-29.23-90.94,0-38.18,9-69.61,28.09-92.08,19-23.61,43.8-34.85,76.37-34.85,28.09,0,50.56,10.09,67.41,29.23,16.85,20.19,24.67,47.14,24.67,80.84v18H826.4c0,32.57,7.9,58.37,23.61,75.23,14.57,18,37,25.81,65.13,25.81,13.43,0,25.81-1.14,35.9-3.34a216.52,216.52,0,0,0,39.33-12.38v21.33c-13.43,5.62-25.81,10.09-37,12.38A205.87,205.87,0,0,1,915.14,477.63Zm-6.76-230.16c-23.61,0-41.52,7.9-56.18,22.47-13.43,15.71-22.47,37-24.67,66.27H975.8c0-28.09-5.62-49.42-18-65.13-11.24-15.8-28.09-23.61-49.42-23.61Zm208.91-19.14c16.85,0,32.57,3.34,44.94,9,12.38,6.76,23.61,16.85,33.71,32.57h1.14c-1.14-19-1.14-37-1.14-55V128.44h21.33V473.15h-14.57l-5.62-37c-18,26.95-44.94,41.52-78.65,41.52s-58.37-10.09-76.37-31.42c-18-20.19-25.81-50.56-25.81-89.8,0-41.52,9-73,25.81-95.42s42.66-32.65,75.23-32.65Zm0,19.14c-25.81,0-46,9-59.51,28.09q-20.15,27-20.19,80.84c0,68.47,26.95,102.18,79.7,102.18,26.95,0,47.14-7.9,59.51-23.61s19-41.52,19-78.65V353c0-37-6.76-64-19-79.7C1165.58,255.28,1145.39,247.47,1117.3,247.47Zm333.47-14.57v15.71l-49.42,3.34q20.15,25.28,20.19,53.9c0,23.61-7.9,41.52-23.61,56.18s-35.9,21.33-61.8,21.33c-11.24,0-19,0-22.47-1.14a60.05,60.05,0,0,0-20.19,15.71c-4.48,6.76-6.76,12.38-6.76,20.19s3.34,13.43,9,16.85,15.71,5.62,29.23,5.62h41.52c25.81,0,46,5.62,59.51,15.71s21.33,25.81,21.33,47.14c0,25.81-10.09,44.94-30.28,58.37S1367.56,582,1329.38,582c-30.28,0-53.9-5.62-70.75-18-16.85-11.24-24.67-28.09-24.67-48.28,0-16.85,5.62-30.28,15.71-41.52s24.67-18,41.52-22.47c-6.76-3.34-13.43-7.9-16.85-13.43a30.25,30.25,0,0,1-6.76-19c0-15.71,10.09-30.28,30.28-42.66a69.84,69.84,0,0,1-32.57-26.95c-7.9-12.38-11.24-26.95-11.24-42.66,0-23.61,7.9-43.8,22.47-58.37,15.71-14.57,35.9-21.33,61.8-21.33,15.71,0,28.09,1.14,37,4.48h75.23v1.14h.18Zm-195.4,280.72c0,32.57,24.67,49.42,74.09,49.42q94.27,0,94.36-60.66c0-14.57-4.48-24.67-14.57-31.42s-25.81-10.09-48.28-10.09h-39.33C1277.85,461.92,1255.38,478.77,1255.38,513.62ZM1274.51,307c0,19,5.62,32.57,16.85,43.8,11.24,10.09,25.81,15.71,44.94,15.71,20.19,0,35.9-5.62,46-15.71,11.24-10.09,15.71-24.67,15.71-43.8,0-20.19-5.62-35.9-16.85-46s-25.81-15.71-46-15.71c-19,0-34.85,5.62-44.94,16.85C1279,272.14,1274.51,287.85,1274.51,307Z"/><path class="cls-461" d="M1559.71,477.63c-34.85,0-61.8-11.24-82-32.57-19-21.33-29.23-51.61-29.23-90.94,0-38.18,9-69.61,28.09-92.08,19-23.61,43.8-34.85,76.37-34.85,28.09,0,50.56,10.09,67.41,29.23,16.85,20.19,24.67,47.14,24.67,80.84v18H1472.1c0,32.57,7.9,58.37,23.61,75.23,14.57,18,37,25.81,65.13,25.81,13.43,0,25.81-1.14,35.9-3.34a216.52,216.52,0,0,0,39.33-12.38v21.33c-13.43,5.62-25.81,10.09-37,12.38a211.25,211.25,0,0,1-39.33,3.34Zm-5.62-230.16c-23.61,0-41.52,7.9-56.18,22.47-13.43,15.71-22.47,37-24.67,66.27H1621.5c0-28.09-5.62-49.42-18-65.13-11.24-15.8-28.09-23.61-49.42-23.61Zm215.59-19.14a173.06,173.06,0,0,1,32.57,3.34L1797.76,253a140.59,140.59,0,0,0-31.43-3.34c-20.19,0-37,9-50.56,25.81-13.43,18-20.19,39.33-20.19,66.27V473.15h-22.47V232.9h19l2.28,43.8h1.14c10.09-18,20.19-30.28,31.43-37,13.52-7.9,26.95-11.32,42.66-11.32ZM413.22,139.68H252.59V355.26H468.17V195.77C468.26,165.49,443.51,139.68,413.22,139.68Zm-210,0H176.31c-30.28,0-56.18,24.67-56.18,56.18v26.95h83.13Zm-83.13,133.6h83.13v83.13H120.13Zm265,215.59h26.95c30.28,0,56.18-24.67,56.18-56.18V405.83H385.13v83Zm-132.55-83h83.13V489H252.59Zm-132.46,0v26.95c0,30.28,24.67,56.18,56.18,56.18h26.95V405.83Z"/></g></svg>
+                  </div>
+                  <div id='ledgerAssetContainer'>
+                    <div id='assetLogo'>
+                      <svg id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="132 144 364 373"><defs><style>.cls-471{fill:#edeef1;}.cls-472{fill:#454ca4;}.cls-473{fill:url(#linear-gradient);}.cls-474{fill:#fff;}.cls-475{fill:url(#linear-gradient-2);}</style><linearGradient id="linear-gradient" x1="313.2" y1="195.97" x2="313.2" y2="475.13" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#109cd8"/><stop offset="0.13" stop-color="#1f90cf"/><stop offset="0.51" stop-color="#4773b8"/><stop offset="0.81" stop-color="#5f61aa"/><stop offset="1" stop-color="#685aa5"/></linearGradient><linearGradient id="linear-gradient-2" x1="278.13" y1="375.61" x2="347.37" y2="375.61" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#ffd65b"/><stop offset="1" stop-color="#ffc858"/></linearGradient></defs><title>Claim process</title><path class="cls-472" d="M156,146.73a21.5,21.5,0,0,0-21.44,21.44V493A21.5,21.5,0,0,0,156,514.41H491.88V146.73Z"/><path class="cls-472" d="M494.61,517.15H156A24.2,24.2,0,0,1,131.78,493V168.18A24.2,24.2,0,0,1,156,144H494.61ZM156,149.47a18.73,18.73,0,0,0-18.71,18.71V493A18.73,18.73,0,0,0,156,511.68H489.14V149.47Z"/><g id="_Group_" data-name="&lt;Group&gt;"><circle id="_Ellipse_" data-name="&lt;Ellipse&gt;" class="cls-473" cx="313.2" cy="330.57" r="143.3"/><path class="cls-474" d="M313.2,475.24c-79.77,0-144.67-64.9-144.67-144.67S233.42,185.9,313.2,185.9s144.67,64.9,144.67,144.67S393,475.24,313.2,475.24Zm0-286.61c-78.26,0-141.94,63.67-141.94,141.94S234.93,472.51,313.2,472.51s141.94-63.67,141.94-141.94S391.46,188.64,313.2,188.64Z"/><g id="_Group_2" data-name="&lt;Group&gt;"><path id="_Path_" data-name="&lt;Path&gt;" class="cls-474" d="M356.2,303l16.53,7.58a3,3,0,0,0,2.81-.19,2.29,2.29,0,0,0,1.11-1.94V264.77a8,8,0,0,0-5-7.15l-53.85-24.75a11.13,11.13,0,0,0-9.18,0l-53.85,24.75a8,8,0,0,0-5,7.15v131.6a8,8,0,0,0,5,7.15l53.85,24.75a11.13,11.13,0,0,0,9.17,0l53.85-24.75a8,8,0,0,0,5-7.15V335.21a8,8,0,0,0-5-7.15l-53.85-24.75a11.13,11.13,0,0,0-9.18,0l-24,11a2.29,2.29,0,0,0,0,4.26L303,327.07a3,3,0,0,0,2.47,0l5.18-2.38a6,6,0,0,1,4.88,0l36.55,16.8a3.88,3.88,0,0,1,2.47,3.39V386.7a3.88,3.88,0,0,1-2.47,3.39l-36.55,16.8a6,6,0,0,1-4.88,0l-36.55-16.8a3.88,3.88,0,0,1-2.47-3.39V339.87l37,17a11.12,11.12,0,0,0,9.18,0l24-11a2.29,2.29,0,0,0,0-4.26l-18.44-8.45a3,3,0,0,0-2.47,0l-5.18,2.38a6,6,0,0,1-4.88,0l-36.55-16.8a3.88,3.88,0,0,1-2.47-3.39V274.44A3.88,3.88,0,0,1,274.3,271l36.55-16.8a6,6,0,0,1,4.88,0L352.28,271a3.88,3.88,0,0,1,2.47,3.39v26.4A2.37,2.37,0,0,0,356.2,303Z"/><path id="_Path_2" data-name="&lt;Path&gt;" class="cls-475" d="M279.82,349.27l32,14.55a1.19,1.19,0,0,0,1,0l32.9-14.58a1.19,1.19,0,0,1,1.67,1.09V385a1.19,1.19,0,0,1-.68,1.08L313.25,402a1.19,1.19,0,0,1-1,0l-33.42-15.21a1.19,1.19,0,0,1-.7-1.08V350.35A1.19,1.19,0,0,1,279.82,349.27Z"/></g></g></svg>
+                    </div>
+                    <div id='assetContent'>
+                      <h3>SIX six.network</h3>
+                      <p>Issuer (not you) : XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX</p>
+                    </div>
+                  </div>
+                  <br>
+                  <p>Action required : Confirm transaction on your Ledger device.</p>
+                  <div class="btn">
+                    <button id='submitLedgerTrustBtn' disabled style='width: auto; margin-top: 10px; margin-bottom: 10px; min-width: 150px;'> Submit </button>
+                  </div>
+                </div>
+              </div>
+              <div class='accordionContent' style='text-align: left; display: flex; font-size: 12px; max-height: 200px;'>
+                <div id='ledgerSetupIcon'>
+                  <svg id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 581.9 520"><defs><style>.cls-451{fill:#e7eced;}.cls-452{fill:#c7cac7;}</style></defs><title>Claim process</title><path class="cls-451" d="M477.36,207.33H456.82a160.05,160.05,0,0,0-20.12-48.59l14.52-14.52a13,13,0,0,0,0-18.47L417.8,92.3a13.11,13.11,0,0,0-18.51,0l-14.52,14.52a161,161,0,0,0-48.55-20.09V66.19A13.07,13.07,0,0,0,323.13,53.1H275.84a13.07,13.07,0,0,0-13.05,13.09V86.74a160,160,0,0,0-48.59,20.11L199.71,92.3a13.11,13.11,0,0,0-18.51,0l-33.45,33.45a13.11,13.11,0,0,0,0,18.51l14.55,14.52a159.43,159.43,0,0,0-20.11,48.55H121.65a13.07,13.07,0,0,0-13.09,13.09v47.26a13.07,13.07,0,0,0,13.09,13.09h20.54a160.39,160.39,0,0,0,20.11,48.55l-14.55,14.52a13.11,13.11,0,0,0,0,18.51l33.45,33.41a13,13,0,0,0,18.51,0l14.52-14.52a161.15,161.15,0,0,0,48.55,20.12v20.54A13.1,13.1,0,0,0,275.87,435h47.26a13.1,13.1,0,0,0,13.09-13.09V401.36a160.42,160.42,0,0,0,48.55-20.12l14.52,14.52a13,13,0,0,0,18.51,0l33.41-33.41a13,13,0,0,0,0-18.51l-14.52-14.52a160.42,160.42,0,0,0,20.12-48.55h20.54a13.1,13.1,0,0,0,13.09-13.09V220.38a13.09,13.09,0,0,0-13.09-13.05ZM299.5,310.13A66.08,66.08,0,1,1,365.59,244a66.08,66.08,0,0,1-66.08,66.08Zm0,0"/><path class="cls-452" d="M299.5,148.55A95.47,95.47,0,1,0,395,244a95.49,95.49,0,0,0-95.45-95.5Zm0,161.58A66.08,66.08,0,1,1,365.59,244a66.08,66.08,0,0,1-66.08,66.08Zm0,0"/></svg>
+                </div>
+                <div id='ledgerSetupContent'>
+                  <p><h3>Set up instructions</h3>1. Get a Ledger Nano S and connect to your computer.<br>2. Setup your Ledger Nano S by following instructions on this Video : http://www.youtube.com/sixnetwork/ledger-setup<br>3. Install the Ledger Manager app on your computer : https://www.ledgerwallet.com/apps/manager<br>4.Inside the Ledgar Manager app, go to Applications and install the Stellar app.</p>
                 </div>
               </div>
             </div>
@@ -591,13 +924,13 @@
               <div class='fdiv'>
                 <label class="text dropdown" style='margin-top: 10px;'>
                   <input placeholder="Public Key" id="genP" type="text" readonly="readonly" style='width: calc(100% - 45px);'>
-                  <a href='#' data-clipboard-text="gas" class='blinkTooltip' id='copyGenP'><i class="far fa-copy"></i></a>
+                  <a href='javascript:;' data-clipboard-text="" class='blinkTooltip' id='copyGenP'><i class="far fa-copy"></i></a>
                 </label>
               </div>
               <div class='fdiv'>
                 <label class="text dropdown" style='margin-top: 10px;'>
                   <input placeholder="Secret Key" id="genS" type="password" readonly="readonly" style='width: calc(100% - 45px);'>
-                  <a href='#' data-clipboard-text="gas2" class='blinkTooltip' id='copyGenS'><i class="far fa-copy"></i></a>
+                  <a href='javascript:;' data-clipboard-text="" class='blinkTooltip' id='copyGenS'><i class="far fa-copy"></i></a>
                 </label>
               </div>
               <div class="btn" style='display: block;'>
@@ -636,7 +969,7 @@
             <br>
             <div id='menuContainer' style='display: none;'>
               <div class='tableMenu'>
-                <a href='#' onclick='changeToPublicTable()' class='currentActive' id='publicTablebtn'>
+                <a href='javascript:;' onclick='changeToPublicTable()' class='currentActive' id='publicTablebtn'>
                   <div class='choiceText'>
                     <h2>Public sale</h2>
                     <span>You could claim all of the purchase token now. Keep it here or transfer to any Stellar token supported wallet at you own will.</span>
@@ -647,7 +980,7 @@
                 </a>
               </div>
               <div class='tableMenu'>
-                <a href='#' onclick='changeToPrivateTable()' id='privateTablebtn'>
+                <a href='javascript:;' onclick='changeToPrivateTable()' id='privateTablebtn'>
                   <div class='choiceText'>
                     <h2>Private contract</h2>
                     <span id='privateDescription'>You will see your total asset amount, but not all of it could be claimed now. See the detail below to see when and how you could claim each contract.</span>
