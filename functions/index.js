@@ -305,6 +305,21 @@ exports.updateETHWallet = functions.https.onCall((data, context) => {
   }
 });
 
+exports.reworkInitializeUserDoc = functions.https.onCall((data, context) => {
+  const email = context.auth.token.email
+  const registration_time = new Date().getTime()
+  const uid = context.auth.uid
+  let ref = admin
+    .firestore()
+    .collection("users")
+    .doc(uid);
+  return ref.set({ email: email, registration_time: registration_time, kyc_status: 'not_complete' }, { merge: true }).then(() => {
+    return { success: true }
+  }).catch(err => {
+    return { success: false }
+  })
+})
+
 exports.initializeUserDoc = functions.auth.user().onCreate(event => {
   const user = event.data;
   const email = user.email;
@@ -312,7 +327,7 @@ exports.initializeUserDoc = functions.auth.user().onCreate(event => {
     .firestore()
     .collection("users")
     .doc(user.uid);
-  return ref.set({ email: email, registration_time: user.metadata.a }, { merge: true }).then(() => {
+  return ref.set({ email: email, registration_time: user.metadata.a, kyc_status: 'not_complete' }, { merge: true }).then(() => {
     return true;
   });
 });
