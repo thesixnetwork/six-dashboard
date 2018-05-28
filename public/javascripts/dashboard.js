@@ -941,6 +941,11 @@ function copyToClipboard (el, y, x) {
 var randomedWords
 var qrcode
 $(document).ready(function(){
+  document.getElementById('otpCode').onkeydown = function() {
+    if ($("#submitOTPError").css("display") === "block") {
+      $("#submitOTPError").slideToggle()
+    }
+  }
   qrcode = new QRCode("qrcode");
   document.getElementById('oldP').onkeydown = function() {
     $('#oldAddress').removeClass("invalid")
@@ -1348,23 +1353,42 @@ function markTrustlineUser() {
 }
 
 function submitOTP(id) {
+  if ($("#submitOTPError").css("display")) {
+    $("#submitOTPError").slideToggle()
+  }
   const btnDOM = document.getElementById('otpSubmitBtn')
   setDisable([btnDOM])
   const requestFunction = firebase.functions().httpsCallable('claimOTPSubmit')
   requestFunction({ref_code: $("#refVerify").text(), code: $("#otpCode").val(), claim_id: String(id)}).then(response => {
     console.log(response)
-    $("#otpDialog").removeClass('show-dialog');
-    $("#claim-"+id).removeClass("avail").addClass("claimed")
-    setDisable([$("#claim-"+id)[0]])
-    $("#claim-"+id).text("Claimed")
-    $("#claim-"+id).parent().parent().removeClass("stillAvail").addClass("stillClaimed")
-    updateGraph()
-    $("#otpCode").val("")
+    if (response.data.success === true) {
+      $("#otpDialog").removeClass('show-dialog');
+      $("#claim-"+id).removeClass("avail").addClass("claimed")
+      setDisable([$("#claim-"+id)[0]])
+      $("#claim-"+id).text("Claimed")
+      $("#claim-"+id).parent().parent().removeClass("stillAvail").addClass("stillClaimed")
+      updateGraph()
+      $("#otpCode").val("")
+    } else {
+      $("#submitOTPError").text(response.data.error_message)
+      if ($("#submitOTPError").css("display") === "none") {
+        $("#submitOTPError").slideToggle()
+      }
+      setEnable([btnDOM])
+    }
     //setEnable([btnDOM])
-  }).catch(err => { alert(err); setEnable([btnDOM]); $("#otpDialog").removeClass('show-dialog'); $("#otpCode").val(""); })
+  }).catch(err => { 
+     alert(err);
+     setEnable([btnDOM]);
+     $("#otpDialog").removeClass('show-dialog');
+     $("#otpCode").val("");
+  })
 }
 
 function claimSix(id) {
+  if ($("#submitOTPError").css("display")) {
+    $("#submitOTPError").css("display", "none")
+  }
   clearInterval(intervalFunction)
   const btnDOM = document.getElementById('claim-'+id)
   const btn2DOM = document.getElementById('otpSubmitBtn')
@@ -1828,10 +1852,10 @@ function clickBody(name, elem, rm_class) {
 }
 
 function submitPhoneNumber() {
-  if ($("#verifyPhoneError").css("display", "block")) {
+  if ($("#verifyPhoneError").css("display") === "block") {
     $("#verifyPhoneError").slideToggle()
   }
-  if ($("#verifyPhoneSubmitError").css("display", "block")) {
+  if ($("#verifyPhoneSubmitError").css("display") === "block") {
     $("#verifyPhoneSubmitError").slideToggle()
   }
   let phoneNumberDOM = document.getElementById('verifyPhonePhonenumber')
