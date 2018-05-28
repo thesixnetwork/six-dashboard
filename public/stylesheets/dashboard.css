@@ -792,3 +792,16 @@ section#progressContent {
   margin-top: auto;
   margin-bottom: auto;
 }
+
+#showXLMWalletBalanceSection {
+  display: block;
+  margin: 15px;
+  padding: 10px;
+  background: white;
+  border: 1px solid #DDDDEE;
+}
+
+#myCurrentBalance {
+  font-weight: bold;
+  color: #4a5ab5;
+}

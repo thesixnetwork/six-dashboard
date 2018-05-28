@@ -595,6 +595,12 @@ function getFlooredFixed(v, d) {
   return (Math.floor(v * Math.pow(10, d)) / Math.pow(10, d)).toFixed(d);
 }
 
+function numberWithCommas(x) {
+  var parts = x.toString().split(".");
+  parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+  return parts.join(".");
+}
+
 function buildListClaim(doc, id) {
   const { amount, claimed, valid_after, tx_id, type } = doc
   var tr = document.createElement("tr")
@@ -610,10 +616,10 @@ function buildListClaim(doc, id) {
   if (privateBonus[type] !== undefined) {
     let bonusPercent = privateBonus[type]
     let rawAmount = (amount*100)/(100+bonusPercent)
-    var txt2 = document.createTextNode(parseFloat(getFlooredFixed(rawAmount, 7)).toString())
-    var txt3 = document.createTextNode(parseFloat(getFlooredFixed((amount-rawAmount), 7)).toString())
+    var txt2 = document.createTextNode(numberWithCommas(parseFloat(getFlooredFixed(rawAmount, 7))).toString() + " SIX")
+    var txt3 = document.createTextNode(numberWithCommas(parseFloat(getFlooredFixed((amount-rawAmount), 7))).toString() + " SIX")
   } else {
-    txt2 = document.createTextNode(parseFloat(getFlooredFixed(amount, 7)).toString())
+    txt2 = document.createTextNode(numberWithCommas(parseFloat(getFlooredFixed(amount, 7))).toString() + " SIX")
     txt3 = document.createTextNode('-')
   }
   td2.appendChild(txt2)
@@ -1090,6 +1096,7 @@ $(document).ready(function(){
                 $("#claimWelcomeBox").css("display", "none")
                 $("#manualTrustlineBox").css("display", "block")
                 $(".noWallet").removeClass("noWallet").addClass("haveWallet")
+                $("#showXLMWalletBalanceSection").css("display", "block")
                 qrcode.makeCode(userData.xlm_address);
                 $("#myXlmPublicAddress").text(userData.xlm_address)
                 $("#copyMyXlmAddress").attr("data-clipboard-text", userData.xlm_address)
@@ -1102,6 +1109,7 @@ $(document).ready(function(){
               $("#claimWelcomeBox").css("display", "none")
               $("#manualTrustlineBox").css("display", "block")
               $(".noWallet").removeClass("noWallet").addClass("haveWallet")
+              $("#showXLMWalletBalanceSection").css("display", "block")
               qrcode.makeCode(userData.xlm_address);
               $("#myXlmPublicAddress").text(userData.xlm_address)
               $("#copyMyXlmAddress").attr("data-clipboard-text", userData.xlm_address)
@@ -1325,6 +1333,7 @@ function submitGeneratedAccount() {
                 $("#myXlmPublicAddress").text(generatedWallet.getPublicKey(0))
                 $("#copyMyXlmAddress").attr("data-clipboard-text", generatedWallet.getPublicKey(0))
                 $(".noWallet").removeClass("noWallet").addClass("haveWallet")
+                $("#showXLMWalletBalanceSection").css("display", "block")
               }, 2000);
             }).catch(err => {
               console.log(err)
