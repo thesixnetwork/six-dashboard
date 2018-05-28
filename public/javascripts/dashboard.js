@@ -598,6 +598,7 @@ function getFlooredFixed(v, d) {
 function buildListClaim(doc, id) {
   const { amount, claimed, valid_after, tx_id, type } = doc
   var tr = document.createElement("tr")
+  $(tr).attr("total-amount", amount)
   var td1 = document.createElement("td");
   var txt1 = document.createTextNode(formatDate(valid_after))
   td1.appendChild(txt1)
@@ -627,17 +628,20 @@ function buildListClaim(doc, id) {
   thisbtn.id = "claim-"+id
   if ((new Date) > valid_after) {
     if (claimed === true) {
+      tr.className = 'claimListItem stillClaimed'
       thisbtn.className = "claimMoneyBtn claimed"
       var txt5 = document.createTextNode("Claimed")
       thisbtn.appendChild(txt5)
       thisbtn.disabled = true
     } else {
+      tr.className = 'claimListItem stillAvail'
       thisbtn.className = "claimMoneyBtn avail"
       var txt5 = document.createTextNode("Claim")
       thisbtn.appendChild(txt5)
       thisbtn.onclick = function() { claimSix(id) }
     }
   } else {
+    tr.className = 'claimListItem stillNotAvail'
     thisbtn.className = "claimMoneyBtn notAvail"
     var txt5 = document.createTextNode("Not Available")
     thisbtn.appendChild(txt5)
@@ -657,7 +661,7 @@ function buildListClaim(doc, id) {
 const typeOrder = {
   'free': 0,
   'presale': 1,
-  'public': 2,
+  'ico': 2,
   'A': 3,
   'B': 4,
   'C': 5,
@@ -692,7 +696,7 @@ const privateType = {
     description: '+6% is added for everyone who contributed SIX Token in the Pre-ICO period.',
     type: 'public'
   },
-  'public': {
+  'ico': {
     name: 'Public',
     description: 'General Token contract.',
     type: 'public'
@@ -781,8 +785,6 @@ function formatDate(date) {
     return [year, month, day].join('-');
 }
 
-let totalSix = 0
-
 function uniqArray(arrArg) {
   return arrArg.filter(function(elem, pos,arr) {
     return arr.indexOf(elem) == pos;
@@ -791,6 +793,7 @@ function uniqArray(arrArg) {
 
 function getClaims() {
   if (firebase.auth().currentUser !== null) {
+    let totalSix = 0
     firebase.firestore().collection('users_claim').doc(firebase.auth().currentUser.uid).collection('claim_period').get().then(docs => {
       let allData = []
       docs.forEach(function(doc) {
@@ -811,17 +814,27 @@ function getClaims() {
           targetDiv.appendChild(newTable)
         }
       })
-      if (foundPrivate !== true) {
-        $("#menuContainer").css("display", "none")
+      if (foundPrivate === true) {
+        $("#menuContainer").css("display", "flex")
       }
       $("#table-container-private").css("display", "none")
       allData.sort(compare_valid_after)
       allData.forEach(d => {
         let data = d.data()
         const elem = buildListClaim(data, d.id)
+        totalSix = totalSix + data.amount
         let thisTable = document.getElementById("table-"+privateType[data.type].type)
         thisTable.appendChild(elem)
       })
+      updateGraph()
+    }).then(() => {
+      var percent_number_step = $.animateNumber.numberStepFactories.append(' SIX')
+      $('#totalSix').animateNumber(
+        {
+          number: totalSix.toFixed(7),
+          numberStep: percent_number_step
+        }
+      );
     })
   }
 }
@@ -835,32 +848,20 @@ function getTxs () {
       return firebase.firestore().collection('presale').doc('supply').collection('purchased_presale_tx').doc(firebase.auth().currentUser.uid).get().then(preDoc => {
         let preDocData = preDoc.data()
         $('#userTxs').empty()
+        $('#userTxs2').empty()
         let allDoc = []
         snapshot.forEach(d => {
           allDoc.push(d)
         })
         allDoc.sort(compare)
-        var percent_number_step = $.animateNumber.numberStepFactories.append(' SIX')
-        $('#totalSix').animateNumber(
-          {
-            number: totalSix.toFixed(7),
-            numberStep: percent_number_step
-          }
-        );
         allDoc.forEach(d => {
           let data = d.data()
           if (preDocData[d.id] !== undefined && preDocData[d.id] !== null) {
             data.six_amount = Number((data.six_amount * 1.06).toFixed(7))
-            totalSix += data.six_amount
-            $('#totalSix').animateNumber(
-              {
-                number: totalSix.toFixed(7),
-                numberStep: percent_number_step
-              }
-            );
           }
           const elem = buildListTx(data)
           $("#userTxs")[0].appendChild(elem)
+          $("#userTxs2")[0].appendChild(elem)
         })
       }).catch(() => {
         $('#userTxs').empty()
@@ -869,23 +870,18 @@ function getTxs () {
           allDoc.push(d)
         })
         allDoc.sort(compare)
-        var percent_number_step = $.animateNumber.numberStepFactories.append(' SIX')
-        $('#totalSix').animateNumber(
-          {
-            number: totalSix.toFixed(7),
-            numberStep: percent_number_step
-          }
-        );
         allDoc.forEach(d => {
           const data = d.data()
           const elem = buildListTx(data)
           $("#userTxs")[0].appendChild(elem)
+          $("#userTxs2")[0].appendChild(elem)
         })
       })
     }).then(() => {
       if (userData.alloc_transaction === true) {
         const elem = buildListTx({ time: userData.alloc_time, native_amount: userData.alloc_transaction_amount, type: userData.alloc_transaction_type, to: '-', id: '-', six_amount: userData.alloc_transaction_six_amount, alloc_time: userData.alloc_time, tx_status: 'pending' })
         $("#userTxs")[0].prepend(elem)
+        $("#userTxs2")[0].prepend(elem)
       }
     })
   }
@@ -1077,7 +1073,7 @@ $(document).ready(function(){
           if (userData.submit_xlm_wallet === true) {
             if (userData.add_trust_line !== true) {
               if (userData.use_old_account !== true) {
-                $(".dialog-reset").addClass("show-dialog")              
+                $(".dialog-reset").addClass("show-dialog")
                 $("#claimBox").css("display", "block")
                 $("#claimWelcomeBox").css("display", "none")
               } else {
@@ -1090,6 +1086,7 @@ $(document).ready(function(){
                 $(".noWallet").removeClass("noWallet").addClass("haveWallet")
                 qrcode.makeCode(userData.xlm_address);
                 $("#myXlmPublicAddress").text(userData.xlm_address)
+                $("#copyMyXlmAddress").attr("data-clipboard-text", userData.xlm_address)
               }
             } else {
               $("#trustlineStep").addClass("current")
@@ -1101,6 +1098,7 @@ $(document).ready(function(){
               $(".noWallet").removeClass("noWallet").addClass("haveWallet")
               qrcode.makeCode(userData.xlm_address);
               $("#myXlmPublicAddress").text(userData.xlm_address)
+              $("#copyMyXlmAddress").attr("data-clipboard-text", userData.xlm_address)
             }
           }
           if (userData.add_trust_line === true) {
@@ -1113,7 +1111,7 @@ $(document).ready(function(){
             $("#walletSelectBox").css("display", "none")
             $("#claimWelcomeBox").css("display", "none")
             $("#manualTrustlineBox").css("display", "none")
-            showGraph()
+            updateGraph()
           }
         }).then(getCurrentTotal).then(() => {
           getTxs()
@@ -1159,21 +1157,57 @@ function generateNewAccount() {
 function goToClaimTable() {
   $("#congratBox").slideToggle(100)
   $("#rewardClaimBox").slideToggle(100, function() {
-    showGraph()
+    updateGraph()
   })
 }
 
-function showGraph() {
-  Morris.Donut({
-    element: 'donut-graph',
-    data: [
-      {label: "2018-03-10", value: 12},
-      {label: "2018-03-11", value: 12},
-      {label: "Claimed", value: 30},
-      {label: "Not Available", value: 20}
-    ],
-    colors: ['#4a5ab5', '#4a5ab5', '#A3ABD9', '#B7B7B7']
-  })
+var mainGraph
+function updateGraph() {
+  let allClaim = 0
+  let allAvailable = 0
+
+  let claimedItems = $(".claimListItem.stillClaimed")
+  for(let i = 0; i < claimedItems.length; i++) {
+    allClaim += parseFloat($(claimedItems[i]).attr("total-amount"))
+  }
+  let notAvailItems = $(".claimListItem.stillNotAvail")
+  for(let i = 0; i < notAvailItems.length; i++) {
+    allAvailable += parseFloat($(notAvailItems[i]).attr("total-amount"))
+  }
+
+  let availItems = $(".claimListItem.stillAvail")
+  for(let i = 0; i < availItems.length; i++) {
+    allAvailable += parseFloat($(availItems[i]).attr("total-amount"))
+  }
+
+  if (mainGraph === undefined) {
+    mainGraph = Morris.Donut({
+      element: 'donut-graph',
+      data: [
+        {label: "Claimed", value: 0},
+        {label: "Not Claimed", value: 0}
+      ],
+      colors: ['#4a5ab5', '#B7B7B7']
+    })
+  } else {
+    mainGraph.setData([
+      {
+        label: "Claimed",
+        value: allClaim
+      },
+      {
+        label: "Not Claimed",
+        value: allAvailable
+      }
+    ])
+  }
+  var percent_number_step = $.animateNumber.numberStepFactories.append(' SIX')
+  $('#totalClaimedSix').animateNumber(
+    {
+      number: allClaim.toFixed(7),
+      numberStep: percent_number_step
+    }
+  );
 }
 
 function nextGeneratedAccount() {
@@ -1227,12 +1261,12 @@ function checkTrustAccount() {
       markTrustlineUser().then(() => {
         $("#manualTrustlineBox").slideToggle(100)
         $("#rewardClaimBox").slideToggle(100, function() {
-          showGraph()
+          updateGraph()
         })
         $("#claimStep").addClass("current")
-      }).catch(err => { 
+      }).catch(err => {
         setEnable([btnDOM])
-        console.log(err) 
+        console.log(err)
       })
     } else {
       setEnable([btnDOM])
@@ -1283,6 +1317,7 @@ function submitGeneratedAccount() {
                 $("#congratBox").slideToggle()
                 qrcode.makeCode(generatedWallet.getPublicKey(0));
                 $("#myXlmPublicAddress").text(generatedWallet.getPublicKey(0))
+                $("#copyMyXlmAddress").attr("data-clipboard-text", generatedWallet.getPublicKey(0))
                 $(".noWallet").removeClass("noWallet").addClass("haveWallet")
               }, 2000);
             }).catch(err => {
@@ -1315,8 +1350,11 @@ function submitOTP(id) {
     $("#claim-"+id).removeClass("avail").addClass("claimed")
     setDisable([$("#claim-"+id)[0]])
     $("#claim-"+id).text("Claimed")
-    setEnable([btnDOM])
-  }).catch(err => { alert(err); setEnable([btnDOM]); $("#otpDialog").removeClass('show-dialog'); })
+    $("#claim-"+id).parent().parent().removeClass("stillAvail").addClass("stillClaimed")
+    updateGraph()
+    $("#otpCode").val("")
+    //setEnable([btnDOM])
+  }).catch(err => { alert(err); setEnable([btnDOM]); $("#otpDialog").removeClass('show-dialog'); $("#otpCode").val(""); })
 }
 
 function claimSix(id) {
@@ -1394,7 +1432,7 @@ function goToGenerateNewWallet() {
   for (;;) {
     mnemonic = StellarHDWallet.generateMnemonic({entropyBits: 128})
     let arr = mnemonic.split(" ")
-    var sorted_arr = arr.slice().sort(); 
+    var sorted_arr = arr.slice().sort();
     var results = [];
     for (var i = 0; i < sorted_arr.length - 1; i++) {
       if (sorted_arr[i + 1] == sorted_arr[i]) {
@@ -1587,7 +1625,7 @@ ${mnemonicWords}
 var doc = new jsPDF()
 doc.setFontSize(12)
 doc.text(data,10,10)
-doc.save('stellar_wallet_recovery_words.pdf')
+doc.save('six_stellar_wallet_recovery_words_'+userData.email+'.pdf')
 
 }
 
@@ -1603,17 +1641,15 @@ Secret Key :
 var doc = new jsPDF()
 doc.setFontSize(12)
 doc.text(data,10,10)
-doc.save('stellar_wallet_credentials.pdf')
+doc.save('six_stellar_wallet_credentials_'+userData.email+'.pdf')
+}
 
-  // element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(data));
-  // element.setAttribute('download', 'stellar_wallet_credentials.txt');
-  //
-  // element.style.display = 'none';
-  // document.body.appendChild(element);
-  //
-  // element.click();
-  //
-  // document.body.removeChild(element);
+function downloadAddress() {
+  let data = "Public Key : "+userData.xlm_address
+  var doc = new jsPDF()
+  doc.setFontSize(12)
+  doc.text(data,10,10)
+  doc.save('six_stellar_wallet_credentials_'+userData.email+'.pdf')
 }
 
 var toggleSecretshow = false
@@ -1709,8 +1745,13 @@ function requestOTP() {
 }
 
 function wcNext() {
-  $("#claimBox").css("display", "block")
-  $("#claimWelcomeBox").css("display", "none")
+  if (userData.phone_number !== undefined && userData.phone_verified === true) {
+    $("#claimBox").css("display", "block")
+    $("#claimWelcomeBox").css("display", "none")
+  } else {
+    $('#verifyPhoneContent').css("display", "block")
+    $("#welcomeContentContainer").css("display", "none")
+  }
 }
 
 function submitDialog() {
@@ -1763,4 +1804,126 @@ function goToLedgerWallet() {
   $("#trustlineStep").addClass("current")
   $("#walletSelectBox").css("display", 'none')
   $("#divClaimBoxLedger").css("display", 'block')
+  clickStrPublicKey(function(){
+    const btnDOM = document.getElementById('submitLedgerBtn')
+    setEnable([btnDOM])
+  })
+}
+
+function submitPhoneNumber() {
+  if ($("#verifyPhoneError").css("display", "block")) {
+    $("#verifyPhoneError").slideToggle()
+  }
+  if ($("#verifyPhoneSubmitError").css("display", "block")) {
+    $("#verifyPhoneSubmitError").slideToggle()
+  }
+  let phoneNumberDOM = document.getElementById('verifyPhonePhonenumber')
+  let countryPhoneDOM = document.getElementById('kycCountryPhone')
+  const countryPhone = countryPhoneDOM.value
+  const parseData = libphonenumber.parse(phoneNumberDOM.value, countryPhone, {extended: true })
+  let btnDOM = document.getElementById('verifyPhoneBtn')
+  setDisable([phoneNumberDOM, btnDOM, countryPhoneDOM])
+  if (parseData.valid === false) {
+    $("#verifyPhoneError").html("Invalid phone number format")
+    if ($("#verifyPhoneError").css("display", "none")) {
+      $("#verifyPhoneError").slideToggle()
+    }
+    setEnable([phoneNumberDOM, btnDOM, countryPhoneDOM])
+    return false
+  }
+  const phone_number = '+'+parseData.countryCallingCode+parseData.phone
+  phoneNumberDOM.value = phone_number
+  let requestFunction = firebase.functions().httpsCallable('phoneVerificationRequest')
+  requestFunction({phone_number: phone_number}).then(response => {
+    if (response.data.success === true) {
+      $('#verifyCodeContent1').removeClass('show-detail')
+      $('#verifyCodeContent2').addClass('show-detail')
+      $('#refVerify').html(response.data.ref_code)
+      $('#refPhoneNumber').html(phone_number)
+      clearInterval(intervalFunction)
+
+      // Countdown verify
+      'use strict'
+      function countdown (options = {}) {
+        let defaults = { cssClass: '.countdown-verify'
+        }
+        let settings = Object.assign({}, defaults, options),
+          startNum = settings.fromNumber,
+          block = document.querySelector(settings.cssClass)
+        function appendText () {
+          let countText = `<p class="countdown-number">${startNum}</p>`
+          block.innerHTML = countText
+          startNum--
+        }
+        function count () {
+          if (startNum < 0) {
+            startNum = settings.fromNumber
+          } else {
+            appendText()
+          }
+          if (startNum == 0) {
+            $('#verifyCodeContent2').removeClass('show-detail')
+            $('#verifyCodeContent1').addClass('show-detail')
+          }
+        }
+        appendText()
+        intervalFunction = setInterval(() => { count() }, 1000)
+      }
+      let countDownNum = response.data.valid_until - Math.round((new Date()).getTime() / 1000)
+      countdown({ fromNumber: countDownNum })
+    } else {
+      $("#verifyPhoneError").html(response.data.error_message)
+      if ($("#verifyPhoneError").css("display", "none")) {
+        $("#verifyPhoneError").slideToggle()
+      }
+    }
+    setEnable([phoneNumberDOM, btnDOM, countryPhoneDOM])
+  }).catch(() => {
+    $("#verifyPhoneError").html("Unexpected error, please try again")
+    if ($("#verifyPhoneError").css("display", "none")) {
+      $("#verifyPhoneError").slideToggle()
+    }
+    setEnable([phoneNumberDOM, btnDOM, countryPhoneDOM])
+  })
+}
+
+function submitPhoneNumberCode() {
+  if ($("#verifyPhoneSubmitError").css("display", "block")) {
+    $("#verifyPhoneSubmitError").slideToggle()
+  }
+  let countryPhoneDOM = document.getElementById('kycCountryPhone')
+  const countryPhone = countryPhoneDOM.value
+  let phoneNumberDOM = document.getElementById('verifyPhonePhonenumber')
+  const phone_number = phoneNumberDOM.value
+  let codeDOM = document.getElementById('verifyCode')
+  let btnDOM = document.getElementById('verifyPhoneSubmitBtn')
+  const code = codeDOM.value
+  setDisable([codeDOM, btnDOM])
+  let requestFunction = firebase.functions().httpsCallable('phoneVerificationSubmit')
+  requestFunction({phone_number: phone_number, country: countryPhone, ref_code: $('#refVerify').html(), code: code}).then(response => {
+    if (response.data.success === true) {
+      $("#claimBox").css("display", "block")
+      $("#claimWelcomeBox").css("display", "none")
+    } else {
+      $("#verifyPhoneSubmitError").html(response.data.error_message)
+      if ($("#verifyPhoneSubmitError").css("display", "none")) {
+        $("#verifyPhoneSubmitError").slideToggle()
+      }
+    }
+    setEnable([codeDOM, btnDOM])
+  }).catch(() => {
+    $("#verifyPhoneSubmitError").html("Unexpected error, please try again")
+    if ($("#verifyPhoneSubmitError").css("display", "none")) {
+      $("#verifyPhoneSubmitError").slideToggle()
+    }
+    setEnable([codeDOM, btnDOM])
+  })
+}
+
+function showPreviousTxs() {
+  if ($("#previousTableContainer").css("display") === "none") {
+    $("#previousTableContainer").css("display", "block")
+  } else {
+    $("#previousTableContainer").css("display", "none")
+  }
 }

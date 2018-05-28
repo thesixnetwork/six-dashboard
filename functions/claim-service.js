@@ -48,7 +48,8 @@ const handleCreateStellarAccount = (data, context) => {
     public_key: publicKey
   })
     .then(createStellarAccount)
-    .then(updateUserWalletAccount)    
+    .then(updateUserWalletAccount)
+    .then(updateUserCreatedAccount)
     .then(() => {
       return {
         success: true
@@ -68,9 +69,9 @@ const setPublicKey = ({ uid, public_key: publicKey }) => {
   // @TODO check is users_claim exists?
   return claimRef
     .doc(uid)
-    .update({
+    .set({
       'public_key': publicKey
-    })
+    }, { merge: true })
     .then(() => {
       return {
         uid,
@@ -112,10 +113,14 @@ const createStellarAccount = ({ uid, public_key: publicKey }) => {
         .loadAccount(distKey.publicKey())
         .then(createTransaction)
         .then(submitTransaction)
-        .then(updateUserCreatedAccount)
     }else {
       return { uid, public_key: publicKey }
     }
+  }).catch(() => {
+    return server
+        .loadAccount(distKey.publicKey())
+        .then(createTransaction)
+        .then(submitTransaction)
   })
 }
 
@@ -136,9 +141,9 @@ const updateUserWalletAccount = ({ uid, public_key }) => {
 const updateUserCreatedAccount = ({ uid }) => {
   return claimRef
     .doc(uid)
-    .update({
+    .set({
       'sent_xlm': true
-    })
+    }, { merge: true })
 }
 
 const handleClaimSix = (data, context) => {
@@ -298,14 +303,18 @@ module.exports = {
   findUser,
   findClaim,
   sendSix,
-  updateClaim,
+  updateClaim
 }
 
-const checkBalanceForTrust = (distributorAccount){
+const checkBalanceForTrust = (distributorAccount) => {
   let balancesCount = (distributorAccount.balances.length - 1)
-  let leastXLM = (balances_count * 0.5) + 2
-  let xlmBlance = distributorAccount.balances.filter(balance => {if(balance.asset_type === 'native'){return true} } )[0].balance
-  if(parseFloat(xlmBlance) > leastXLM) {
+  let leastXLM = (balancesCount * 0.5) + 2
+  let xlmBlance = distributorAccount.balances.filter(balance => {
+    if (balance.asset_type === 'native') {
+      return true
+    }
+  })[0].balance
+  if (parseFloat(xlmBlance) > leastXLM) {
     return true
   } else {
     return false

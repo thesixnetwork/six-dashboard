@@ -20,12 +20,12 @@ const model = {
   'phone_number': 4,
   'total_six': 5,
   'type': 5,
-  'd+0': 6,
-  'd+30': 7,
-  'd+60': 8,
-  'd+90': 9,
-  'd+365': 10,
-  'tx_ids': 11
+  'd+0': 7,
+  'd+30': 8,
+  'd+60': 9,
+  'd+90': 10,
+  'd+365': 11,
+  'tx_ids': 12
 }
 
 const conditions = {
@@ -61,8 +61,8 @@ const toJSON = (d) => {
     if (roll[model['d+90']]) addClaimPeriod(obj.claim_periods, 90, parseFloat(roll[model['d+90']].replace(/,/g, '')), type)
     if (roll[model['d+365']]) addClaimPeriod(obj.claim_periods, 365, parseFloat(roll[model['d+365']].replace(/,/g, '')), type)
     if (roll[model['tx_ids']]) {
-      const txs = roll[model['tx_ids']].split(',')
-      obj.tx_ids = roll[model['tx_ids']].split(',')
+      const txs = roll[model['tx_ids']].replace(/ /g, '').split(',')
+      obj.tx_ids = roll[model['tx_ids']].replace(/ /g, '').split(',')
       privateSaleTxIds.push(...txs)
     } else obj.tx_ids = []
     if (obj.claim_periods.length > 0) return obj
