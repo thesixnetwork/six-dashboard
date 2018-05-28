@@ -661,7 +661,7 @@ function buildListClaim(doc, id) {
 const typeOrder = {
   'free': 0,
   'presale': 1,
-  'public': 2,
+  'ico': 2,
   'A': 3,
   'B': 4,
   'C': 5,
@@ -696,7 +696,7 @@ const privateType = {
     description: '+6% is added for everyone who contributed SIX Token in the Pre-ICO period.',
     type: 'public'
   },
-  'public': {
+  'ico': {
     name: 'Public',
     description: 'General Token contract.',
     type: 'public'
