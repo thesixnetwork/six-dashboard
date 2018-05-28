@@ -147,6 +147,7 @@ class User {
             identification_type: 'PASSPORT',
             identification_number: userData.passport_number,
             addresses: userData.address,
+            source_of_funds: 'OTHERS',
             telephone_numbers: [
               userData.phone_number
             ],
