@@ -1378,7 +1378,7 @@ function claimSix(id) {
       // Countdown verify
       'use strict'
       function countdown (options = {}) {
-        let defaults = { cssClass: '.countdown-verify'
+        let defaults = { cssClass: '.countdown-verify-2'
         }
         let settings = Object.assign({}, defaults, options),
           startNum = settings.fromNumber,
