@@ -387,7 +387,7 @@ function submitDepositXLMTran() {
     const elem = buildListTx({ time: thisTime, native_amount: xlm_value, type: "XLM", to: '-', id: '-', time: thisTime, six_amount: amount.toLocaleString(), tx_status: 'pending' })
     $("#userTxs")[0].prepend(elem)
     if (userData.seen_congrat === true) {
-      $("#backToTxHis").css("display", "block")
+//      $("#backToTxHis").css("display", "block")
       $("#mainBox").css("display", "block")
     } else {
       $("#congratulationBox").css("display", "block")
@@ -426,7 +426,7 @@ function submitDepositETHTran() {
     const elem = buildListTx({ time: thisTime, native_amount: eth_value, type: "ETH", to: '-', id: '-', time: thisTime, six_amount: amount.toLocaleString(), tx_status: 'pending' })
     $("#userTxs")[0].prepend(elem)
     if (userData.seen_congrat === true) {
-      $("#backToTxHis").css("display", "block")
+//      $("#backToTxHis").css("display", "block")
       $("#mainBox").css("display", "block")
     } else {
       $("#congratulationBox").css("display", "block")
@@ -444,7 +444,7 @@ function submitCongrat() {
   $("#submitETHBox").css("display", "none")
   $("#depositETHBox").css("display", "none")
   $("#depositXLMBox").css("display", "none")
-  $("#backToTxHis").css("display", "block")
+//  $("#backToTxHis").css("display", "block")
   $("#mainBox").css("display", "block")
   $("#congratulationBox").css("display", "none")
   $("#walletBox").css("display", "none")
@@ -457,7 +457,7 @@ function backToDashboard() {
   $("#submitETHBox").css("display", "none")
   $("#depositETHBox").css("display", "none")
   $("#depositXLMBox").css("display", "none")
-  $("#backToTxHis").css("display", "block")
+//  $("#backToTxHis").css("display", "block")
   $("#mainBox").css("display", "block")
   $("#congratulationBox").css("display", "none")
   $("#walletBox").css("display", "none")
@@ -1042,7 +1042,7 @@ $(document).ready(function(){
           $("#memoCopy").attr('data-clipboard-text', userData.memo)
           if (userData.first_transaction === true) {
             if (userData.seen_congrat === true) {
-              $("#backToTxHis").css("display", "block")
+//              $("#backToTxHis").css("display", "block")
               $("#welcomeBox").css("display", "none")
               $("#mainBox").css("display", "block")
             } else {
