@@ -144,8 +144,10 @@ class User {
             onboarding_mode: 'NON FACE-TO-FACE',
             payment_mode: 'VIRTUAL CURRENCY',
             product_service_complexity: 'COMPLEX',
+            identification_type: 'PASSPORT',
+            identification_number: userData.passport_number,
             addresses: userData.address,
-            identification_number: userData.citizen_id,
+            source_of_funds: 'OTHERS',
             telephone_numbers: [
               userData.phone_number
             ],
