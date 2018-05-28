@@ -1015,6 +1015,7 @@ $(document).ready(function(){
 
     $('body').on('click', '[class^="dialog-"]', function(){
 			$(this).removeClass('show-dialog');
+                        $("#otpCode").val("")
     });
 
     $('body').on('click', '[class^="dialog-"] dialog a.close', function(){
