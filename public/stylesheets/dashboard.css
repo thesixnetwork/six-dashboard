@@ -358,6 +358,12 @@
   margin: auto;
 }
 
+.choiceIcon svg {
+  width: 80px;
+  height: 80px;
+  margin: auto;
+}
+
 #accordion {
   margin-bottom: 50px;
 }
