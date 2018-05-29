@@ -595,6 +595,12 @@ function getFlooredFixed(v, d) {
   return (Math.floor(v * Math.pow(10, d)) / Math.pow(10, d)).toFixed(d);
 }
 
+function numberWithCommas(x) {
+  var parts = x.toString().split(".");
+  parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+  return parts.join(".");
+}
+
 function buildListClaim(doc, id) {
   const { amount, claimed, valid_after, tx_id, type } = doc
   var tr = document.createElement("tr")
@@ -610,10 +616,10 @@ function buildListClaim(doc, id) {
   if (privateBonus[type] !== undefined) {
     let bonusPercent = privateBonus[type]
     let rawAmount = (amount*100)/(100+bonusPercent)
-    var txt2 = document.createTextNode(parseFloat(getFlooredFixed(rawAmount, 7)).toString())
-    var txt3 = document.createTextNode(parseFloat(getFlooredFixed((amount-rawAmount), 7)).toString())
+    var txt2 = document.createTextNode(numberWithCommas(parseFloat(getFlooredFixed(rawAmount, 7))).toString() + " SIX")
+    var txt3 = document.createTextNode(numberWithCommas(parseFloat(getFlooredFixed((amount-rawAmount), 7))).toString() + " SIX")
   } else {
-    txt2 = document.createTextNode(parseFloat(getFlooredFixed(amount, 7)).toString())
+    txt2 = document.createTextNode(numberWithCommas(parseFloat(getFlooredFixed(amount, 7))).toString() + " SIX")
     txt3 = document.createTextNode('-')
   }
   td2.appendChild(txt2)
@@ -962,6 +968,11 @@ $(document).ready(function(){
     issuerKey = "GBVX36SLDLLXCVMGFLKNQ5XB76Z4SIXCFKYHKMSJTLANXB6AH27LUKEP"
   }
 
+  document.getElementById('otpCode').onkeydown = function() {
+    if ($("#submitOTPError").css("display") === "block") {
+      $("#submitOTPError").slideToggle()
+    }
+  }
   qrcode = new QRCode("qrcode");
   document.getElementById('oldP').onkeydown = function() {
     $('#oldAddress').removeClass("invalid")
@@ -1031,6 +1042,7 @@ $(document).ready(function(){
 
     $('body').on('click', '[class^="dialog-"]', function(){
 			$(this).removeClass('show-dialog');
+                        $("#otpCode").val("")
     });
 
     $('body').on('click', '[class^="dialog-"] dialog a.close', function(){
@@ -1105,6 +1117,7 @@ $(document).ready(function(){
                 $("#claimWelcomeBox").css("display", "none")
                 $("#manualTrustlineBox").css("display", "block")
                 $(".noWallet").removeClass("noWallet").addClass("haveWallet")
+                $("#showXLMWalletBalanceSection").css("display", "block")
                 qrcode.makeCode(userData.xlm_address);
                 $("#myXlmPublicAddress").text(userData.xlm_address)
                 $("#copyMyXlmAddress").attr("data-clipboard-text", userData.xlm_address)
@@ -1117,6 +1130,7 @@ $(document).ready(function(){
               $("#claimWelcomeBox").css("display", "none")
               $("#manualTrustlineBox").css("display", "block")
               $(".noWallet").removeClass("noWallet").addClass("haveWallet")
+              $("#showXLMWalletBalanceSection").css("display", "block")
               qrcode.makeCode(userData.xlm_address);
               $("#myXlmPublicAddress").text(userData.xlm_address)
               $("#copyMyXlmAddress").attr("data-clipboard-text", userData.xlm_address)
@@ -1340,6 +1354,7 @@ function submitGeneratedAccount() {
                 $("#myXlmPublicAddress").text(generatedWallet.getPublicKey(0))
                 $("#copyMyXlmAddress").attr("data-clipboard-text", generatedWallet.getPublicKey(0))
                 $(".noWallet").removeClass("noWallet").addClass("haveWallet")
+                $("#showXLMWalletBalanceSection").css("display", "block")
               }, 2000);
             }).catch(err => {
               console.log(err)
@@ -1362,23 +1377,42 @@ function markTrustlineUser() {
 }
 
 function submitOTP(id) {
+  if ($("#submitOTPError").css("display")) {
+    $("#submitOTPError").slideToggle()
+  }
   const btnDOM = document.getElementById('otpSubmitBtn')
   setDisable([btnDOM])
   const requestFunction = firebase.functions().httpsCallable('claimOTPSubmit')
   requestFunction({ref_code: $("#refVerify").text(), code: $("#otpCode").val(), claim_id: String(id)}).then(response => {
     console.log(response)
-    $("#otpDialog").removeClass('show-dialog');
-    $("#claim-"+id).removeClass("avail").addClass("claimed")
-    setDisable([$("#claim-"+id)[0]])
-    $("#claim-"+id).text("Claimed")
-    $("#claim-"+id).parent().parent().removeClass("stillAvail").addClass("stillClaimed")
-    updateGraph()
-    $("#otpCode").val("")
+    if (response.data.success === true) {
+      $("#otpDialog").removeClass('show-dialog');
+      $("#claim-"+id).removeClass("avail").addClass("claimed")
+      setDisable([$("#claim-"+id)[0]])
+      $("#claim-"+id).text("Claimed")
+      $("#claim-"+id).parent().parent().removeClass("stillAvail").addClass("stillClaimed")
+      updateGraph()
+      $("#otpCode").val("")
+    } else {
+      $("#submitOTPError").text(response.data.error_message)
+      if ($("#submitOTPError").css("display") === "none") {
+        $("#submitOTPError").slideToggle()
+      }
+      setEnable([btnDOM])
+    }
     //setEnable([btnDOM])
-  }).catch(err => { alert(err); setEnable([btnDOM]); $("#otpDialog").removeClass('show-dialog'); $("#otpCode").val(""); })
+  }).catch(err => {
+     alert(err);
+     setEnable([btnDOM]);
+     $("#otpDialog").removeClass('show-dialog');
+     $("#otpCode").val("");
+  })
 }
 
 function claimSix(id) {
+  if ($("#submitOTPError").css("display")) {
+    $("#submitOTPError").css("display", "none")
+  }
   clearInterval(intervalFunction)
   const btnDOM = document.getElementById('claim-'+id)
   const btn2DOM = document.getElementById('otpSubmitBtn')
@@ -1399,7 +1433,7 @@ function claimSix(id) {
       // Countdown verify
       'use strict'
       function countdown (options = {}) {
-        let defaults = { cssClass: '.countdown-verify'
+        let defaults = { cssClass: '.countdown-verify-2'
         }
         let settings = Object.assign({}, defaults, options),
           startNum = settings.fromNumber,
@@ -1870,10 +1904,10 @@ function trustLedgerWallet() {
 }
 
 function submitPhoneNumber() {
-  if ($("#verifyPhoneError").css("display", "block")) {
+  if ($("#verifyPhoneError").css("display") === "block") {
     $("#verifyPhoneError").slideToggle()
   }
-  if ($("#verifyPhoneSubmitError").css("display", "block")) {
+  if ($("#verifyPhoneSubmitError").css("display") === "block") {
     $("#verifyPhoneSubmitError").slideToggle()
   }
   let phoneNumberDOM = document.getElementById('verifyPhonePhonenumber')

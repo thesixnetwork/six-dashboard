@@ -358,6 +358,12 @@
   margin: auto;
 }
 
+.choiceIcon svg {
+  width: 80px;
+  height: 80px;
+  margin: auto;
+}
+
 #accordion {
   margin-bottom: 50px;
 }
@@ -422,6 +428,7 @@ section#progressContent {
 
 #xlmWalletIcon {
   width: 30px;
+  height: 30px;
   margin-left: auto;
   margin-right: 15px;
 }
@@ -784,4 +791,17 @@ section#progressContent {
   margin-left: 20px;
   margin-top: auto;
   margin-bottom: auto;
+}
+
+#showXLMWalletBalanceSection {
+  display: block;
+  margin: 15px;
+  padding: 10px;
+  background: white;
+  border: 1px solid #DDDDEE;
+}
+
+#myCurrentBalance {
+  font-weight: bold;
+  color: #4a5ab5;
 }
