@@ -1244,12 +1244,17 @@ function generateNewAccount() {
   $("#genS").val(pair.secret())
 }
 
-function goToClaimTable() {
-  $("#congratBox").slideToggle(100)
+function goToClaimTable(type) {
+  if (type === "ledger") {
+    $("#congratBoxLedger").slideToggle(100)
+  } else {
+    $("#congratBox").slideToggle(100)
+  }
   $("#rewardClaimBox").slideToggle(100, function() {
     updateGraph()
   })
 }
+
 
 var mainGraph
 function updateGraph() {
@@ -1924,8 +1929,7 @@ function argreeLedgerWallet() {
       let publicKey = $("#assetContent p:first span").text().trim()
       $("#submitLedgerBtn").prop("disabled",true)
       requestFunction({public_key: publicKey}).then(response => {
-        debugger
-        if (response.success) {
+        if (response.data.success) {
           $("#ledgerContentContainer").hide()
           $("#ledgerMiniContent1").hide()
           $("#ledgerMiniContent2").show()
@@ -1938,32 +1942,20 @@ function argreeLedgerWallet() {
 }
 
 function trustLedgerWallet() {
-    requestFunction = firebase.functions().httpsCallable('createClaim')
     let publicKey = $("#assetContent p:first span").text().trim()
-    $("#ledgerBox").fadeToggle(100, function() {
-      $("#progressContainer").fadeToggle(function() {
-        $("#accountPg").css('width', '25%')
-        $("#accountPg").css('width', '50%')
-        $("#progressText").html("Activate your address")
-        requestFunction({public_key: publicKey}).then(response => {
-          if (response.success) {
-            $("#accountPg").css('width', '75%')
-            $("#trustlineStep").addClass("current")
-            $("#progressText").html("Changing trustline")
-            trustSix(publicKey, issuerKey,function(data){
-              markTrustlineUser().then(() => {
-                $("#accountPg").css('width', '100%')
-                $("#progressText").html("Yay ! Your address is now ready")
-                $("#myXlmPublicAddress").text(publicKey)
-                $("#copyMyXlmAddress").attr("data-clipboard-text", publicKey)
-                $("#claimStep").addClass("current")
-                $("#progressContainer").fadeToggle(function(){
-                    $("#congratBoxLedger").slideToggle()
-                })
-                $(".noWallet").removeClass("noWallet").addClass("haveWallet")
-              })
-            })
-          }ำ
+    $("#submitLedgerTrustBtn").prop("disabled",true)
+    return trustSix(publicKey, issuerKey,function(data){
+      return markTrustlineUser().then(() => {
+        $("#myXlmPublicAddress").text(publicKey)
+        $("#copyMyXlmAddress").attr("data-clipboard-text", publicKey)
+        $("#copyGenPLender").attr("data-clipboard-text", publicKey)
+        $("#claimStep").addClass("current")
+        $("#ledgerBox").fadeToggle(function() {
+          $("#congratBoxLedger").slideToggle()
+          $(".noWallet").removeClass("noWallet").addClass("haveWallet")
+          let nextBtnDOM = document.getElementById("submitG3AccountBtnLedger")
+          $("#genPLedger").val(publicKey)
+          setEnable([nextBtnDOM])
         })
       })
     })
