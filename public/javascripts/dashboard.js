@@ -845,6 +845,54 @@ function getClaims() {
   }
 }
 
+var walletInterval
+function getMyWalletBalance() {
+  $("#showXLMWalletBalanceSection").show()
+  let stellarUrl
+  var domain = window.location.href
+  if (domain.match('localhost')) {
+    stellarUrl = 'https://horizon-testnet.stellar.org'
+    StellarSdk.Network.useTestNetwork()
+  } else if (domain.match('six-dashboard')) {
+    stellarUrl = 'https://horizon-testnet.stellar.org'
+    StellarSdk.Network.useTestNetwork()
+  } else if (domain.match('ico.six.network')) {
+    stellarUrl = 'https://horizon.stellar.org'
+    StellarSdk.Network.usePublicNetwork()
+  } else {
+    stellarUrl = 'https://horizon-testnet.stellar.org'
+    StellarSdk.Network.useTestNetwork()
+  }
+
+  const server = new StellarSdk.Server(stellarUrl)
+  let accountCaller = server.accounts()
+  accountCaller.accountId(userData.xlm_address)
+
+  var percent_number_step = $.animateNumber.numberStepFactories.separator(",")
+  accountCaller.call().then(account => {
+    let sixAsset = account.balances.find(x => { return x.asset_code == 'SIX' })
+    if (sixAsset !== undefined) {
+      let thisAccBalance = parseFloat(sixAsset.balance)
+      $('#myCurrentBalance').animateNumber(
+        {
+          number: thisAccBalance.toFixed(7),
+          numberStep: percent_number_step
+        }
+      );
+      if (walletInterval === undefined) {
+        walletInterval = setInterval(() => { getMyWalletBalance() }, 10000)
+        $("#myCurrentBalance2").text(" SIX")
+      }
+    } else {
+      $('#myCurrentBalance').text("0")
+      if (walletInterval === undefined) {
+        walletInterval = setInterval(() => { getMyWalletBalance() }, 10000)
+        $("#myCurrentBalance2").text(" SIX")
+      }
+    }
+  }).catch(err => { console.log(err) })
+}
+
 function getTxs () {
   if (firebase.auth().currentUser !== null) {
     firebase.firestore().collection('purchase_txs')
@@ -1096,7 +1144,7 @@ $(document).ready(function(){
                 $("#claimWelcomeBox").css("display", "none")
                 $("#manualTrustlineBox").css("display", "block")
                 $(".noWallet").removeClass("noWallet").addClass("haveWallet")
-                $("#showXLMWalletBalanceSection").css("display", "block")
+                getMyWalletBalance()
                 qrcode.makeCode(userData.xlm_address);
                 $("#myXlmPublicAddress").text(userData.xlm_address)
                 $("#copyMyXlmAddress").attr("data-clipboard-text", userData.xlm_address)
@@ -1109,7 +1157,7 @@ $(document).ready(function(){
               $("#claimWelcomeBox").css("display", "none")
               $("#manualTrustlineBox").css("display", "block")
               $(".noWallet").removeClass("noWallet").addClass("haveWallet")
-              $("#showXLMWalletBalanceSection").css("display", "block")
+              getMyWalletBalance()
               qrcode.makeCode(userData.xlm_address);
               $("#myXlmPublicAddress").text(userData.xlm_address)
               $("#copyMyXlmAddress").attr("data-clipboard-text", userData.xlm_address)
@@ -1328,12 +1376,13 @@ function submitGeneratedAccount() {
                 $("#genS").val(generatedWallet.getSecret(0))
                 $("#claimStep").addClass("current")
                 $("#divClaimBoxNew").slideToggle()
+                $("#progressContainer").slideToggle()
                 $("#congratBox").slideToggle()
                 qrcode.makeCode(generatedWallet.getPublicKey(0));
                 $("#myXlmPublicAddress").text(generatedWallet.getPublicKey(0))
                 $("#copyMyXlmAddress").attr("data-clipboard-text", generatedWallet.getPublicKey(0))
                 $(".noWallet").removeClass("noWallet").addClass("haveWallet")
-                $("#showXLMWalletBalanceSection").css("display", "block")
+                getMyWalletBalance()
               }, 2000);
             }).catch(err => {
               console.log(err)

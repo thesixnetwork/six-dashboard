@@ -192,7 +192,7 @@
         </a>
         <div id='showXLMWalletBalanceSection' style='display: none;'>
           <div id='currentBalanceContainer'>
-            <span>Current Balance : </span><span id='myCurrentBalance'>0 SIX</span>
+            <span>Current Balance : </span><span id='myCurrentBalance'>Loading</span><span id='myCurrentBalance2'></span>
           </div>
         </div>
         <section id='showXLMWalletSection' style='display: none;'>
@@ -816,7 +816,15 @@
             <br>
             <div id='ledgerBox'>
               <h3 class='accordionHeader'>Connect a Ledger Nano S</h3>
-              <div class='accordionContent' style='text-align: center; border-bottom: none;'>
+              <div class='accordionContent' style='text-align: left; display: flex; font-size: 12px; max-height: 200px; border-bottom: none;'>
+                <div id='ledgerSetupIcon'>
+                  <svg id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 581.9 520"><defs><style>.cls-451{fill:#e7eced;}.cls-452{fill:#c7cac7;}</style></defs><title>Claim process</title><path class="cls-451" d="M477.36,207.33H456.82a160.05,160.05,0,0,0-20.12-48.59l14.52-14.52a13,13,0,0,0,0-18.47L417.8,92.3a13.11,13.11,0,0,0-18.51,0l-14.52,14.52a161,161,0,0,0-48.55-20.09V66.19A13.07,13.07,0,0,0,323.13,53.1H275.84a13.07,13.07,0,0,0-13.05,13.09V86.74a160,160,0,0,0-48.59,20.11L199.71,92.3a13.11,13.11,0,0,0-18.51,0l-33.45,33.45a13.11,13.11,0,0,0,0,18.51l14.55,14.52a159.43,159.43,0,0,0-20.11,48.55H121.65a13.07,13.07,0,0,0-13.09,13.09v47.26a13.07,13.07,0,0,0,13.09,13.09h20.54a160.39,160.39,0,0,0,20.11,48.55l-14.55,14.52a13.11,13.11,0,0,0,0,18.51l33.45,33.41a13,13,0,0,0,18.51,0l14.52-14.52a161.15,161.15,0,0,0,48.55,20.12v20.54A13.1,13.1,0,0,0,275.87,435h47.26a13.1,13.1,0,0,0,13.09-13.09V401.36a160.42,160.42,0,0,0,48.55-20.12l14.52,14.52a13,13,0,0,0,18.51,0l33.41-33.41a13,13,0,0,0,0-18.51l-14.52-14.52a160.42,160.42,0,0,0,20.12-48.55h20.54a13.1,13.1,0,0,0,13.09-13.09V220.38a13.09,13.09,0,0,0-13.09-13.05ZM299.5,310.13A66.08,66.08,0,1,1,365.59,244a66.08,66.08,0,0,1-66.08,66.08Zm0,0"/><path class="cls-452" d="M299.5,148.55A95.47,95.47,0,1,0,395,244a95.49,95.49,0,0,0-95.45-95.5Zm0,161.58A66.08,66.08,0,1,1,365.59,244a66.08,66.08,0,0,1-66.08,66.08Zm0,0"/></svg>
+                </div>
+                <div id='ledgerSetupContent'>
+                  <p><h3>Set up instructions</h3>1. Get a Ledger Nano S and connect to your computer.<br>2. Setup your Ledger Nano S by following instructions on this Video : http://www.youtube.com/sixnetwork/ledger-setup<br>3. Install the Ledger Manager app on your computer : https://www.ledgerwallet.com/apps/manager<br>4.Inside the Ledgar Manager app, go to Applications and install the Stellar app.</p>
+                </div>
+              </div>
+              <div class='accordionContent' style='text-align: center;'>
                 <div id='ledgerMiniContent1'>
                   <svg id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2511.67 451.95"><defs><style>.cls-441{fill:#231f20;}.cls-442{fill:#ccc;}.cls-443{fill:#404041;}.cls-444{fill:#58595b;}.cls-445{fill:#fff;}</style></defs><title>Claim process</title><path class="cls-441" d="M1535.76,219.07A121.87,121.87,0,0,1,1657.63,97.2H949.85a5.64,5.64,0,0,0-5.62,5.62V335.32a5.64,5.64,0,0,0,5.62,5.62h707.78A121.87,121.87,0,0,1,1535.76,219.07Z"/><path class="cls-442" d="M2363,97.2H1655.26a121.87,121.87,0,1,0,0,243.74H2363a5.64,5.64,0,0,0,5.62-5.62V102.83A5.64,5.64,0,0,0,2363,97.2Z"/><polygon class="cls-443" points="1059.71 165.64 1059.71 272.51 1434.69 272.51 1434.69 264.07 1141.27 165.64 1059.71 165.64"/><polygon class="cls-444" points="1141.27 165.64 1434.69 264.07 1434.69 165.64 1141.27 165.64"/><circle class="cls-441" cx="1657.63" cy="219.07" r="76.4"/><circle class="cls-445" cx="1657.63" cy="219.07" r="66.58"/><rect class="cls-441" x="1028.1" y="86.66" width="112.9" height="40.31" rx="2" ry="2"/><rect class="cls-441" x="1360.63" y="86.66" width="112.9" height="40.31" rx="2" ry="2"/><rect class="cls-442" x="706.48" y="183.4" width="106.87" height="75.34" rx="2" ry="2"/><path class="cls-441" d="M523.67,150.17s-18.28,5.62-18.28,19.69v98.43c0,14.06,18.28,19.69,18.28,19.69h227.8V150.17Z"/><rect class="cls-441" x="451.96" y="193.76" width="67.5" height="53.44"/><rect class="cls-441" x="168.27" y="210.05" width="302.91" height="20.87"/></svg>
                   <div id='ledgerContentContainer'>
@@ -856,14 +864,6 @@
                   <div class="btn">
                     <button id='submitLedgerTrustBtn' disabled style='width: auto; margin-top: 10px; margin-bottom: 10px; min-width: 150px;'> Submit </button>
                   </div>
-                </div>
-              </div>
-              <div class='accordionContent' style='text-align: left; display: flex; font-size: 12px; max-height: 200px;'>
-                <div id='ledgerSetupIcon'>
-                  <svg id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 581.9 520"><defs><style>.cls-451{fill:#e7eced;}.cls-452{fill:#c7cac7;}</style></defs><title>Claim process</title><path class="cls-451" d="M477.36,207.33H456.82a160.05,160.05,0,0,0-20.12-48.59l14.52-14.52a13,13,0,0,0,0-18.47L417.8,92.3a13.11,13.11,0,0,0-18.51,0l-14.52,14.52a161,161,0,0,0-48.55-20.09V66.19A13.07,13.07,0,0,0,323.13,53.1H275.84a13.07,13.07,0,0,0-13.05,13.09V86.74a160,160,0,0,0-48.59,20.11L199.71,92.3a13.11,13.11,0,0,0-18.51,0l-33.45,33.45a13.11,13.11,0,0,0,0,18.51l14.55,14.52a159.43,159.43,0,0,0-20.11,48.55H121.65a13.07,13.07,0,0,0-13.09,13.09v47.26a13.07,13.07,0,0,0,13.09,13.09h20.54a160.39,160.39,0,0,0,20.11,48.55l-14.55,14.52a13.11,13.11,0,0,0,0,18.51l33.45,33.41a13,13,0,0,0,18.51,0l14.52-14.52a161.15,161.15,0,0,0,48.55,20.12v20.54A13.1,13.1,0,0,0,275.87,435h47.26a13.1,13.1,0,0,0,13.09-13.09V401.36a160.42,160.42,0,0,0,48.55-20.12l14.52,14.52a13,13,0,0,0,18.51,0l33.41-33.41a13,13,0,0,0,0-18.51l-14.52-14.52a160.42,160.42,0,0,0,20.12-48.55h20.54a13.1,13.1,0,0,0,13.09-13.09V220.38a13.09,13.09,0,0,0-13.09-13.05ZM299.5,310.13A66.08,66.08,0,1,1,365.59,244a66.08,66.08,0,0,1-66.08,66.08Zm0,0"/><path class="cls-452" d="M299.5,148.55A95.47,95.47,0,1,0,395,244a95.49,95.49,0,0,0-95.45-95.5Zm0,161.58A66.08,66.08,0,1,1,365.59,244a66.08,66.08,0,0,1-66.08,66.08Zm0,0"/></svg>
-                </div>
-                <div id='ledgerSetupContent'>
-                  <p><h3>Set up instructions</h3>1. Get a Ledger Nano S and connect to your computer.<br>2. Setup your Ledger Nano S by following instructions on this Video : http://www.youtube.com/sixnetwork/ledger-setup<br>3. Install the Ledger Manager app on your computer : https://www.ledgerwallet.com/apps/manager<br>4.Inside the Ledgar Manager app, go to Applications and install the Stellar app.</p>
                 </div>
               </div>
             </div>
@@ -935,8 +935,25 @@
             </div>
           </div>
           <div id='manualTrustlineBox' style='display: none;'>
-            <h3>To add a trustline to SIX assets, please follow the steps below:</h3>
-            <p>Some information or link</p>
+            <p>In order to claim SIX token to your Stellar wallet, you need to do create trustline process.</p>
+            <p>This tutorial consists of 5 steps to will guide you to create trustline to your wallet to accept SIX token.</p>
+            <br>
+            <p style='font-weight: bold;'>Step 1: Navigate to https://www.StellarTerm.com</p>
+            <img class='trustlineImage'src="images/image2.png">
+            <br><br>
+            <p style='font-weight: bold;'>Step 2: Log-in to your Stellar Wallet by click “Account” tab</p>
+            <img class='trustlineImage'src="images/image1.png">
+            <br><br>
+            <p style='font-weight: bold;'>Step 3: Once you have successfully logged to your account, navigate to “Accept assets”</p>
+            <img class='trustlineImage'src="images/image3.png">
+            <br><br>
+            <p style='font-weight: bold;'>Step 4: In the “Accept asset via anchor domain section”, type “six.network” and press “Accept SIX” button</p>
+            <img class='trustlineImage'src="images/image5.png">
+            <br><br>
+            <p style='font-weight: bold;'>Step 5: Navigate back to “Balances” tab, copy your public key to claim SIX token</p>
+            <img class='trustlineImage'src="images/image4.png">
+            <br><br>
+            <p>Congratulation! You have just added SIX.network token as a new asset to your Stellar Wallet. Now you can store, deposit or transfer SIX token from your Stellar Wallet on your behalf.</p>
             <div class="btn">
               <button id='checkTrustAccountBtn' onclick='checkTrustAccount()' style='width: auto; margin-top: 20px; margin-bottom: 20px; min-width: 150px;'> Next </button>
             </div>
