@@ -1296,6 +1296,9 @@ function backGeneratedAccount() {
 }
 
 function checkTrustAccount() {
+  if ($("#checkTrustError").css("display") === "block") {
+    $("#checkTrustError").slideToggle()
+  }
   let stellarUrl
   var domain = window.location.href
   if (domain.match('localhost')) {
@@ -1333,7 +1336,13 @@ function checkTrustAccount() {
     } else {
       setEnable([btnDOM])
     }
-  }).catch(err => { console.log(err) })
+  }).catch(err => {
+    setEnable([btnDOM])
+    $("#checkTrustError").text("Trustline is not properly trusted")
+    if ($("#checkTrustError").css("display") === "none") {
+      $("#checkTrustError").slideToggle()
+    }
+  })
 }
 
 function submitGeneratedAccount() {
@@ -1669,7 +1678,7 @@ function submitOldAccount() {
   let requestFunction = firebase.functions().httpsCallable('updateXLMWallet')
   const oldXlmAddressDOM = document.getElementById('oldP')
   const btnDOM = document.getElementById('submitOldAccountBtn')
-  const xlmAddress = oldXlmAddressDOM.value.toLowerCase().trim()
+  const xlmAddress = oldXlmAddressDOM.value.trim()
   setDisable([btnDOM, oldXlmAddressDOM])
   requestFunction({xlm_address: xlmAddress}).then(response => {
     if (response.data.success === true) {
@@ -1677,6 +1686,7 @@ function submitOldAccount() {
       $("#divClaimBoxOld").css("display", "none")
       $("#manualTrustlineBox").css("display", "block")
       $("#trustlineStep").addClass("current")
+      userData.xlm_address = xlmAddress
     } else {
       $("#oldWalletAlertText").html(response.data.error_message)
       if ($("#oldWalletAlert").css("display") === 'none') {
