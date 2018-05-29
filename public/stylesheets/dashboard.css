@@ -511,7 +511,9 @@ section#progressContent {
 }
 
 #manualTrustlineBox {
-  text-align: center;
+  text-align: left;
+  margin: auto;
+  max-width: 650px;
 }
 
 #mnemonicWordDownloadContainer {
@@ -801,7 +803,13 @@ section#progressContent {
   border: 1px solid #DDDDEE;
 }
 
-#myCurrentBalance {
+#myCurrentBalance, #myCurrentBalance2 {
   font-weight: bold;
   color: #4a5ab5;
 }
+
+.trustlineImage {
+  max-width: 650px;
+}
+
+
