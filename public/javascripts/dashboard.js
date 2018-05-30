@@ -994,7 +994,28 @@ function copyToClipboard (el, y, x) {
 
 var randomedWords
 var qrcode
+var stellarUrl, issuerKey
 $(document).ready(function(){
+  // Variable
+
+  var domain = window.location.href
+  if (domain.match('localhost')) {
+    stellarUrl = 'https://horizon-testnet.stellar.org'
+    StellarSdk.Network.useTestNetwork()
+    issuerKey = "GBVX36SLDLLXCVMGFLKNQ5XB76Z4SIXCFKYHKMSJTLANXB6AH27LUKEP"
+  } else if (domain.match('six-dashboard')) {
+    stellarUrl = 'https://horizon-testnet.stellar.org'
+    StellarSdk.Network.useTestNetwork()
+    issuerKey = "GBVX36SLDLLXCVMGFLKNQ5XB76Z4SIXCFKYHKMSJTLANXB6AH27LUKEP"
+  } else if (domain.match('ico.six.network')) {
+    stellarUrl = 'https://horizon.stellar.org'
+    StellarSdk.Network.usePublicNetwork()
+  } else {
+    stellarUrl = 'https://horizon-testnet.stellar.org'
+    StellarSdk.Network.useTestNetwork()
+    issuerKey = "GBVX36SLDLLXCVMGFLKNQ5XB76Z4SIXCFKYHKMSJTLANXB6AH27LUKEP"
+  }
+
   document.getElementById('otpCode').onkeydown = function() {
     if ($("#submitOTPError").css("display") === "block") {
       $("#submitOTPError").slideToggle()
@@ -1216,12 +1237,17 @@ function generateNewAccount() {
   $("#genS").val(pair.secret())
 }
 
-function goToClaimTable() {
-  $("#congratBox").slideToggle(100)
+function goToClaimTable(type) {
+  if (type === "ledger") {
+    $("#congratBoxLedger").slideToggle(100)
+  } else {
+    $("#congratBox").slideToggle(100)
+  }
   $("#rewardClaimBox").slideToggle(100, function() {
     updateGraph()
   })
 }
+
 
 var mainGraph
 function updateGraph() {
@@ -1355,7 +1381,7 @@ function submitGeneratedAccount() {
     return false
   }
   setDisable([btnDOM, btn2DOM])
-  $("#accordion").fadeToggle(100, function() {
+  $("#showProgressBar").fadeToggle(100, function() {
 
     $("#progressContainer").fadeToggle(function() {
       $("#accountPg").css('width', '25%')
@@ -1429,7 +1455,7 @@ function submitOTP(id) {
       setEnable([btnDOM])
     }
     //setEnable([btnDOM])
-  }).catch(err => { 
+  }).catch(err => {
      alert(err);
      setEnable([btnDOM]);
      $("#otpDialog").removeClass('show-dialog');
@@ -1619,25 +1645,6 @@ function goToOldWallet() {
 }
 
 function automatedChangeTrustToSix() {
-
-  let stellarUrl, issuerKey
-  var domain = window.location.href
-  if (domain.match('localhost')) {
-    stellarUrl = 'https://horizon-testnet.stellar.org'
-    StellarSdk.Network.useTestNetwork()
-    issuerKey = "GBVX36SLDLLXCVMGFLKNQ5XB76Z4SIXCFKYHKMSJTLANXB6AH27LUKEP"
-  } else if (domain.match('six-dashboard')) {
-    stellarUrl = 'https://horizon-testnet.stellar.org'
-    StellarSdk.Network.useTestNetwork()
-    issuerKey = "GBVX36SLDLLXCVMGFLKNQ5XB76Z4SIXCFKYHKMSJTLANXB6AH27LUKEP"
-  } else if (domain.match('ico.six.network')) {
-    stellarUrl = 'https://horizon.stellar.org'
-    StellarSdk.Network.usePublicNetwork()
-  } else {
-    stellarUrl = 'https://horizon-testnet.stellar.org'
-    StellarSdk.Network.useTestNetwork()
-    issuerKey = "GBVX36SLDLLXCVMGFLKNQ5XB76Z4SIXCFKYHKMSJTLANXB6AH27LUKEP"
-  }
 
   const server = new StellarSdk.Server(stellarUrl)
 
@@ -1887,10 +1894,60 @@ function goToLedgerWallet() {
   $("#trustlineStep").addClass("current")
   $("#walletSelectBox").css("display", 'none')
   $("#divClaimBoxLedger").css("display", 'block')
-  clickStrPublicKey(function(){
-    const btnDOM = document.getElementById('submitLedgerBtn')
-    setEnable([btnDOM])
+  $("#assetContent p:last span").text(issuerKey)
+  clickStrPublicKey(function(pk){
+    $("#ledgerContentContainer").addClass("active")
+    $("#ledgerAgreement #warning1").prop("disabled",false)
+    $("#assetContent p:first span").text(pk)
   })
+}
+
+function argreeLedgerWallet() {
+  const btnDOM = document.getElementById('submitLedgerBtn')
+  let activeledger = $("#ledgerContentContainer").hasClass("active")
+  if(activeledger) {
+    setEnable([btnDOM])
+    $("#submitLedgerBtn").on("click",function(){
+      requestFunction = firebase.functions().httpsCallable('createClaim')
+      let publicKey = $("#assetContent p:first span").text().trim()
+      $("#submitLedgerBtn").prop("disabled",true)
+      requestFunction({public_key: publicKey}).then(response => {
+        if (response.data.success) {
+          $("#ledgerContentContainer").hide()
+          $("#ledgerMiniContent1").hide()
+          $("#ledgerMiniContent2").show()
+          $("#ledgerBox #setupInstruction").hide()
+        } else {
+
+        }
+      })
+    })
+  }
+}
+
+function trustLedgerWallet() {
+    let publicKey = $("#assetContent p:first span").text().trim()
+    $("#submitLedgerTrustBtn").prop("disabled",true)
+    return trustSix(publicKey, issuerKey,function(data){
+      return markTrustlineUser().then(() => {
+        $("#myXlmPublicAddress").text(publicKey)
+        $("#copyMyXlmAddress").attr("data-clipboard-text", publicKey)
+        $("#copyGenPLender").attr("data-clipboard-text", publicKey)
+        $("#claimStep").addClass("current")
+        $("#ledgerBox").fadeToggle(function() {
+          $("#congratBoxLedger").slideToggle()
+          $(".noWallet").removeClass("noWallet").addClass("haveWallet")
+          let nextBtnDOM = document.getElementById("submitG3AccountBtnLedger")
+          $("#genPLedger").val(publicKey)
+          setEnable([nextBtnDOM])
+        })
+      })
+    }).catch(err => {
+      $(".dialog-reset").addClass("show-dialog")
+      $("#recoveryDialogSubmitBtn3").bind("click",function(){
+        $("#submitLedgerTrustBtn").prop("disabled",false)
+      })
+    })
 }
 
 function submitPhoneNumber() {

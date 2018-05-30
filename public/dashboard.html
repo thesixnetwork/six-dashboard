@@ -37,7 +37,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.18.1/moment.js"></script>
     <script src="javascripts/jspdf.min.js"></script>
     <script src="javascripts/ledger.js"></script>
-    <script src="javascripts/dashboard.js"></script>
+
     <!-- Global site tag (gtag.js) - Google Analytics -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=GTM-N5DKTMD"></script>
     <script src="javascripts/google-analytic.js"></script>
@@ -46,6 +46,7 @@
     <script src="javascripts/raphael-min.js"></script>
     <script src="javascripts/morris.min.js"></script>
     <script src="javascripts/stellar-hd-wallet.js"></script>
+    <script src="javascripts/dashboard.js"></script>
     <!-- Facebook Pixel Code -->
     <script>
       !function(f,b,e,v,n,t,s)
@@ -711,7 +712,7 @@
                       </label>
                     </dd>
                   </dl>
-    
+
                   <dl>
                     <dt>Verify Phone number</dt>
                     <dd><label class="text"><input id='verifyPhonePhonenumber' type="tel" placeholder="Phone number"></label></dd>
@@ -816,7 +817,7 @@
             <br>
             <div id='ledgerBox'>
               <h3 class='accordionHeader'>Connect a Ledger Nano S</h3>
-              <div class='accordionContent' style='text-align: left; display: flex; font-size: 12px; max-height: 200px; border-bottom: none;'>
+              <div class='accordionContent' id='setupInstruction' style='text-align: left; display: flex; font-size: 12px; max-height: 200px; border-bottom: none;'>
                 <div id='ledgerSetupIcon'>
                   <svg id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 581.9 520"><defs><style>.cls-451{fill:#e7eced;}.cls-452{fill:#c7cac7;}</style></defs><title>Claim process</title><path class="cls-451" d="M477.36,207.33H456.82a160.05,160.05,0,0,0-20.12-48.59l14.52-14.52a13,13,0,0,0,0-18.47L417.8,92.3a13.11,13.11,0,0,0-18.51,0l-14.52,14.52a161,161,0,0,0-48.55-20.09V66.19A13.07,13.07,0,0,0,323.13,53.1H275.84a13.07,13.07,0,0,0-13.05,13.09V86.74a160,160,0,0,0-48.59,20.11L199.71,92.3a13.11,13.11,0,0,0-18.51,0l-33.45,33.45a13.11,13.11,0,0,0,0,18.51l14.55,14.52a159.43,159.43,0,0,0-20.11,48.55H121.65a13.07,13.07,0,0,0-13.09,13.09v47.26a13.07,13.07,0,0,0,13.09,13.09h20.54a160.39,160.39,0,0,0,20.11,48.55l-14.55,14.52a13.11,13.11,0,0,0,0,18.51l33.45,33.41a13,13,0,0,0,18.51,0l14.52-14.52a161.15,161.15,0,0,0,48.55,20.12v20.54A13.1,13.1,0,0,0,275.87,435h47.26a13.1,13.1,0,0,0,13.09-13.09V401.36a160.42,160.42,0,0,0,48.55-20.12l14.52,14.52a13,13,0,0,0,18.51,0l33.41-33.41a13,13,0,0,0,0-18.51l-14.52-14.52a160.42,160.42,0,0,0,20.12-48.55h20.54a13.1,13.1,0,0,0,13.09-13.09V220.38a13.09,13.09,0,0,0-13.09-13.05ZM299.5,310.13A66.08,66.08,0,1,1,365.59,244a66.08,66.08,0,0,1-66.08,66.08Zm0,0"/><path class="cls-452" d="M299.5,148.55A95.47,95.47,0,1,0,395,244a95.49,95.49,0,0,0-95.45-95.5Zm0,161.58A66.08,66.08,0,1,1,365.59,244a66.08,66.08,0,0,1-66.08,66.08Zm0,0"/></svg>
                 </div>
@@ -833,10 +834,10 @@
                       <ul class="option-list">
                         <li>
                           <label class="option warning-label">
-                            <input onchange="checkWarning()" id='warning1' class='warning-check-box' type="checkbox">
+                            <input onchange="argreeLedgerWallet()" id='warning1' class='warning-check-box' type="checkbox" disabled="true" />
                             <span class="check-mark"></span>
                           </label>
-                          
+
                           <p>I accept the Term of Use, understand the risks associated with cryptocurrencies, and know that StellarTerm does not issue or endorse any asset on the Stellar network.</p>
                         </li>
                       </ul>
@@ -856,13 +857,14 @@
                     </div>
                     <div id='assetContent'>
                       <h3>SIX six.network</h3>
-                      <p>Issuer (not you) : XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX</p>
+                      <p>Your Stellar public adress: <span></span></p>
+                      <p>Issuer (not you) : <span> </span></p>
                     </div>
                   </div>
                   <br>
                   <p>Action required : Confirm transaction on your Ledger device.</p>
                   <div class="btn">
-                    <button id='submitLedgerTrustBtn' disabled style='width: auto; margin-top: 10px; margin-bottom: 10px; min-width: 150px;'> Submit </button>
+                    <button id='submitLedgerTrustBtn' onclick="trustLedgerWallet()"  style='width: auto; margin-top: 10px; margin-bottom: 10px; min-width: 150px;'> Submit </button>
                   </div>
                 </div>
               </div>
@@ -931,6 +933,23 @@
               <div class="btn" style='display: block;'>
                 <button id='DownloadGAccountBtn' onclick='downloadGeneratedAccount()' style='width: auto; min-width: 150px; margin: auto; margin-top: 20px; background: #569E5C;'> Print Backup </button>
                 <button id='submitG3AccountBtn' onclick='goToClaimTable()' disabled class='not avail' style='cursor: pointer; width: auto; min-width: 150px; margin: auto; margin-top: 15px;'> Claim SIX Token </button>
+              </div>
+            </div>
+          </div>
+          <div id='congratBoxLedger' style='display: none;text-align: center;'>
+            <div id='congratContainerLedger' style= "border: 1px solid #D3D3D3;padding: 40px;max-width: 500px;margin: auto;border-radius: 20px;">
+              <i id='correctIcon' class="fas fa-check-circle"></i>
+              <h3>Congrats Wallet Generated Successfully</h3>
+              <p>Transaction is pending blockchain confirmation.<br>Check your wallet in a few minutes.</p>
+              <p>Your wallet address is</p><br>
+              <div class='fdiv'>
+                <label class="text dropdown" style='margin-top: 10px;'>
+                  <input placeholder="Public Key" id="genPLedger" type="text" readonly="readonly" style='width: calc(100% - 45px);'>
+                  <a href='javascript:;' data-clipboard-text="" class='blinkTooltip' id='copyGenPLender'><i class="far fa-copy"></i></a>
+                </label>
+              </div>
+              <div class="btn" style='display: block;'>
+                <button id='submitG3AccountBtnLedger' onclick='goToClaimTable("ledger")' disabled class='not avail' style='cursor: pointer; width: auto; min-width: 150px; margin: auto; margin-top: 15px;'> Claim SIX Token </button>
               </div>
             </div>
           </div>
