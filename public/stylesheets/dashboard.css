@@ -358,6 +358,12 @@
   margin: auto;
 }
 
+.choiceIcon svg {
+  width: 80px;
+  height: 80px;
+  margin: auto;
+}
+
 #accordion {
   margin-bottom: 50px;
 }
@@ -422,6 +428,7 @@ section#progressContent {
 
 #xlmWalletIcon {
   width: 30px;
+  height: 30px;
   margin-left: auto;
   margin-right: 15px;
 }
@@ -504,7 +511,9 @@ section#progressContent {
 }
 
 #manualTrustlineBox {
-  text-align: center;
+  text-align: left;
+  margin: auto;
+  max-width: 650px;
 }
 
 #mnemonicWordDownloadContainer {
@@ -785,3 +794,22 @@ section#progressContent {
   margin-top: auto;
   margin-bottom: auto;
 }
+
+#showXLMWalletBalanceSection {
+  display: block;
+  margin: 15px;
+  padding: 10px;
+  background: white;
+  border: 1px solid #DDDDEE;
+}
+
+#myCurrentBalance, #myCurrentBalance2 {
+  font-weight: bold;
+  color: #4a5ab5;
+}
+
+.trustlineImage {
+  max-width: 650px;
+}
+
+

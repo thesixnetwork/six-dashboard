@@ -387,7 +387,7 @@ function submitDepositXLMTran() {
     const elem = buildListTx({ time: thisTime, native_amount: xlm_value, type: "XLM", to: '-', id: '-', time: thisTime, six_amount: amount.toLocaleString(), tx_status: 'pending' })
     $("#userTxs")[0].prepend(elem)
     if (userData.seen_congrat === true) {
-      $("#backToTxHis").css("display", "block")
+//      $("#backToTxHis").css("display", "block")
       $("#mainBox").css("display", "block")
     } else {
       $("#congratulationBox").css("display", "block")
@@ -426,7 +426,7 @@ function submitDepositETHTran() {
     const elem = buildListTx({ time: thisTime, native_amount: eth_value, type: "ETH", to: '-', id: '-', time: thisTime, six_amount: amount.toLocaleString(), tx_status: 'pending' })
     $("#userTxs")[0].prepend(elem)
     if (userData.seen_congrat === true) {
-      $("#backToTxHis").css("display", "block")
+//      $("#backToTxHis").css("display", "block")
       $("#mainBox").css("display", "block")
     } else {
       $("#congratulationBox").css("display", "block")
@@ -444,7 +444,7 @@ function submitCongrat() {
   $("#submitETHBox").css("display", "none")
   $("#depositETHBox").css("display", "none")
   $("#depositXLMBox").css("display", "none")
-  $("#backToTxHis").css("display", "block")
+//  $("#backToTxHis").css("display", "block")
   $("#mainBox").css("display", "block")
   $("#congratulationBox").css("display", "none")
   $("#walletBox").css("display", "none")
@@ -457,7 +457,7 @@ function backToDashboard() {
   $("#submitETHBox").css("display", "none")
   $("#depositETHBox").css("display", "none")
   $("#depositXLMBox").css("display", "none")
-  $("#backToTxHis").css("display", "block")
+//  $("#backToTxHis").css("display", "block")
   $("#mainBox").css("display", "block")
   $("#congratulationBox").css("display", "none")
   $("#walletBox").css("display", "none")
@@ -595,6 +595,12 @@ function getFlooredFixed(v, d) {
   return (Math.floor(v * Math.pow(10, d)) / Math.pow(10, d)).toFixed(d);
 }
 
+function numberWithCommas(x) {
+  var parts = x.toString().split(".");
+  parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+  return parts.join(".");
+}
+
 function buildListClaim(doc, id) {
   const { amount, claimed, valid_after, tx_id, type } = doc
   var tr = document.createElement("tr")
@@ -610,10 +616,10 @@ function buildListClaim(doc, id) {
   if (privateBonus[type] !== undefined) {
     let bonusPercent = privateBonus[type]
     let rawAmount = (amount*100)/(100+bonusPercent)
-    var txt2 = document.createTextNode(parseFloat(getFlooredFixed(rawAmount, 7)).toString())
-    var txt3 = document.createTextNode(parseFloat(getFlooredFixed((amount-rawAmount), 7)).toString())
+    var txt2 = document.createTextNode(numberWithCommas(parseFloat(getFlooredFixed(rawAmount, 7))).toString() + " SIX")
+    var txt3 = document.createTextNode(numberWithCommas(parseFloat(getFlooredFixed((amount-rawAmount), 7))).toString() + " SIX")
   } else {
-    txt2 = document.createTextNode(parseFloat(getFlooredFixed(amount, 7)).toString())
+    txt2 = document.createTextNode(numberWithCommas(parseFloat(getFlooredFixed(amount, 7))).toString() + " SIX")
     txt3 = document.createTextNode('-')
   }
   td2.appendChild(txt2)
@@ -839,6 +845,54 @@ function getClaims() {
   }
 }
 
+var walletInterval
+function getMyWalletBalance() {
+  $("#showXLMWalletBalanceSection").show()
+  let stellarUrl
+  var domain = window.location.href
+  if (domain.match('localhost')) {
+    stellarUrl = 'https://horizon-testnet.stellar.org'
+    StellarSdk.Network.useTestNetwork()
+  } else if (domain.match('six-dashboard')) {
+    stellarUrl = 'https://horizon-testnet.stellar.org'
+    StellarSdk.Network.useTestNetwork()
+  } else if (domain.match('ico.six.network')) {
+    stellarUrl = 'https://horizon.stellar.org'
+    StellarSdk.Network.usePublicNetwork()
+  } else {
+    stellarUrl = 'https://horizon-testnet.stellar.org'
+    StellarSdk.Network.useTestNetwork()
+  }
+
+  const server = new StellarSdk.Server(stellarUrl)
+  let accountCaller = server.accounts()
+  accountCaller.accountId(userData.xlm_address)
+
+  var percent_number_step = $.animateNumber.numberStepFactories.separator(",")
+  accountCaller.call().then(account => {
+    let sixAsset = account.balances.find(x => { return x.asset_code == 'SIX' })
+    if (sixAsset !== undefined) {
+      let thisAccBalance = parseFloat(sixAsset.balance)
+      $('#myCurrentBalance').animateNumber(
+        {
+          number: thisAccBalance.toFixed(7),
+          numberStep: percent_number_step
+        }
+      );
+      if (walletInterval === undefined) {
+        walletInterval = setInterval(() => { getMyWalletBalance() }, 10000)
+        $("#myCurrentBalance2").text(" SIX")
+      }
+    } else {
+      $('#myCurrentBalance').text("0")
+      if (walletInterval === undefined) {
+        walletInterval = setInterval(() => { getMyWalletBalance() }, 10000)
+        $("#myCurrentBalance2").text(" SIX")
+      }
+    }
+  }).catch(err => { console.log(err) })
+}
+
 function getTxs () {
   if (firebase.auth().currentUser !== null) {
     firebase.firestore().collection('purchase_txs')
@@ -941,6 +995,11 @@ function copyToClipboard (el, y, x) {
 var randomedWords
 var qrcode
 $(document).ready(function(){
+  document.getElementById('otpCode').onkeydown = function() {
+    if ($("#submitOTPError").css("display") === "block") {
+      $("#submitOTPError").slideToggle()
+    }
+  }
   qrcode = new QRCode("qrcode");
   document.getElementById('oldP').onkeydown = function() {
     $('#oldAddress').removeClass("invalid")
@@ -1010,6 +1069,7 @@ $(document).ready(function(){
 
     $('body').on('click', '[class^="dialog-"]', function(){
 			$(this).removeClass('show-dialog');
+                        $("#otpCode").val("")
     });
 
     $('body').on('click', '[class^="dialog-"] dialog a.close', function(){
@@ -1042,7 +1102,7 @@ $(document).ready(function(){
           $("#memoCopy").attr('data-clipboard-text', userData.memo)
           if (userData.first_transaction === true) {
             if (userData.seen_congrat === true) {
-              $("#backToTxHis").css("display", "block")
+//              $("#backToTxHis").css("display", "block")
               $("#welcomeBox").css("display", "none")
               $("#mainBox").css("display", "block")
             } else {
@@ -1084,6 +1144,7 @@ $(document).ready(function(){
                 $("#claimWelcomeBox").css("display", "none")
                 $("#manualTrustlineBox").css("display", "block")
                 $(".noWallet").removeClass("noWallet").addClass("haveWallet")
+                getMyWalletBalance()
                 qrcode.makeCode(userData.xlm_address);
                 $("#myXlmPublicAddress").text(userData.xlm_address)
                 $("#copyMyXlmAddress").attr("data-clipboard-text", userData.xlm_address)
@@ -1096,6 +1157,7 @@ $(document).ready(function(){
               $("#claimWelcomeBox").css("display", "none")
               $("#manualTrustlineBox").css("display", "block")
               $(".noWallet").removeClass("noWallet").addClass("haveWallet")
+              getMyWalletBalance()
               qrcode.makeCode(userData.xlm_address);
               $("#myXlmPublicAddress").text(userData.xlm_address)
               $("#copyMyXlmAddress").attr("data-clipboard-text", userData.xlm_address)
@@ -1314,11 +1376,13 @@ function submitGeneratedAccount() {
                 $("#genS").val(generatedWallet.getSecret(0))
                 $("#claimStep").addClass("current")
                 $("#divClaimBoxNew").slideToggle()
+                $("#progressContainer").slideToggle()
                 $("#congratBox").slideToggle()
                 qrcode.makeCode(generatedWallet.getPublicKey(0));
                 $("#myXlmPublicAddress").text(generatedWallet.getPublicKey(0))
                 $("#copyMyXlmAddress").attr("data-clipboard-text", generatedWallet.getPublicKey(0))
                 $(".noWallet").removeClass("noWallet").addClass("haveWallet")
+                getMyWalletBalance()
               }, 2000);
             }).catch(err => {
               console.log(err)
@@ -1341,23 +1405,42 @@ function markTrustlineUser() {
 }
 
 function submitOTP(id) {
+  if ($("#submitOTPError").css("display")) {
+    $("#submitOTPError").slideToggle()
+  }
   const btnDOM = document.getElementById('otpSubmitBtn')
   setDisable([btnDOM])
   const requestFunction = firebase.functions().httpsCallable('claimOTPSubmit')
   requestFunction({ref_code: $("#refVerify").text(), code: $("#otpCode").val(), claim_id: String(id)}).then(response => {
     console.log(response)
-    $("#otpDialog").removeClass('show-dialog');
-    $("#claim-"+id).removeClass("avail").addClass("claimed")
-    setDisable([$("#claim-"+id)[0]])
-    $("#claim-"+id).text("Claimed")
-    $("#claim-"+id).parent().parent().removeClass("stillAvail").addClass("stillClaimed")
-    updateGraph()
-    $("#otpCode").val("")
+    if (response.data.success === true) {
+      $("#otpDialog").removeClass('show-dialog');
+      $("#claim-"+id).removeClass("avail").addClass("claimed")
+      setDisable([$("#claim-"+id)[0]])
+      $("#claim-"+id).text("Claimed")
+      $("#claim-"+id).parent().parent().removeClass("stillAvail").addClass("stillClaimed")
+      updateGraph()
+      $("#otpCode").val("")
+    } else {
+      $("#submitOTPError").text(response.data.error_message)
+      if ($("#submitOTPError").css("display") === "none") {
+        $("#submitOTPError").slideToggle()
+      }
+      setEnable([btnDOM])
+    }
     //setEnable([btnDOM])
-  }).catch(err => { alert(err); setEnable([btnDOM]); $("#otpDialog").removeClass('show-dialog'); $("#otpCode").val(""); })
+  }).catch(err => { 
+     alert(err);
+     setEnable([btnDOM]);
+     $("#otpDialog").removeClass('show-dialog');
+     $("#otpCode").val("");
+  })
 }
 
 function claimSix(id) {
+  if ($("#submitOTPError").css("display")) {
+    $("#submitOTPError").css("display", "none")
+  }
   clearInterval(intervalFunction)
   const btnDOM = document.getElementById('claim-'+id)
   const btn2DOM = document.getElementById('otpSubmitBtn')
@@ -1378,7 +1461,7 @@ function claimSix(id) {
       // Countdown verify
       'use strict'
       function countdown (options = {}) {
-        let defaults = { cssClass: '.countdown-verify'
+        let defaults = { cssClass: '.countdown-verify-2'
         }
         let settings = Object.assign({}, defaults, options),
           startNum = settings.fromNumber,
@@ -1811,10 +1894,10 @@ function goToLedgerWallet() {
 }
 
 function submitPhoneNumber() {
-  if ($("#verifyPhoneError").css("display", "block")) {
+  if ($("#verifyPhoneError").css("display") === "block") {
     $("#verifyPhoneError").slideToggle()
   }
-  if ($("#verifyPhoneSubmitError").css("display", "block")) {
+  if ($("#verifyPhoneSubmitError").css("display") === "block") {
     $("#verifyPhoneSubmitError").slideToggle()
   }
   let phoneNumberDOM = document.getElementById('verifyPhonePhonenumber')
