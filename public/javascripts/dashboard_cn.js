@@ -524,6 +524,9 @@ let totalSix = 20
 
 function getTxs () {
   if (firebase.auth().currentUser !== null) {
+    if (userData.update_time !== undefined && userData.update_time > 1527692400000) {
+      totalSix = 0
+    }
     firebase.firestore().collection('purchase_txs')
     .where("user_id",'==',firebase.auth().currentUser.uid)
     .get()
@@ -595,8 +598,10 @@ function getTxs () {
         const elem = buildListTx({ time: userData.alloc_time, native_amount: userData.alloc_transaction_amount, type: userData.alloc_transaction_type, to: '-', id: '-', six_amount: userData.alloc_transaction_six_amount, alloc_time: userData.alloc_time, tx_status: 'pending' })
         $("#userTxs")[0].prepend(elem)
       }
-      const elem = buildFreeTx()
-      $("#userTxs")[0].appendChild(elem)
+      if (userData.update_time === undefined || userData.update_time < 1527692400000) {
+        const elem = buildFreeTx()
+        $("#userTxs")[0].appendChild(elem)
+      }
     })
   }
 }
