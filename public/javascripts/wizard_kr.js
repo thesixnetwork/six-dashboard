@@ -1,31 +1,31 @@
 let rejectNote = {
-  need_more: `We appreciate that you took the time for the registration. However, we received insufficient information regarding your KYC/ AML documents and/ or information.
+  need_more: `등록을 신청해주셔서 감사합니다. 그러나 KYC/AML 관련 자료 및 정보가 충분히 제출되지 않았습니다.
 
-We would highly appreciate if you could resubmit the documents and/ or information through the link below.
+아래 링크를 통해 빠진 서류 및 정보를 채워 다시 제출해주시기를 바랍니다.
 
-Thank you for your interest in our ICO.
-
-SIX.network`,
-  restricted: `We highly appreciate that you took the time for the registration. After reviewing your submitted application materials, the KYC/AML result does not match with our requirements.
-
-We highly appreciate that you are interested in our ICO. Please do support us in the secondary market soon.
-
-Thank you for your interest in SIX.network and our ICO.
+식스 네트워크 ICO에 관심을 보내주셔서 감사합니다.
 
 SIX.network`,
-  incorrect: `We appreciate that you took the time for the registration. However, we received insufficient information regarding your KYC/ AML documents and/ or information.
+  restricted: `등록을 신청해주셔서 감사합니다.
 
-We would highly appreciate if you could resubmit the documents and/ or information through the link below.
+식스 네트워크 ICO에 관심을 보내주셔서 정말 감사합니다.
 
-Thank you for your interest in our ICO.
+식스 네트워크와 식스 네트워크 ICO에 관심을 보내주셔서 감사합니다.
 
 SIX.network`,
-  photo_corrupted: `We appreciate that you took the time for the registration. However, we received incorrect or unclear information regarding your selfie picture.
+  incorrect: `등록을 신청해주셔서 감사합니다. 그러나 KYC/AML 관련 자료 및 정보가 충분히 제출되지 않았습니다.
 
-We would highly appreciate if you could resubmit your selfie through the link below.`,
-  other: `We appreciate that you took the time for the registration. However, we received insufficient information regarding your KYC/ AML documents and/ or information.
+아래 링크를 통해 빠진 서류 및 정보를 채워 다시 제출해주시기를 바랍니다.
 
-Thank you for your interest in our ICO. `
+식스 네트워크 ICO에 관심을 보내주셔서 감사합니다.
+
+SIX.network`,
+  photo_corrupted: `등록을 신청해주셔서 감사합니다. 그러나 셀카 사진 속 정보가 정확하지 않거나 불명확합니다.
+
+아래 링크를 통해 셀카 사진을 다시 제출해주시기를 바랍니다.`,
+  other: `등록을 신청해주셔서 감사합니다. 그러나 KYC/AML 관련 자료 및 정보가 충분히 제출되지 않았습니다.
+
+식스 네트워크 ICO에 관심을 보내주셔서 감사합니다. `
 }
 
 // Log out function using in Wizardd page to sign current user out
@@ -109,7 +109,6 @@ function initializeAdmin () {
   })
   return promise
 }
-
 function closeErrorMatch() {
   $("div.error-not-match, div.overlay").hide()
 }
@@ -153,7 +152,7 @@ function submitPhoneNumber() {
   let btnDOM = document.getElementById('verifyPhoneBtn')
   setDisable([phoneNumberDOM, btnDOM, countryPhoneDOM])
   if (parseData.valid === false) {
-    $("#verifyPhoneError").html("Invalid phone number format")
+    $("#verifyPhoneError").html("올바르지 않은 전화번호 형식입니다.")
     if ($("#verifyPhoneError").css("display", "none")) {
       $("#verifyPhoneError").slideToggle()
     }
@@ -201,7 +200,12 @@ function submitPhoneNumber() {
       let countDownNum = response.data.valid_until - Math.round((new Date()).getTime() / 1000)
       countdown({ fromNumber: countDownNum })
     } else {
-      $("#verifyPhoneError").html(response.data.error_message)
+      if (response.data.error_code == 100) {
+        $("#verifyPhoneError").html('이미 사용된 전화번호입니다.')
+      } else {
+        $("#verifyPhoneError").html(response.data.error_message)
+      }
+
       if ($("#verifyPhoneError").css("display", "none")) {
         $("#verifyPhoneError").slideToggle()
       }
@@ -225,8 +229,8 @@ function kycCountryChange() {
     $("#citizenIdPhotoBack").css("display", "block")
     $("#passportNumberPhoto").css("display", "none")
     $("#passportNumber").css("display", "none")
-    $("#itemHoldingHead").html("ID-card")
-    $("#itemHolding").html("ID-card")
+    $("#itemHoldingHead").html("")
+    $("#itemHolding").html("")
     $("#samplePassportSelfie").css('display', 'none')
     $("#sampleIDSelfie").css('display', 'block')
     $("#idHelper").css('display', 'inline-block')
@@ -237,8 +241,8 @@ function kycCountryChange() {
     $("#citizenIdPhotoBack").css("display", "none")
     $("#passportNumberPhoto").css("display", "block")
     $("#passportNumber").css("display", "block")
-    $("#itemHoldingHead").html("Passport")
-    $("#itemHolding").html("passport showing the passport photo page")
+    $("#itemHoldingHead").html("")
+    $("#itemHolding").html("")
     $("#samplePassportSelfie").css('display', 'block')
     $("#sampleIDSelfie").css('display', 'none')
     $("#idHelper").css('display', 'none')
@@ -264,7 +268,14 @@ function submitPhoneNumberCode() {
       document.getElementById("kycCountry").value = countryPhone
       goToKYCStep()
     } else {
-      $("#verifyPhoneSubmitError").html(response.data.error_message)
+      if(response.data.error_code == 100) {
+        $("#verifyPhoneSubmitError").html('이미 사용된 전화번호입니다.')
+      } else if (response.data.error_code == 200) {
+        $("#verifyPhoneSubmitError").html('올바르지 않은 인증 코드입니다.')
+      } else {
+        $("#verifyPhoneSubmitError").html(response.data.error_message)
+      }
+
       if ($("#verifyPhoneSubmitError").css("display", "none")) {
         $("#verifyPhoneSubmitError").slideToggle()
       }
@@ -332,7 +343,7 @@ function resendVerifyEmail() {
     let currentUser = firebase.auth().currentUser
     currentUser.sendEmailVerification().then(() => {
       if ($("#verifyNotice").css("display") == "none") {
-        $("#verifyNotice").html("Email successfully sent to your inbox.")
+        $("#verifyNotice").html("성공적으로 이메일이 수신함으로 전송되었습니다..")
         setEnable([resendDOM])
         $("#verifyNotice").slideToggle(400, resolve)
       }
@@ -419,7 +430,6 @@ function setupUserData() {
     }
     rejectReason = String(rejectReason).split("\n").join("<br>")
     $("#rejectReason").html(rejectReason)
-
     if (userData.reject_note_extend !== null && userData.reject_note_extend !== '' && userData.reject_note_extend !== undefined) {
       $("#rejectReasonExtend").html(String(userData.reject_note_extend))
       $("#extendRejectNote").css("display", "block")
@@ -434,55 +444,52 @@ function setupUserData() {
 function initializeStep() {
   let promise = new Promise(function (resolve, reject) {
     let currentUser = firebase.auth().currentUser
-    let db = firebase.firestore()
-    db.collection('users').doc(firebase.auth().currentUser.uid).get().then(doc => {
-      if (doc.data() === undefined) {
-        let requestFunction = firebase.functions().httpsCallable('reworkInitializeUserDoc')
-        requestFunction({}).then(response => {
-          console.log("rework success")
-        })
-      }
-      userData = doc.data() || {}
-      if (userData.private_user === true) {
-        window.location.href = '/dashboard'+window.location.search
-      } else if (currentUser.emailVerified == true) {
-        goToVerifyPhoneStep()
+    if (currentUser.emailVerified == true) {
+      goToVerifyPhoneStep()
+      let db = firebase.firestore()
+      db.collection('users').doc(firebase.auth().currentUser.uid).get().then(doc => {
+        if (doc.data() === undefined) {
+          let requestFunction = firebase.functions().httpsCallable('reworkInitializeUserDoc')
+          requestFunction({}).then(response => {
+            console.log("rework success")
+          })
+        }
+        userData = doc.data() || {}
         if (Date.now() > endtimeOfIco && userData.all_done) {
-          window.location.href = '/dashboard'+window.location.search
-        } else {
-          setupUserData()
-          if (doc.data().phone_verified === true) {
-            goToKYCStep()
-            if (userData.kyc_status === 'pending') {
-              $("#kycContentForm").removeClass("show-detail")
-              $("#kycContentPending").addClass("show-detail")
+          window.location.href = '/dashboard-kr'+window.location.search
+        }
+        setupUserData()
+        if (doc.data().phone_verified === true) {
+          goToKYCStep()
+          if (userData.kyc_status === 'pending') {
+            $("#kycContentForm").removeClass("show-detail")
+            $("#kycContentPending").addClass("show-detail")
+            resolve()
+          } else if (userData.kyc_status === 'rejected') {
+            $("#kycContentForm").removeClass("show-detail")
+            $("#kycContentRejected").addClass("show-detail")
+            resolve()
+          } else if (userData.kyc_status === 'approved') {
+            goToFinishStep()
+            if (userData.all_done === true) {
+              goToICOStep()
               resolve()
-            } else if (userData.kyc_status === 'rejected') {
-              $("#kycContentForm").removeClass("show-detail")
-              $("#kycContentRejected").addClass("show-detail")
-              resolve()
-            } else if (userData.kyc_status === 'approved') {
-              goToFinishStep()
-              if (userData.all_done === true) {
-                goToICOStep()
-                resolve()
-              } else {
-                resolve()
-              }
             } else {
               resolve()
             }
           } else {
             resolve()
           }
+        } else {
+          resolve()
         }
-      } else {
-        $("#emailToVerify").html(currentUser.email)
+      }).catch(() => {
         resolve()
-      }
-    }).catch(() => {
+      })
+    } else {
+      $("#emailToVerify").html(currentUser.email)
       resolve()
-    })
+    }
   })
   return promise
 }
@@ -509,14 +516,20 @@ function proceedToIco() {
     }
     gtag('event','click',{'event_category':'button','event_label':'finish-kyc'});
     if (Date.now() > endtimeOfIco) {
-      window.location.href = '/dashboard'+window.location.search
+      window.location.href = '/dashboard-kr'+window.location.search
     }
     setEnable([icoBtn])
+    $("#icoPage").addClass("show-detail")
+    $('#icoStep').addClass('current')
+    $("#congratulationPage").removeClass("show-detail")
   }).catch(() => {
     if (Date.now() > endtimeOfIco) {
-      window.location.href = '/dashboard'+window.location.search
+      window.location.href = '/dashboard-kr'+window.location.search
     }
     setEnable([icoBtn])
+    $("#icoPage").addClass("show-detail")
+    $('#icoStep').addClass('current')
+    $("#congratulationPage").removeClass("show-detail")
   })
 }
 
@@ -585,7 +598,7 @@ function submitKyc() {
     if ($("#kycFormAlert").css('display') == 'none') {
       $("#kycFormAlert").slideToggle()
     }
-    $("#kycFormAlertText").html("Sorry, Civils in the jurisdiction of the US, China, and Singapore are not able to join this ICO contribution according to the laws. Apologize for inconvenience this may cause.")
+    $("#kycFormAlertText").html("죄송합니다. 미국과 중국, 싱가포르 국적자들께서는 관련 법에 따라 ICO에 참여하실 수 없습니다. 이로 인해 발생할 수 있는 불편에 대해 사과 드립니다.")
     validate = false
   }
   if ((citizen_id == '' || citizen_id == undefined) && country === 'TH') { $('#kycCitizenIdAlert').addClass('invalid'); validate = false }
@@ -642,12 +655,12 @@ function submitKyc() {
           $('#kycContentPending').addClass('show-detail')
           $(".overlay, div.loader-checker").hide()
         } else {
-          window.location.href = '/dashboard'+window.location.search
+          window.location.href = '/dashboard-kr'+window.location.search
         }
-      } else {
-        $("div.loader-checker").hide()
-        $("div.error-not-match").show()
-      }
+     } else {
+       $("div.loader-checker").hide()
+       $("div.error-not-match").show()
+     }
       setEnable([btnDOM, firstNameDOM, lastNameDOM, countryDOM, citizenIdDOM, passportNumberDOM, addressDOM, pic1DOM, pic2DOM, pic4DOM, pic5DOM])
     }).catch(err => {
       console.log(err.message)
@@ -663,8 +676,6 @@ function uploadFile(fileNumber, file) {
   if ($("#sampleImage"+fileNumber).css('display') == 'block') {
     $("#sampleImage"+fileNumber).fadeToggle(400, function() { $("#sampleImage"+fileNumber).attr("src", "") })
   }
-  //$("#kycPicName"+fileNumber).html(file.name)
-  //$("#kycPicName"+fileNumber).html(escape(file.name))
   $("#kycPicName"+fileNumber).text(file.name)
   $("#kycPic"+fileNumber+"Alert").removeClass("invalid")
   let user = firebase.auth().currentUser
@@ -848,18 +859,27 @@ $(document).ready(function () {
   firebase.auth().onAuthStateChanged(function (user) {
     if (!user) {
       console.log('Go to login')
-      window.location.href = '/'+window.location.search
+      window.location.href = '/kr'+window.location.search
     } else {
       initializeAdmin().then(() => {
         $('#adminShortcut').css('display', 'block')
-      }).catch(() => {}).then(() => {
+      }).finally(() => {
         initializeStep().then(() => {
-        }).catch(() => {}).then(() => {
+        }).finally(() => {
           $('#preLoader').fadeToggle()
         })
       })
     }
   })
+
+  $('body').on('click', '.dropdown a', function() {
+    var dropdown = $(this).parent(".dropdown");
+
+    dropdown.toggleClass("show-dropdown");
+
+    clickBody('dropdown', dropdown, 'show-dropdown');
+  });
+
 })
 
 // Click body for close

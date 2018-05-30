@@ -365,11 +365,7 @@ function submitDepositXLMTran() {
   const xlm_value = (parseFloat(xlmToSixInput.value) || 0)
   setDisable([btnDOM])
   let amount = 0
-  if (userData.is_presale === true) {
-    amount = Number((xlm_value*xlmPrice.six_per_xlm).toFixed(7))
-  } else {
-    amount = Number((xlm_value*xlmPrice.six_per_xlm).toFixed(7))*1.06
-  }
+  amount = Number((xlm_value*xlmPrice.six_per_xlm).toFixed(7))
   window.dataLayer = window.dataLayer || [];
   function gtag () {
     dataLayer.push(arguments);
@@ -403,11 +399,7 @@ function submitDepositETHTran() {
   const eth_value = (parseFloat(ethToSixInput.value) || 0)
   setDisable([btnDOM])
   let amount = 0
-  if (userData.is_presale === true) {
-    amount = Number((eth_value*ethPrice.six_per_eth).toFixed(7))
-  } else {
-    amount = Number((eth_value*ethPrice.six_per_eth).toFixed(7))*1.06
-  }
+  amount = Number((eth_value*ethPrice.six_per_eth).toFixed(7))
   window.dataLayer = window.dataLayer || [];
   function gtag () {
     dataLayer.push(arguments);
@@ -474,6 +466,37 @@ function gotoCurrency() {
   $("#congratulationBox").css("display", "none")
   $("#walletBox").css("display", "none")
   $("#warnBox").css("display", "none")
+}
+
+function buildFreeTx() {
+  var tr = document.createElement("tr");
+  var td1 = document.createElement("td");
+  var txt1 = document.createTextNode('-')
+  td1.appendChild(txt1);
+
+  var td2 = document.createElement("td");
+  var txt2 = document.createTextNode("20 SIX");
+  td2.appendChild(txt2);
+
+  var td3 = document.createElement("td");
+  var txt3 = document.createTextNode("-");
+  td3.appendChild(txt3)
+
+  var td4 = document.createElement("td");
+  var txt4 = document.createTextNode("airdrop");
+  td4.appendChild(txt4)
+
+  var td5 = document.createElement("td");
+  var txt5 = document.createTextNode("-");
+  td5.appendChild(txt5)
+
+  tr.appendChild(td1);
+  tr.appendChild(td2);
+  tr.appendChild(td3);
+  tr.appendChild(td4);
+  tr.appendChild(td5);
+
+  return tr
 }
 
 function buildListTx(doc) {
@@ -893,6 +916,8 @@ function getMyWalletBalance() {
   }).catch(err => { console.log(err) })
 }
 
+let totalSix = 20
+
 function getTxs () {
   if (firebase.auth().currentUser !== null) {
     firebase.firestore().collection('purchase_txs')
@@ -901,6 +926,9 @@ function getTxs () {
     .then(snapshot => {
       return firebase.firestore().collection('presale').doc('supply').collection('purchased_presale_tx').doc(firebase.auth().currentUser.uid).get().then(preDoc => {
         let preDocData = preDoc.data()
+        if (preDocData === undefined) {
+          preDocData = {}
+        }
         $('#userTxs').empty()
         $('#userTxs2').empty()
         let allDoc = []
@@ -912,6 +940,22 @@ function getTxs () {
           let data = d.data()
           if (preDocData[d.id] !== undefined && preDocData[d.id] !== null) {
             data.six_amount = Number((data.six_amount * 1.06).toFixed(7))
+            totalSix += data.six_amount
+            $('#totalSix').animateNumber(
+              {
+                number: totalSix.toFixed(7),
+                numberStep: percent_number_step
+              }
+            )
+          } else {
+            data.six_amount = Number((data.six_amount).toFixed(7))
+            totalSix += data.six_amount
+            $('#totalSix').animateNumber(
+              {
+                number: totalSix.toFixed(7),
+                numberStep: percent_number_step
+              }
+            )
           }
           const elem = buildListTx(data)
           $("#userTxs")[0].appendChild(elem)
@@ -924,6 +968,13 @@ function getTxs () {
           allDoc.push(d)
         })
         allDoc.sort(compare)
+        var percent_number_step = $.animateNumber.numberStepFactories.append(' SIX')
+        $('#totalSix').animateNumber(
+          {
+            number: totalSix.toFixed(7),
+            numberStep: percent_number_step
+          }
+        );
         allDoc.forEach(d => {
           const data = d.data()
           const elem = buildListTx(data)
@@ -937,6 +988,8 @@ function getTxs () {
         $("#userTxs")[0].prepend(elem)
         $("#userTxs2")[0].prepend(elem)
       }
+      const elem = buildFreeTx()
+      $("#userTxs")[0].appendChild(elem)
     })
   }
 }
@@ -1044,7 +1097,6 @@ $(document).ready(function(){
   document.getElementById('xlmToSixInput').onkeyup = function () {
     let number = parseFloat(this.value) || 0
     $("#xlmToSix").html(Number((number*xlmPrice.six_per_xlm).toFixed(7)).toLocaleString())
-    $("#bonusXLM").html(Number(((number*xlmPrice.six_per_xlm)*0.06).toFixed(7)))
     $("#xlmToSixInputAlertText").html("")
     $("#xlmToSixInputAlertText").css("display", "none")
     $("#xlmToSixInputAlert").removeClass("invalid")
@@ -1053,7 +1105,6 @@ $(document).ready(function(){
   document.getElementById('ethToSixInput').onkeyup = function() {
     let number = parseFloat(this.value) || 0
     $("#ethToSix").html(Number((number*ethPrice.six_per_eth).toFixed(7)).toLocaleString())
-    $("#bonusETH").html(Number(((number*ethPrice.six_per_eth)*0.06).toFixed(7)))
     $("#ethToSixInputAlertText").html("")
     $("#ethToSixInputAlertText").css("display", "none")
     $("#ethToSixInputAlert").removeClass("invalid")

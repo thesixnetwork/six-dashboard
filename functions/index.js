@@ -14,6 +14,7 @@ admin.initializeApp(functions.config().firebase);
 const EthereumService = require("./service-ethereum");
 const stellarService = require("./stellar-service");
 const claimService= require('./claim-service')
+const activecampaign_subscriber = require('./activecampaign_subscriber')
 
 const handleCreateStellarAccount = claimService.handleCreateStellarAccount
 const handleClaimSix = claimService.handleClaimSix
@@ -22,26 +23,22 @@ const fireStore = admin.firestore();
 
 require("./initialFireStoreData")(fireStore);
 
-const account = {
-  user: "apikey",
-  pass: "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"
-};
+const SENDGRID_API_KEY = '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'
 
 const sgOptions = {
   auth: {
-    api_key:
-      "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"
+    api_key: SENDGRID_API_KEY
   }
 };
 
 const mailTransport = nodemailer.createTransport(sgTransport(sgOptions));
 
-const triggers = require("./trigger")(functions, fireStore);
+const triggers = require("./trigger")(admin, functions, fireStore)
 for (let trigger of triggers) {
   exports[trigger.name] = trigger.module;
 }
 
-const userModels = require("./model/user")(functions, fireStore);
+const userModels = require("./model/user")(functions, fireStore)
 for (let trigger of userModels) {
   exports[trigger.name] = trigger.module;
 }
@@ -366,8 +363,9 @@ exports.phoneVerificationRequest = functions.https.onCall((data, context) => {
         if (doc.data().is_verified === true) {
           return {
             success: false,
-            error_message: "Phone number has already been used"
-          };
+            error_message: 'Phone number has already been used',
+            error_code: 100
+          }
         } else {
           return generatePhoneVerificationCode(phoneNumber)
             .then(data => {
@@ -426,13 +424,13 @@ exports.phoneVerificationRequest = functions.https.onCall((data, context) => {
 });
 
 exports.phoneVerificationSubmit = functions.https.onCall((data, context) => {
-  let ref = admin.firestore().collection("phone-verifications");
-  let userRef = admin.firestore().collection("users");
-  let phoneNumber = data.phone_number;
-  let country = data.country;
-  let refCode = data.ref_code;
-  let code = data.code;
-  const uid = context.auth.uid;
+  let ref = admin.firestore().collection('phone-verifications')
+  let userRef = admin.firestore().collection('users')
+  let phoneNumber = data.phone_number
+  let country = data.country
+  let refCode = data.ref_code
+  let code = data.code
+  const uid = context.auth.uid
   return ref
     .doc(phoneNumber)
     .get()
@@ -441,38 +439,41 @@ exports.phoneVerificationSubmit = functions.https.onCall((data, context) => {
         if (doc.data().is_verified === true) {
           return {
             success: false,
-            error_message: "Phone number has already been used"
-          };
+            error_message: 'Phone number has already been used',
+            error_code: 100
+          }
         } else {
           if (
             doc.data().valid_until > Math.round(new Date().getTime() / 1000)
           ) {
             if (doc.data().ref_code === refCode && doc.data().code === code) {
-              let batch = admin.firestore().batch();
-              batch.set(ref.doc(phoneNumber), { is_verified: true });
+              let batch = admin.firestore().batch()
+              batch.set(ref.doc(phoneNumber), { is_verified: true })
               batch.update(userRef.doc(uid), {
                 phone_number: phoneNumber,
                 phone_verified: true,
                 country: country
-              });
+              })
               return batch
                 .commit()
                 .then(() => {
-                  return { success: true };
+                  return { success: true }
                 })
                 .catch(err => {
-                  return { success: false, error_message: err.message };
-                });
+                  return { success: false, error_message: err.message }
+                })
             } else {
               return {
                 success: false,
-                error_message: "Invalid verification code"
-              };
+                error_message: 'Invalid verification code',
+                error_code: 200
+              }
             }
           } else {
             return {
               success: false,
-              error_message: "Verification session expired"
+              error_message: "Verification session expired",
+              error_code: 300
             };
           }
         }
@@ -577,6 +578,22 @@ exports.updateXLMWallet = functions.https.onCall((data, context) => {
   }
 });
 
+exports.reworkInitializeUserDoc = functions.https.onCall((data, context) => {
+  const email = context.auth.token.email
+  const registration_time = new Date().getTime()
+  const uid = context.auth.uid
+  let ref = admin
+    .firestore()
+    .collection("users")
+    .doc(uid);
+  return ref.set({ email: email, registration_time: registration_time, kyc_status: 'not_complete' }, { merge: true }).then(() => {
+    return { success: true }
+  }).catch(err => {
+    return { success: false }
+  })
+})
+
+
 exports.initializeUserDoc = functions.auth.user().onCreate(event => {
   const user = event.data;
   const uid = user.uid;
@@ -596,7 +613,7 @@ exports.initializeUserDoc = functions.auth.user().onCreate(event => {
     .firestore()
     .collection("users")
     .doc(user.uid);
-  return ref.set(setUser, { merge: true }).then(() => {
+  return ref.set({ email: email, registration_time: user.metadata.a, kyc_status: 'not_complete' }, { merge: true }).then(() => {
     return true;
   });
 });
@@ -679,253 +696,6 @@ exports.logsUserTable = functions.firestore
       .set({ document, oldDocument });
   });
 
-function genKycReadyEmail({ email }) {
-  return new Promise((resolve, reject) => {
-    const mailOptions = {
-      from: '"SIX Network" <noreply@six.network>',
-      to: email,
-      subject: "SIX.network: Pre-ICO is now open for contribution ",
-      html: `
-      <body id="ac-designer" class="body" style="font-family:Arial;line-height:1.1;margin-top:0px;margin-bottom:0px;margin-right:0px;margin-left:0px;background-color:#ffffff;width:100%;text-align:center;">
-        <div class="divbody" style="margin-top:0px;margin-bottom:0px;margin-right:0px;margin-left:0px;outline-style:none;padding-top:0px;padding-bottom:0px;padding-right:0px;padding-left:0px;color:#000000;font-family:arial;line-height:1.1;width:100%;background-color:#ffffff;background-image:none;background-repeat:repeat;background-position:top left;background-attachment:scroll;text-align:center;">
-          <table class="template-table" border="0" cellpadding="0" cellspacing="0" width="100%" align="left" style="font-size:13px;min-width:auto;mso-table-lspace:0pt;mso-table-rspace:0pt;background-color:#ffffff;background-image:none;background-repeat:repeat;background-position:top left;background-attachment:scroll;">
-            <tr>
-              <td align="center" valign="top" width="100%">
-                <table class="template-table" border="0" cellpadding="0" cellspacing="0" width="650" bgcolor="#ffffff" style="font-size:13px;min-width:auto;mso-table-lspace:0pt;mso-table-rspace:0pt;max-width:650px;">
-                  <tr>
-                    <td id="layout_table_8ec95b1f4afbf007cff9c9f914a162067c7ba113" valign="top" align="center" width="650">
-                      <table cellpadding="0" cellspacing="0" border="0" class="layout layout-table root-table" width="650" style="font-size:13px;min-width:100%;mso-table-lspace:0pt;mso-table-rspace:0pt;">
-                        <tr>
-                          <td id="layout-row-margin105" valign="top">
-                            <table width="100%" border="0" cellpadding="0" cellspacing="0" style="font-size:13px;min-width:100%;mso-table-lspace:0pt;mso-table-rspace:0pt;">
-                              <tr id="layout-row105" class="layout layout-row widget _widget_spacer ">
-                                <td id="layout-row-padding105" valign="top">
-                                  <table width="100%" border="0" cellpadding="0" cellspacing="0" style="font-size:13px;min-width:100%;mso-table-lspace:0pt;mso-table-rspace:0pt;">
-                                    <tr>
-                                      <td valign="top" height="30">
-                                        <div class="spacer" style="margin-top:0;margin-bottom:0;margin-right:0;margin-left:0;outline-style:none;padding-top:0;padding-bottom:0;padding-right:0;padding-left:0;height:30px;">
-                                          <table cellpadding="0" cellspacing="0" border="0" width="100%" style="font-size:13px;min-width:100%;mso-table-lspace:0pt;mso-table-rspace:0pt;">
-                                            <tbody>
-                                              <tr>
-                                                <td class="spacer-body" valign="top" height="30" width="650"> </td>
-                                              </tr>
-                                            </tbody>
-                                          </table>
-                                        </div>
-                                      </td>
-                                    </tr>
-                                  </table>
-                                </td>
-                              </tr>
-                            </table>
-                          </td>
-                        </tr>
-                        <tr>
-                          <td id="layout-row-margin107" valign="top">
-                            <table width="100%" border="0" cellpadding="0" cellspacing="0" style="font-size:13px;min-width:100%;mso-table-lspace:0pt;mso-table-rspace:0pt;">
-                              <tr id="layout-row107" class="layout layout-row widget _widget_picture " align="center">
-                                <td id="layout-row-padding107" valign="top">
-                                  <table width="100%" border="0" cellpadding="0" cellspacing="0" style="font-size:13px;min-width:100%;mso-table-lspace:0pt;mso-table-rspace:0pt;">
-                                    <tr>
-                                      <td class="image-td" align="center" valign="top" width="650">
-                                        <img src="https://six.network/images/logo/six-logo.png" alt="" width="296" style="display:block;border-style:none;outline-style:none;width:120px;opacity:1;max-width:100%;">
-                                      </td>
-                                    </tr>
-                                  </table>
-                                </td>
-                              </tr>
-                            </table>
-                          </td>
-                        </tr>
-                        <tr>
-                          <td id="layout-row-margin108" valign="top">
-                            <table width="100%" border="0" cellpadding="0" cellspacing="0" style="font-size:13px;min-width:100%;mso-table-lspace:0pt;mso-table-rspace:0pt;">
-                              <tr id="layout-row108" class="layout layout-row widget _widget_break ">
-                                <td id="layout-row-padding108" valign="top" style="line-height:0;mso-line-height-rule:exactly;">
-                                  <table width="100%" border="0" cellpadding="0" cellspacing="0" style="font-size:13px;min-width:100%;mso-table-lspace:0pt;mso-table-rspace:0pt;border-collapse:collapse;line-height:0;mso-line-height-rule:exactly;">
-                                    <tr>
-                                      <td height="10" style="line-height:0;mso-line-height-rule:exactly;"></td>
-                                    </tr>
-                                    <tr>
-                                      <td align="center" height="1" width="650" style="line-height:0;mso-line-height-rule:exactly;">
-                                        <table align="center" border="0" cellpadding="0" cellspacing="0" height="1" width="650" style="font-size:13px;min-width:auto!important;mso-table-lspace:0pt;mso-table-rspace:0pt;border-collapse:collapse;line-height:0;mso-line-height-rule:exactly;width:100%;max-width:100%;">
-                                          <tr>
-                                            <td class="break-line" bgcolor="#000000" height="1" width="650" style="line-height:1px;mso-line-height-rule:exactly;height:1px;width:650px;background-color:#000000;">
-                                            </td>
-                                          </tr>
-                                        </table>
-                                      </td>
-                                    </tr>
-                                    <tr>
-                                      <td height="10" style="line-height:0;mso-line-height-rule:exactly;"></td>
-                                    </tr>
-                                  </table>
-                                </td>
-                              </tr>
-                            </table>
-                          </td>
-                        </tr>
-      
-                        <tr>
-                          <td id="layout-row-margin109" valign="top" style="padding-top:5px;padding-bottom:5px;padding-right:5px;padding-left:5px;">
-                            <table width="100%" border="0" cellpadding="0" cellspacing="0" style="font-size:13px;min-width:100%;mso-table-lspace:0pt;mso-table-rspace:0pt;border-collapse:initial !important;">
-                              <tr id="layout-row109" class="layout layout-row widget _widget_text style109" style="margin-top:0;margin-bottom:0;margin-right:0;margin-left:0;padding-top:0;padding-bottom:0;padding-right:0;padding-left:0;">
-                                <td id="layout-row-padding109" valign="top" style="padding-top:5px;padding-bottom:5px;padding-right:5px;padding-left:5px;">
-                                  <table width="100%" border="0" cellpadding="0" cellspacing="0" style="font-size:13px;min-width:100%;mso-table-lspace:0pt;mso-table-rspace:0pt;">
-                                    <tr>
-                                      <td id="text_div99" class="td_text td_block" valign="top" align="left" style="color:inherit;font-size:12px;font-weight:inherit;line-height:1;text-decoration:inherit;font-family:Arial;">
-                                        <div style="margin-top:0;margin-bottom:0;margin-right:0;margin-left:0;outline-style:none;padding-top:0;padding-bottom:0;padding-right:0;padding-left:0;font-size:15px;">
-                                          <span class="" style="color:inherit;font-size:15px;font-weight:inherit;line-height:inherit;text-decoration:inherit;">
-                                            <h2>Pre-ICO is now open for contribution !</h2>
-                                            <p>We have already opened a pre-ICO. You can login with your registered username and password
-                                              to contribute.</p>
-                                            <p>Please note that, the pre-ICO 6% bonus is first come first serve and
-                                              <u>very limited.</u>
-                                            </p>
-                                            <p>
-                                              Proceed to contribute:
-                                              <a href="https://ico.six.network">https://ico.six.network</a>
-                                              <br> How to buy:
-                                              <a href="https://six.network/faq.html#howtobuy">https://six.network/faq.html#howtobuy</a>
-                                            </p>
-                                            <p>Best Regards,
-                                              <br>SIX.network team</p>
-                                          </span>
-                                          <br>
-                                          <div style="margin-top:0;margin-bottom:0;margin-right:0;margin-left:0;outline-style:none;padding-top:0;padding-bottom:0;padding-right:0;padding-left:0;text-align:center;">
-                                            <span style="color:#000000;font-size:inherit;font-weight:400;line-height:inherit;text-decoration:inherit;font-family:arial;text-align:inherit;">Follow us</span>
-                                            <span class="" style="color:#000000;font-size:inherit;font-weight:400;line-height:inherit;text-decoration:inherit;font-family:arial;text-align:inherit;"></span>
-                                            <span style="color:#000000;font-size:inherit;font-weight:400;line-height:inherit;text-decoration:inherit;font-family:arial;text-align:inherit;">
-                                            :</span>
-                                          </div>
-      
-                                        </div>
-                                      </td>
-                                    </tr>
-                                  </table>
-                                </td>
-                              </tr>
-                            </table>
-                          </td>
-                        </tr>
-                        <tr>
-                          <td id="layout-row-margin110" valign="top" style="padding-top:5px;padding-bottom:5px;padding-right:5px;padding-left:5px;">
-                            <table width="100%" border="0" cellpadding="0" cellspacing="0" style="font-size:13px;min-width:100%;mso-table-lspace:0pt;mso-table-rspace:0pt;border-collapse:initial !important;">
-                              <tr id="layout-row110" class="layout layout-row widget _widget_social style110">
-                                <td id="layout-row-padding110" valign="top" style="padding-top:5px;padding-bottom:5px;padding-right:5px;padding-left:5px;">
-                                  <table width="100%" border="0" cellpadding="0" cellspacing="0" style="font-size:13px;min-width:100%;mso-table-lspace:0pt;mso-table-rspace:0pt;">
-                                    <tr>
-                                      <td>
-                                        <table width="100%" cellspacing="0" cellpadding="0" style="font-size:13px;min-width:100%;mso-table-lspace:0pt;mso-table-rspace:0pt;">
-                                          <tr>
-                                            <td width="650" align="left">
-                                              <center style="margin-top:0;margin-bottom:0;margin-right:0;margin-left:0;outline-style:none;padding-top:0;padding-bottom:0;padding-right:0;padding-left:0;font-size:0px;">
-                                                <table class="_ac_social_table" cellspacing="0" cellpadding="0" align="center" style="font-size:0;min-width:auto!important;mso-table-lspace:0pt;mso-table-rspace:0pt;margin-top:auto !important;margin-bottom:auto !important;margin-right:auto !important;margin-left:auto !important;display:inline-block!important;text-align:center!important;">
-                                                  <tr>
-                                                    <td align="center" valign="middle" width="34" style="display:inline-block!important;font-size:0;width:34px!important;">
-                                                      <div class="__ac_social_icons" style="margin-top:0;margin-bottom:0;margin-right:0;margin-left:0;outline-style:none;padding-top:0;padding-bottom:0;padding-right:0;padding-left:0;">
-                                                        <a href="https://www.facebook.com/thesixnetwork/" id="facebook" class="__ac_social_icon_link"
-                                                          style="margin-top:0;margin-bottom:0;margin-right:0;margin-left:0;outline-style:none;padding-top:0;padding-bottom:0;padding-right:0;padding-left:0;color:#045fb4;">
-                                                          <img src="http://sixnetwork.img-us3.com/_social_/flat-color-poly-facebook.png"
-                                                            border="0" width="34" style="display:block;border-style:none;">
-                                                        </a>
-                                                      </div>
-                                                    </td>
-                                                    <td width="10" style="display:inline-block!important;font-size:0;width:10px!important;"> </td>
-                                                    <td align="center" valign="middle" width="34" style="display:inline-block!important;font-size:0;width:34px!important;">
-                                                      <div class="__ac_social_icons" style="margin-top:0;margin-bottom:0;margin-right:0;margin-left:0;outline-style:none;padding-top:0;padding-bottom:0;padding-right:0;padding-left:0;">
-                                                        <a href="https://twitter.com/theSIXnetwork" id="twitter" class="__ac_social_icon_link"
-                                                          style="margin-top:0;margin-bottom:0;margin-right:0;margin-left:0;outline-style:none;padding-top:0;padding-bottom:0;padding-right:0;padding-left:0;color:#045fb4;">
-                                                          <img src="http://sixnetwork.img-us3.com/_social_/flat-color-poly-twitter.png"
-                                                            border="0" width="34" style="display:block;border-style:none;">
-                                                        </a>
-                                                      </div>
-                                                    </td>
-                                                    <td width="10" style="display:inline-block!important;font-size:0;width:10px!important;"> </td>
-                                                    <td align="center" valign="middle" width="34" style="display:inline-block!important;font-size:0;width:34px!important;">
-                                                      <div class="__ac_social_icons" style="margin-top:0;margin-bottom:0;margin-right:0;margin-left:0;outline-style:none;padding-top:0;padding-bottom:0;padding-right:0;padding-left:0;">
-                                                        <a href="https://six.network" id="website" class="__ac_social_icon_link"
-                                                          style="margin-top:0;margin-bottom:0;margin-right:0;margin-left:0;outline-style:none;padding-top:0;padding-bottom:0;padding-right:0;padding-left:0;color:#045fb4;">
-                                                          <img src="http://sixnetwork.img-us3.com/_social_/flat-color-poly-website.png"
-                                                            border="0" width="34" style="display:block;border-style:none;">
-                                                        </a>
-                                                      </div>
-                                                    </td>
-                                                  </tr>
-                                                </table>
-                                              </center>
-                                            </td>
-                                          </tr>
-                                        </table>
-                                      </td>
-                                    </tr>
-                                  </table>
-                                </td>
-                              </tr>
-                            </table>
-                          </td>
-                        </tr>
-                        <tr>
-                          <td id="layout-row-margin104" valign="top">
-                            <table width="100%" border="0" cellpadding="0" cellspacing="0" style="font-size:13px;min-width:100%;mso-table-lspace:0pt;mso-table-rspace:0pt;">
-                              <tr id="layout-row104" class="layout layout-row widget _widget_text " style="margin-top:0;margin-bottom:0;margin-right:0;margin-left:0;padding-top:0;padding-bottom:0;padding-right:0;padding-left:0;">
-                                <td id="layout-row-padding104" valign="top">
-                                  <table width="100%" border="0" cellpadding="0" cellspacing="0" style="font-size:13px;min-width:100%;mso-table-lspace:0pt;mso-table-rspace:0pt;border-collapse:collapse;line-height:0;mso-line-height-rule:exactly;">
-                                    <tbody>
-                                      <tr>
-                                        <td height="10" style="line-height:0;mso-line-height-rule:exactly;"></td>
-                                      </tr>
-                                      <tr>
-                                        <td align="center" height="1" width="650" style="line-height:0;mso-line-height-rule:exactly;">
-                                          <table align="center" border="0" cellpadding="0" cellspacing="0" height="1" width="650" style="font-size:13px;min-width:auto!important;mso-table-lspace:0pt;mso-table-rspace:0pt;border-collapse:collapse;line-height:0;mso-line-height-rule:exactly;width:100%;max-width:100%;">
-                                            <tbody>
-                                              <tr>
-                                                <td class="break-line" bgcolor="#000000" height="1" width="650" style="line-height:1px;mso-line-height-rule:exactly;height:1px;width:650px;background-color:#000000;">
-                                                </td>
-                                              </tr>
-                                            </tbody>
-                                          </table>
-                                        </td>
-                                      </tr>
-                                      <tr>
-                                        <td height="10" style="line-height:0;mso-line-height-rule:exactly;"></td>
-                                      </tr>
-                                    </tbody>
-                                  </table>
-                                  <table width="100%" border="0" cellpadding="0" cellspacing="0" style="font-size:13px;min-width:100%;mso-table-lspace:0pt;mso-table-rspace:0pt;">
-                                    <tr>
-                                      <td id="text_div94" class="td_text td_block" valign="top" align="left" style="line-height:1.4;color:inherit;font-size:12px;font-weight:inherit;text-decoration:inherit;font-family:Arial;mso-line-height-rule:exactly;">
-                                        <div data-line-height="1.4" style="line-height:1.4;margin-top:0;margin-bottom:0;margin-right:0;margin-left:0;outline-style:none;padding-top:0;padding-bottom:0;padding-right:0;padding-left:0;font-size:12px;mso-line-height-rule:exactly;">
-                                          <div style="margin-top:0;margin-bottom:0;margin-right:0;margin-left:0;outline-style:none;padding-top:0;padding-bottom:0;padding-right:0;padding-left:0;">
-                                            <p style="margin-top:0;margin-bottom:0;margin-right:0;margin-left:0;outline-style:none;padding-top:0;padding-bottom:0;padding-right:0;padding-left:0;color:inherit;font-size:inherit;font-weight:inherit;line-height:inherit;text-decoration:inherit;">This email was sent to you by SIX.network because you registered for ICO contribution.
-                                              If you don't know this source, please ignore this email..</p>
-                                          </div>
-                                        </div>
-                                        <!--[if (gte mso 12)&(lte mso 15) ]>
-                                                        <style data-ac-keep="true" data-ac-inline="false"> #text_div94, #text_div94 div { line-height: 140% !important !important; } !important;</style>
-                                                        <![endif]-->
-                                      </td>
-                                    </tr>
-                                  </table>
-                                </td>
-                              </tr>
-                            </table>
-                          </td>
-                        </tr>
-                      </table>
-                    </td>
-                  </tr>
-                </table>
-              </td>
-            </tr>
-          </table>
-        </div>
-      </body>
-    `
-    };
-    resolve(mailOptions);
-  });
-}
 
 var _extends =
   Object.assign ||
@@ -975,7 +745,7 @@ var sendEmail = (function() {
 
                 email = _step.value;
                 _context.next = 9;
-                return genKycReadyEmail({ email: email });
+                 break
 
               case 9:
                 mailOptions = _context.sent;
@@ -1055,35 +825,39 @@ var sendEmail = (function() {
   };
 })();
 
-function _asyncToGenerator(fn) {
-  return function() {
-    var gen = fn.apply(this, arguments);
-    return new Promise(function(resolve, reject) {
-      function step(key, arg) {
-        try {
-          var info = gen[key](arg);
-          var value = info.value;
-        } catch (error) {
-          reject(error);
-          return;
-        }
-        if (info.done) {
-          resolve(value);
-        } else {
-          return Promise.resolve(value).then(
-            function(value) {
-              step("next", value);
-            },
-            function(err) {
-              step("throw", err);
-            }
-          );
-        }
-      }
-      return step("next");
-    });
-  };
-}
+// f_toConsumableArrayunction (arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
+
+function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, arguments); return new Promise(function (resolve, reject) { function step(key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { return Promise.resolve(value).then(function (value) { step("next", value); }, function (err) { step("throw", err); }); } } return step("next"); }); }; }
+
+// function _asyncToGenerator(fn) {
+//   return function() {
+//     var gen = fn.apply(this, arguments);
+//     return new Promise(function(resolve, reject) {
+//       function step(key, arg) {
+//         try {
+//           var info = gen[key](arg);
+//           var value = info.value;
+//         } catch (error) {
+//           reject(error);
+//           return;
+//         }
+//         if (info.done) {
+//           resolve(value);
+//         } else {
+//           return Promise.resolve(value).then(
+//             function(value) {
+//               step("next", value);
+//             },
+//             function(err) {
+//               step("throw", err);
+//             }
+//           );
+//         }
+//       }
+//       return step("next");
+//     });
+//   };
+// }
 
 // Upper function convert from this function should not remove.
 // async function sendEmail  (emails) {
@@ -1108,32 +882,6 @@ exports.sendKycReadyEmail = functions.https.onRequest((req, res) => {
     return res.status(400).json(new Error("Password not match"));
   }
 });
-
-exports.autoSendKycReadyEmail = functions.firestore
-  .document("/users/{userId}")
-  .onUpdate(event => {
-    console.log(event.data.kyc_status);
-    const document = event.data.exists ? event.data.data() : null;
-    const oldDocument = event.data.previous.data();
-    if (
-      document.kyc_status === "approved" &&
-      !oldDocument.kyc_status !== "approved"
-    ) {
-      console.log(`Send pro-ico email to : ${document.email}`);
-      return genKycReadyEmail({ email: document.email }).then(mailOptions => {
-        return mailTransport
-          .sendMail(mailOptions)
-          .then(result => {
-            console.log(result, "result");
-            return result;
-          })
-          .catch(err => {
-            console.log(err);
-            return err;
-          });
-      });
-    }
-  });
 
   function genReminderEmail(emails) {
     return new Promise((resolve, reject) => {
@@ -1187,7 +935,7 @@ exports.autoSendKycReadyEmail = functions.firestore
                         <a href="https://goo.gl/H14G3B" target="_blank"  class="button" style="font-family: &quot;Prompt&quot;, sans-serif;color: #FFF;background: #3B409E;font-size: 16px;padding: 15px 20px;float: center;border-radius: 5px;margin-top: 10px;margin-bottom: 10px">ส่งเอกสาร</a>
                     </div>
                     <!-- end-thai -->
-            
+
                     <!-- english -->
                     <h2 class="title" style="font-family: &quot;Prompt&quot;, sans-serif;color: rgba(33, 33, 33, 1)">Hello !</h2>
                     <h3 class="subtitle" style="font-family: &quot;Prompt&quot;, sans-serif;color: rgba(33, 33, 33, 1)">Thank you for your interest in SIX.network</h3>
@@ -1212,6 +960,107 @@ exports.autoSendKycReadyEmail = functions.firestore
                         <a href="https://goo.gl/fVxRmq" target="_blank" class="button" style="font-family: &quot;Prompt&quot;, sans-serif;color: #FFF;background: #3B409E;font-size: 16px;padding: 15px 20px;float: center;border-radius: 5px;margin-top: 10px;margin-bottom: 10px">Submit documents</a>
                     </div>
                     <!-- end-english -->
+                  </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      `
+      }]
+    }
+      resolve(mailOptions);
+    });
+  }
+
+  function genRemindBonusExpireEmail(emails) {
+    return new Promise((resolve, reject) => {
+      let personalizations = []
+      emails.forEach(email => {
+        if (email && email.email !== null) {
+          personalizations.push({
+            "to": [{ email: email.email }],
+            "subject": "SIX.network - Remind Customer to contribute"
+          })
+        }
+      })
+      const mailOptions = {
+        personalizations,
+        from: {email: 'no-reply@six.network'},
+        content: [{
+          type: 'text/html',
+          value: `<div style="font-family: &quot;Prompt&quot;, sans-serif;color: rgba(33, 33, 33, 1);margin: 0;background: #F6F6F6">
+          <div class="section" style="font-family: &quot;Prompt&quot;, sans-serif;color: rgba(33, 33, 33, 1);position: relative;background: #F6F6F6;padding-bottom: 10px;height: 100%;z-index: 1">
+          <!-- <img class="top-header" src="https://firebasestorage.googleapis.com/v0/b/devson-f46f4.appspot.com/o/public%2Fheader.png?alt=media&token=9f32b7f1-6def-45f2-bf1a-2cea15326450"
+            alt=""> -->
+          <div class="card" style="font-family: &quot;Prompt&quot;, sans-serif;color: rgba(33, 33, 33, 1);width: 80%;padding: 0;padding-top: 2%;z-index: 100;margin-left: 10%;background: transparent">
+            <div class="card-header" style="font-family: &quot;Prompt&quot;, sans-serif;color: rgba(33, 33, 33, 1);position: relative;padding: 0;background: transparent;width: 100%">
+              <img class="header-img" src="https://firebasestorage.googleapis.com/v0/b/devson-f46f4.appspot.com/o/public%2Fcover2.png?alt=media&amp;token=74bc44f8-f8e2-4a0d-aeca-6ee76ab2befb" alt="" style="font-family: &quot;Prompt&quot;, sans-serif;color: rgba(33, 33, 33, 1);width: 100%;box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);z-index: 10"/>
+            </div>
+            <div class="card-content" style="font-family: &quot;Prompt&quot;, sans-serif;color: rgba(33, 33, 33, 1);padding: 5px;margin-top: -20px;box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);background: #FFF">
+                <div class="container" style="font-family: &quot;Prompt&quot;, sans-serif;color: rgba(33, 33, 33, 1);padding: 2%">
+                    <!-- thai -->
+                    <h2 class="title" style="font-family: &quot;Prompt&quot;, sans-serif;color: rgba(33, 33, 33, 1)">เรียน ผู้ร่วมลงทุน</h2>
+                    <dd> <p style="text-indent: 2.5em;font-family: &quot;Prompt&quot;, sans-serif;color: rgba(33, 33, 33, 1);font-size: 14px">    ทาง ซิคซ์ เนทเวิร์ค ขอแสดงความขอบคุณ ท่านผู้ร่วมลงทุนที่สนใจลงทุนในเหรียญ SIX Token จากการลงทะเบียนรอบ Pre-Sale SIX Token เพื่อรับโบนัส 6% ในช่วงต้นเดือนเมษายน 2561 ที่ผ่านมา อย่างไรก็ตามทางเรายังไม่ได้รับยอดโอนเงินจากท่านและมีความจำเป็นต้องเรียนแจ้ง ผู้ร่วมลงทุน ทราบว่า โบนัส 6% ใกล้จะสิ้นสุดและปิดการขายแล้ว</p>
+                    <p style="font-family: &quot;Prompt&quot;, sans-serif;color: rgba(33, 33, 33, 1);font-size: 14px"> ขอความกรุณาท่านผู้ร่วมลงทุนกรุณาทำการส่ง ETH ตามจำนวนที่ท่านได้ลงทะเบียนไว้และถ้าหากท่านผู้ร่วมลงทุนทำการโอนเหรียญ ETH เพื่อซื้อ SIX Token หลังจากนี้ ทางบริษัทขอเรียนแจ้งว่า ท่านผู้ร่วมลงทุนจะไม่ได้รับโบนัส 6% ตามที่กำหนด
+
+                      bonus 6% ก่อนที่จะหมดลงนะครับ</p></dd>
+                    <dd> <p style="text-indent: 2.5em;font-family: &quot;Prompt&quot;, sans-serif;color: rgba(33, 33, 33, 1);font-size: 14px">  ทั้งนี้ทางบริษัทต้องขออภัย หากท่านผู้ร่วมลงทุนได้ทำการโอนเหรียญ ETH หรือ XLM มาเพื่อทำการซื้อ SIX Token เรียบร้อยแล้ว </p>
+                    <div class="p-group" style="font-family: &quot;Prompt&quot;, sans-serif;color: rgba(33, 33, 33, 1)">
+                    <div class="p-group" style="font-family: &quot;Prompt&quot;, sans-serif;color: rgba(33, 33, 33, 1)">
+                      <span style="font-family: &quot;Prompt&quot;, sans-serif;color: rgba(33, 33, 33, 1);font-size: 14px">จึงเรียนมาเพื่อโปรดทราบ</span>
+                      <br style="font-family: &quot;Prompt&quot;, sans-serif;color: rgba(33, 33, 33, 1)"/>
+                      <span style="font-family: &quot;Prompt&quot;, sans-serif;color: rgba(33, 33, 33, 1);font-size: 14px">ทีมงาน SIX network</span>
+                    </div>
+                  </div>
+            </div>
+          </div
+        </div>
+      </div>
+      `
+      }]
+    }
+      resolve(mailOptions);
+    });
+  }
+
+  function genRemindBonusExpireEmailEN(emails) {
+    return new Promise((resolve, reject) => {
+      let personalizations = []
+      emails.forEach(email => {
+        if (email && email.email !== null) {
+          personalizations.push({
+            "to": [{ email: email.email }],
+            "subject": "SIX.network - Remind Customer to contribute"
+          })
+        }
+      })
+      const mailOptions = {
+        personalizations,
+        from: {email: 'no-reply@six.network'},
+        content: [{
+          type: 'text/html',
+          value: `<div style="font-family: &quot;Prompt&quot;, sans-serif;color: rgba(33, 33, 33, 1);margin: 0;background: #F6F6F6">
+          <div class="section" style="font-family: &quot;Prompt&quot;, sans-serif;color: rgba(33, 33, 33, 1);position: relative;background: #F6F6F6;padding-bottom: 10px;height: 100%;z-index: 1">
+          <!-- <img class="top-header" src="https://firebasestorage.googleapis.com/v0/b/devson-f46f4.appspot.com/o/public%2Fheader.png?alt=media&token=9f32b7f1-6def-45f2-bf1a-2cea15326450"
+            alt=""> -->
+          <div class="card" style="font-family: &quot;Prompt&quot;, sans-serif;color: rgba(33, 33, 33, 1);width: 80%;padding: 0;padding-top: 2%;z-index: 100;margin-left: 10%;background: transparent">
+            <div class="card-header" style="font-family: &quot;Prompt&quot;, sans-serif;color: rgba(33, 33, 33, 1);position: relative;padding: 0;background: transparent;width: 100%">
+              <img class="header-img" src="https://firebasestorage.googleapis.com/v0/b/devson-f46f4.appspot.com/o/public%2Fcover2.png?alt=media&amp;token=74bc44f8-f8e2-4a0d-aeca-6ee76ab2befb" alt="" style="font-family: &quot;Prompt&quot;, sans-serif;color: rgba(33, 33, 33, 1);width: 100%;box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);z-index: 10"/>
+            </div>
+            <div class="card-content" style="font-family: &quot;Prompt&quot;, sans-serif;color: rgba(33, 33, 33, 1);padding: 5px;margin-top: -20px;box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);background: #FFF">
+                <div class="container" style="font-family: &quot;Prompt&quot;, sans-serif;color: rgba(33, 33, 33, 1);padding: 2%">
+                    <!-- thai -->
+                    <h2 class="title" style="font-family: &quot;Prompt&quot;, sans-serif;color: rgba(33, 33, 33, 1)">To Investor</h2>
+                    <dd> <p style="text-indent: 2.5em;font-family: &quot;Prompt&quot;, sans-serif;color: rgba(33, 33, 33, 1);font-size: 14px">      SIX Network is appreciate for your interesting to invest in SIX Token that by your registered for a Pre-Sale SIX Token to get 6% BONUS in early April. However SIX Network (Thailand) has not received the transfer amount for a Pre-Sale SIX Token yet.</p>
+                    <p style="font-family: &quot;Prompt&quot;, sans-serif;color: rgba(33, 33, 33, 1);font-size: 14px">      We to inform that 6% BONUS will be effective up to the short time for closing soon.</p></dd>
+                    <dd> <p style="text-indent: 2.5em;font-family: &quot;Prompt&quot;, sans-serif;color: rgba(33, 33, 33, 1);font-size: 14px">  Please doing the transaction following our ETH address to buy SIX Token completely. If after this. SIX Network want to tell you that you will not loss 6% BONUS. Sorry if you are already transfer to ETH or XLM or if this e-mail is delay.</p>
+                    <div class="p-group" style="font-family: &quot;Prompt&quot;, sans-serif;color: rgba(33, 33, 33, 1)">
+                    <div class="p-group" style="font-family: &quot;Prompt&quot;, sans-serif;color: rgba(33, 33, 33, 1)">
+                      <span style="font-family: &quot;Prompt&quot;, sans-serif;color: rgba(33, 33, 33, 1);font-size: 14px">Please be informed accordingly</span>
+                      <br style="font-family: &quot;Prompt&quot;, sans-serif;color: rgba(33, 33, 33, 1)"/>
+                      <span style="font-family: &quot;Prompt&quot;, sans-serif;color: rgba(33, 33, 33, 1);font-size: 14px">SIX network</span>
+                    </div>
+
                   </div>
             </div>
           </div>
@@ -1318,6 +1167,549 @@ exports.remindEmails = functions.https.onRequest((request, response) => {
     });
   } else {
     return response.status(400).json(new Error("Password not match"));
+  }
+});
+
+exports.remindBonusExpireEmail = functions.https.onRequest((request, response) => {
+  cors(request, response, () => {});
+  const db = admin.firestore().collection("users");
+  const { password } = request.query
+  if (password === "ineedtosendemail") {
+    db.get().then(docs => {
+      let emailsList = []
+      let sendList = []
+      docs.forEach(doc => {
+        const user = doc.data();
+        const { remind_status, email, kyc_status, last_send_remind, eth_address, estimate, country } = user;
+        const notFoundEstimate = !estimate || estimate === null || estimate === ''
+        const isTH = country === 'TH'
+        if (isTH && eth_address && eth_address !== null && notFoundEstimate) {
+          sendList.push({ email })
+        }
+      });
+      if (sendList && sendList.length > 0) {
+        return genRemindBonusExpireEmail(sendList)
+        .then(mailOptions => {
+          return axios.post('https://api.sendgrid.com/v3/mail/send', mailOptions, { headers: { Authorization: `Bearer ${SENDGRID_API_KEY}`}})
+        })
+        .then(res => {
+          return response.json({ success: true, sendList })
+        })
+        .catch(err => {
+          console.log((err.response || {}).data, 'err')
+          console.log(err.message, 'err.message')
+          return response.status(400).json({ error: (err.reponse || {}).data })
+        })
+      } else {
+        return response.send({ success: true, sendList })
+      }
+    });
+  } else {
+    return response.status(400).json(new Error("Password not match"));
+  }
+});
+
+exports.remindBonusExpireEmailEN = functions.https.onRequest((request, response) => {
+  cors(request, response, () => {});
+  const db = admin.firestore().collection("users")
+  const { password } = request.query
+  if (password === "ineedtosendemail") {
+    db.get().then(docs => {
+      let emailsList = []
+      let sendList = []
+      console.log(sendList, 'sendList...')
+      docs.forEach(doc => {
+        const user = doc.data();
+        const { remind_status, email, kyc_status, last_send_remind, eth_address, estimate, country } = user;
+        const notFoundEstimate = !estimate || estimate === null || estimate === ''
+        const notThandKr = country !== 'TH' && country !== 'KR'
+        if (notThandKr && eth_address && eth_address !== null && notFoundEstimate) {
+          sendList.push({ email })
+        }
+      });
+      if (sendList && sendList.length > 0) {
+        return genRemindBonusExpireEmailEN(sendList)
+        .then(mailOptions => {
+          return axios.post('https://api.sendgrid.com/v3/mail/send', mailOptions, { headers: { Authorization: `Bearer ${SENDGRID_API_KEY}`}})
+        })
+        .then(res => {
+          return response.json({ success: true, sendList })
+        })
+        .catch(err => {
+          console.log((err.response || {}).data, 'err')
+          console.log(err.message, 'err.message')
+          return response.status(400).json({ error: (err.reponse || {}).data })
+        })
+      } else {
+        return response.send({ success: true, sendList })
+      }
+    });
+  } else {
+    return response.status(400).json(new Error("Password not match"));
+  }
+});
+
+exports.createClaim = functions.https.onRequest(handleCreateStellarAccount)
+exports.claimSix = functions.https.onRequest(handleClaimSix)
+
+
+function genLastBonusEmail(emails) {
+  return new Promise((resolve, reject) => {
+    let personalizations = []
+    console.log(emails, 'emails....')
+    emails.forEach(email => {
+      if (email && email !== null) {
+        personalizations.push({
+          "to": [{ email }],
+          "subject": "[SIX network] - Our 6% bonus campaign has been closed!"
+        })
+      }
+    })
+    const mailOptions = {
+      personalizations,
+      from: {email: 'no-reply@six.network'},
+      content: [{
+        type: 'text/html',
+        value: `
+        <div style="font-family: &quot;Prompt&quot;, sans-serif;color: rgba(33, 33, 33, 1);margin: 0;background: #F6F6F6">
+        <div class="section" style="font-family: &quot;Prompt&quot;, sans-serif;color: rgba(33, 33, 33, 1);position: relative;background: #F6F6F6;padding-bottom: 10px;height: 100%;z-index: 1">
+          <!-- <img class="top-header" src="https://firebasestorage.googleapis.com/v0/b/devson-f46f4.appspot.com/o/public%2Fheader.png?alt=media&token=9f32b7f1-6def-45f2-bf1a-2cea15326450"
+            alt=""> -->
+          <div class="card" style="font-family: &quot;Prompt&quot;, sans-serif;color: rgba(33, 33, 33, 1);width: 80%;padding: 0;padding-top: 2%;z-index: 100;margin-left: 10%;background: transparent">
+            <div class="card-header" style="font-family: &quot;Prompt&quot;, sans-serif;color: rgba(33, 33, 33, 1);position: relative;padding: 0;background: transparent;width: 100%">
+              <img class="header-img" src="https://firebasestorage.googleapis.com/v0/b/six-dashboard.appspot.com/o/public%2FS__18350212.jpg?alt=media&token=fd19f8af-b64a-4115-b14d-3e070c31039c"
+                alt="" style="font-family: &quot;Prompt&quot;, sans-serif;color: rgba(33, 33, 33, 1);width: 100%;box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);z-index: 10"
+              />
+            </div>
+            <div class="card-content" style="font-family: &quot;Prompt&quot;, sans-serif;color: rgba(33, 33, 33, 1);padding: 5px;margin-top: -20px;box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);background: #FFF">
+              <div class="container" style="font-family: &quot;Prompt&quot;, sans-serif;color: rgba(33, 33, 33, 1);padding: 2%">
+                <!-- thai -->
+                <h2 class="title" style="font-family: &quot;Prompt&quot;, sans-serif;color: rgba(33, 33, 33, 1)">Hi everyone,</h2>
+                <span>(Korean version below)</span>
+                <p style="font-family: &quot;Prompt&quot;, sans-serif;color: rgba(33, 33, 33, 1);font-size: 14px">Thanks to the high demand, our pre-sale has been ended. </p>
+                <p style="font-family: &quot;Prompt&quot;, sans-serif;color: rgba(33, 33, 33, 1);font-size: 14px">6% bonus will automatically be added to at the account of those who make a contribution within 19 May 2018 at 23.59 GMT+9. </p>
+
+                <p style="font-family: &quot;Prompt&quot;, sans-serif;color: rgba(33, 33, 33, 1);font-size: 14px">However, you can contribute to our ICO until 31 May 2018.</p>
+
+                  <div class="p-group" style="font-family: &quot;Prompt&quot;, sans-serif;color: rgba(33, 33, 33, 1)">
+                      <div class="p-group" style="font-family: &quot;Prompt&quot;, sans-serif;color: rgba(33, 33, 33, 1)">
+                        <br />
+                        <span style="font-family: &quot;Prompt&quot;, sans-serif;color: rgba(33, 33, 33, 1);font-size: 14px">Cheers!</span>
+                        <br style="font-family: &quot;Prompt&quot;, sans-serif;color: rgba(33, 33, 33, 1)" />
+                        <span style="font-family: &quot;Prompt&quot;, sans-serif;color: rgba(33, 33, 33, 1);font-size: 14px">SIX network team</span>
+                      </div>
+                    </div>
+              </div>
+            </div>
+          </div>
+          <div class="card" style="font-family: &quot;Prompt&quot;, sans-serif;color: rgba(33, 33, 33, 1);width: 80%;padding: 0;padding-top: 2%;z-index: 100;margin-left: 10%;background: transparent">
+              <div class="card-content" style="font-family: &quot;Prompt&quot;, sans-serif;color: rgba(33, 33, 33, 1);padding: 5px;margin-top: -20px;box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);background: #FFF">
+                <div class="container" style="font-family: &quot;Prompt&quot;, sans-serif;color: rgba(33, 33, 33, 1);padding: 2%">
+                  <!-- thai -->
+                  <p style="font-family: &quot;Prompt&quot;, sans-serif;color: rgba(33, 33, 33, 1);font-size: 14px">여러분의 많은 관심과 성원 덕분에 프리세일이 마감되었습니다.</p>
+                  <p style="font-family: &quot;Prompt&quot;, sans-serif;color: rgba(33, 33, 33, 1);font-size: 14px">2018년 5월 19일 23시 59분 GMT+9 이내로 이체를 완료해주신 분들께는 자동으로 6% 보너스 혜택이 적용됩니다.</p>
+
+                  <p style="font-family: &quot;Prompt&quot;, sans-serif;color: rgba(33, 33, 33, 1);font-size: 14px">보너스 혜택 기간은 끝났지만, 2018년 5월 31일까지 ICO에 참여하실 수 있습니다.</p>
+
+                    <div class="p-group" style="font-family: &quot;Prompt&quot;, sans-serif;color: rgba(33, 33, 33, 1)">
+                        <div class="p-group" style="font-family: &quot;Prompt&quot;, sans-serif;color: rgba(33, 33, 33, 1)">
+                          <br />
+                          <span style="font-family: &quot;Prompt&quot;, sans-serif;color: rgba(33, 33, 33, 1);font-size: 14px">감사합니다</span>
+                          <br style="font-family: &quot;Prompt&quot;, sans-serif;color: rgba(33, 33, 33, 1)" />
+                          <span style="font-family: &quot;Prompt&quot;, sans-serif;color: rgba(33, 33, 33, 1);font-size: 14px">식스네트워크팀 드림</span>
+                        </div>
+                      </div>
+                </div>
+              </div>
+            </div>
+        </div>
+      </div>
+    `
+    }]
+  }
+    resolve(mailOptions);
+  });
+}
+
+
+exports.sendLastBonusToSubscriber = functions.https.onRequest(function () {
+  var _ref = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee(request, response) {
+    var password, emailsList, sendList, initial, list_send, i, from, to, t, mailOptions;
+    return regeneratorRuntime.wrap(function _callee$(_context) {
+      while (1) {
+        switch (_context.prev = _context.next) {
+          case 0:
+            _context.prev = 0;
+
+            cors(request, response, function () {});
+            password = request.query.password;
+
+            if (!(password === "ineedtosendemail")) {
+              _context.next = 28;
+              break;
+            }
+
+            emailsList = [];
+            sendList = activecampaign_subscriber;
+
+            if (!(sendList && sendList.length > 0)) {
+              _context.next = 26;
+              break;
+            }
+
+            initial = 0;
+            list_send = [];
+            i = 1;
+
+          case 10:
+            if (!(i <= sendList.length / 1000)) {
+              _context.next = 25;
+              break;
+            }
+
+            from = initial;
+            to = i * 1000;
+            t = sendList.slice(from, to);
+
+            console.log(t, 't....');
+            _context.next = 17;
+            return genLastBonusEmail(t);
+
+          case 17:
+            mailOptions = _context.sent;
+            _context.next = 20;
+            return axios.post('https://api.sendgrid.com/v3/mail/send', mailOptions, { headers: { Authorization: 'Bearer ' + SENDGRID_API_KEY } });
+
+          case 20:
+            list_send.push(t);
+            initial = to;
+
+          case 22:
+            i++;
+            _context.next = 10;
+            break;
+
+          case 25:
+            return _context.abrupt('return', response.send({ success: true, list_send: list_send }));
+
+          case 26:
+            _context.next = 29;
+            break;
+
+          case 28:
+            return _context.abrupt('return', response.status(400).json(new Error("Password not match")));
+
+          case 29:
+            _context.next = 34;
+            break;
+
+          case 31:
+            _context.prev = 31;
+            _context.t0 = _context['catch'](0);
+            return _context.abrupt('return', response.status(400).json(_context.t0));
+
+          case 34:
+          case 'end':
+            return _context.stop();
+        }
+      }
+    }, _callee, undefined, [[0, 31]]);
+  }));
+
+  return function (_x, _x2) {
+    return _ref.apply(this, arguments);
+  };
+}());
+
+exports.sendLastBonusToUser = functions.https.onRequest((request, response) => {
+  cors(request, response, () => {});
+  const db = admin.firestore().collection("users");
+  const { password } = request.query
+  if (password === "ineedtosendemail") {
+    db.get().then(docs => {
+      let emailsList = []
+      let sendList = []
+      docs.forEach(doc => {
+        if (email && email !== null) {
+          sendList.push({ email })
+        }
+      });
+      if (sendList && sendList.length > 0) {
+        return genLastBonusEmail(sendList)
+        .then(mailOptions => {
+          return axios.post('https://api.sendgrid.com/v3/mail/send', mailOptions, { headers: { Authorization: `Bearer ${SENDGRID_API_KEY}`}})
+        })
+        .then(res => {
+          return response.json({ success: true, sendList })
+        })
+        .catch(err => {
+          console.log((err.response || {}).data, 'err')
+          console.log(err.message, 'err.message')
+          return response.status(400).json({ error: (err.reponse || {}).data })
+        })
+      } else {
+        return response.send({ success: true, sendList })
+      }
+    });
+  } else {
+    return response.status(400).json(new Error("Password not match"));
+  }
+});
+
+// ico close
+function genICOCloseEmail(emails) {
+  return new Promise((resolve, reject) => {
+    let personalizations = []
+    console.log(emails, 'emails....')
+    emails.forEach(email => {
+      if (email && email !== null) {
+        if (typeof email === 'string') {
+          console.log(email, 'email...')
+          personalizations.push({
+            "to": [{ email: email }],
+            "subject": "[SIX network] Free 20 SIX token for those who passed the KYC process by this Saturday"
+          })
+        } else {
+          console.log(email, 'email...')
+          personalizations.push({
+            "to": [{ email: email.email }],
+            "subject": "[SIX network] Free 20 SIX token for those who passed the KYC process by this Saturday"
+          })
+        }
+      }
+    })
+    const mailOptions = {
+      personalizations,
+      from: {email: 'no-reply@six.network'},
+      content: [{
+        type: 'text/html',
+        value: `
+        <div style="font-family: &quot;Prompt&quot;, sans-serif;color: rgba(33, 33, 33, 1);margin: 0;background: #F6F6F6">
+        <div class="section" style="font-family: &quot;Prompt&quot;, sans-serif;color: rgba(33, 33, 33, 1);position: relative;background: #F6F6F6;padding-bottom: 10px;height: 100%;z-index: 1">
+          <!-- <img class="top-header" src="https://firebasestorage.googleapis.com/v0/b/devson-f46f4.appspot.com/o/public%2Fheader.png?alt=media&token=9f32b7f1-6def-45f2-bf1a-2cea15326450"
+            alt=""> -->
+          <div class="card" style="font-family: &quot;Prompt&quot;, sans-serif;color: rgba(33, 33, 33, 1);width: 80%;padding: 0;padding-top: 2%;z-index: 100;margin-left: 10%;background: transparent">
+            <div class="card-header" style="font-family: &quot;Prompt&quot;, sans-serif;color: rgba(33, 33, 33, 1);position: relative;padding: 0;background: transparent;width: 100%">
+              <img class="header-img" src="https://firebasestorage.googleapis.com/v0/b/six-dashboard.appspot.com/o/public%2FS__18628690.jpg?alt=media&token=80f74e49-347f-4bbf-abe0-7594c281e876"
+                alt="" style="font-family: &quot;Prompt&quot;, sans-serif;color: rgba(33, 33, 33, 1);width: 100%;box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);z-index: 10"
+              />
+            </div>
+            <div class="card-content" style="font-family: &quot;Prompt&quot;, sans-serif;color: rgba(33, 33, 33, 1);padding: 5px;margin-top: -20px;box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);background: #FFF">
+              <div class="container" style="font-family: &quot;Prompt&quot;, sans-serif;color: rgba(33, 33, 33, 1);padding: 2%">
+                <!-- thai -->
+                <h2 class="title" style="font-family: &quot;Prompt&quot;, sans-serif;color: rgba(33, 33, 33, 1)">Hi there,</h2>
+                <span>(Korean version below)</span>
+                <p style="font-family: &quot;Prompt&quot;, sans-serif;color: rgba(33, 33, 33, 1);font-size: 14px">There are 9 days left before our ICO will close.</p>
+                <p style="font-family: &quot;Prompt&quot;, sans-serif;color: rgba(33, 33, 33, 1);font-size: 14px">We have a good news to the person who did not finish the document submission. </p>
+
+                <p style="font-family: &quot;Prompt&quot;, sans-serif;color: rgba(33, 33, 33, 1);font-size: 14px">From 22 May 2018 21.00 GMT+9 to 27 May 2018 23.59 GMT+9, every person who successfully submit their document and get approved on KYC process will get free 20 SIX token automatically added to their account.</p>
+                <p style="font-family: &quot;Prompt&quot;, sans-serif;color: rgba(33, 33, 33, 1);font-size: 14px">
+                  But don't worry, for the people who have already got approved to our KYC before this "KYC Bounty Campaign" will get this reward as well.
+                </p>
+                <br />
+
+              <div class="p-group" style="font-family: &quot;Prompt&quot;, sans-serif;color: rgba(33, 33, 33, 1)">
+                <div class="p-group" style="font-family: &quot;Prompt&quot;, sans-serif;color: rgba(33, 33, 33, 1)">
+                  <span style="font-family: &quot;Prompt&quot;, sans-serif;color: rgba(33, 33, 33, 1);font-size: 14px">Thank you for your always supporting on us!</span>
+                  <br />
+                  <br />
+                  <span style="font-family: &quot;Prompt&quot;, sans-serif;color: rgba(33, 33, 33, 1);font-size: 14px">Cheers!</span>
+                  <br style="font-family: &quot;Prompt&quot;, sans-serif;color: rgba(33, 33, 33, 1)" />
+                  <span style="font-family: &quot;Prompt&quot;, sans-serif;color: rgba(33, 33, 33, 1);font-size: 14px">SIX network team</span>
+                </div>
+              </div>
+              </div>
+            </div>
+          </div>
+          <div class="card" style="font-family: &quot;Prompt&quot;, sans-serif;color: rgba(33, 33, 33, 1);width: 80%;padding: 0;padding-top: 2%;z-index: 100;margin-left: 10%;background: transparent">
+            <div class="card-content" style="font-family: &quot;Prompt&quot;, sans-serif;color: rgba(33, 33, 33, 1);padding: 5px;margin-top: -20px;box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);background: #FFF">
+              <div class="container" style="font-family: &quot;Prompt&quot;, sans-serif;color: rgba(33, 33, 33, 1);padding: 2%">
+                <!-- thai -->
+                <h2 class="title" style="font-family: &quot;Prompt&quot;, sans-serif;color: rgba(33, 33, 33, 1)">안녕하세요 여러분.</h2>
+                <p style="font-family: &quot;Prompt&quot;, sans-serif;color: rgba(33, 33, 33, 1);font-size: 14px">식스 네트워크 종료일까지 9일이 남았습니다.</p>
+                <p style="font-family: &quot;Prompt&quot;, sans-serif;color: rgba(33, 33, 33, 1);font-size: 14px">아직 KYC 관련 서류를 제출하지 못한 분들께 좋은 소식이 있습니다.</p>
+
+                <p style="font-family: &quot;Prompt&quot;, sans-serif;color: rgba(33, 33, 33, 1);font-size: 14px">2018년 5월 22일 21시부터 2018년 5월 27일 23시 59분까지, KYC에 필요한 서류를 제출하고 KYC 인증이 성공적으로 승인된 모든 분들께 20 SIX 토큰을 식스 계정으로 자동 지급하는 캠페인을 진행합니다. </p>
+                <p style="font-family: &quot;Prompt&quot;, sans-serif;color: rgba(33, 33, 33, 1);font-size: 14px">
+                  "KYC 바운티 캠페인" 이전에 KYC에 승인된 분들께도 보상이 지급되니 걱정하지 않으셔도 됩니다.
+                </p>
+                <br />
+
+              <div class="p-group" style="font-family: &quot;Prompt&quot;, sans-serif;color: rgba(33, 33, 33, 1)">
+                <div class="p-group" style="font-family: &quot;Prompt&quot;, sans-serif;color: rgba(33, 33, 33, 1)">
+                  <br />
+                  <span style="font-family: &quot;Prompt&quot;, sans-serif;color: rgba(33, 33, 33, 1);font-size: 14px">항상 보내주시는 성원과 지지에 감사드립니다!</span>
+                  <br style="font-family: &quot;Prompt&quot;, sans-serif;color: rgba(33, 33, 33, 1)" />
+                  <span style="font-family: &quot;Prompt&quot;, sans-serif;color: rgba(33, 33, 33, 1);font-size: 14px">식스 네트워크 드림</span>
+                </div>
+              </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    `
+    }]
+  }
+    resolve(mailOptions);
+  });
+}
+
+exports.sendICOCloseToSubscribers = functions.https.onRequest(function () {
+  var _ref = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee(request, response) {
+    var password, emailsList, sendList, initial, list_send, i, from, to, t, mailOptions;
+    return regeneratorRuntime.wrap(function _callee$(_context) {
+      while (1) {
+        switch (_context.prev = _context.next) {
+          case 0:
+            _context.prev = 0;
+
+            cors(request, response, function () {});
+            password = request.query.password;
+
+            if (!(password === "ineedtosendemail")) {
+              _context.next = 28;
+              break;
+            }
+
+            emailsList = [];
+            sendList = activecampaign_subscriber;
+
+            if (!(sendList && sendList.length > 0)) {
+              _context.next = 26;
+              break;
+            }
+
+            initial = 0;
+            list_send = [];
+            i = 1;
+
+          case 10:
+            if (!(i <= sendList.length / 1000)) {
+              _context.next = 25;
+              break;
+            }
+
+            from = initial;
+            to = i * 1000;
+            t = sendList.slice(from, to);
+
+            console.log(t, 't....');
+            _context.next = 17;
+            return genICOCloseEmail(t);
+
+          case 17:
+            mailOptions = _context.sent;
+            _context.next = 20;
+            return axios.post('https://api.sendgrid.com/v3/mail/send', mailOptions, { headers: { Authorization: 'Bearer ' + SENDGRID_API_KEY } });
+
+          case 20:
+            list_send.push(t);
+            initial = to;
+
+          case 22:
+            i++;
+            _context.next = 10;
+            break;
+
+          case 25:
+            return _context.abrupt('return', response.send({ success: true, list_send: list_send }));
+
+          case 26:
+            _context.next = 29;
+            break;
+
+          case 28:
+            return _context.abrupt('return', response.status(400).json(new Error("Password not match")));
+
+          case 29:
+            _context.next = 34;
+            break;
+
+          case 31:
+            _context.prev = 31;
+            _context.t0 = _context['catch'](0);
+            return _context.abrupt('return', response.status(400).json(_context.t0));
+
+          case 34:
+          case 'end':
+            return _context.stop();
+        }
+      }
+    }, _callee, undefined, [[0, 31]]);
+  }));
+
+  return function (_x, _x2) {
+    return _ref.apply(this, arguments);
+  };
+}());
+
+exports.sendICOCloseToUser = functions.https.onRequest((request, response) => {
+  cors(request, response, () => {});
+  const db = admin.firestore().collection("users")
+  const { password } = request.query
+  try {
+    if (password === "ineedtosendemail") {
+      db.get().then(docs => {
+        let emailsList = []
+        let sendList = []
+        docs.forEach(doc => {
+          const user = doc.data();
+          if (user.email && user.email !== null) {
+            const { remind_status, email, kyc_status, last_send_remind } = user;
+            if (kyc_status) {
+              if (kyc_status === 'not_complete' || kyc_status === 'pending' || kyc_status === 'rejected') {
+                sendList.push({ email: email })
+              }
+            }
+          }
+        });
+        console.log(sendList, 'sendList...')
+        if (sendList && sendList.length > 0) {
+          if (sendList && sendList.length > 1000) {
+            const new_send_list = sendList.slice(0, 1000)
+            const last_send_list = sendList.slice(1000, sendList.length - 1)
+            return genICOCloseEmail(new_send_list)
+            .then(mailOptions => {
+              return axios.post('https://api.sendgrid.com/v3/mail/send', mailOptions, { headers: { Authorization: `Bearer ${SENDGRID_API_KEY}`}})
+            })
+            .then(res => {
+              return genICOCloseEmail(last_send_list)
+            })
+            .then(mailOptions_two => {
+              return axios.post('https://api.sendgrid.com/v3/mail/send', mailOptions_two, { headers: { Authorization: `Bearer ${SENDGRID_API_KEY}`}})
+            })
+            .then(res => {
+              return response.json({ success: true, sendList: [ ...new_send_list, ...last_send_list ],  })
+            })
+            .catch(err => {
+              console.log(err, 'error')
+              return response.status(400).json({ error: err })
+            })
+          } else {
+            return genICOCloseEmail(sendList)
+            .then(mailOptions => {
+              console.log(mailOptions)
+              return axios.post('https://api.sendgrid.com/v3/mail/send', mailOptions, { headers: { Authorization: `Bearer ${SENDGRID_API_KEY}`}})
+            })
+            .then(res => {
+              console.log(res, 'res...')
+              return response.json({ success: true, sendList })
+            })
+            .catch(err => {
+              console.log(err, 'error sendgrid')
+              return response.status(400).json({ error: err.response })
+            })
+          }
+        } else {
+          return response.send({ success: true, sendList })
+        }
+      });
+    } else {
+      return response.status(400).json(new Error("Password not match"));
+    }
+  }catch (err) {
+    return response.status(400).json(err);
   }
 });
 

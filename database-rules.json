@@ -1,5 +1,9 @@
 {
   "rules": {
+    "airdrop-list": {
+      ".read": "auth !== null",
+      ".write": "auth !== null"
+    },
     "users": {
       "$uid":{
         ".read": "$uid === auth.uid",

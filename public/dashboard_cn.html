@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <meta property="og:url" content="https://ico.six.network/"/>
+    <meta property="og:type" content="article"/>
+    <meta property="og:title" content="SIX | Reinventing the digital economy" />
+    <meta property="og:description" content="SIX aims to bring a better liquidity, ownership, and wealth distribution back to the digital creators."/>
+    <meta property="og:image" content="https://ico.six.network/images/logo/six-logo-property.png"/>
+
+    <!-- Include firebase : update the version number as needed -->
+    <script defer src="/__/firebase/4.12.0/firebase-app.js"></script>
+    <script defer src="/__/firebase/4.12.0/firebase-auth.js"></script>
+    <script defer src="/__/firebase/4.12.0/firebase-database.js"></script>
+    <script defer src="/__/firebase/4.12.0/firebase-firestore.js"></script>
+    <script defer src="/__/firebase/4.12.0/firebase-messaging.js"></script>
+    <script defer src="/__/firebase/4.12.0/firebase-storage.js"></script>
+    <script defer src="/__/firebase/4.12.0/firebase-functions.js"></script>
+    <script defer src="/__/firebase/init.js"></script>
+
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>SIX | Reinventing the digital economy</title>
+    <link rel="shortcut icon" href="images/logo/fav.ico" type="image/x-icon">
+    <link rel="stylesheet" href="stylesheets/style.css">
+    <link rel="stylesheet" href="stylesheets/loading.css">
+    <link rel="stylesheet" href="stylesheets/dashboard.css">
+    <script src="javascripts/bluebird.js"></script>
+    <script src="javascripts/clipboard.js"></script>
+    <script src="javascripts/jquery-3.2.1.min.js"></script>
+    <script src="javascripts/url_replacer.js"></script>
+    <script src="javascripts/jquery.animateNumber.min.js"></script>
+    <script src="javascripts/config.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.18.1/moment.js"></script>
+    <script src="javascripts/dashboard.js"></script>
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=GTM-N5DKTMD"></script>
+    <script src="javascripts/google-analytic.js"></script>
+    <!-- Facebook Pixel Code -->
+    <script>
+      !function(f,b,e,v,n,t,s)
+      {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+      n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+      if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+      n.queue=[];t=b.createElement(e);t.async=!0;
+      t.src=v;s=b.getElementsByTagName(e)[0];
+      s.parentNode.insertBefore(t,s)}(window, document,'script',
+      'https://connect.facebook.net/en_US/fbevents.js');
+      fbq('init', '191771061455429');
+      fbq('track', 'PageView');
+    </script>
+    <noscript><img height="1" width="1" style="display:none"
+      src="https://www.facebook.com/tr?id=191771061455429&ev=PageView&noscript=1"
+    /></noscript>
+    <!-- End Facebook Pixel Code -->
+
+    <!-- Facebook Pixel Code -->
+    <script> 
+      !function(f,b,e,v,n,t,s) 
+      {if(f.fbq)return;n=f.fbq=function(){n.callMethod? 
+      n.callMethod.apply(n,arguments):n.queue.push(arguments)}; 
+      if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0'; 
+      n.queue=[];t=b.createElement(e);t.async=!0; 
+      t.src=v;s=b.getElementsByTagName(e)[0]; 
+      s.parentNode.insertBefore(t,s)}(window, document,'script', 
+      'https://connect.facebook.net/en_US/fbevents.js'); 
+      fbq('init', '788942741294425'); 
+      fbq('track', 'PageView'); 
+    </script>   
+    <noscript><img height="1" width="1" style="display:none" 
+      src="https://www.facebook.com/tr?id=788942741294425&ev=PageView&noscript=1" 
+    /></noscript>  
+    <!-- End Facebook Pixel Code -->
+  </head>
+  <body>
+    <script>
+        var s = document.createElement('div')
+        s.className = 'fb-customerchat'
+        var att = document.createAttribute("page_id")
+        att.value = pageId
+        s.setAttributeNode(att)
+        document.body.appendChild(s)
+
+        window.fbAsyncInit = function() {
+          FB.init({
+            appId            : appId,
+            autoLogAppEvents : true,
+            xfbml            : true,
+            version          : 'v2.11'
+          });
+        };
+
+        (function(d, s, id){
+           var js, fjs = d.getElementsByTagName(s)[0];
+           if (d.getElementById(id)) {return;}
+           js = d.createElement(s); js.id = id;
+           js.src = "https://connect.facebook.net/en_US/sdk.js";
+           fjs.parentNode.insertBefore(js, fjs);
+         }(document, 'script', 'facebook-jssdk'));
+     </script>
+    <script type="text/javascript"> (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+      })();
+    </script>
+
+    <div id='copiedTooltip'>
+      <span>Address copied</span>
+    </div>
+    <div id='alertModal' style='display: none;'>
+      <div id='alertModalWrapper'>
+        <div id='fixWidth'>
+          <div id='alertModalContainer'>
+            <h2>ARE YOU SURE?</h2>
+            <ul>
+              <li><p>After submitting the wallet address <strong>YOU WILL NOT </strong>be able to change the wallet. And, make sure that, you are not using an exchange-address which may result in a permanent loss all of your SIX tokens since you may not be able to withdraw SIX tokens from the exchange wallet address after the contribution.</p></li>
+              <li style='display:flex; margin-top: 20px;'><div id='leftBtn'><button id="cancelConfirmBtn" onclick='cancelConfirm()' class='confirmBtn'>Cancel</button></div><div id='rightBtn'><button class='confirmBtn' id="alertConfirmBtn" onclick='submitConfirm()'>Submit</button></div></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div id='preLoader'>
+      <div id='preloadWrapper'>
+        <img id='preloadImage'src="images/six_network.png">
+        <div class="spinner">
+          <div class="bounce1"></div>
+          <div class="bounce2"></div>
+          <div class="bounce3"></div>
+        </div>
+      </div>
+    </div>
+    <header class="header">
+      <a href="" class="logo"><img src="images/logo/six-logo-white.png"></a>
+      <ul class="menu">
+        <li id='adminShortcut' style='display: none;'><a href="/kyc_manager">Admin</a></li>
+        <li>
+          <div class="dropdown">
+            <a><img src="images/chinese.png"><i class="fas fa-angle-down"></i></a>
+            <ul style="z-index: 9999;">
+              <li><a href="/dashboard"><img src="images/united-kingdom.png">&nbsp;&nbsp;EN</a></li>
+              <li><a href="/dashboard-kr"><img src="images/south-korea.png">&nbsp;&nbsp;KR</a></li>              
+            </ul>
+          </div>
+        </li>
+      </ul>
+      <a href="javascript:;" onclick='logOut()' class="logout">Logout&nbsp;<i class="fas fa-sign-out-alt"></i></a>
+    </header>
+  </body>
+  <main class="dashboard-2">
+      <aside>
+        <section class="user-detail">
+          <span class="avatar" id='firstCharName'>V</span>
+          <p class='truncate'>你好&nbsp;<span id='displayName'>Vachara A.</span></p>
+          <p>余额 :&nbsp;<span><span id='totalSix'>Loading</span></span></p>
+        </section>
+        <section class="video">
+          <div class="tab-header">
+            <a class="eth-link actived">ETH</a>
+            <a class="stl-link">XLM</a>
+          </div>
+          <div class="tab-container">
+            <div class="video eth show">
+              <a class="open-dialog-video">
+                <i class="fas fa-play"></i>
+                <p>如何使用ETH投资</p>
+              </a>
+            </div>
+            <div class="video stl">
+              <a class="open-dialog-video">
+                <i class="fas fa-play"></i>
+                <p>如何使用XLM投资</p>
+              </a>
+            </div>
+          </div>
+        </section>
+        <section class="progress" id='progressContent'>
+          <div class="bar">
+            <div class="top">
+              <p class='zeroStart'>$0</p>
+              <p class='softCapText'>$15 M</p>
+              <p class='hardCapText'>$43 M</p>
+            </div>
+            <span class="available" style=" width: 5%;" id='barPercentage'>
+              <em>$<span id='totalCurrentAsset'>-</span></em>
+            </span>
+            <div class="bottom">
+              <p class='zeroStart'>起始</p>
+              <p class='softCapText'>软上限</p>
+              <p class='hardCapText'>硬上限</p>
+            </div>
+          </div>
+        </section>
+        <hr style='border-bottom: 1px solid #DDDDDD;'>
+        <section id='myWallet' style='display: none;'>
+          <h4>我的钱包</h4>
+          <p class="myETHWallet truncate" id='myETHWallet'>
+            ETH : <a href='#' id='myAddressBtn' data-clipboard-text="" class='blinkTooltip'><i class="far fa-copy"></i></a>&nbsp;
+            <span id="myETHWalletAddress" data-clipboard-text="" class='blinkTooltip'>-</span>
+            <input type="text" value="" id='myHiddenETHWalletAddress' style="display:inline; color: rgba(255,255,255,0); width: 0px;">
+          </p>
+        </section>
+        <a href="#" onclick='backToDashboard()' id='backToTxHis' style='display: none;'><i class="fas fa-arrow-left"></i> Back to Dashboard</a>
+        <section class="static-link" style='margin-top: 7px;'>
+          <a href="https://six.network/faq.html" class='faqMenu'><strong>问题解答</strong></a>
+          <a href="https://six.network/faq.html#howtobuy" class='faqMenu'><strong>如何购买？</strong></a>
+        </section>
+      </aside>
+      <div class="content">
+        <section class="welcome-box show-detail" id='welcomeBox'>
+          <h2>欢迎进入SIX界面</h2>
+          <p>为了投资我们的公开销售，您需要完成以下步骤以将您的储备金转换成SIX代币：</p>
+          <ul>
+            <li>
+              <label class="option">
+                <p>1. 选择您的储备金货币</p>
+              </label>
+            </li>
+            <li>
+              <label class="option">
+                <p>2. 将您的货币转到SIX钱包</p>
+              </label>
+            </li>
+            <li>
+              <label class="option">
+                <p>3. 确认您的转账</p>
+              </label>
+            </li>
+          </ul>
+          <p>当公开销售结束时，我们会尽快通知代币的分配日期。您将会收到一封邮件，邮件内容会一步步引导您认领代币。</p>
+          <div id="nwbtn"><button id="nextWayBtn" onclick='submitWelcome()'>下一步</button></div>
+        </section>
+        <section class="question-box" id='questionBox'>
+          <h2>选择您的储备金货币</h2>
+          <fieldset id='questionSelect'>
+            <dl>
+              <dd>
+                <label class="dropdown kycinput" id="waySelectAlert">
+                  <select id='waySelect' name="value" id="value">
+                    <option value="eth">Ethereum (ETH)</option>
+                    <option value="xlm">Stellar Lumens (XLM)</option>
+                  </select>
+                  <i class="fas fa-angle-down"></i>
+                </label>
+              </dd>
+            </dl>
+          </fieldset>
+          <div id="nwbtn"><button id="nextWayBtn" onclick='submitWay()'>下一步</button></div>
+        </section>
+        <section class="warninging-box" id='warnBox'>
+          <h2>警告</h2>
+          <ul class="option-list">
+            <li>
+              <label class="option warning-label">
+                <input onchange="checkWarning()" id='warning1' class='warning-check-box' type="checkbox">
+                <span class="check-mark"></span>
+              </label>
+              <p>我不会更改我转账购买SIX代币的钱包地址，并且我完全了解我任何的更改行为都将永久地无法获得在SIX.network转账的任何代币</p>
+            </li>
+            <li>
+              <label class="option warning-label">
+                <input onchange="checkWarning()" id='warning2' class='warning-check-box' type="checkbox">
+                <span class="check-mark"></span>
+              </label>
+              <p>我完全了解使用交换地址可能导致我所有SIX代币的永久丢失，因为我可能无法在投资后从交换钱包地址取回SIX代币</p>
+            </li>
+            <li>
+              <label class="option warning-label">
+                <input onchange="checkWarning()" id='warning3' class='warning-check-box' type="checkbox">
+                <span class="check-mark"></span>
+              </label>
+              <p><a href='content/term_policy.pdf'><strong>我同意通用条款</strong></a>.</p>
+            </li>
+          </ul>
+          <div style='max-width: 500px; margin: auto;'>
+            <img src='images/content/donotuse_exchange_wallet.png' style='width: 100%;'></img>
+          </div>
+          <div class="btn"><button disabled id="acknowledgeBtn" onclick='submitAcknowledge()'>下一步</button></div>
+        </section>
+        <section class='deposit-xlm-box deposit-box' id='depositXLMBox'>
+          <h2>创建您的储备金</h2>
+          <p style='margin-bottom: 25px; text-align: center;'>输入您期望的储备金数额</p>
+          <div class="Exexchange">
+            <label class="text dropdown" id='xlmToSixInputAlert'>
+              <input type="text" placeholder="您的投资额" id='xlmToSixInput' style="text-align: end; width: 90%;" disabled/>
+              <i class="">XLM</i>
+              <p id='xlmToSixInputAlertText' style='display: none;'></p>
+            </label>
+            <p style='font-size: 23px;'>≈ <strong><span id='xlmToSix'>0</span> SIX</strong></p>
+          </div>
+          <p style='margin-top: 20px; margin-bottom: 20px;'>请注意这里的SIX代币值由实时交易利率决定 您的SIX代币会以我们收到您储备金时的实时利率进行换算</p>
+          <p style='margin-top: 20px; text-align: center;'><strong>来自cryptocompare的实时交易利率（间隔1小时）</strong></p>
+          <section id='exchange'>
+            <ul class="exchange" id='exchange-ul'>
+              <li class='exchange-li'><p>SIX / USD</p><p style='font-size: 18px;'>1 SIX = 0.1 USD</p></li>
+              <li class='exchange-li'><p>ETH / USD</p><p class="ethPrice" style='font-size: 18px;'>Loading</p></li>
+              <li class='exchange-li'><p>XLM / USD</p><p class="xlmPrice" style='font-size: 18px;'>Loading</p></li>
+            </ul>
+          </section>
+          <div class="btn"><button id='submitDepositXLM' onclick='submitDepositXLM()'>提交</button></div>
+        </section>
+        <section class='submit-xlm-box submit-box' id='submitXLMBox'>
+          <h2>储备金转账</h2>
+          <p style='text-align: center;'><strong>请转账 <span id='depositXLMamount'>0</span> XLM 到下面这个地址：</strong></p>
+          <p data-clipboard-text='GDYALW6CVL6PRL6RZHJMQZ4VXGJXRKPZHJH6VKHW3J7USHBBPY52XHNO' class='blinkTooltip truncate' style='text-align: center; text-decoration: underline; font-size: 20px;' id='XLMaddressToCopyText'><i class="far fa-copy"></i>&nbsp;GDYALW6CVL6PRL6RZHJMQZ4VXGJXRKPZHJH6VKHW3J7USHBBPY52XHNO</p>
+          <p style="text-align: center; font-size: 20px;" class='blinkTooltip' data-clipboard-text="" id='memoCopy'><strong>MEMO : <span id='myMemo' class='myMemo'></span></strong></p>
+          <p style="text-align: center; font-size: 17px;">To prevent transfer failure, please specify <i class='myMemo'>XXXXXX</i> on the memo on your Stella Lumens transfer.</p>
+          <div class='qrContainer'>
+            <img class='qrCenter' src='images/content/xlm_qr.png'>
+          </div>
+          <div class="btn"><button id='submitDepositXLMTran' onclick='submitDepositXLMTran()'>完成</button></div>
+        </section>
+        <section class='deposit-eth-box deposit-box' id='depositETHBox'>
+          <h2>创建您的储备金</h2>
+          <p style='margin-bottom: 25px; text-align: center;'>输入您期望的储备金数额</p>
+          <div class="Exexchange">
+            <label class="text dropdown" id='ethToSixInputAlert'>
+              <input placeholder="您的投资额" id="ethToSixInput" style="text-align: end; width: 90%;" type="text">
+              <i class="">ETH</i>
+              <p id='ethToSixInputAlertText' style='display: none;'></p>
+            </label>
+            <p style='font-size: 23px;'>≈ <strong><span id='ethToSix'>0</span> SIX</strong></p>
+          </div>
+          <p style='margin-top: 15px;'>
+            <strong>资金来源（您的地址）</strong>
+          </p>
+          <label class="text" style='margin-top: 10px;'>
+            <input placeholder="Address" disabled id="myETHaddress" type="text" style="color: #999999;">
+          </label>
+          <p style='margin-top: 20px; margin-bottom: 20px;'>请注意这里的SIX代币值由实时交易利率决定 您的SIX代币会以我们收到您储备金时的实时利率进行换算</p>
+          <p style='margin-top: 20px; text-align: center;'><strong>来自cryptocompare的实时交易利率（间隔1小时）</strong></p>
+          <section id='exchange'>
+            <ul class="exchange" id='exchange-ul'>
+              <li class='exchange-li'><p>SIX / USD</p><p style='font-size: 18px;'>1 SIX = 0.1 USD</p></li>
+              <li class='exchange-li'><p>ETH / USD</p><p class="ethPrice" style='font-size: 18px;'>Loading</p></li>
+              <li class='exchange-li'><p>XLM / USD</p><p class="xlmPrice" style='font-size: 18px;'>Loading</p></li>
+            </ul>
+          </section>
+          <div class="btn"><button id='submitDepositETH' onclick='submitDepositETH()'>提交</button></div>
+        </section>
+        <section class='submit-sth-box submit-box' id='submitETHBox'>
+          <h2>储备金转账</h2>
+          <p style='text-align: center;'><strong>请转账 <span id='depositETHamount'>0</span> ETH 到下面这个地址：</strong></p>
+          <p data-clipboard-text='0x47ef7027425426db85b70b67600a47490312431a' class='blinkTooltip truncate' style='text-align: center; text-decoration: underline; font-size: 20px;' id='ETHaddressToCopyText'><i class="far fa-copy"></i>&nbsp;0x47ef7027425426db85b70b67600a47490312431a</p>
+          <p style="text-align: center; font-size: 20px;"><strong>为了防止转账失败，我们建议最小Gas Limit为200，000，Gas Price为40 gwei。</strong></p>
+          <div class='qrContainer'>
+            <img class='qrCenter' src='images/content/eth_qr.png'>
+          </div>
+          <div class="btn"><button id='submitDepositETHTran' onclick='submitDepositETHTran()'>完成</button></div>
+        </section>
+        <section class='congrat-box' id='congratulationBox'>
+          <h2>恭喜，您已经添加了您的第一笔交易</h2>
+          <p>请耐心等待系统审核您的转账。以太坊可能需要30分钟，验证可能需要5分钟。当状态显示为“完成”，说明您的储备金已成功转账到我们这里。如果您想继续添加储备金，请点击“添加储备金”按钮。</p>
+          <div class="btn" style='margin-top: 35px;'><button id='submitCongrat' onclick='submitCongrat()'>完成</button></div>
+        </section>
+        <section class="payment-box" id='walletBox'>
+          <ul class="option-list">
+            <li>
+              <label class="option">
+                <p>您的ETH地址</p>
+              </label>
+              <p>:</p>
+              <label class="text width-full" id='ethWalletAddressAlert' style='width: 100%;'>
+                <input id='walletETHinput' type="text" placeholder="Address"/>
+                <p id='ethWalletAddressAlertText' style='display: none;'></p>
+              </label>
+            </li>
+            <li>
+              <div id="submitWalletAlert" class="alert-error">
+                <p id="submitWalletAlertText"></p>
+              </div>
+            </li>
+          </ul>
+          <div class="btn"><button id='confirmAddressBtn' onclick='startConfirmation()'>提交</button></div>
+        </section>
+        <div class="address-history" id='mainBox' style='display: none;'>
+          <section class="transaction-history with-table" style='display: block;'>
+            <header>
+              <h2>您的交易</h2>
+            </header>
+            <div id='trnsBtnContainer'>
+              <div class="btn btnInline"><button id='gotoQuestionBtn' onclick='gotoCurrency()'> 添加储备金  </button></div>
+              <div class="btn btnInline"><button id='contactBtn' onclick='window.open("http://m.me/thesixnetwork")'>联系我们</button></div>
+            </div>
+            <div id='tableContainer'>
+              <table id='txHistoryTable'>
+                <thead>
+                  <tr>
+                    <th width="120">转账</th>
+                    <th width="130">SIX代币</th>
+                    <th width="400">交易单号</th>
+                    <th width="120">状态</th>
+                    <th width="200">日期</th>
+                  </tr>
+                </thead>
+                <tbody id="userTxs">
+                </tbody>
+              </table>
+            </div>
+            <div id='loadmoreBtn' style='display: none;' class="loader-more"><a href="#">More</a></div>
+          </section>
+        </div>
+      </div>
+  </main>
+</html>
+
+
+<div class="dialog-video">
+  <dialog>
+    <iframe id='videoEmbed' width="870" height="520" src="https://www.youtube.com/embed/LvHgV8D9Uj4?rel=0&amp;showinfo=0&enablejsapi=1" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+    <a class="close">Close this window</a>
+  </dialog>
+</div>
