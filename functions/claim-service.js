@@ -1,11 +1,14 @@
 const functions = require('firebase-functions')
 const StellarSdk = require('stellar-sdk')
+const request = require('request-promise')
 const admin = require('firebase-admin')
 const db = admin.firestore()
 const claimRef = db.collection('users_claim')
 const userRef = db.collection('users')
 
 let stellarUrl
+const secondaryClaimUrl = functions.config().secondary_signer.url + '/setPublicKey'
+
 if (functions.config().campaign.is_production === 'true') {
   stellarUrl = 'https://horizon.stellar.org'
   StellarSdk.Network.usePublicNetwork()
@@ -47,6 +50,7 @@ const handleCreateStellarAccount = (data, context) => {
     uid,
     public_key: publicKey
   })
+    .then(setPublicKeyToSecondaryServer)
     .then(createStellarAccount)
     .then(updateUserWalletAccount)
     .then(updateUserCreatedAccount)
@@ -62,6 +66,20 @@ const handleCreateStellarAccount = (data, context) => {
         error_message: error.message
       }
     })
+}
+
+const setPublicKeyToSecondaryServer = ({ uid, public_key: publicKey }) => {
+  // @TODO check is users exists?
+  // @TODO check is users_claim exists?
+  return request({
+    uri: secondaryClaimUrl,
+    method: 'POST',
+    body: {
+      uid,
+      public_key: publicKey
+    },
+    json: true
+  }).then(body => body.is_error ? Promise.reject(new Error(body.message)) : { uid, public_key: publicKey })
 }
 
 const setPublicKey = ({ uid, public_key: publicKey }) => {
@@ -108,19 +126,19 @@ const createStellarAccount = ({ uid, public_key: publicKey }) => {
     })
   }
   return server.loadAccount(publicKey).then(an_account => {
-    if(!checkBalanceForTrust(an_account)) {
+    if (!checkBalanceForTrust(an_account)) {
       return server
         .loadAccount(distKey.publicKey())
         .then(createTransaction)
         .then(submitTransaction)
-    }else {
+    } else {
       return { uid, public_key: publicKey }
     }
   }).catch(() => {
     return server
-        .loadAccount(distKey.publicKey())
-        .then(createTransaction)
-        .then(submitTransaction)
+      .loadAccount(distKey.publicKey())
+      .then(createTransaction)
+      .then(submitTransaction)
   })
 }
 
@@ -186,7 +204,7 @@ const handleClaimSix = (data, context) => {
 }
 
 function findUser ({ uid, claim_id: claimId }) {
-  console.log("find user")
+  console.log('find user')
   return claimRef
     .doc(uid)
     .get()
@@ -202,36 +220,36 @@ function findUser ({ uid, claim_id: claimId }) {
     })
 }
 
- function findClaim ({ uid, claim_id: claimId, user }) {
-   return claimRef
-     .doc(uid)
-     .collection('claim_period')
-     .doc(claimId)
-     .get()
-     .then(claim => {
-       if (claim.exists) {
-         const claimData = claim.data()
+function findClaim ({ uid, claim_id: claimId, user }) {
+  return claimRef
+    .doc(uid)
+    .collection('claim_period')
+    .doc(claimId)
+    .get()
+    .then(claim => {
+      if (claim.exists) {
+        const claimData = claim.data()
 
-         const currentTime = new Date().getTime()
-         if (currentTime < claimData.valid_after) {
-             return Promise.reject(new Error('Claim is not ready'))
-         }
+        const currentTime = new Date().getTime()
+        if (currentTime < claimData.valid_after) {
+          return Promise.reject(new Error('Claim is not ready'))
+        }
 
-         return claimData.claimed === true
-           ? Promise.reject(new Error('User already claimed.'))
-           : {
-             uid,
-             claim: claimData,
-             claim_id: claimId,
-             user
-           }
-       }
-       return Promise.reject(new Error('User not found'))
-     })
- }
+        return claimData.claimed === true
+          ? Promise.reject(new Error('User already claimed.'))
+          : {
+            uid,
+            claim: claimData,
+            claim_id: claimId,
+            user
+          }
+      }
+      return Promise.reject(new Error('User not found'))
+    })
+}
 
 function sendSix ({ uid, claim_id: claimId, user, claim }) {
-  console.log("sendSix")
+  console.log('sendSix')
   function createTransaction (distributorAccount) {
     const sendTransaction = new StellarSdk.TransactionBuilder(
       distributorAccount
@@ -279,7 +297,7 @@ function sendSix ({ uid, claim_id: claimId, user, claim }) {
 }
 
 const updateClaim = ({ uid, claim, claim_id: claimId, user }) => {
-  console.log("updateClaim")
+  console.log('updateClaim')
   return claimRef
     .doc(uid)
     .collection('claim_period')
