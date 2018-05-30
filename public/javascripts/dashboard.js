@@ -1933,6 +1933,7 @@ function argreeLedgerWallet() {
           $("#ledgerContentContainer").hide()
           $("#ledgerMiniContent1").hide()
           $("#ledgerMiniContent2").show()
+          $("#ledgerBox #setupInstruction").hide()
         } else {
 
         }
@@ -1957,6 +1958,11 @@ function trustLedgerWallet() {
           $("#genPLedger").val(publicKey)
           setEnable([nextBtnDOM])
         })
+      })
+    }).catch(err => {
+      $(".dialog-reset").addClass("show-dialog")
+      $("#recoveryDialogSubmitBtn3").bind("click",function(){
+        $("#submitLedgerTrustBtn").prop("disabled",false)
       })
     })
 }
