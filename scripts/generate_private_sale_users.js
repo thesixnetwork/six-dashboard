@@ -29,7 +29,7 @@ async function generateUser (user) {
     email: user.email,
     emailVerified: false,
     phoneNumber: user.phone_number,
-    password: 'asdfasdf1234',
+    password: Math.random().toString(36).slice(-8),
     displayName: `${user.firstname} ${user.lastname}`,
     disabled: false
   }
