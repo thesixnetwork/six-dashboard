@@ -237,6 +237,7 @@ label < input:disabled {
 }
 
 #barPercentage {
+  text-align: right;
   min-width: 0px;
   text-shadow: -1px -1px 0 #4a5ab5, 1px -1px 0 #4a5ab5, -1px 1px 0 #4a5ab5, 1px 1px 0 #4a5ab5;
   -webkit-transition: width 0.5s;
@@ -244,7 +245,7 @@ label < input:disabled {
 }
 
 .dashboard-2 section.progress .bar::before {
-  left: 50%!important;
+  left: 32%!important;
 }
 
 .zeroStart {
@@ -252,7 +253,8 @@ label < input:disabled {
 }
 
 .softCapText {
-  width: 50%!important;
+  width: 68%!important;
+  text-align: left!important;
 }
 
 .hardCapText {
