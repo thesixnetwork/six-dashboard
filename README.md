@@ -13,3 +13,7 @@ Or
 firebase functions:config:get > .runtimeconfig.json
 firebase serve --only functions
 ```
+3. deploy indexes
+```
+firebase deploy --only firestore:indexes
+```

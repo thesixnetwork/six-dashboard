@@ -53,34 +53,99 @@
       src="https://www.facebook.com/tr?id=191771061455429&ev=PageView&noscript=1"
     /></noscript>
     <!-- End Facebook Pixel Code -->
+
+    <!-- Facebook Pixel Code -->
+    <script> 
+      !function(f,b,e,v,n,t,s) 
+      {if(f.fbq)return;n=f.fbq=function(){n.callMethod? 
+      n.callMethod.apply(n,arguments):n.queue.push(arguments)}; 
+      if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0'; 
+      n.queue=[];t=b.createElement(e);t.async=!0; 
+      t.src=v;s=b.getElementsByTagName(e)[0]; 
+      s.parentNode.insertBefore(t,s)}(window, document,'script', 
+      'https://connect.facebook.net/en_US/fbevents.js'); 
+      fbq('init', '788942741294425'); 
+      fbq('track', 'PageView'); 
+    </script>   
+    <noscript><img height="1" width="1" style="display:none" 
+      src="https://www.facebook.com/tr?id=788942741294425&ev=PageView&noscript=1" 
+    /></noscript>  
+    <!-- End Facebook Pixel Code -->
   </head>
   <body>
-    <script>
-        var s = document.createElement('div')
-        s.className = 'fb-customerchat'
-        var att = document.createAttribute("page_id")
-        att.value = pageId
-        s.setAttributeNode(att)
-        document.body.appendChild(s)
+  <script>
+      var s = document.createElement('div')
+      s.className = 'fb-customerchat'
+      var att = document.createAttribute("page_id")
+      att.value = pageId
+      s.setAttributeNode(att)
+      document.body.appendChild(s)
 
-        window.fbAsyncInit = function() {
-          FB.init({
-            appId            : appId,
-            autoLogAppEvents : true,
-            xfbml            : true,
-            version          : 'v2.11'
-          });
-        };
+      window.fbAsyncInit = function() {
+        FB.init({
+          appId            : appId,
+          autoLogAppEvents : true,
+          xfbml            : true,
+          version          : 'v2.11'
+        });
+      };
 
-        (function(d, s, id){
-           var js, fjs = d.getElementsByTagName(s)[0];
-           if (d.getElementById(id)) {return;}
-           js = d.createElement(s); js.id = id;
-           js.src = "https://connect.facebook.net/en_US/sdk.js";
-           fjs.parentNode.insertBefore(js, fjs);
-         }(document, 'script', 'facebook-jssdk'));
-     </script>
+      (function(d, s, id){
+         var js, fjs = d.getElementsByTagName(s)[0];
+         if (d.getElementById(id)) {return;}
+         js = d.createElement(s); js.id = id;
+         js.src = "https://connect.facebook.net/en_US/sdk.js";
+         fjs.parentNode.insertBefore(js, fjs);
+       }(document, 'script', 'facebook-jssdk'));
+   </script>
 
+   <div class="overlay" style="display:none">
+        	<div class="error-not-match" style="display:none">
+        		<img src="./images/exclamation-mark.png" alt="Data not match">
+        		<p>Face detection not match</p>
+        		<p>We can not match your photo. Please try again</p>
+        		<a href="#" onclick="closeErrorMatch()" class="close">Close this window</a>
+        	</div>
+        	<div class="loader-checker" style="display:none">
+        		<div class="loading-pulse"></div>
+        		<p>Data has been loading.</p>
+        	</div>
+        </div>
+        <style>
+        	.overlay { background-color: rgba(0,0,0,0.5); position: fixed; left: 0; top: 0; width: 100%; height: 100%; display: flex; justify-content: center; align-items: center; z-index: 1}
+        	.loader-checker { width: 320px; padding: 60px 40px; background-color: rgba(0,0,0,0.25); border-radius: 4px; }
+        	.loader-checker p { text-align: center; color: #FFFFFF; }
+        	.error-not-match { width: 480px; padding: 60px 40px; background-color: #FFFFFF; border-radius: 4px; }
+        	.error-not-match img { display: block; width: 64px; margin: 0 auto 40px auto; }
+        	.error-not-match p { text-align: center; }
+        	.error-not-match p:nth-of-type(01) { color: #F44336; font-size: 24px; font-weight: bold; margin-bottom: 10px; }
+        	.error-not-match p:nth-of-type(02) { color: #777777; margin-bottom: 20px; }
+        	.error-not-match a.close { display: block; text-align: center; font-size: 12px; color: #777777; opacity: 0.75; }
+        	.loading-pulse { margin-left: auto; margin-right: auto; margin-bottom: 30px; display: block; position: relative; width: 6px; height: 24px; background: rgba(255, 255, 255, 0.2); -webkit-animation: pulse 750ms infinite; animation: pulse 750ms infinite; -webkit-animation-delay: 250ms; animation-delay: 250ms; }
+        	.loading-pulse:before, .loading-pulse:after { content: ''; position: absolute; display: block; height: 16px; width: 6px; background: rgba(255, 255, 255, 0.2); top: 50%; -webkit-transform: translateY(-50%); transform: translateY(-50%); -webkit-animation: pulse 750ms infinite; animation: pulse 750ms infinite; }
+        	.loading-pulse:before { left: -12px; }
+        	.loading-pulse:after { left: 12px; -webkit-animation-delay: 500ms; animation-delay: 500ms; }
+        		@keyframes spin {
+        			0% {
+        				-webkit-transform: rotate(0deg);
+        				transform: rotate(0deg);
+        			}
+        		100% {
+        				-webkit-transform: rotate(360deg);
+        				transform: rotate(360deg);
+        			}
+        		}
+        		@-webkit-keyframes pulse {
+        			50% {
+        				background: white;
+        			}
+        		}
+        		@keyframes pulse {
+        			50% {
+        				background: white;
+        			}
+        		}
+    </style>
     <div id='preLoader'>
       <div id='preloadWrapper'>
         <img id='preloadImage'src="images/six_network.png">
@@ -108,10 +173,10 @@
         <li id='adminShortcut' style='display: none;'><a href="/kyc_manager">Admin</a></li>
         <li>
           <div class="dropdown">
-            <a><img src="images/united-kingdom.png"><i class="fas fa-angle-down"></i></a>
+            <a><img src="images/chinese.png"><i class="fas fa-angle-down"></i></a>
             <ul style="z-index: 9999;">
               <li><a href="/wizard-kr"><img src="images/south-korea.png">&nbsp;&nbsp;KR</a></li>
-              <li><a href="/wizard-cn"><img src="images/chinese.png">&nbsp;&nbsp;CN</a></li>
+              <li><a href="/wizard"><img src="images/united-kingdom.png">&nbsp;&nbsp;EN</a></li>
             </ul>
           </div>
         </li>
@@ -413,7 +478,7 @@
           </article>
           <article id='verifyCodeContent2' class="verify-code">
             <h1>Enter the code</h1>
-            <p>An SMS message with verification code is sent to you (<span id='refPhoneNumber'></span>). Ref: <span id='refVerify'></span></p>
+            <p>条带有验证码的短信已发送给您 (<span id='refPhoneNumber'></span>). Ref: <span id='refVerify'></span></p>
             <div class="countdown-verify"></div>
             <fieldset>
               <dl>
@@ -711,7 +776,7 @@
 
               <dl id='passportNumber'>
                 <dt>护照号
-                  <span>As SIX.network is registered in Singapore, we require your passport ID to do the KYC process</span>
+                  <span>SIX.network在新加坡注册，所以我们需要您的护照号做KYC程序</span>
                 </dt>
                 <dd><label class="text kycinput" id="kycPassportNumberAlert">
                   <input type="text" id='kycPassportNumber' placeholder="护照号">
@@ -835,31 +900,8 @@
                 </dd>
               </dl>
             </fieldset>
-            <fieldset>
-              <legend>投资额</legend>
-              <dl>
-                <dd>
-                  <dt>
-                    <span id='estimateDescription'>请填写您在以太坊的期望投资额，您至少要填写0.2ETH以获得最小数目的SIX代币</span>
-                  </dt>
-                  <dd class="combine">
-                    <label class="text kycinput" id="kycEstimateAlert" style='width: 100%;'>
-                      <input type="text" id='kycEstimate' placeholder="0.2">
-                      <p id='kycEstimateError' style='display: none;'></p>
-                    </label>
-                    <label class="dropdown kycinput" id="kycCurrencyAlert" style="width: 30%;">
-                      <select id='kycCurrency' name="value" id="value" onchange="currencyChange()">
-                        <option value="ETH">ETH</option>
-                        <option value="XLM">XLM</option>
-                      </select>
-                      <i class="fas fa-angle-down"></i>
-                    </label>
-                  </dd>
-                </dd>
-              </dl>
-            </fieldset>
             <div id='kycFormAlert' class="alert-error">
-              <p id='kycFormAlertText'>Sorry, Civils in the jurisdiction of the US, China, and Singapore are not able to join this ICO contribution according to the laws. Apologize for inconvenience this may cause.</p>
+              <p id='kycFormAlertText'>抱歉，美国、中国和新加坡的公民根据相关法律无法参与此次公开销售。由此造成的不便我们深表歉意。</p>
             </div>
             <dl>
               <dd><button id='kycSubmitBtn' onclick='submitKyc()'>提交</button></dd>
@@ -867,28 +909,28 @@
           </article>
 
           <article class="approved" id='kycContentPending'>
-            <h1>Waiting for approval</h1>
-            <p>The approval process takes up to 72 business hours. After we review your account information and KYC/ AML documents, you will receive an email confirmation on your KYC/ AML result.</p>
+            <h1>等待审批</h1>
+            <p>审批过程需要72个小时。我们审核完您的帐户信息和KYC/ AML文件后，您将会收到关于您KYC/ AML结果的确认邮件。</p>
             <img id='headerEmailSample'src="images/header_email_sample.png">
             <img id='bodyEmailSample'src="images/body_email_sample.png">
           </article>
 
           <article class="rejected" id='kycContentRejected'>
-            <h1>Your submission has been rejected</h1>
+            <h1>您的提交已被拒绝</h1>
             <p><span id='rejectReason'></span></p>
             <div id='extendRejectNote' style='display: none'>
               <br>
-              <p><strong>Note</strong> : <span id='rejectReasonExtend'></span></p>
+              <p><strong>注意</strong> : <span id='rejectReasonExtend'></span></p>
             </div>
-            <a href='javascript:;' onclick='resubmission()' class="back" id='resubmission' >Resubmission</a>
+            <a href='javascript:;' onclick='resubmission()' class="back" id='resubmission' >重新提交</a>
           </article>
         </section>
 
         <section class="finished" id='congratulationPage'>
-          <h1>Congratulation</h1>
-          <p id='presale_congrat'>You are now listed in our exclusive pre-sale list. You are eligible for 6% bonus by contributing to our project.</p>
-          <p id='normal_congrat'>Your KYC application was APPROVED. Next step, please proceed on ICO contribution by click on the button below.</p>
-          <dl><dd><button id='toIcoBtn' onclick='proceedToIco()'>Proceed to ICO</button></dd></dl>
+          <h1>恭喜</h1>
+          <p id='presale_congrat'>您现在已被列入我们专门的预售名单。通过参与我们的项目您可以获得6％的奖金。</p>
+          <p id='normal_congrat'>您的KYC申请获得批准。下一步，请点击下面的按钮进行公开销售。</p>
+          <dl><dd><button id='toIcoBtn' onclick='proceedToIco()'>进行公开销售</button></dd></dl>
         </section>
 
         <section class="starting-ico" id='icoPage'>

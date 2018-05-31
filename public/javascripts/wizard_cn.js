@@ -1,3 +1,32 @@
+let rejectNote = {
+  need_more: `感谢您的注册。但我们收到的关于您的KYC/ AML文件和/或信息的不完整。
+
+我们将非常感激如果您能通过下面的链接重新提交文件和/或信息。
+
+感谢您对我们公开销售的关注。
+
+SIX.network`,
+  restricted: `感谢您的注册。在审核完您提交的申请材料后，您的KYC/AML结果与我们的要求不符。
+
+感谢您对我们公开销售的关注。希望您会继续在二级市场支持我们。
+
+感谢您对SIX.network和我们公开销售的关注。
+
+SIX.network`,
+  incorrect: `感谢您的注册。但我们收到的关于您的KYC/ AML文件和/或信息的不完整。
+
+我们将非常感激如果您能通过下面的链接重新提交文件和/或信息。
+
+感谢您对我们公开销售的关注。
+
+SIX.network`,
+  photo_corrupted: `感谢您的注册。但我们收到的您自拍照片的信息不正确或不清楚。
+
+我们将非常感激如果您能通过下面的链接重新提交您的自拍照片。`,
+  other: `感谢您的注册。但我们收到的关于您的KYC/ AML文件和/或信息的不完整。
+
+感谢您对我们公开销售的关注。 `
+}
 // Log out function using in Wizardd page to sign current user out
 function logOut () {
   console.log('logout')
@@ -79,7 +108,9 @@ function initializeAdmin () {
   })
   return promise
 }
-
+function closeErrorMatch() {
+  $("div.error-not-match, div.overlay").hide()
+}
 // Update User
 function updateUser (data) {
   var updateUserOncall = firebase.functions().httpsCallable('updateUser')
@@ -106,17 +137,6 @@ let pic2Url
 let pic4Url
 let pic5Url
 
-function currencyChange() {
-  let estimateCurrencyDOM = document.getElementById("kycCurrency")
-  $("#kycEstimateAlert").removeClass('invalid')
-  const estimate_currency = estimateCurrencyDOM.value
-  if (estimate_currency === "ETH") {
-    $("#estimateDescription").html("请填写您在以太坊的期望投资额，您至少要填写0.2ETH以获得最小数目的SIX代币")
-  } else if (estimate_currency === "XLM") {
-    $("#estimateDescription").html("请填写您在以太坊的期望投资额，您至少要填写410XLM以获得最小数目的SIX代币")
-  }
-}
-
 function submitPhoneNumber() {
   if ($("#verifyPhoneError").css("display", "block")) {
     $("#verifyPhoneError").slideToggle()
@@ -131,7 +151,7 @@ function submitPhoneNumber() {
   let btnDOM = document.getElementById('verifyPhoneBtn')
   setDisable([phoneNumberDOM, btnDOM, countryPhoneDOM])
   if (parseData.valid === false) {
-    $("#verifyPhoneError").html("Invalid phone number format")
+    $("#verifyPhoneError").html("手机号码格式无效")
     if ($("#verifyPhoneError").css("display", "none")) {
       $("#verifyPhoneError").slideToggle()
     }
@@ -179,7 +199,11 @@ function submitPhoneNumber() {
       let countDownNum = response.data.valid_until - Math.round((new Date()).getTime() / 1000)
       countdown({ fromNumber: countDownNum })
     } else {
-      $("#verifyPhoneError").html(response.data.error_message)
+      if (response.data.error_code == 100) {
+        $("#verifyPhoneError").html('手机号码已被使用')
+      } else {
+        $("#verifyPhoneError").html(response.data.error_message)
+      }
       if ($("#verifyPhoneError").css("display", "none")) {
         $("#verifyPhoneError").slideToggle()
       }
@@ -242,7 +266,13 @@ function submitPhoneNumberCode() {
       document.getElementById("kycCountry").value = countryPhone
       goToKYCStep()
     } else {
-      $("#verifyPhoneSubmitError").html(response.data.error_message)
+      if(response.data.error_code == 100) {
+        $("#verifyPhoneSubmitError").html('手机号码已被使用')
+      } else if (response.data.error_code == 200) {
+        $("#verifyPhoneSubmitError").html('验证码无效')
+      } else {
+        $("#verifyPhoneSubmitError").html(response.data.error_message)
+      }
       if ($("#verifyPhoneSubmitError").css("display", "none")) {
         $("#verifyPhoneSubmitError").slideToggle()
       }
@@ -310,7 +340,7 @@ function resendVerifyEmail() {
     let currentUser = firebase.auth().currentUser
     currentUser.sendEmailVerification().then(() => {
       if ($("#verifyNotice").css("display") == "none") {
-        $("#verifyNotice").html("Email successfully sent to your inbox.")
+        $("#verifyNotice").html("邮件已成功发送到您的收件箱")
         setEnable([resendDOM])
         $("#verifyNotice").slideToggle(400, resolve)
       }
@@ -349,16 +379,6 @@ function setupUserData() {
   if (userData.address !== undefined) {
     document.getElementById("kycAddress").value = userData.address
   }
-  if (userData.estimate_currency !== undefined) {
-      document.getElementById("kycCurrency").value = userData.estimate_currency
-  }
-  if (userData.estimate !== undefined) {
-    if (userData.estimate_currency === 'XLM') {
-      document.getElementById("kycEstimate").value = parseFloat(userData.estimate)*2050
-    } else {
-      document.getElementById("kycEstimate").value = userData.estimate
-    }
-  }
   if (userData.is_presale === true) {
     $("#presale_congrat").css('display', 'block')
     $("#normal_congrat").css('display', 'none')
@@ -387,7 +407,26 @@ function setupUserData() {
     $("#sampleImage5").toggle()
   }
   if (userData.kyc_status === 'rejected') {
-    $("#rejectReason").html(String(userData.reject_note).split("\n").join("<br>"))
+    let rejectReason
+    switch (userData.reject_type) {
+      case 'need_more':
+        rejectReason = rejectNote['need_more']
+        break
+      case 'restricted':
+        rejectReason = rejectNote['restricted']
+        break
+      case 'incorrect':
+        rejectReason = rejectNote['incorrect']
+        break
+      case 'photo_corrupted':
+        rejectReason = rejectNote['photo_corrupted']
+        break
+      case 'other':
+        rejectReason = rejectNote['other']
+        break
+    }
+    rejectReason = String(rejectReason).split("\n").join("<br>")
+    $("#rejectReason").html(rejectReason)
     if (userData.reject_note_extend !== null && userData.reject_note_extend !== '' && userData.reject_note_extend !== undefined) {
       $("#rejectReasonExtend").html(String(userData.reject_note_extend))
       $("#extendRejectNote").css("display", "block")
@@ -396,7 +435,6 @@ function setupUserData() {
   if (userData.is_restricted === true) {
     $("#resubmission").css("display", "none")
   }
-  currencyChange()
 }
 
 // Steps
@@ -407,7 +445,13 @@ function initializeStep() {
       goToVerifyPhoneStep()
       let db = firebase.firestore()
       db.collection('users').doc(firebase.auth().currentUser.uid).get().then(doc => {
-        userData = doc.data()
+        if (doc.data() === undefined) {
+          let requestFunction = firebase.functions().httpsCallable('reworkInitializeUserDoc')
+          requestFunction({}).then(response => {
+            console.log("rework success")
+          })
+        }
+        userData = doc.data() || {}
         if (Date.now() > endtimeOfIco && userData.all_done) {
           window.location.href = '/dashboard-cn'+window.location.search
         }
@@ -520,9 +564,7 @@ function submitKyc() {
   let pic2DOM = document.getElementById('kycPic2')
   let pic4DOM = document.getElementById('kycPic4')
   let pic5DOM = document.getElementById('kycPic5')
-  let estimateDOM = document.getElementById('kycEstimate')
-  let estimateCurrencyDOM = document.getElementById("kycCurrency")
-  setDisable([btnDOM, firstNameDOM, lastNameDOM, countryDOM, citizenIdDOM, passportNumberDOM, addressDOM, pic1DOM, pic2DOM, pic4DOM, pic5DOM, estimateDOM, estimateCurrencyDOM])
+  setDisable([btnDOM, firstNameDOM, lastNameDOM, countryDOM, citizenIdDOM, passportNumberDOM, addressDOM, pic1DOM, pic2DOM, pic4DOM, pic5DOM])
   const first_name = firstNameDOM.value
   const last_name = lastNameDOM.value
   const country = countryDOM.value
@@ -533,8 +575,6 @@ function submitKyc() {
   const pic2 = pic2DOM.files[0]
   const pic4 = pic4DOM.files[0]
   const pic5 = pic5DOM.files[0]
-  let estimate = estimateDOM.value
-  const estimate_currency = estimateCurrencyDOM.value
   let validate = true
   if (first_name == '' || first_name == undefined) { $('#kycFirstNameAlert').addClass('invalid'); validate = false }
   if (/^[a-zA-Z ]+$/.test(first_name) === false) {
@@ -555,7 +595,7 @@ function submitKyc() {
     if ($("#kycFormAlert").css('display') == 'none') {
       $("#kycFormAlert").slideToggle()
     }
-    $("#kycFormAlertText").html("Sorry, Civils in the jurisdiction of the US, China, and Singapore are not able to join this ICO contribution according to the laws. Apologize for inconvenience this may cause.")
+    $("#kycFormAlertText").html("抱歉，美国、中国和新加坡的公民根据相关法律无法参与此次公开销售。由此造成的不便我们深表歉意。")
     validate = false
   }
   if ((citizen_id == '' || citizen_id == undefined) && country === 'TH') { $('#kycCitizenIdAlert').addClass('invalid'); validate = false }
@@ -583,30 +623,9 @@ function submitKyc() {
   if ((pic2 == '' || pic2 == undefined) && pic2Url === undefined) { $('#kycPic2Alert').addClass('invalid'); validate = false }
   if ((pic4 == '' || pic4 == undefined) && pic4Url === undefined && country !== 'TH') { $('#kycPic4Alert').addClass('invalid'); validate = false }
   if ((pic5 == '' || pic5 == undefined) && pic5Url === undefined && country === 'TH') { $('#kycPic5Alert').addClass('invalid'); validate = false }
-  if (estimate == '' || estimate == undefined) { $('#kycEstimateAlert').addClass('invalid'); validate = false }
-  if (/^[0-9\.]+$/.test(estimate) === false) {
-    $('#kycEstimateAlert').addClass('invalid')
-    validate = false
-    $("#kycEstimateError").html('Contribution amount should contain only digits and period')
-    $("#kycEstimateError").css('display', 'block')
-  }
-  if (estimate_currency == '' || estimate_currency == undefined) { $('#kycCurrencyAlert').addClass('invalid'); validate = false }
-  if ((parseFloat(estimate) < 0.2 && estimate_currency === 'ETH') || (parseFloat(estimate) < 410 && estimate_currency === 'XLM')) {
-    $('#kycEstimateAlert').addClass('invalid')
-    validate = false
-    if (estimate_currency === 'ETH') {
-      $("#kycEstimateError").html('Contribution amount must be at least 0.2 ETH to get the minimum of SIX token')
-    } else if (estimate_currency === 'XLM') {
-      $("#kycEstimateError").html('Contribution amount must be at least 410 XLM to get the minimum of SIX token')
-    }
-    $("#kycEstimateError").css('display', 'block')
-  }
   if (validate === false) {
-    setEnable([btnDOM, firstNameDOM, lastNameDOM, countryDOM, citizenIdDOM, passportNumberDOM, addressDOM, pic1DOM, pic2DOM, pic4DOM, pic5DOM, estimateDOM, estimateCurrencyDOM])
+    setEnable([btnDOM, firstNameDOM, lastNameDOM, countryDOM, citizenIdDOM, passportNumberDOM, addressDOM, pic1DOM, pic2DOM, pic4DOM, pic5DOM])
   } else {
-    if (estimate_currency === 'XLM') {
-      estimate = estimate/2050
-    }
     let uid = firebase.auth().currentUser.uid
     let dataToUpdate = {
       first_name: first_name,
@@ -614,8 +633,6 @@ function submitKyc() {
       country: country,
       address: address,
       pic2: pic2Url,
-      estimate: estimate,
-      estimate_currency: estimate_currency,
       kyc_status: 'pending',
       kyc_submit_time: Math.round((new Date()).getTime() / 1000)
     }
@@ -627,13 +644,24 @@ function submitKyc() {
       dataToUpdate.pic4 = pic4Url
       dataToUpdate.passport_number = passport_number
     }
-    updateUser(dataToUpdate).then(() => {
-      $("#kycContentForm").removeClass("show-detail")
-      $("#kycContentPending").addClass("show-detail")
-      setEnable([btnDOM, firstNameDOM, lastNameDOM, countryDOM, citizenIdDOM, passportNumberDOM, addressDOM, pic1DOM, pic2DOM, pic4DOM, pic5DOM, estimateDOM, estimateCurrencyDOM])
+    $(".overlay, div.loader-checker").show()
+    return updateUser(dataToUpdate).then(response => {
+      if (response.data.success) {
+        if (response.data.code === 205) {
+          $('#kycContentForm').removeClass('show-detail')
+          $('#kycContentPending').addClass('show-detail')
+          $(".overlay, div.loader-checker").hide()
+        } else {
+          window.location.href = '/dashboard-cn' + window.location.search
+        }
+      } else {
+        $("div.loader-checker").hide()
+        $("div.error-not-match").show()
+      }
+      setEnable([btnDOM, firstNameDOM, lastNameDOM, countryDOM, citizenIdDOM, passportNumberDOM, addressDOM, pic1DOM, pic2DOM, pic4DOM, pic5DOM])
     }).catch(err => {
       console.log(err.message)
-      setEnable([btnDOM, firstNameDOM, lastNameDOM, countryDOM, citizenIdDOM, passportNumberDOM, addressDOM, pic1DOM, pic2DOM, pic4DOM, pic5DOM, estimateDOM, estimateCurrencyDOM])
+      setEnable([btnDOM, firstNameDOM, lastNameDOM, countryDOM, citizenIdDOM, passportNumberDOM, addressDOM, pic1DOM, pic2DOM, pic4DOM, pic5DOM])
     })
   }
 }
@@ -726,11 +754,6 @@ $(document).ready(function () {
     $('#kycAddressAlert').removeClass("invalid")
     $("#kycAddressError").html('')
     $("#kycAddressError").css('display', 'none')
-  }
-  document.getElementById('kycEstimate').onkeydown = function() {
-    $('#kycEstimateAlert').removeClass("invalid")
-    $("#kycEstimateError").html('')
-    $("#kycEstimateError").css('display', 'none')
   }
   $('#kycPic1').change(function () {
     uploadFile(1, this.files[0])
