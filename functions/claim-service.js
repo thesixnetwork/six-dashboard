@@ -10,6 +10,7 @@ const lockPoolsRef = db.collection('lock_pool').doc('process')
 
 let stellarUrl
 const secondaryClaimUrl = functions.config().secondary_signer.url + '/setPublicKey'
+const secondarySignerUrl = functions.config().secondary_signer.url + '/handleSignSix'
 
 if (functions.config().campaign.is_production === 'true') {
   stellarUrl = 'https://horizon.stellar.org'
@@ -391,13 +392,28 @@ function sendSix ({ uid, claim_id: claimId, user, claim }) {
     }
   }
 
-  function submitTransaction ({
-    uid,
-    claim,
-    claim_id: claimId,
-    user,
-    send_transaction: sendTransaction
-  }) {
+  function sendTxToSecondarySigner ({ uid, claim, claim_id: claimId, user, send_transaction: sendTransaction }) {
+    const xdr = sendTransaction.toEnvelope().toXDR('base64')
+    return request({
+      uri: secondarySignerUrl,
+      method: 'POST',
+      body: {
+        uid,
+        claim_id: claimId,
+        xdr
+      },
+      json: true
+    }).then(body => body.error ? Promise.reject(new Error(body.error))
+      : {
+        uid,
+        claim,
+        claim_id: claimId,
+        user,
+        send_transaction: new StellarSdk.Transaction(body.new_xdr)
+      })
+  }
+
+  function submitTransaction ({ uid, claim, claim_id: claimId, user, send_transaction: sendTransaction }) {
     return server.submitTransaction(sendTransaction).then(() => {
       return {
         uid,
@@ -408,9 +424,9 @@ function sendSix ({ uid, claim_id: claimId, user, claim }) {
     })
   }
 
-  return server
-    .loadAccount(distKey.publicKey())
+  return server.loadAccount(distKey.publicKey())
     .then(createTransaction)
+    .then(sendTxToSecondarySigner)
     .then(submitTransaction)
 }
 
