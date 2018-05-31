@@ -1,3 +1,23 @@
+#thankImage {
+  max-width: 800px;
+  margin: auto;
+  margin-top: 20px;
+}
+
+#thankImage img {
+  max-width: 100%;
+}
+
+#thankImage2 {
+  display: none;
+  max-width: 800px;
+  margin: auto;
+}
+
+#thankImage2 img {
+  max-width: 100%;
+}
+
 #preLoader {
   position: fixed;
   width: 100%;
