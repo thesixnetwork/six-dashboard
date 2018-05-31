@@ -4,6 +4,7 @@ const admin = require('firebase-admin')
 const db = admin.firestore()
 const claimRef = db.collection('users_claim')
 const userRef = db.collection('users')
+const claimPoolsRef = db.collection('claim_pools')
 
 let stellarUrl
 if (functions.config().campaign.is_production === 'true') {
@@ -145,6 +146,67 @@ const updateUserCreatedAccount = ({ uid }) => {
       'sent_xlm': true
     }, { merge: true })
 }
+
+const createPool = ({ uid, claim_id: claimId }) => {
+  const data = {
+    uid,
+    claim_id: claimId,
+    timestamp: new Date().getTime()
+  };
+  return claimPoolsRef
+    .doc(`${uid}_${claimId}`)
+    .create(data)
+    .then(() => {
+      return {
+        uid,
+        claim_id: claimId
+      };
+    });
+};
+
+const updateState = ({ uid, claim, claim_id: claimId, user }) => {
+  console.log("updateState");
+  return claimRef
+    .doc(uid)
+    .collection("claim_period")
+    .doc(String(claimId))
+    .update({
+      state: 1
+    })
+    .then(() => {
+      return {
+        uid,
+        claim,
+        claim_id: claimId,
+        user
+      };
+    });
+};
+
+/**
+ * create job on claim_pools.
+ * @param {string} uid
+ * @param {string} claimId
+ */
+const claimSixByCreatePool = (uid, claimId) => {
+  return createPool({
+    uid,
+    claim_id: claimId
+  })
+    .then(updateState)
+    .then(() => {
+      return {
+        success: true
+      };
+    })
+    .catch(error => {
+      console.log(error);
+      return {
+        success: false,
+        error_message: error.message
+      };
+    });
+};
 
 const handleClaimSix = (data, context) => {
   if (!distKey) {
@@ -300,6 +362,7 @@ const updateClaim = ({ uid, claim, claim_id: claimId, user }) => {
 module.exports = {
   handleCreateStellarAccount,
   handleClaimSix,
+  claimSixByCreatePool,
   findUser,
   findClaim,
   sendSix,
