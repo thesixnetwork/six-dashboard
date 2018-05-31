@@ -37,7 +37,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.18.1/moment.js"></script>
     <script src="javascripts/jspdf.min.js"></script>
     <script src="javascripts/ledger.js"></script>
-    <script src="javascripts/dashboard.js"></script>
+
     <!-- Global site tag (gtag.js) - Google Analytics -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=GTM-N5DKTMD"></script>
     <script src="javascripts/google-analytic.js"></script>
@@ -46,6 +46,7 @@
     <script src="javascripts/raphael-min.js"></script>
     <script src="javascripts/morris.min.js"></script>
     <script src="javascripts/stellar-hd-wallet.js"></script>
+    <script src="javascripts/dashboard.js"></script>
     <!-- Facebook Pixel Code -->
     <script>
       !function(f,b,e,v,n,t,s)
@@ -719,7 +720,7 @@
                       </label>
                     </dd>
                   </dl>
-    
+
                   <dl>
                     <dt>Verify Phone number</dt>
                     <dd><label class="text"><input id='verifyPhonePhonenumber' type="tel" placeholder="Phone number"></label></dd>
@@ -841,10 +842,10 @@
                       <ul class="option-list">
                         <li>
                           <label class="option warning-label">
-                            <input onchange="checkWarning()" id='warning1' class='warning-check-box' type="checkbox">
+                            <input onchange="argreeLedgerWallet()" id='warning1' class='warning-check-box' type="checkbox" disabled="true" />
                             <span class="check-mark"></span>
                           </label>
-                          
+
                           <p>I accept the Term of Use, understand the risks associated with cryptocurrencies, and know that StellarTerm does not issue or endorse any asset on the Stellar network.</p>
                         </li>
                       </ul>
@@ -864,13 +865,14 @@
                     </div>
                     <div id='assetContent'>
                       <h3>SIX six.network</h3>
-                      <p>Issuer (not you) : XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX</p>
+                      <p>Your Stellar public adress: <span></span></p>
+                      <p>Issuer (not you) : <span> </span></p>
                     </div>
                   </div>
                   <br>
                   <p>Action required : Confirm transaction on your Ledger device.</p>
                   <div class="btn">
-                    <button id='submitLedgerTrustBtn' disabled style='width: auto; margin-top: 10px; margin-bottom: 10px; min-width: 150px;'> Submit </button>
+                    <button id='submitLedgerTrustBtn' onclick="trustLedgerWallet()"  style='width: auto; margin-top: 10px; margin-bottom: 10px; min-width: 150px;'> Submit </button>
                   </div>
                 </div>
               </div>
@@ -940,6 +942,13 @@
                 <button id='DownloadGAccountBtn' onclick='downloadGeneratedAccount()' style='width: auto; min-width: 150px; margin: auto; margin-top: 20px; background: #569E5C;'> Print Backup </button>
                 <button id='submitG3AccountBtn' onclick='goToClaimTable()' disabled class='not avail' style='cursor: pointer; width: auto; min-width: 150px; margin: auto; margin-top: 15px;'> Claim SIX Token </button>
               </div>
+            </div>
+          </div>
+          <div id='congratBoxLedger' style='display: none;'>
+            <div id='congratContainer'>
+              <i id='correctIcon' class="fas fa-check-circle"></i>
+              <h3>Congrats Wallet Generated Successfully</h3>
+              <p>Transaction is pending blockchain confirmation.<br>Check your wallet in a few minutes.</p>
             </div>
           </div>
           <div id='manualTrustlineBox' style='display: none;'>

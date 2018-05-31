@@ -994,12 +994,33 @@ function copyToClipboard (el, y, x) {
 
 var randomedWords
 var qrcode
+var stellarUrl, issuerKey
 $(document).ready(function(){
   document.getElementById('otpCode').onkeydown = function() {
     if ($("#submitOTPError").css("display") === "block") {
       $("#submitOTPError").slideToggle()
     }
   }
+  // Variable
+
+  var domain = window.location.href
+  if (domain.match('localhost')) {
+    stellarUrl = 'https://horizon-testnet.stellar.org'
+    StellarSdk.Network.useTestNetwork()
+    issuerKey = "GBVX36SLDLLXCVMGFLKNQ5XB76Z4SIXCFKYHKMSJTLANXB6AH27LUKEP"
+  } else if (domain.match('six-dashboard')) {
+    stellarUrl = 'https://horizon-testnet.stellar.org'
+    StellarSdk.Network.useTestNetwork()
+    issuerKey = "GBVX36SLDLLXCVMGFLKNQ5XB76Z4SIXCFKYHKMSJTLANXB6AH27LUKEP"
+  } else if (domain.match('ico.six.network')) {
+    stellarUrl = 'https://horizon.stellar.org'
+    StellarSdk.Network.usePublicNetwork()
+  } else {
+    stellarUrl = 'https://horizon-testnet.stellar.org'
+    StellarSdk.Network.useTestNetwork()
+    issuerKey = "GBVX36SLDLLXCVMGFLKNQ5XB76Z4SIXCFKYHKMSJTLANXB6AH27LUKEP"
+  }
+
   qrcode = new QRCode("qrcode");
   document.getElementById('oldP').onkeydown = function() {
     $('#oldAddress').removeClass("invalid")
@@ -1362,7 +1383,7 @@ function submitGeneratedAccount() {
     return false
   }
   setDisable([btnDOM, btn2DOM])
-  $("#accordion").fadeToggle(100, function() {
+  $("#showProgressBar").fadeToggle(100, function() {
 
     $("#progressContainer").fadeToggle(function() {
       $("#accountPg").css('width', '25%')
@@ -1627,25 +1648,6 @@ function goToOldWallet() {
 
 function automatedChangeTrustToSix() {
 
-  let stellarUrl, issuerKey
-  var domain = window.location.href
-  if (domain.match('localhost')) {
-    stellarUrl = 'https://horizon-testnet.stellar.org'
-    StellarSdk.Network.useTestNetwork()
-    issuerKey = "GBVX36SLDLLXCVMGFLKNQ5XB76Z4SIXCFKYHKMSJTLANXB6AH27LUKEP"
-  } else if (domain.match('six-dashboard')) {
-    stellarUrl = 'https://horizon-testnet.stellar.org'
-    StellarSdk.Network.useTestNetwork()
-    issuerKey = "GBVX36SLDLLXCVMGFLKNQ5XB76Z4SIXCFKYHKMSJTLANXB6AH27LUKEP"
-  } else if (domain.match('ico.six.network')) {
-    stellarUrl = 'https://horizon.stellar.org'
-    StellarSdk.Network.usePublicNetwork()
-  } else {
-    stellarUrl = 'https://horizon-testnet.stellar.org'
-    StellarSdk.Network.useTestNetwork()
-    issuerKey = "GBVX36SLDLLXCVMGFLKNQ5XB76Z4SIXCFKYHKMSJTLANXB6AH27LUKEP"
-  }
-
   const server = new StellarSdk.Server(stellarUrl)
 
   let userWallet = StellarSdk.Keypair.fromSecret(generatedWallet.getSecret(0))
@@ -1894,9 +1896,11 @@ function goToLedgerWallet() {
   $("#trustlineStep").addClass("current")
   $("#walletSelectBox").css("display", 'none')
   $("#divClaimBoxLedger").css("display", 'block')
-  clickStrPublicKey(function(){
-    const btnDOM = document.getElementById('submitLedgerBtn')
-    setEnable([btnDOM])
+  $("#assetContent p:last span").text(issuerKey)
+  clickStrPublicKey(function(pk){
+    $("#ledgerContentContainer").addClass("active")
+    $("#ledgerAgreement #warning1").prop("disabled",false)
+    $("#assetContent p:first span").text(pk)
   })
 }
 
@@ -1908,6 +1912,61 @@ function clickBody(name, elem, rm_class) {
       $('body').off('click.'+name);
     });
   }
+}
+
+function argreeLedgerWallet() {
+  const btnDOM = document.getElementById('submitLedgerBtn')
+  let activeledger = $("#ledgerContentContainer").hasClass("active")
+  if(activeledger) {
+    setEnable([btnDOM])
+    $("#submitLedgerBtn").on("click",function(){
+      requestFunction = firebase.functions().httpsCallable('createClaim')
+      let publicKey = $("#assetContent p:first span").text().trim()
+      $("#submitLedgerBtn").prop("disabled",true)
+      requestFunction({public_key: publicKey}).then(response => {
+        debugger
+        if (response.success) {
+          $("#ledgerContentContainer").hide()
+          $("#ledgerMiniContent1").hide()
+          $("#ledgerMiniContent2").show()
+        } else {
+
+        }
+      })
+    })
+  }
+}
+
+function trustLedgerWallet() {
+    requestFunction = firebase.functions().httpsCallable('createClaim')
+    let publicKey = $("#assetContent p:first span").text().trim()
+    $("#ledgerBox").fadeToggle(100, function() {
+      $("#progressContainer").fadeToggle(function() {
+        $("#accountPg").css('width', '25%')
+        $("#accountPg").css('width', '50%')
+        $("#progressText").html("Activate your address")
+        requestFunction({public_key: publicKey}).then(response => {
+          if (response.success) {
+            $("#accountPg").css('width', '75%')
+            $("#trustlineStep").addClass("current")
+            $("#progressText").html("Changing trustline")
+            trustSix(publicKey, issuerKey,function(data){
+              markTrustlineUser().then(() => {
+                $("#accountPg").css('width', '100%')
+                $("#progressText").html("Yay ! Your address is now ready")
+                $("#myXlmPublicAddress").text(publicKey)
+                $("#copyMyXlmAddress").attr("data-clipboard-text", publicKey)
+                $("#claimStep").addClass("current")
+                $("#progressContainer").fadeToggle(function(){
+                    $("#congratBoxLedger").slideToggle()
+                })
+                $(".noWallet").removeClass("noWallet").addClass("haveWallet")
+              })
+            })
+          }ำ
+        })
+      })
+    })
 }
 
 function submitPhoneNumber() {
