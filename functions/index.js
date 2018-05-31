@@ -1683,7 +1683,7 @@ exports.sendICOCloseToUser = functions.https.onRequest((request, response) => {
 
 exports.getPurchasedUser = functions.https.onRequest((request, response) => {
   cors(request, response, () => {});
-  const { password } = req.body;
+  const { password } = request.body;
   if (password === 'sixsendmailtoday') {
     admin.firestore().collection('users').where("total_six", ">", 20).get().then(snapshots => {
       let users = []
@@ -1704,7 +1704,7 @@ exports.getPurchasedUser = functions.https.onRequest((request, response) => {
 
 exports.getNotPurchasedUser = functions.https.onRequest((request, response) => {
   cors(request, response, () => {});
-  const { password } = req.body;
+  const { password } = request.body;
   if (password === 'sixsendmailtoday') {
     admin.firestore().collection('users').where("total_six", "<=", 20).get().then(snapshots => {
       let users = []
