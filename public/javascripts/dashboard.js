@@ -1096,8 +1096,15 @@ $(document).ready(function(){
       })
     }
   })
+  $('body').on('click', '.dropdown a', function() {
+    var dropdown = $(this).parent(".dropdown");
 
-});
+    dropdown.toggleClass("show-dropdown");
+
+    clickBody('dropdown', dropdown, 'show-dropdown');
+  });
+
+})
 
 function goToClaim() {
   $("#welcomeBox").css("display", "none")
@@ -1729,3 +1736,14 @@ function goToLedgerWallet() {
   $("#walletSelectBox").css("display", 'none')
   $("#divClaimBoxLedger").css("display", 'block')
 }
+
+// Click body for close
+function clickBody(name, elem, rm_class) {
+  if ( elem.hasClass(rm_class) ) {
+    $('body').on('click.'+name, function(){
+      elem.removeClass(rm_class);
+      $('body').off('click.'+name);
+    });
+  }
+}
+

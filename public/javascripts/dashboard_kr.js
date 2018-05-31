@@ -694,7 +694,7 @@ $(document).ready(function(){
   firebase.auth().onAuthStateChanged(function (user) {
     if (!user) {
       console.log('Go to login')
-      window.location.href = '/'+window.location.search
+      window.location.href = '/kr'+window.location.search
     } else {
       initializeAdmin().then(() => {
         return $('#adminShortcut').css('display', 'block')
@@ -702,7 +702,7 @@ $(document).ready(function(){
         return firebase.firestore().collection('users').doc(user.uid).get().then(doc => {
           const endtime = endtimeOfIco
           if (!(Date.now() > endtime && doc.data().all_done)) {
-            window.location.href = '/wizard'+window.location.search
+            window.location.href = '/wizard-kr'+window.location.search
           }
           userData = doc.data()
           let name = (userData.first_name || "") + " " + (userData.last_name || "")
@@ -748,4 +748,22 @@ $(document).ready(function(){
       })
     }
   })
-});
+  $('body').on('click', '.dropdown a', function() {
+    var dropdown = $(this).parent(".dropdown");
+
+    dropdown.toggleClass("show-dropdown");
+
+    clickBody('dropdown', dropdown, 'show-dropdown');
+  });
+
+})
+
+// Click body for close
+function clickBody(name, elem, rm_class) {
+  if ( elem.hasClass(rm_class) ) {
+    $('body').on('click.'+name, function(){
+      elem.removeClass(rm_class);
+      $('body').off('click.'+name);
+    });
+  }
+}
