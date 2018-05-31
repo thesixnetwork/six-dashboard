@@ -313,16 +313,13 @@ function submitDepositETH() {
 let globalCurrent
 let percentageGlobalCurrent
 function getCurrentTotal() {
-  return firebase.firestore().collection('total_asset').doc('usd').get().then(doc => {
+  return firebase.firestore().collection('total_asset').doc('six').get().then(doc => {
     const totalAsset = parseFloat(doc.data().total || 0)
-    const privateAsset = parseFloat(doc.data().private_asset || 0)
+    const privateAsset = parseFloat(doc.data().private || 0)
     const currentAsset = privateAsset+totalAsset
-    const softCapAmount = doc.data().soft_cap_usd
-    const percentage = Number(((currentAsset/(doc.data().hard_cap_usd/100)) || 0).toFixed(0))
-    let scalePercentage = Number((((((100-percentage)*99273.68461538461)+currentAsset)/(doc.data().hard_cap_usd/100)) || 0).toFixed(1))
-    if ((scalePercentage + 5) < 100) {
-      scalePercentage = scalePercentage+5
-    }
+    const softCapAmount = doc.data().soft_cap
+    const percentage = Number(((currentAsset/(doc.data().hard_cap/100)) || 0).toFixed(0))
+    let scalePercentage = Number((((((100-percentage)*99273.68461538461)+currentAsset)/(doc.data().hard_cap/100)) || 0).toFixed(1))
     percentageGlobalCurrent = Number(scalePercentage)
     globalCurrent = Number(parseFloat(currentAsset/1000000).toFixed(1))
   })
@@ -336,7 +333,7 @@ function runGlobalNumber() {
       numberStep: function(now, tween) {
         var target = $(tween.elem);
         floored_number = now.toFixed(decimal_places);
-        target.text(floored_number+' M');
+        target.text(floored_number+' M SIX');
       }
     }
   )
