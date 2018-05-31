@@ -438,12 +438,12 @@ exports.phoneVerificationSubmit = functions.https.onCall((data, context) => {
     .get()
     .then(doc => {
       if (doc.exists) {
-        if (doc.data().is_verified === true) {
-          return {
-            success: false,
-            error_message: "Phone number has already been used"
-          };
-        } else {
+        //if (doc.data().is_verified === true) {
+        //  return {
+        //    success: false,
+        //    error_message: "Phone number has already been used"
+        //  };
+        //} else {
           if (
             doc.data().valid_until > Math.round(new Date().getTime() / 1000)
           ) {
@@ -475,7 +475,7 @@ exports.phoneVerificationSubmit = functions.https.onCall((data, context) => {
               error_message: "Verification session expired"
             };
           }
-        }
+        //}
       } else {
         return {
           success: false,

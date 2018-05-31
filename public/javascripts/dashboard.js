@@ -1518,7 +1518,6 @@ function shuffle(array) {
 var generatedWallet
 var mnemonicWords
 function goToGenerateNewWallet() {
-  $('.dialog-recovery').addClass('show-dialog')
   $("#trustlineStep").addClass("current")
   $("#walletSelectBox").css("display", 'none')
   for (;;) {
@@ -1568,20 +1567,20 @@ function goToGenerateNewWallet() {
   $("#copyGenS").attr("data-clipboard-text", generatedwallet.getSecret(0))
   $("#genM").val(mnemonic)
   $("#divClaimBoxNew").css("display", 'block')
-  $( "#accordion" ).accordion();
-  $( "#accordion" ).accordion({
-    beforeActivate: function( event, ui ) {
-      answerMnemonic = {}
-      indexAnswerMnemonic = {}
-      lastIndexMnemonic = 0
-      let usedWord = $(".usedWord")
-      for(let i = 0; i < usedWord.length; i++) {
-        let oldDom = document.getElementById('mnemonicAnswer'+usedWord[i].text.trim())
-        oldDom.remove()
-      }
-      $(".usedWord").removeClass("usedWord").addClass("unusedWord")
-    }
-  })
+//  $( "#accordion" ).accordion();
+//  $( "#accordion" ).accordion({
+//    beforeActivate: function( event, ui ) {
+//      answerMnemonic = {}
+//      indexAnswerMnemonic = {}
+//      lastIndexMnemonic = 0
+//      let usedWord = $(".usedWord")
+//      for(let i = 0; i < usedWord.length; i++) {
+//        let oldDom = document.getElementById('mnemonicAnswer'+usedWord[i].text.trim())
+//        oldDom.remove()
+//      }
+//      $(".usedWord").removeClass("usedWord").addClass("unusedWord")
+//    }
+//  })
 }
 
 var answerMnemonic = {}
@@ -2019,4 +2018,63 @@ function showPreviousTxs() {
   } else {
     $("#previousTableContainer").css("display", "none")
   }
+}
+
+var currentChoice = "new"
+
+function selectChoice(choice) {
+  $("#newChoice").removeClass("active")
+  $("#oldChoice").removeClass("active")
+  $("#ledgerChoice").removeClass("active")
+  if (choice == "new") {
+    $("#newChoice").addClass("active")
+    currentChoice = "new"
+  } else if (choice == "old") {
+    $("#oldChoice").addClass("active")
+    currentChoice = "old"
+  } else {
+    $("#ledgerChoice").addClass("active")
+    currentChoice = "ledger"
+  }
+}
+
+function nextWay() {
+  if (currentChoice == "new") {
+    goToGenerateNewWallet()
+  } else if (currentChoice == "old") {
+    goToOldWallet()
+  } else {
+    goToLedgerWallet()
+  }
+}
+
+function nextRecoveryWord() {
+  $("#dialogRecov1").fadeToggle(100, function() {
+    $("#dialogRecov2").fadeToggle(100)
+  })
+}
+
+function backRecoveryWord() {
+  $("#dialogRecov2").fadeToggle(100, function() {
+    $("#dialogRecov1").fadeToggle(100)
+  })
+}
+
+function nextRecoveryWord2() {
+  $("#dialogRecov2").css("display", 'none')
+  $("#newClaimContent").css("display", 'block')
+  $( "#accordion" ).accordion();
+  $( "#accordion" ).accordion({
+    beforeActivate: function( event, ui ) {
+      answerMnemonic = {}
+      indexAnswerMnemonic = {}
+      lastIndexMnemonic = 0
+      let usedWord = $(".usedWord")
+      for(let i = 0; i < usedWord.length; i++) {
+        let oldDom = document.getElementById('mnemonicAnswer'+usedWord[i].text.trim())
+        oldDom.remove()
+      }
+      $(".usedWord").removeClass("usedWord").addClass("unusedWord")
+    }
+  })
 }
