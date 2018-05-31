@@ -32,12 +32,12 @@ const sgOptions = {
 
 const mailTransport = nodemailer.createTransport(sgTransport(sgOptions));
 
-const triggers = require("./trigger")(functions, fireStore);
+const triggers = require("./trigger")(admin, functions, fireStore)
 for (let trigger of triggers) {
   exports[trigger.name] = trigger.module;
 }
 
-const userModels = require("./model/user")(functions, fireStore);
+const userModels = require("./model/user")(functions, fireStore)
 for (let trigger of userModels) {
   exports[trigger.name] = trigger.module;
 }
@@ -141,8 +141,9 @@ exports.phoneVerificationRequest = functions.https.onCall((data, context) => {
         if (doc.data().is_verified === true) {
           return {
             success: false,
-            error_message: "Phone number has already been used"
-          };
+            error_message: 'Phone number has already been used',
+            error_code: 100
+          }
         } else {
           return generatePhoneVerificationCode(phoneNumber)
             .then(data => {
@@ -201,13 +202,13 @@ exports.phoneVerificationRequest = functions.https.onCall((data, context) => {
 });
 
 exports.phoneVerificationSubmit = functions.https.onCall((data, context) => {
-  let ref = admin.firestore().collection("phone-verifications");
-  let userRef = admin.firestore().collection("users");
-  let phoneNumber = data.phone_number;
-  let country = data.country;
-  let refCode = data.ref_code;
-  let code = data.code;
-  const uid = context.auth.uid;
+  let ref = admin.firestore().collection('phone-verifications')
+  let userRef = admin.firestore().collection('users')
+  let phoneNumber = data.phone_number
+  let country = data.country
+  let refCode = data.ref_code
+  let code = data.code
+  const uid = context.auth.uid
   return ref
     .doc(phoneNumber)
     .get()
@@ -216,38 +217,41 @@ exports.phoneVerificationSubmit = functions.https.onCall((data, context) => {
         if (doc.data().is_verified === true) {
           return {
             success: false,
-            error_message: "Phone number has already been used"
-          };
+            error_message: 'Phone number has already been used',
+            error_code: 100
+          }
         } else {
           if (
             doc.data().valid_until > Math.round(new Date().getTime() / 1000)
           ) {
             if (doc.data().ref_code === refCode && doc.data().code === code) {
-              let batch = admin.firestore().batch();
-              batch.set(ref.doc(phoneNumber), { is_verified: true });
+              let batch = admin.firestore().batch()
+              batch.set(ref.doc(phoneNumber), { is_verified: true })
               batch.update(userRef.doc(uid), {
                 phone_number: phoneNumber,
                 phone_verified: true,
                 country: country
-              });
+              })
               return batch
                 .commit()
                 .then(() => {
-                  return { success: true };
+                  return { success: true }
                 })
                 .catch(err => {
-                  return { success: false, error_message: err.message };
-                });
+                  return { success: false, error_message: err.message }
+                })
             } else {
               return {
                 success: false,
-                error_message: "Invalid verification code"
-              };
+                error_message: 'Invalid verification code',
+                error_code: 200
+              }
             }
           } else {
             return {
               success: false,
-              error_message: "Verification session expired"
+              error_message: "Verification session expired",
+              error_code: 300
             };
           }
         }
@@ -301,6 +305,21 @@ exports.updateETHWallet = functions.https.onCall((data, context) => {
   }
 });
 
+exports.reworkInitializeUserDoc = functions.https.onCall((data, context) => {
+  const email = context.auth.token.email
+  const registration_time = new Date().getTime()
+  const uid = context.auth.uid
+  let ref = admin
+    .firestore()
+    .collection("users")
+    .doc(uid);
+  return ref.set({ email: email, registration_time: registration_time, kyc_status: 'not_complete' }, { merge: true }).then(() => {
+    return { success: true }
+  }).catch(err => {
+    return { success: false }
+  })
+})
+
 exports.initializeUserDoc = functions.auth.user().onCreate(event => {
   const user = event.data;
   const email = user.email;
@@ -308,7 +327,7 @@ exports.initializeUserDoc = functions.auth.user().onCreate(event => {
     .firestore()
     .collection("users")
     .doc(user.uid);
-  return ref.set({ email: email, registration_time: user.metadata.a }, { merge: true }).then(() => {
+  return ref.set({ email: email, registration_time: user.metadata.a, kyc_status: 'not_complete' }, { merge: true }).then(() => {
     return true;
   });
 });
@@ -391,253 +410,6 @@ exports.logsUserTable = functions.firestore
       .set({ document, oldDocument });
   });
 
-function genKycReadyEmail({ email }) {
-  return new Promise((resolve, reject) => {
-    const mailOptions = {
-      from: '"SIX Network" <noreply@six.network>',
-      to: email,
-      subject: "SIX.network: Pre-ICO is now open for contribution ",
-      html: `
-      <body id="ac-designer" class="body" style="font-family:Arial;line-height:1.1;margin-top:0px;margin-bottom:0px;margin-right:0px;margin-left:0px;background-color:#ffffff;width:100%;text-align:center;">
-        <div class="divbody" style="margin-top:0px;margin-bottom:0px;margin-right:0px;margin-left:0px;outline-style:none;padding-top:0px;padding-bottom:0px;padding-right:0px;padding-left:0px;color:#000000;font-family:arial;line-height:1.1;width:100%;background-color:#ffffff;background-image:none;background-repeat:repeat;background-position:top left;background-attachment:scroll;text-align:center;">
-          <table class="template-table" border="0" cellpadding="0" cellspacing="0" width="100%" align="left" style="font-size:13px;min-width:auto;mso-table-lspace:0pt;mso-table-rspace:0pt;background-color:#ffffff;background-image:none;background-repeat:repeat;background-position:top left;background-attachment:scroll;">
-            <tr>
-              <td align="center" valign="top" width="100%">
-                <table class="template-table" border="0" cellpadding="0" cellspacing="0" width="650" bgcolor="#ffffff" style="font-size:13px;min-width:auto;mso-table-lspace:0pt;mso-table-rspace:0pt;max-width:650px;">
-                  <tr>
-                    <td id="layout_table_8ec95b1f4afbf007cff9c9f914a162067c7ba113" valign="top" align="center" width="650">
-                      <table cellpadding="0" cellspacing="0" border="0" class="layout layout-table root-table" width="650" style="font-size:13px;min-width:100%;mso-table-lspace:0pt;mso-table-rspace:0pt;">
-                        <tr>
-                          <td id="layout-row-margin105" valign="top">
-                            <table width="100%" border="0" cellpadding="0" cellspacing="0" style="font-size:13px;min-width:100%;mso-table-lspace:0pt;mso-table-rspace:0pt;">
-                              <tr id="layout-row105" class="layout layout-row widget _widget_spacer ">
-                                <td id="layout-row-padding105" valign="top">
-                                  <table width="100%" border="0" cellpadding="0" cellspacing="0" style="font-size:13px;min-width:100%;mso-table-lspace:0pt;mso-table-rspace:0pt;">
-                                    <tr>
-                                      <td valign="top" height="30">
-                                        <div class="spacer" style="margin-top:0;margin-bottom:0;margin-right:0;margin-left:0;outline-style:none;padding-top:0;padding-bottom:0;padding-right:0;padding-left:0;height:30px;">
-                                          <table cellpadding="0" cellspacing="0" border="0" width="100%" style="font-size:13px;min-width:100%;mso-table-lspace:0pt;mso-table-rspace:0pt;">
-                                            <tbody>
-                                              <tr>
-                                                <td class="spacer-body" valign="top" height="30" width="650"> </td>
-                                              </tr>
-                                            </tbody>
-                                          </table>
-                                        </div>
-                                      </td>
-                                    </tr>
-                                  </table>
-                                </td>
-                              </tr>
-                            </table>
-                          </td>
-                        </tr>
-                        <tr>
-                          <td id="layout-row-margin107" valign="top">
-                            <table width="100%" border="0" cellpadding="0" cellspacing="0" style="font-size:13px;min-width:100%;mso-table-lspace:0pt;mso-table-rspace:0pt;">
-                              <tr id="layout-row107" class="layout layout-row widget _widget_picture " align="center">
-                                <td id="layout-row-padding107" valign="top">
-                                  <table width="100%" border="0" cellpadding="0" cellspacing="0" style="font-size:13px;min-width:100%;mso-table-lspace:0pt;mso-table-rspace:0pt;">
-                                    <tr>
-                                      <td class="image-td" align="center" valign="top" width="650">
-                                        <img src="https://six.network/images/logo/six-logo.png" alt="" width="296" style="display:block;border-style:none;outline-style:none;width:120px;opacity:1;max-width:100%;">
-                                      </td>
-                                    </tr>
-                                  </table>
-                                </td>
-                              </tr>
-                            </table>
-                          </td>
-                        </tr>
-                        <tr>
-                          <td id="layout-row-margin108" valign="top">
-                            <table width="100%" border="0" cellpadding="0" cellspacing="0" style="font-size:13px;min-width:100%;mso-table-lspace:0pt;mso-table-rspace:0pt;">
-                              <tr id="layout-row108" class="layout layout-row widget _widget_break ">
-                                <td id="layout-row-padding108" valign="top" style="line-height:0;mso-line-height-rule:exactly;">
-                                  <table width="100%" border="0" cellpadding="0" cellspacing="0" style="font-size:13px;min-width:100%;mso-table-lspace:0pt;mso-table-rspace:0pt;border-collapse:collapse;line-height:0;mso-line-height-rule:exactly;">
-                                    <tr>
-                                      <td height="10" style="line-height:0;mso-line-height-rule:exactly;"></td>
-                                    </tr>
-                                    <tr>
-                                      <td align="center" height="1" width="650" style="line-height:0;mso-line-height-rule:exactly;">
-                                        <table align="center" border="0" cellpadding="0" cellspacing="0" height="1" width="650" style="font-size:13px;min-width:auto!important;mso-table-lspace:0pt;mso-table-rspace:0pt;border-collapse:collapse;line-height:0;mso-line-height-rule:exactly;width:100%;max-width:100%;">
-                                          <tr>
-                                            <td class="break-line" bgcolor="#000000" height="1" width="650" style="line-height:1px;mso-line-height-rule:exactly;height:1px;width:650px;background-color:#000000;">
-                                            </td>
-                                          </tr>
-                                        </table>
-                                      </td>
-                                    </tr>
-                                    <tr>
-                                      <td height="10" style="line-height:0;mso-line-height-rule:exactly;"></td>
-                                    </tr>
-                                  </table>
-                                </td>
-                              </tr>
-                            </table>
-                          </td>
-                        </tr>
-      
-                        <tr>
-                          <td id="layout-row-margin109" valign="top" style="padding-top:5px;padding-bottom:5px;padding-right:5px;padding-left:5px;">
-                            <table width="100%" border="0" cellpadding="0" cellspacing="0" style="font-size:13px;min-width:100%;mso-table-lspace:0pt;mso-table-rspace:0pt;border-collapse:initial !important;">
-                              <tr id="layout-row109" class="layout layout-row widget _widget_text style109" style="margin-top:0;margin-bottom:0;margin-right:0;margin-left:0;padding-top:0;padding-bottom:0;padding-right:0;padding-left:0;">
-                                <td id="layout-row-padding109" valign="top" style="padding-top:5px;padding-bottom:5px;padding-right:5px;padding-left:5px;">
-                                  <table width="100%" border="0" cellpadding="0" cellspacing="0" style="font-size:13px;min-width:100%;mso-table-lspace:0pt;mso-table-rspace:0pt;">
-                                    <tr>
-                                      <td id="text_div99" class="td_text td_block" valign="top" align="left" style="color:inherit;font-size:12px;font-weight:inherit;line-height:1;text-decoration:inherit;font-family:Arial;">
-                                        <div style="margin-top:0;margin-bottom:0;margin-right:0;margin-left:0;outline-style:none;padding-top:0;padding-bottom:0;padding-right:0;padding-left:0;font-size:15px;">
-                                          <span class="" style="color:inherit;font-size:15px;font-weight:inherit;line-height:inherit;text-decoration:inherit;">
-                                            <h2>Pre-ICO is now open for contribution !</h2>
-                                            <p>We have already opened a pre-ICO. You can login with your registered username and password
-                                              to contribute.</p>
-                                            <p>Please note that, the pre-ICO 6% bonus is first come first serve and
-                                              <u>very limited.</u>
-                                            </p>
-                                            <p>
-                                              Proceed to contribute:
-                                              <a href="https://ico.six.network">https://ico.six.network</a>
-                                              <br> How to buy:
-                                              <a href="https://six.network/faq.html#howtobuy">https://six.network/faq.html#howtobuy</a>
-                                            </p>
-                                            <p>Best Regards,
-                                              <br>SIX.network team</p>
-                                          </span>
-                                          <br>
-                                          <div style="margin-top:0;margin-bottom:0;margin-right:0;margin-left:0;outline-style:none;padding-top:0;padding-bottom:0;padding-right:0;padding-left:0;text-align:center;">
-                                            <span style="color:#000000;font-size:inherit;font-weight:400;line-height:inherit;text-decoration:inherit;font-family:arial;text-align:inherit;">Follow us</span>
-                                            <span class="" style="color:#000000;font-size:inherit;font-weight:400;line-height:inherit;text-decoration:inherit;font-family:arial;text-align:inherit;"></span>
-                                            <span style="color:#000000;font-size:inherit;font-weight:400;line-height:inherit;text-decoration:inherit;font-family:arial;text-align:inherit;">
-                                            :</span>
-                                          </div>
-      
-                                        </div>
-                                      </td>
-                                    </tr>
-                                  </table>
-                                </td>
-                              </tr>
-                            </table>
-                          </td>
-                        </tr>
-                        <tr>
-                          <td id="layout-row-margin110" valign="top" style="padding-top:5px;padding-bottom:5px;padding-right:5px;padding-left:5px;">
-                            <table width="100%" border="0" cellpadding="0" cellspacing="0" style="font-size:13px;min-width:100%;mso-table-lspace:0pt;mso-table-rspace:0pt;border-collapse:initial !important;">
-                              <tr id="layout-row110" class="layout layout-row widget _widget_social style110">
-                                <td id="layout-row-padding110" valign="top" style="padding-top:5px;padding-bottom:5px;padding-right:5px;padding-left:5px;">
-                                  <table width="100%" border="0" cellpadding="0" cellspacing="0" style="font-size:13px;min-width:100%;mso-table-lspace:0pt;mso-table-rspace:0pt;">
-                                    <tr>
-                                      <td>
-                                        <table width="100%" cellspacing="0" cellpadding="0" style="font-size:13px;min-width:100%;mso-table-lspace:0pt;mso-table-rspace:0pt;">
-                                          <tr>
-                                            <td width="650" align="left">
-                                              <center style="margin-top:0;margin-bottom:0;margin-right:0;margin-left:0;outline-style:none;padding-top:0;padding-bottom:0;padding-right:0;padding-left:0;font-size:0px;">
-                                                <table class="_ac_social_table" cellspacing="0" cellpadding="0" align="center" style="font-size:0;min-width:auto!important;mso-table-lspace:0pt;mso-table-rspace:0pt;margin-top:auto !important;margin-bottom:auto !important;margin-right:auto !important;margin-left:auto !important;display:inline-block!important;text-align:center!important;">
-                                                  <tr>
-                                                    <td align="center" valign="middle" width="34" style="display:inline-block!important;font-size:0;width:34px!important;">
-                                                      <div class="__ac_social_icons" style="margin-top:0;margin-bottom:0;margin-right:0;margin-left:0;outline-style:none;padding-top:0;padding-bottom:0;padding-right:0;padding-left:0;">
-                                                        <a href="https://www.facebook.com/thesixnetwork/" id="facebook" class="__ac_social_icon_link"
-                                                          style="margin-top:0;margin-bottom:0;margin-right:0;margin-left:0;outline-style:none;padding-top:0;padding-bottom:0;padding-right:0;padding-left:0;color:#045fb4;">
-                                                          <img src="http://sixnetwork.img-us3.com/_social_/flat-color-poly-facebook.png"
-                                                            border="0" width="34" style="display:block;border-style:none;">
-                                                        </a>
-                                                      </div>
-                                                    </td>
-                                                    <td width="10" style="display:inline-block!important;font-size:0;width:10px!important;"> </td>
-                                                    <td align="center" valign="middle" width="34" style="display:inline-block!important;font-size:0;width:34px!important;">
-                                                      <div class="__ac_social_icons" style="margin-top:0;margin-bottom:0;margin-right:0;margin-left:0;outline-style:none;padding-top:0;padding-bottom:0;padding-right:0;padding-left:0;">
-                                                        <a href="https://twitter.com/theSIXnetwork" id="twitter" class="__ac_social_icon_link"
-                                                          style="margin-top:0;margin-bottom:0;margin-right:0;margin-left:0;outline-style:none;padding-top:0;padding-bottom:0;padding-right:0;padding-left:0;color:#045fb4;">
-                                                          <img src="http://sixnetwork.img-us3.com/_social_/flat-color-poly-twitter.png"
-                                                            border="0" width="34" style="display:block;border-style:none;">
-                                                        </a>
-                                                      </div>
-                                                    </td>
-                                                    <td width="10" style="display:inline-block!important;font-size:0;width:10px!important;"> </td>
-                                                    <td align="center" valign="middle" width="34" style="display:inline-block!important;font-size:0;width:34px!important;">
-                                                      <div class="__ac_social_icons" style="margin-top:0;margin-bottom:0;margin-right:0;margin-left:0;outline-style:none;padding-top:0;padding-bottom:0;padding-right:0;padding-left:0;">
-                                                        <a href="https://six.network" id="website" class="__ac_social_icon_link"
-                                                          style="margin-top:0;margin-bottom:0;margin-right:0;margin-left:0;outline-style:none;padding-top:0;padding-bottom:0;padding-right:0;padding-left:0;color:#045fb4;">
-                                                          <img src="http://sixnetwork.img-us3.com/_social_/flat-color-poly-website.png"
-                                                            border="0" width="34" style="display:block;border-style:none;">
-                                                        </a>
-                                                      </div>
-                                                    </td>
-                                                  </tr>
-                                                </table>
-                                              </center>
-                                            </td>
-                                          </tr>
-                                        </table>
-                                      </td>
-                                    </tr>
-                                  </table>
-                                </td>
-                              </tr>
-                            </table>
-                          </td>
-                        </tr>
-                        <tr>
-                          <td id="layout-row-margin104" valign="top">
-                            <table width="100%" border="0" cellpadding="0" cellspacing="0" style="font-size:13px;min-width:100%;mso-table-lspace:0pt;mso-table-rspace:0pt;">
-                              <tr id="layout-row104" class="layout layout-row widget _widget_text " style="margin-top:0;margin-bottom:0;margin-right:0;margin-left:0;padding-top:0;padding-bottom:0;padding-right:0;padding-left:0;">
-                                <td id="layout-row-padding104" valign="top">
-                                  <table width="100%" border="0" cellpadding="0" cellspacing="0" style="font-size:13px;min-width:100%;mso-table-lspace:0pt;mso-table-rspace:0pt;border-collapse:collapse;line-height:0;mso-line-height-rule:exactly;">
-                                    <tbody>
-                                      <tr>
-                                        <td height="10" style="line-height:0;mso-line-height-rule:exactly;"></td>
-                                      </tr>
-                                      <tr>
-                                        <td align="center" height="1" width="650" style="line-height:0;mso-line-height-rule:exactly;">
-                                          <table align="center" border="0" cellpadding="0" cellspacing="0" height="1" width="650" style="font-size:13px;min-width:auto!important;mso-table-lspace:0pt;mso-table-rspace:0pt;border-collapse:collapse;line-height:0;mso-line-height-rule:exactly;width:100%;max-width:100%;">
-                                            <tbody>
-                                              <tr>
-                                                <td class="break-line" bgcolor="#000000" height="1" width="650" style="line-height:1px;mso-line-height-rule:exactly;height:1px;width:650px;background-color:#000000;">
-                                                </td>
-                                              </tr>
-                                            </tbody>
-                                          </table>
-                                        </td>
-                                      </tr>
-                                      <tr>
-                                        <td height="10" style="line-height:0;mso-line-height-rule:exactly;"></td>
-                                      </tr>
-                                    </tbody>
-                                  </table>
-                                  <table width="100%" border="0" cellpadding="0" cellspacing="0" style="font-size:13px;min-width:100%;mso-table-lspace:0pt;mso-table-rspace:0pt;">
-                                    <tr>
-                                      <td id="text_div94" class="td_text td_block" valign="top" align="left" style="line-height:1.4;color:inherit;font-size:12px;font-weight:inherit;text-decoration:inherit;font-family:Arial;mso-line-height-rule:exactly;">
-                                        <div data-line-height="1.4" style="line-height:1.4;margin-top:0;margin-bottom:0;margin-right:0;margin-left:0;outline-style:none;padding-top:0;padding-bottom:0;padding-right:0;padding-left:0;font-size:12px;mso-line-height-rule:exactly;">
-                                          <div style="margin-top:0;margin-bottom:0;margin-right:0;margin-left:0;outline-style:none;padding-top:0;padding-bottom:0;padding-right:0;padding-left:0;">
-                                            <p style="margin-top:0;margin-bottom:0;margin-right:0;margin-left:0;outline-style:none;padding-top:0;padding-bottom:0;padding-right:0;padding-left:0;color:inherit;font-size:inherit;font-weight:inherit;line-height:inherit;text-decoration:inherit;">This email was sent to you by SIX.network because you registered for ICO contribution.
-                                              If you don't know this source, please ignore this email..</p>
-                                          </div>
-                                        </div>
-                                        <!--[if (gte mso 12)&(lte mso 15) ]>
-                                                        <style data-ac-keep="true" data-ac-inline="false"> #text_div94, #text_div94 div { line-height: 140% !important !important; } !important;</style>
-                                                        <![endif]-->
-                                      </td>
-                                    </tr>
-                                  </table>
-                                </td>
-                              </tr>
-                            </table>
-                          </td>
-                        </tr>
-                      </table>
-                    </td>
-                  </tr>
-                </table>
-              </td>
-            </tr>
-          </table>
-        </div>
-      </body>
-    `
-    };
-    resolve(mailOptions);
-  });
-}
 
 var _extends =
   Object.assign ||
@@ -687,7 +459,7 @@ var sendEmail = (function() {
 
                 email = _step.value;
                 _context.next = 9;
-                return genKycReadyEmail({ email: email });
+                 break
 
               case 9:
                 mailOptions = _context.sent;
@@ -825,32 +597,6 @@ exports.sendKycReadyEmail = functions.https.onRequest((req, res) => {
   }
 });
 
-exports.autoSendKycReadyEmail = functions.firestore
-  .document("/users/{userId}")
-  .onUpdate(event => {
-    console.log(event.data.kyc_status);
-    const document = event.data.exists ? event.data.data() : null;
-    const oldDocument = event.data.previous.data();
-    if (
-      document.kyc_status === "approved" &&
-      !oldDocument.kyc_status !== "approved"
-    ) {
-      console.log(`Send pro-ico email to : ${document.email}`);
-      return genKycReadyEmail({ email: document.email }).then(mailOptions => {
-        return mailTransport
-          .sendMail(mailOptions)
-          .then(result => {
-            console.log(result, "result");
-            return result;
-          })
-          .catch(err => {
-            console.log(err);
-            return err;
-          });
-      });
-    }
-  });
-
   function genReminderEmail(emails) {
     return new Promise((resolve, reject) => {
       let personalizations = []
@@ -903,7 +649,7 @@ exports.autoSendKycReadyEmail = functions.firestore
                         <a href="https://goo.gl/H14G3B" target="_blank"  class="button" style="font-family: &quot;Prompt&quot;, sans-serif;color: #FFF;background: #3B409E;font-size: 16px;padding: 15px 20px;float: center;border-radius: 5px;margin-top: 10px;margin-bottom: 10px">ส่งเอกสาร</a>
                     </div>
                     <!-- end-thai -->
-            
+
                     <!-- english -->
                     <h2 class="title" style="font-family: &quot;Prompt&quot;, sans-serif;color: rgba(33, 33, 33, 1)">Hello !</h2>
                     <h3 class="subtitle" style="font-family: &quot;Prompt&quot;, sans-serif;color: rgba(33, 33, 33, 1)">Thank you for your interest in SIX.network</h3>
@@ -969,7 +715,7 @@ exports.autoSendKycReadyEmail = functions.firestore
                     <!-- thai -->
                     <h2 class="title" style="font-family: &quot;Prompt&quot;, sans-serif;color: rgba(33, 33, 33, 1)">เรียน ผู้ร่วมลงทุน</h2>
                     <dd> <p style="text-indent: 2.5em;font-family: &quot;Prompt&quot;, sans-serif;color: rgba(33, 33, 33, 1);font-size: 14px">    ทาง ซิคซ์ เนทเวิร์ค ขอแสดงความขอบคุณ ท่านผู้ร่วมลงทุนที่สนใจลงทุนในเหรียญ SIX Token จากการลงทะเบียนรอบ Pre-Sale SIX Token เพื่อรับโบนัส 6% ในช่วงต้นเดือนเมษายน 2561 ที่ผ่านมา อย่างไรก็ตามทางเรายังไม่ได้รับยอดโอนเงินจากท่านและมีความจำเป็นต้องเรียนแจ้ง ผู้ร่วมลงทุน ทราบว่า โบนัส 6% ใกล้จะสิ้นสุดและปิดการขายแล้ว</p>
-                    <p style="font-family: &quot;Prompt&quot;, sans-serif;color: rgba(33, 33, 33, 1);font-size: 14px"> ขอความกรุณาท่านผู้ร่วมลงทุนกรุณาทำการส่ง ETH ตามจำนวนที่ท่านได้ลงทะเบียนไว้และถ้าหากท่านผู้ร่วมลงทุนทำการโอนเหรียญ ETH เพื่อซื้อ SIX Token หลังจากนี้ ทางบริษัทขอเรียนแจ้งว่า ท่านผู้ร่วมลงทุนจะไม่ได้รับโบนัส 6% ตามที่กำหนด 
+                    <p style="font-family: &quot;Prompt&quot;, sans-serif;color: rgba(33, 33, 33, 1);font-size: 14px"> ขอความกรุณาท่านผู้ร่วมลงทุนกรุณาทำการส่ง ETH ตามจำนวนที่ท่านได้ลงทะเบียนไว้และถ้าหากท่านผู้ร่วมลงทุนทำการโอนเหรียญ ETH เพื่อซื้อ SIX Token หลังจากนี้ ทางบริษัทขอเรียนแจ้งว่า ท่านผู้ร่วมลงทุนจะไม่ได้รับโบนัส 6% ตามที่กำหนด
 
                       bonus 6% ก่อนที่จะหมดลงนะครับ</p></dd>
                     <dd> <p style="text-indent: 2.5em;font-family: &quot;Prompt&quot;, sans-serif;color: rgba(33, 33, 33, 1);font-size: 14px">  ทั้งนี้ทางบริษัทต้องขออภัย หากท่านผู้ร่วมลงทุนได้ทำการโอนเหรียญ ETH หรือ XLM มาเพื่อทำการซื้อ SIX Token เรียบร้อยแล้ว </p>
@@ -1028,7 +774,7 @@ exports.autoSendKycReadyEmail = functions.firestore
                       <br style="font-family: &quot;Prompt&quot;, sans-serif;color: rgba(33, 33, 33, 1)"/>
                       <span style="font-family: &quot;Prompt&quot;, sans-serif;color: rgba(33, 33, 33, 1);font-size: 14px">SIX network</span>
                     </div>
-    
+
                   </div>
             </div>
           </div>

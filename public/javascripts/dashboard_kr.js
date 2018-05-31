@@ -313,16 +313,13 @@ function submitDepositETH() {
 let globalCurrent
 let percentageGlobalCurrent
 function getCurrentTotal() {
-  return firebase.firestore().collection('total_asset').doc('usd').get().then(doc => {
+  return firebase.firestore().collection('total_asset').doc('six').get().then(doc => {
     const totalAsset = parseFloat(doc.data().total || 0)
-    const privateAsset = parseFloat(doc.data().private_asset || 0)
+    const privateAsset = parseFloat(doc.data().private || 0)
     const currentAsset = privateAsset+totalAsset
-    const softCapAmount = doc.data().soft_cap_usd
-    const percentage = Number(((currentAsset/(doc.data().hard_cap_usd/100)) || 0).toFixed(0))
-    let scalePercentage = Number((((((100-percentage)*99273.68461538461)+currentAsset)/(doc.data().hard_cap_usd/100)) || 0).toFixed(1))
-    if ((scalePercentage + 5) < 100) {
-      scalePercentage = scalePercentage+5
-    }
+    const softCapAmount = doc.data().soft_cap
+    const percentage = Number(((currentAsset/(doc.data().hard_cap/100)) || 0).toFixed(0))
+    let scalePercentage = Number((((((100-percentage)*99273.68461538461)+currentAsset)/(doc.data().hard_cap/100)) || 0).toFixed(1))
     percentageGlobalCurrent = Number(scalePercentage)
     globalCurrent = Number(parseFloat(currentAsset/1000000).toFixed(1))
   })
@@ -336,7 +333,7 @@ function runGlobalNumber() {
       numberStep: function(now, tween) {
         var target = $(tween.elem);
         floored_number = now.toFixed(decimal_places);
-        target.text(floored_number+' M');
+        target.text(floored_number+' M SIX');
       }
     }
   )
@@ -349,11 +346,7 @@ function submitDepositXLMTran() {
   const xlm_value = (parseFloat(xlmToSixInput.value) || 0)
   setDisable([btnDOM])
   let amount = 0
-  if (userData.is_presale === true) {
-    amount = Number((xlm_value*xlmPrice.six_per_xlm).toFixed(7))
-  } else {
-    amount = Number((xlm_value*xlmPrice.six_per_xlm).toFixed(7))*1.06
-  }
+  amount = Number((xlm_value*xlmPrice.six_per_xlm).toFixed(7))
   window.dataLayer = window.dataLayer || [];
   function gtag () {
     dataLayer.push(arguments);
@@ -387,11 +380,7 @@ function submitDepositETHTran() {
   const eth_value = (parseFloat(ethToSixInput.value) || 0)
   setDisable([btnDOM])
   let amount = 0
-  if (userData.is_presale === true) {
-    amount = Number((eth_value*ethPrice.six_per_eth).toFixed(7))
-  } else {
-    amount = Number((eth_value*ethPrice.six_per_eth).toFixed(7))*1.06
-  }
+  amount = Number((eth_value*ethPrice.six_per_eth).toFixed(7))
   window.dataLayer = window.dataLayer || [];
   function gtag () {
     dataLayer.push(arguments);
@@ -460,6 +449,37 @@ function gotoCurrency() {
   $("#warnBox").css("display", "none")
 }
 
+function buildFreeTx() {
+  var tr = document.createElement("tr");
+  var td1 = document.createElement("td");
+  var txt1 = document.createTextNode('-')
+  td1.appendChild(txt1);
+
+  var td2 = document.createElement("td");
+  var txt2 = document.createTextNode("20 SIX");
+  td2.appendChild(txt2);
+
+  var td3 = document.createElement("td");
+  var txt3 = document.createTextNode("-");
+  td3.appendChild(txt3)
+
+  var td4 = document.createElement("td");
+  var txt4 = document.createTextNode("free");
+  td4.appendChild(txt4)
+
+  var td5 = document.createElement("td");
+  var txt5 = document.createTextNode("-");
+  td5.appendChild(txt5)
+
+  tr.appendChild(td1);
+  tr.appendChild(td2);
+  tr.appendChild(td3);
+  tr.appendChild(td4);
+  tr.appendChild(td5);
+
+  return tr
+}
+
 function buildListTx(doc) {
   const { time: t, native_amount, type: currency_type, to, id, time, six_amount, tx_status } = doc
   let date = new Date(parseFloat(t));
@@ -497,16 +517,22 @@ function buildListTx(doc) {
   return tr
 }
 
-let totalSix = 0
+let totalSix = 20
 
 function getTxs () {
   if (firebase.auth().currentUser !== null) {
+    if (userData.update_time !== undefined && userData.update_time > 1527692400000) {
+      totalSix = 0
+    }
     firebase.firestore().collection('purchase_txs')
     .where("user_id",'==',firebase.auth().currentUser.uid)
     .get()
     .then(snapshot => {
       return firebase.firestore().collection('presale').doc('supply').collection('purchased_presale_tx').doc(firebase.auth().currentUser.uid).get().then(preDoc => {
         let preDocData = preDoc.data()
+        if (preDocData === undefined) {
+          preDocData = {}
+        }
         $('#userTxs').empty()
         let allDoc = []
         snapshot.forEach(d => {
@@ -531,6 +557,15 @@ function getTxs () {
                 numberStep: percent_number_step
               }
             );
+          } else {
+             data.six_amount = Number((data.six_amount).toFixed(7))
+             totalSix += data.six_amount
+             $('#totalSix').animateNumber(
+               {
+                 number: totalSix.toFixed(7),
+                 numberStep: percent_number_step
+               }
+             )
           }
           const elem = buildListTx(data)
           $("#userTxs")[0].appendChild(elem)
@@ -559,6 +594,10 @@ function getTxs () {
       if (userData.alloc_transaction === true) {
         const elem = buildListTx({ time: userData.alloc_time, native_amount: userData.alloc_transaction_amount, type: userData.alloc_transaction_type, to: '-', id: '-', six_amount: userData.alloc_transaction_six_amount, alloc_time: userData.alloc_time, tx_status: 'pending' })
         $("#userTxs")[0].prepend(elem)
+      }
+      if (userData.update_time === undefined || userData.update_time < 1527692400000) {
+        const elem = buildFreeTx()
+        $("#userTxs")[0].appendChild(elem)
       }
     })
   }
@@ -634,7 +673,6 @@ $(document).ready(function(){
   document.getElementById('xlmToSixInput').onkeyup = function () {
     let number = parseFloat(this.value) || 0
     $("#xlmToSix").html(Number((number*xlmPrice.six_per_xlm).toFixed(7)).toLocaleString())
-    $("#bonusXLM").html(Number(((number*xlmPrice.six_per_xlm)*0.06).toFixed(7)))
     $("#xlmToSixInputAlertText").html("")
     $("#xlmToSixInputAlertText").css("display", "none")
     $("#xlmToSixInputAlert").removeClass("invalid")
@@ -643,7 +681,6 @@ $(document).ready(function(){
   document.getElementById('ethToSixInput').onkeyup = function() {
     let number = parseFloat(this.value) || 0
     $("#ethToSix").html(Number((number*ethPrice.six_per_eth).toFixed(7)).toLocaleString())
-    $("#bonusETH").html(Number(((number*ethPrice.six_per_eth)*0.06).toFixed(7)))
     $("#ethToSixInputAlertText").html("")
     $("#ethToSixInputAlertText").css("display", "none")
     $("#ethToSixInputAlert").removeClass("invalid")
@@ -732,10 +769,6 @@ $(document).ready(function(){
             $("#myETHWalletAddress").html('-')
             $("#myETHWalletAddress").attr('data-clipboard-text', '-')
             $("#myAddressBtn").attr('data-clipboard-text', '-')
-          }
-          if (userData.is_presale === true) {
-            $("#bonusXLMText").css('display', 'block')
-            $("#bonusETHText").css('display', 'block')
           }
         }).then(getCurrentTotal).then(() => {
           getTxs()
