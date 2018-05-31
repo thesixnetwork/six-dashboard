@@ -33,6 +33,10 @@
         "destination": "/dashboard_kr.html"
       },
       {
+        "source": "/wizard-kr",
+        "destination": "/wizard_kr.html"
+      },
+      {
         "source": "/dashboard",
         "destination": "/dashboard.html"
       }
