@@ -1082,6 +1082,7 @@ $(document).ready(function(){
                 $(".noWallet").removeClass("noWallet").addClass("haveWallet")
                 qrcode.makeCode(userData.xlm_address);
                 $("#myXlmPublicAddress").text(userData.xlm_address)
+                $("#copyMyXlmAddress").attr("data-clipboard-text", userData.xlm_address)
               }
             } else {
               $("#trustlineStep").addClass("current")
@@ -1093,6 +1094,7 @@ $(document).ready(function(){
               $(".noWallet").removeClass("noWallet").addClass("haveWallet")
               qrcode.makeCode(userData.xlm_address);
               $("#myXlmPublicAddress").text(userData.xlm_address)
+              $("#copyMyXlmAddress").attr("data-clipboard-text", userData.xlm_address)
             }
           }
           if (userData.add_trust_line === true) {
@@ -1318,6 +1320,7 @@ function submitGeneratedAccount() {
                 $("#congratBox").slideToggle()
                 qrcode.makeCode(generatedWallet.getPublicKey(0));
                 $("#myXlmPublicAddress").text(generatedWallet.getPublicKey(0))
+                $("#copyMyXlmAddress").attr("data-clipboard-text", generatedWallet.getPublicKey(0))
                 $(".noWallet").removeClass("noWallet").addClass("haveWallet")
               }, 2000);
             }).catch(err => {
@@ -1625,7 +1628,7 @@ ${mnemonicWords}
 var doc = new jsPDF()
 doc.setFontSize(12)
 doc.text(data,10,10)
-doc.save('stellar_wallet_recovery_words.pdf')
+doc.save('six_stellar_wallet_recovery_words_'+userData.email+'.pdf')
 
 }
 
@@ -1641,17 +1644,15 @@ Secret Key :
 var doc = new jsPDF()
 doc.setFontSize(12)
 doc.text(data,10,10)
-doc.save('stellar_wallet_credentials.pdf')
+doc.save('six_stellar_wallet_credentials_'+userData.email+'.pdf')
+}
 
-  // element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(data));
-  // element.setAttribute('download', 'stellar_wallet_credentials.txt');
-  //
-  // element.style.display = 'none';
-  // document.body.appendChild(element);
-  //
-  // element.click();
-  //
-  // document.body.removeChild(element);
+function downloadAddress() {
+  let data = "Public Key : "+userData.xlm_address
+  var doc = new jsPDF()
+  doc.setFontSize(12)
+  doc.text(data,10,10)
+  doc.save('six_stellar_wallet_credentials_'+userData.email+'.pdf')
 }
 
 var toggleSecretshow = false
@@ -1747,8 +1748,13 @@ function requestOTP() {
 }
 
 function wcNext() {
-  $("#claimBox").css("display", "block")
-  $("#claimWelcomeBox").css("display", "none")
+  if (userData.phone_number !== undefined && userData.phone_verified === true) {
+    $("#claimBox").css("display", "block")
+    $("#claimWelcomeBox").css("display", "none")
+  } else {
+    $('#verifyPhoneContent').css("display", "block")
+    $("#welcomeContentContainer").css("display", "none")
+  }
 }
 
 function submitDialog() {
@@ -1817,3 +1823,112 @@ function clickBody(name, elem, rm_class) {
   }
 }
 
+function submitPhoneNumber() {
+  if ($("#verifyPhoneError").css("display", "block")) {
+    $("#verifyPhoneError").slideToggle()
+  }
+  if ($("#verifyPhoneSubmitError").css("display", "block")) {
+    $("#verifyPhoneSubmitError").slideToggle()
+  }
+  let phoneNumberDOM = document.getElementById('verifyPhonePhonenumber')
+  let countryPhoneDOM = document.getElementById('kycCountryPhone')
+  const countryPhone = countryPhoneDOM.value
+  const parseData = libphonenumber.parse(phoneNumberDOM.value, countryPhone, {extended: true })
+  let btnDOM = document.getElementById('verifyPhoneBtn')
+  setDisable([phoneNumberDOM, btnDOM, countryPhoneDOM])
+  if (parseData.valid === false) {
+    $("#verifyPhoneError").html("Invalid phone number format")
+    if ($("#verifyPhoneError").css("display", "none")) {
+      $("#verifyPhoneError").slideToggle()
+    }
+    setEnable([phoneNumberDOM, btnDOM, countryPhoneDOM])
+    return false
+  }
+  const phone_number = '+'+parseData.countryCallingCode+parseData.phone
+  phoneNumberDOM.value = phone_number
+  let requestFunction = firebase.functions().httpsCallable('phoneVerificationRequest')
+  requestFunction({phone_number: phone_number}).then(response => {
+    if (response.data.success === true) {
+      $('#verifyCodeContent1').removeClass('show-detail')
+      $('#verifyCodeContent2').addClass('show-detail')
+      $('#refVerify').html(response.data.ref_code)
+      $('#refPhoneNumber').html(phone_number)
+      clearInterval(intervalFunction)
+
+      // Countdown verify
+      'use strict'
+      function countdown (options = {}) {
+        let defaults = { cssClass: '.countdown-verify'
+        }
+        let settings = Object.assign({}, defaults, options),
+          startNum = settings.fromNumber,
+          block = document.querySelector(settings.cssClass)
+        function appendText () {
+          let countText = `<p class="countdown-number">${startNum}</p>`
+          block.innerHTML = countText
+          startNum--
+        }
+        function count () {
+          if (startNum < 0) {
+            startNum = settings.fromNumber
+          } else {
+            appendText()
+          }
+          if (startNum == 0) {
+            $('#verifyCodeContent2').removeClass('show-detail')
+            $('#verifyCodeContent1').addClass('show-detail')
+          }
+        }
+        appendText()
+        intervalFunction = setInterval(() => { count() }, 1000)
+      }
+      let countDownNum = response.data.valid_until - Math.round((new Date()).getTime() / 1000)
+      countdown({ fromNumber: countDownNum })
+    } else {
+      $("#verifyPhoneError").html(response.data.error_message)
+      if ($("#verifyPhoneError").css("display", "none")) {
+        $("#verifyPhoneError").slideToggle()
+      }
+    }
+    setEnable([phoneNumberDOM, btnDOM, countryPhoneDOM])
+  }).catch(() => {
+    $("#verifyPhoneError").html("Unexpected error, please try again")
+    if ($("#verifyPhoneError").css("display", "none")) {
+      $("#verifyPhoneError").slideToggle()
+    }
+    setEnable([phoneNumberDOM, btnDOM, countryPhoneDOM])
+  })
+}
+
+function submitPhoneNumberCode() {
+  if ($("#verifyPhoneSubmitError").css("display", "block")) {
+    $("#verifyPhoneSubmitError").slideToggle()
+  }
+  let countryPhoneDOM = document.getElementById('kycCountryPhone')
+  const countryPhone = countryPhoneDOM.value
+  let phoneNumberDOM = document.getElementById('verifyPhonePhonenumber')
+  const phone_number = phoneNumberDOM.value
+  let codeDOM = document.getElementById('verifyCode')
+  let btnDOM = document.getElementById('verifyPhoneSubmitBtn')
+  const code = codeDOM.value
+  setDisable([codeDOM, btnDOM])
+  let requestFunction = firebase.functions().httpsCallable('phoneVerificationSubmit')
+  requestFunction({phone_number: phone_number, country: countryPhone, ref_code: $('#refVerify').html(), code: code}).then(response => {
+    if (response.data.success === true) {
+      $("#claimBox").css("display", "block")
+      $("#claimWelcomeBox").css("display", "none")
+    } else {
+      $("#verifyPhoneSubmitError").html(response.data.error_message)
+      if ($("#verifyPhoneSubmitError").css("display", "none")) {
+        $("#verifyPhoneSubmitError").slideToggle()
+      }
+    }
+    setEnable([codeDOM, btnDOM])
+  }).catch(() => {
+    $("#verifyPhoneSubmitError").html("Unexpected error, please try again")
+    if ($("#verifyPhoneSubmitError").css("display", "none")) {
+      $("#verifyPhoneSubmitError").slideToggle()
+    }
+    setEnable([codeDOM, btnDOM])
+  })
+}
