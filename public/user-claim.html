@@ -27,15 +27,18 @@
         <link href="stylesheets/loading.css" rel="stylesheet">
         <link href="stylesheets/admin.css" rel="stylesheet">
         <link rel="stylesheet" type="text/css" href="//cdn.jsdelivr.net/bootstrap/3/css/bootstrap.css" />
+        <link rel="stylesheet" href="https://cdn.datatables.net/1.10.16/css/dataTables.bootstrap.min.css">
         <script src="javascripts/bluebird.js"></script>
         <script src="javascripts/jquery-3.2.1.min.js"></script>
         <script src="javascripts/url_replacer.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/lodash@4.17.5/lodash.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.18.1/moment.js"></script>
+        
         <!-- Include Date Range Picker -->
         <script type="text/javascript" src="//cdn.jsdelivr.net/bootstrap.daterangepicker/2/daterangepicker.js"></script>
         <link rel="stylesheet" type="text/css" href="//cdn.jsdelivr.net/bootstrap.daterangepicker/2/daterangepicker.css" />
-
+        <script src="https://cdn.datatables.net/1.10.16/js/jquery.dataTables.min.js"></script>
+        <script src="https://cdn.datatables.net/1.10.16/js/dataTables.bootstrap.min.js"></script>
         <script src="javascripts/user_claim.js"></script>
         <!-- <script src="javascripts/wizard.js"></script> -->
         <!-- Global site tag (gtag.js) - Google Analytics -->
@@ -68,15 +71,16 @@
       <br>
       <section class="list-user with-table">
         <div style="overflow-x: auto;width: 100%;">
-          <table>
+          <table id='claim-table' class='display' style="width: 100%;">
             <thead>
               <tr>
-                <th width="300" id='kycColumn'>Name</th>
-                <th width="200" id='contributeColumn'>Email</th>
-                <th width="200" id="remarkColumn">Public Key</th>
-                <th width="150" id="remindStatus">Sent XLM</th>
-                <th width="150" id="remindStatus">Allow Trust</th>
-                <th width="150" id="remindStatus">Trustline</th>
+                  <th width="300" id='kycColumn'>Email</th>
+                <th width="300" id='kycColumn'>User ID</th>
+                <th width="200" id='contributeColumn'>Amount</th>
+                <th width="200" id="remarkColumn">Type</th>
+                <th width="150" id="remindStatus">Valid Date</th>
+                <th width="150" id="remindStatus">Claimed</th>
+                <!-- <th width="150" id="remindStatus">Trustline</th> -->
               </tr>
             </thead>
             <tbody id="claim_list">

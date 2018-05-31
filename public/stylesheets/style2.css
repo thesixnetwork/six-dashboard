@@ -97,3 +97,19 @@
 .widget > .title {
     font-size: 20px;
 }
+
+.red {
+    color: red;
+}
+
+.green {
+    color: green;
+}
+
+.block-content {
+    position: absolute;
+    top: 0;
+    right: 0;
+    left: 0;
+    bottom: 0;
+}

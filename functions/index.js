@@ -1426,3 +1426,44 @@ exports.sendICOCloseToUser = functions.https.onRequest((request, response) => {
     return response.status(400).json(err);
   }
 });
+
+exports.getPurchasedUser = functions.https.onRequest((request, response) => {
+  cors(request, response, () => {});
+  const { password } = request.body;
+  if (password === 'sixsendmailtoday') {
+    admin.firestore().collection('users').where("total_six", ">", 20).get().then(snapshots => {
+      let users = []
+      snapshots.forEach(snapshot => {
+        const data = snapshot.data()
+        const { email } = data
+        users.push(email)
+      })
+      response.send(users)
+    })
+  } else {
+    response.send({
+      error: 'Password Incorrect.'
+    })
+  }
+})
+
+
+exports.getNotPurchasedUser = functions.https.onRequest((request, response) => {
+  cors(request, response, () => {});
+  const { password } = request.body;
+  if (password === 'sixsendmailtoday') {
+    admin.firestore().collection('users').where("total_six", "<=", 20).get().then(snapshots => {
+      let users = []
+      snapshots.forEach(snapshot => {
+        const data = snapshot.data()
+        const { email } = data
+        users.push(email)
+      })
+      response.send(users)
+    })
+  } else {
+    response.send({
+      error: 'Password Incorrect.'
+    })
+  }
+})
