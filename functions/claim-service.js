@@ -6,6 +6,7 @@ const db = admin.firestore()
 const claimRef = db.collection('users_claim')
 const userRef = db.collection('users')
 const claimPoolsRef = db.collection('claim_pools')
+const lockPoolsRef = db.collection('lock_pool').doc('process')
 
 let stellarUrl
 const secondaryClaimUrl = functions.config().secondary_signer.url + '/setPublicKey'
@@ -170,7 +171,7 @@ const createPool = ({ uid, claim_id: claimId }) => {
     uid,
     claim_id: claimId,
     timestamp: new Date().getTime()
-  };
+  }
   return claimPoolsRef
     .doc(`${uid}_${claimId}`)
     .create(data)
@@ -178,15 +179,15 @@ const createPool = ({ uid, claim_id: claimId }) => {
       return {
         uid,
         claim_id: claimId
-      };
-    });
-};
+      }
+    })
+}
 
 const updateState = ({ uid, claim, claim_id: claimId, user }) => {
-  console.log("updateState");
+  console.log('updateState')
   return claimRef
     .doc(uid)
-    .collection("claim_period")
+    .collection('claim_period')
     .doc(String(claimId))
     .update({
       state: 1
@@ -197,9 +198,60 @@ const updateState = ({ uid, claim, claim_id: claimId, user }) => {
         claim,
         claim_id: claimId,
         user
-      };
-    });
-};
+      }
+    })
+}
+
+const releasePool = () => lockPoolsRef.set({is_lock: false})
+
+const lockPool = ({ uid, claim_id: claimId }) => {
+  return db.runTransaction(t => {
+    return t.get(lockPoolsRef).then(doc => {
+      // @TODO  create document if not intial lock process
+      if (doc.exists) {
+        const lockStatus = doc.data()
+        if (lockStatus.is_lock) {
+          return {
+            uid,
+            claim_id: claimId,
+            lock_successful: false
+          }
+        }
+      }
+      t.update(lockPoolsRef, { is_lock: true, lock_id: `${uid}_${claimId}` })
+      return {
+        uid,
+        claim_id: claimId,
+        lock_successful: true
+      }
+    })
+  })
+}
+
+const processNewClaimPool = () => {
+  return claimPoolsRef
+    .orderBy('timestamp')
+    .limit(1)
+    .get()
+    .then((snap) => {
+      if (snap.docs.length > 0) {
+        return snap.docs[0].data()
+      }
+    })
+    .then(claimData => {
+      if (claimData) {
+        return lockPool(claimData)
+      }
+      return {
+        lock_successful: false
+      }
+    })
+    .then(lockInfo => {
+      if (lockInfo.lock_successful) {
+        handleClaimSix({ claim_id: lockInfo.claim_id }, { auth: { uid: lockInfo.uid } })
+      }
+    })
+}
 
 /**
  * create job on claim_pools.
@@ -215,16 +267,16 @@ const claimSixByCreatePool = (uid, claimId) => {
     .then(() => {
       return {
         success: true
-      };
+      }
     })
     .catch(error => {
-      console.log(error);
+      console.log(error)
       return {
         success: false,
         error_message: error.message
-      };
-    });
-};
+      }
+    })
+}
 
 const handleClaimSix = (data, context) => {
   if (!distKey) {
@@ -251,17 +303,10 @@ const handleClaimSix = (data, context) => {
     .then(findClaim)
     .then(sendSix)
     .then(updateClaim)
-    .then(() => {
-      return {
-        success: true
-      }
-    })
+    .then(() => releasePool().then(() => ({ success: true })))
     .catch(error => {
       console.log(error)
-      return {
-        success: false,
-        error_message: error.message
-      }
+      releasePool().then(() => ({ success: false, error_message: error.message }))
     })
 }
 
