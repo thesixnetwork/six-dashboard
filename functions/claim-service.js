@@ -207,10 +207,11 @@ const updateState = ({ uid, claim, claim_id: claimId, user }) => {
  * @param {string} claimId
  */
 const claimSixByCreatePool = (uid, claimId) => {
-  return createPool({
+  return findClaim({
     uid,
     claim_id: claimId
   })
+    .then(createPool)
     .then(updateState)
     .then(() => {
       return {
@@ -295,6 +296,10 @@ function findClaim ({ uid, claim_id: claimId, user }) {
         const currentTime = new Date().getTime()
         if (currentTime < claimData.valid_after) {
           return Promise.reject(new Error('Claim is not ready'))
+        }
+
+        if (claimData.state) {
+          return Promise.reject(new Error('State is existing, already claim even it error'))
         }
 
         return claimData.claimed === true
