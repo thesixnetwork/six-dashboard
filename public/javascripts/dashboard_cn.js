@@ -333,7 +333,7 @@ function runGlobalNumber() {
       numberStep: function(now, tween) {
         var target = $(tween.elem);
         floored_number = now.toFixed(decimal_places);
-        target.text(floored_number+' M SIX');
+        target.text(floored_number+'M SIX');
       }
     }
   )
