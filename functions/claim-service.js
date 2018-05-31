@@ -21,8 +21,14 @@ if (functions.config().campaign.is_production === 'true') {
 
 const server = new StellarSdk.Server(stellarUrl)
 
+// for claim six
 const distKey = StellarSdk.Keypair.fromSecret(
   functions.config().xlm.ico_distributor_secret
+)
+
+// for create account
+const accountCreatorKey = StellarSdk.Keypair.fromSecret(
+  functions.config().xlm.account_creator_secret
 )
 
 const ASSET_CODE = 'SIX'
@@ -31,7 +37,7 @@ const sixAsset = new StellarSdk.Asset(ASSET_CODE, functions.config().xlm.issuer_
 const startingBalance = '2.5'
 
 const handleCreateStellarAccount = (data, context) => {
-  if (!distKey) {
+  if (!accountCreatorKey) {
     return {
       success: false,
       error_message: 'not yet config stellar params'
@@ -111,7 +117,7 @@ const createStellarAccount = ({ uid, public_key: publicKey }) => {
       )
       .build()
 
-    transaction.sign(distKey)
+    transaction.sign(accountCreatorKey)
     return {
       uid,
       public_key: publicKey,
@@ -130,7 +136,7 @@ const createStellarAccount = ({ uid, public_key: publicKey }) => {
   return server.loadAccount(publicKey).then(an_account => {
     if (!checkBalanceForTrust(an_account)) {
       return server
-        .loadAccount(distKey.publicKey())
+        .loadAccount(accountCreatorKey.publicKey())
         .then(createTransaction)
         .then(submitTransaction)
     } else {
@@ -138,7 +144,7 @@ const createStellarAccount = ({ uid, public_key: publicKey }) => {
     }
   }).catch(() => {
     return server
-      .loadAccount(distKey.publicKey())
+      .loadAccount(accountCreatorKey.publicKey())
       .then(createTransaction)
       .then(submitTransaction)
   })
@@ -259,10 +265,11 @@ const processNewClaimPool = () => {
  * @param {string} claimId
  */
 const claimSixByCreatePool = (uid, claimId) => {
-  return createPool({
+  return findClaim({
     uid,
     claim_id: claimId
   })
+    .then(createPool)
     .then(updateState)
     .then(() => {
       return {
@@ -340,6 +347,10 @@ function findClaim ({ uid, claim_id: claimId, user }) {
         const currentTime = new Date().getTime()
         if (currentTime < claimData.valid_after) {
           return Promise.reject(new Error('Claim is not ready'))
+        }
+
+        if (claimData.state) {
+          return Promise.reject(new Error('State is existing, already claim even it error'))
         }
 
         return claimData.claimed === true
