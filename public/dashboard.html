@@ -156,7 +156,10 @@
           <p class='truncate'>Hello&nbsp;<span id='displayName'>Vachara A.</span></p>
           <p>Balance :&nbsp;<span><span id='totalSix'>Loading</span></span></p>
         </section>
-        <section class="video">
+        <div id='thankImage2'>
+          <img src='images/thank_you.png'>
+        </div>
+        <section class="video" style='display: none;'>
           <div class="tab-header">
             <a class="eth-link actived">ETH</a>
             <a class="stl-link">XLM</a>
@@ -181,7 +184,7 @@
             <div class="top">
               <p class='zeroStart'>0 SIX</p>
               <p class='softCapText'></p>
-              <p class='hardCapText'>520 M SIX</p>
+              <p class='hardCapText'>520M SIX</p>
             </div>
             <span class="available" style=" width: 5%;" id='barPercentage'>
               <em><span id='totalCurrentAsset'>-</span></em>
@@ -376,12 +379,15 @@
           <div class="btn"><button id='confirmAddressBtn' onclick='startConfirmation()'>Submit</button></div>
         </section>
         <div class="address-history" id='mainBox' style='display: none;'>
+          <div id='thankImage'>
+            <img src='images/thank_you.png'>
+          </div>
           <section class="transaction-history with-table" style='display: block;'>
             <header>
               <h2>Your Transactions</h2>
             </header>
             <div id='trnsBtnContainer'>
-              <div class="btn btnInline"><button id='gotoQuestionBtn' onclick='gotoCurrency()'>Add deposit</button></div>
+              <div class="btn btnInline"><button disabled id='gotoQuestionBtn' onclick='gotoCurrency()'>Add deposit</button></div>
               <div class="btn btnInline"><button id='contactBtn' onclick='window.open("http://m.me/thesixnetwork")'>Contact Us</button></div>
             </div>
             <div id='tableContainer'>
