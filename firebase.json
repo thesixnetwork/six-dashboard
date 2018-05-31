@@ -29,6 +29,11 @@
         "destination": "/wizard.html"
       },
       {
+      {
+        "source": "/wizard-cn",
+        "destination": "/wizard_cn.html"
+      },
+      {
         "source": "/dashboard-kr",
         "destination": "/dashboard_kr.html"
       },
