@@ -1452,12 +1452,22 @@ exports.getNotPurchasedUser = functions.https.onRequest((request, response) => {
   cors(request, response, () => {});
   const { password } = request.query;
   if (password === 'sixsendmailtoday') {
-    admin.firestore().collection('users').where("total_six", "<=", 20).get().then(snapshots => {
+    admin.firestore().collection('users').get().then(snapshots => {
       let users = []
       snapshots.forEach(snapshot => {
         const data = snapshot.data()
-        const { email } = data
-        users.push(email)
+        const { email, total_six } = data
+        if (total_six && total_six !== null) {
+          if (total_six < 20) {
+            if (email && email !== null) {
+              users.push(email)
+            }
+          }
+        } else {
+          if (email && email !== null) {
+            users.push(email)
+          }
+        }
       })
       response.send(users)
     })
