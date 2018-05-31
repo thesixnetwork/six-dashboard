@@ -13,36 +13,13 @@ const serviceAccount = require(configPath)
 const allUsers = [...privateUsers, ...publicUsers, ...airdropUsers]
 
 function merge(allUsers) {
-  const sortWithUid = R.sortWith([
-    R.ascend(R.prop('uid'))
-  ])
+    const groupByUID = R.groupBy(user => user.uid)
 
-  const sortedUsers = sortWithUid(allUsers);
-  const mergedUsers = []
+    const concatValues = (k, l, r) => k == 'claim_periods' ? R.concat(l, r) : r
 
-  // ไม่ได้ handle กรณี valid after ตรงกัน แต่เอาไป concat กันหมดเลย
-  const sum = (k, l, r) => k == 'claim_periods' ? l.concat(r) : r
+    const reducePeriods = R.reduce(R.mergeWithKey(concatValues), {})
 
-  while (sortedUsers.length > 0) {
-    let l = sortedUsers.pop()
-    let r = mergedUsers.pop()
-
-    if (!r) {
-      r = l
-      l = sortedUsers.pop()
-    }
-
-    if (l.uid === r.uid) {
-      const c = R.mergeWithKey(sum, l, r)
-      mergedUsers.push(c)
-      continue
-    }
-
-    mergedUsers.push(r)
-    mergedUsers.push(l)
-  }
-
-  return mergedUsers
+    return R.pipe(groupByUID, R.mapObjIndexed(reducePeriods), R.values)(allUsers)
 }
 
 admin.initializeApp({

@@ -1432,7 +1432,7 @@ function submitGeneratedAccount() {
     return false
   }
   setDisable([btnDOM, btn2DOM])
-  $("#showProgressBar").fadeToggle(100, function() {
+  $("#accordion").fadeToggle(100, function() {
 
     $("#progressContainer").fadeToggle(function() {
       $("#accountPg").css('width', '25%')
