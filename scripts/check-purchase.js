@@ -2,6 +2,8 @@ const admin = require("firebase-admin");
 const _ = require("lodash");
 const R = require("ramda");
 const axios = require("axios");
+const jsonfile = require("jsonfile");
+const resultFile = __dirname + "/result.json";
 
 const configPath = __dirname + "/config/config.json";
 const serviceAccount = require(configPath);
@@ -39,7 +41,9 @@ async function main() {
   const groupedTxs = groupByType(purchaseTxs);
 
   const checked = await Promise.all(groupedTxs.xlm.map(checkXLM));
-  console.log(checked);
+  jsonfile.writeFile(resultFile, checked, function(err) {
+    console.error(err);
+  });
 }
 
 /*
