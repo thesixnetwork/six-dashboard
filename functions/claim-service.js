@@ -256,6 +256,7 @@ const processNewClaimPool = () => {
     .then(lockInfo => {
       if (lockInfo.lock_successful) {
         handleClaimSix({ claim_id: lockInfo.claim_id }, { auth: { uid: lockInfo.uid } })
+          .then(processNewClaimPool)
       }
     })
 }
@@ -272,6 +273,7 @@ const claimSixByCreatePool = (uid, claimId) => {
   })
     .then(createPool)
     .then(updateState)
+    .then(processNewClaimPool)
     .then(() => {
       return {
         success: true
