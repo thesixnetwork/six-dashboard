@@ -1713,5 +1713,56 @@ exports.sendICOCloseToUser = functions.https.onRequest((request, response) => {
   }
 });
 
+exports.getPurchasedUser = functions.https.onRequest((request, response) => {
+  cors(request, response, () => {});
+  const { password } = request.query;
+  if (password === 'sixsendmailtoday') {
+    admin.firestore().collection('users').where("total_six", ">", 20).get().then(snapshots => {
+      let users = []
+      snapshots.forEach(snapshot => {
+        const data = snapshot.data()
+        const { email } = data
+        users.push(email)
+      })
+      response.send(users)
+    })
+  } else {
+    response.send({
+      error: 'Password Incorrect.'
+    })
+  }
+})
+
+
+exports.getNotPurchasedUser = functions.https.onRequest((request, response) => {
+  cors(request, response, () => {});
+  const { password } = request.query;
+  if (password === 'sixsendmailtoday') {
+    admin.firestore().collection('users').get().then(snapshots => {
+      let users = []
+      snapshots.forEach(snapshot => {
+        const data = snapshot.data()
+        const { email, total_six } = data
+        if (total_six && total_six !== null) {
+          if (total_six < 20) {
+            if (email && email !== null) {
+              users.push(email)
+            }
+          }
+        } else {
+          if (email && email !== null) {
+            users.push(email)
+          }
+        }
+      })
+      response.send(users)
+    })
+  } else {
+    response.send({
+      error: 'Password Incorrect.'
+    })
+  }
+})
+
 exports.createClaim = functions.https.onCall(handleCreateStellarAccount)
 exports.claimSix = functions.https.onCall(handleClaimSix)

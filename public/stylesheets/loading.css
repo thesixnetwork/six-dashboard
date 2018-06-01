@@ -1,3 +1,34 @@
+#thankContainer {
+  display: flex;
+  min-height: calc(100vh - 60px);
+}
+
+#thankYouDiv {
+  max-width: 800px;
+  margin: auto;
+  text-align: center;
+}
+
+#thankImage {
+  max-width: 800px;
+  margin: auto;
+  margin-top: 20px;
+}
+
+#thankImage img, #thankYouDiv img {
+  max-width: 100%;
+}
+
+#thankImage2 {
+  display: none;
+  max-width: 800px;
+  margin: auto;
+}
+
+#thankImage2 img {
+  max-width: 100%;
+}
+
 #preLoader {
   position: fixed;
   width: 100%;
@@ -53,10 +84,10 @@
 }
 
 @keyframes sk-bouncedelay {
-  0%, 80%, 100% { 
+  0%, 80%, 100% {
     -webkit-transform: scale(0);
     transform: scale(0);
-  } 40% { 
+  } 40% {
     -webkit-transform: scale(1.0);
     transform: scale(1.0);
   }
@@ -237,6 +268,7 @@ label < input:disabled {
 }
 
 #barPercentage {
+  text-align: right;
   min-width: 0px;
   text-shadow: -1px -1px 0 #4a5ab5, 1px -1px 0 #4a5ab5, -1px 1px 0 #4a5ab5, 1px 1px 0 #4a5ab5;
   -webkit-transition: width 0.5s;
@@ -244,7 +276,7 @@ label < input:disabled {
 }
 
 .dashboard-2 section.progress .bar::before {
-  left: 50%!important;
+  left: 32%!important;
 }
 
 .zeroStart {
@@ -252,9 +284,129 @@ label < input:disabled {
 }
 
 .softCapText {
-  width: 50%!important;
+  width: 68%!important;
+  text-align: left!important;
 }
 
 .hardCapText {
   width: 50%!important;
+}
+
+.dropdown {
+  position: relative;
+  color: #FFFFFF;
+  border-radius: 40px;
+  min-width: 150px;
+}
+.dropdown i {
+  margin: 0 0 0 10px;
+}
+.dropdown a {
+  display: block;
+  text-align: center;
+  font-weight: 700;
+  line-height: 44px;
+  padding: 0 20px;
+  opacity: 1;
+}
+.dropdown ul {
+  margin-top: 15px;
+  display: none;
+  position: absolute;
+  top: 100%;
+  left: calc(50% - 75px);
+  width: 150px;
+  background: #FFFFFF;
+  color: #4a5ab5;
+  border-radius: 4px;
+  z-index: 1;
+  box-shadow: 0 0 15px -1px rgba(74, 90, 181, 0.2);
+}
+.dropdown ul li:hover {
+  background-color: #ececec;
+}
+.dropdown ul:before {
+  content: "";
+  display: none;
+  position: absolute;
+  bottom: 100%;
+  left: calc(50% - 8px);
+  z-index: 100;
+  border: 8px solid transparent;
+  border-bottom-color: #FFFFFF;
+}
+.dropdown.show-dropdown ul {
+  display: block;
+}
+.dropdown.show-dropdown ul:before {
+  display: block;
+}
+
+.dropdown a img {
+  width: 20px;
+  height: 20px;
+}
+
+ul.social-list {
+  margin-top: 30px;
+  margin-bottom: 30px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+}
+ul.social-list li {
+  margin-right: 20px;
+}
+ul.social-list li a {
+  display: block;
+  position: relative;
+}
+ul.social-list li a i, ul.social-list li a .kakao-logo {
+  display: block;
+  width: 64px;
+  height: 64px;
+  line-height: 64px;
+  font-size: 18px;
+  text-align: center;
+  border: 1px solid #e3e3e3;
+  border-radius: 50%;
+}
+ul.social-list li a img.flag {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  width: 32px;
+  border-radius: 50%;
+  background: #f5f5f5;
+  border: 2px solid #e3e3e3;
+}
+ul.social-list li a .kakao-logo {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+ul.social-list li a .kakao-logo:before {
+  content: "";
+  display: block;
+  background: url(images/logo/kakao-logo-gray.png) no-repeat center;
+  background-size: 100%;
+  width: 22px;
+  height: 22px;
+}
+ul.social-list li a:hover i {
+  background-color: #4449a8;
+  color: #FFFFFF;
+}
+ul.social-list li a:hover .kakao-logo {
+  background: #4449a8;
+}
+ul.social-list li a:hover .kakao-logo:before {
+  background: url(images/logo/kakao-logo-white.png) no-repeat center;
+  background-size: 100%;
+  width: 22px;
+  height: 22px;
+}
+ul.social-list li:last-of-type {
+  margin-right: 0;
 }

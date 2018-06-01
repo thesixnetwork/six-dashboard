@@ -4,6 +4,8 @@ const admin = require('firebase-admin')
 const Promise = require('bluebird')
 const fireStore = admin.firestore()
 
+const closeICO = new Date('2018-05-31T22:00:00+07:00')
+
 function StellarService(event) {
   this.stellarUrl = functions.config().campaign.is_production === 'true'
     ? 'https://horizon.stellar.org'
@@ -158,7 +160,7 @@ function handleOperation(user, tx, operation, n, price, priceTime) {
 }
 
 function findUser(tx) {
-  if (!tx.hasOwnProperty('memo')) {
+  if (!tx.hasOwnProperty('memo') || !(new Date() < closeICO)) {
     return {
       tx
     }

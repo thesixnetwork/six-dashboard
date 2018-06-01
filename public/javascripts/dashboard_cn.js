@@ -313,16 +313,13 @@ function submitDepositETH() {
 let globalCurrent
 let percentageGlobalCurrent
 function getCurrentTotal() {
-  return firebase.firestore().collection('total_asset').doc('usd').get().then(doc => {
+  return firebase.firestore().collection('total_asset').doc('six').get().then(doc => {
     const totalAsset = parseFloat(doc.data().total || 0)
-    const privateAsset = parseFloat(doc.data().private_asset || 0)
+    const privateAsset = parseFloat(doc.data().private || 0)
     const currentAsset = privateAsset+totalAsset
-    const softCapAmount = doc.data().soft_cap_usd
-    const percentage = Number(((currentAsset/(doc.data().hard_cap_usd/100)) || 0).toFixed(0))
-    let scalePercentage = Number((((((100-percentage)*99273.68461538461)+currentAsset)/(doc.data().hard_cap_usd/100)) || 0).toFixed(1))
-    if ((scalePercentage + 5) < 100) {
-      scalePercentage = scalePercentage+5
-    }
+    const softCapAmount = doc.data().soft_cap
+    const percentage = Number(((currentAsset/(doc.data().hard_cap/100)) || 0).toFixed(0))
+    let scalePercentage = Number((((((100-percentage)*99273.68461538461)+currentAsset)/(doc.data().hard_cap/100)) || 0).toFixed(1))
     percentageGlobalCurrent = Number(scalePercentage)
     globalCurrent = Number(parseFloat(currentAsset/1000000).toFixed(1))
   })
@@ -336,7 +333,7 @@ function runGlobalNumber() {
       numberStep: function(now, tween) {
         var target = $(tween.elem);
         floored_number = now.toFixed(decimal_places);
-        target.text(floored_number+' M');
+        target.text(floored_number+'M SIX');
       }
     }
   )
@@ -367,7 +364,6 @@ function submitDepositXLMTran() {
     const elem = buildListTx({ time: thisTime, native_amount: xlm_value, type: "XLM", to: '-', id: '-', time: thisTime, six_amount: amount.toLocaleString(), tx_status: 'pending' })
     $("#userTxs")[0].prepend(elem)
     if (userData.seen_congrat === true) {
-      $("#backToTxHis").css("display", "block")
       $("#mainBox").css("display", "block")
     } else {
       $("#congratulationBox").css("display", "block")
@@ -402,7 +398,6 @@ function submitDepositETHTran() {
     const elem = buildListTx({ time: thisTime, native_amount: eth_value, type: "ETH", to: '-', id: '-', time: thisTime, six_amount: amount.toLocaleString(), tx_status: 'pending' })
     $("#userTxs")[0].prepend(elem)
     if (userData.seen_congrat === true) {
-      $("#backToTxHis").css("display", "block")
       $("#mainBox").css("display", "block")
     } else {
       $("#congratulationBox").css("display", "block")
@@ -420,7 +415,6 @@ function submitCongrat() {
   $("#submitETHBox").css("display", "none")
   $("#depositETHBox").css("display", "none")
   $("#depositXLMBox").css("display", "none")
-  $("#backToTxHis").css("display", "block")
   $("#mainBox").css("display", "block")
   $("#congratulationBox").css("display", "none")
   $("#walletBox").css("display", "none")
@@ -433,7 +427,6 @@ function backToDashboard() {
   $("#submitETHBox").css("display", "none")
   $("#depositETHBox").css("display", "none")
   $("#depositXLMBox").css("display", "none")
-  $("#backToTxHis").css("display", "block")
   $("#mainBox").css("display", "block")
   $("#congratulationBox").css("display", "none")
   $("#walletBox").css("display", "none")
@@ -524,6 +517,9 @@ let totalSix = 20
 
 function getTxs () {
   if (firebase.auth().currentUser !== null) {
+    if (userData.update_time !== undefined && userData.update_time > 1527692400000) {
+      totalSix = 0
+    }
     firebase.firestore().collection('purchase_txs')
     .where("user_id",'==',firebase.auth().currentUser.uid)
     .get()
@@ -591,12 +587,14 @@ function getTxs () {
         })
       })
     }).then(() => {
-      if (userData.alloc_transaction === true) {
-        const elem = buildListTx({ time: userData.alloc_time, native_amount: userData.alloc_transaction_amount, type: userData.alloc_transaction_type, to: '-', id: '-', six_amount: userData.alloc_transaction_six_amount, alloc_time: userData.alloc_time, tx_status: 'pending' })
-        $("#userTxs")[0].prepend(elem)
+//      if (userData.alloc_transaction === true) {
+//        const elem = buildListTx({ time: userData.alloc_time, native_amount: userData.alloc_transaction_amount, type: userData.alloc_transaction_type, to: '-', id: '-', six_amount: userData.alloc_transaction_six_amount, alloc_time: userData.alloc_time, tx_status: 'pending' })
+//        $("#userTxs")[0].prepend(elem)
+//      }
+      if (userData.update_time === undefined || userData.update_time < 1527692400000) {
+        const elem = buildFreeTx()
+        $("#userTxs")[0].appendChild(elem)
       }
-      const elem = buildFreeTx()
-      $("#userTxs")[0].appendChild(elem)
     })
   }
 }
@@ -745,16 +743,8 @@ $(document).ready(function(){
           $("#firstCharName").html((userData.first_name || "").substr(0,1).toUpperCase())
           $(".myMemo").html(userData.memo)
           $("#memoCopy").attr('data-clipboard-text', userData.memo)
-          if (userData.first_transaction === true) {
-            if (userData.seen_congrat === true) {
-              $("#backToTxHis").css("display", "block")
-              $("#welcomeBox").css("display", "none")
-              $("#mainBox").css("display", "block")
-            } else {
-              $("#welcomeBox").css("display", "none")
-              $("#congratulationBox").css("display", "block")
-            }
-          }
+          $("#welcomeBox").css("display", "none")
+          $("#mainBox").css("display", "block")
           if (userData.eth_address !== undefined) {
             $("#myWallet").css("display", "block")
             $("#myETHaddress")[0].value = userData.eth_address

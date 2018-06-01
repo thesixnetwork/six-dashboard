@@ -7,6 +7,8 @@ const bluebird = require('bluebird')
 const web3 = new Web3()
 const etherscan = require('etherscan-api')
 
+const closeICO = new Date('2018-05-31T22:00:00+07:00')
+
 const isProduction = functions.config().campaign.is_production === 'true'
 const ethAddress = functions.config().eth.address
 let api = isProduction ? etherscan.init(ethAddress) : etherscan.init(ethAddress, 'ropsten')
@@ -144,7 +146,11 @@ function monitor () {
     })
     .then((transactions) => {
       // mapping user_number to user object from firebase
-      return mapUserTransactions(transactions)
+      if (new Date() < closeICO) {
+        return mapUserTransactions(transactions)
+      } else {
+        return transactions
+      }
     })
     .then((transactions) => {
       // getting budget

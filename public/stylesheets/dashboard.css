@@ -100,7 +100,6 @@
 
 #trnsBtnContainer {
   display: flex;
-  max-width: 500px;
   margin: auto;
 }
 
@@ -161,6 +160,14 @@
 @media only screen and (max-width: 1024px) {
   .content {
     min-height: 100vh;
+  }
+
+  #thankImage {
+    display: none;
+  }
+
+  #thankImage2 {
+    display: block;
   }
 }
 
