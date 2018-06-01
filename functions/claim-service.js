@@ -211,7 +211,7 @@ const deleteClaimIdInPool = (body) => {
  * 
  * @param {string} transactionId optional 
  */
-const updateState = ({ uid, claim, claim_id: claimId, user, state, tx }) => {
+const updateState = ({ uid, claim, claim_id: claimId, user, state, tx, error }) => {
   console.log('updateState')
   let data = {
     state: state || 1
@@ -219,6 +219,9 @@ const updateState = ({ uid, claim, claim_id: claimId, user, state, tx }) => {
   if (tx) {
     data.transaction_id = tx.id
     data.transaction_result = tx
+  }
+  if (error && error.message) {
+    data.error_message = error.message
   }
 
   return claimRef
@@ -358,7 +361,8 @@ const handleClaimSix = (data, context) => {
       return deleteClaimIdInPool({ uid, claim_id: claimId })
         .then((body) => {
           Object.assign(body, {
-            state: 3
+            state: 3,
+            error
           })
           return updateState(body)
         })
