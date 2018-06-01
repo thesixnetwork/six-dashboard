@@ -190,6 +190,15 @@ const createPool = ({ uid, claim_id: claimId }) => {
     })
 }
 
+const deleteClaimIdInPool = (claimId) => {
+  return claimPoolsRef
+    .doc(claimId)
+    .delete()
+    .catch(e => {
+      console.error('Error removing document: ', e)
+    })
+}
+
 const updateState = ({ uid, claim, claim_id: claimId, user }) => {
   console.log('updateState')
   return claimRef
@@ -273,7 +282,9 @@ const claimSixByCreatePool = (uid, claimId) => {
   })
     .then(createPool)
     .then(updateState)
-    .then(processNewClaimPool)
+    .then(() => {
+      processNewClaimPool()
+    })
     .then(() => {
       return {
         success: true
@@ -313,10 +324,14 @@ const handleClaimSix = (data, context) => {
     .then(findClaim)
     .then(sendSix)
     .then(updateClaim)
-    .then(() => releasePool().then(() => ({ success: true })))
+    .then(() => deleteClaimIdInPool(`${uid}_${claimId}`)
+      .releasePool()
+      .then(() => ({ success: true })))
     .catch(error => {
       console.log(error)
-      releasePool().then(() => ({ success: false, error_message: error.message }))
+      return deleteClaimIdInPool(`${uid}_${claimId}`)
+        .releasePool()
+        .then(() => ({ success: false, error_message: error.message }))
     })
 }
 
