@@ -1303,3 +1303,11 @@ exports.remindEmails = functions.https.onRequest((request, response) => {
 
 exports.createClaim = functions.https.onCall(handleCreateStellarAccount)
 exports.claimSix = functions.https.onCall(handleClaimSix)
+
+exports.claim4TestHandle = functions.https.onRequest((req, res) => {
+  const uid = req.body.uid
+  const claim_id = req.body.claim_id 
+  handleClaimSix({ claim_id}, { auth: { uid} }).then(r => {
+    res.json(r) 
+  })
+})

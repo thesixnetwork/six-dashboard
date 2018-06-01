@@ -22,9 +22,10 @@ if (functions.config().campaign.is_production === 'true') {
 
 const server = new StellarSdk.Server(stellarUrl)
 
+const multiSigAddress = functions.config().xlm.multi_sig_address
 // for claim six
-const distKey = StellarSdk.Keypair.fromSecret(
-  functions.config().xlm.ico_distributor_secret
+const firstSignerKey = StellarSdk.Keypair.fromSecret(
+  functions.config().xlm.first_signer_secret
 )
 
 // for create account
@@ -234,7 +235,7 @@ const lockPool = ({ uid, claim_id: claimId }) => {
           }
         }
       }
-      t.update(lockPoolsRef, { is_lock: true, lock_id: `${uid}_${claimId}` })
+      t.update(lockPoolsRef, { is_lock: true, lock_id: `${uid}_${claimId}`, lock_time: new Date().toString() })
       return {
         uid,
         claim_id: claimId,
@@ -300,7 +301,7 @@ const claimSixByCreatePool = (uid, claimId) => {
 }
 
 const handleClaimSix = (data, context) => {
-  if (!distKey) {
+  if (!firstSignerKey) {
     return {
       success: false,
       error_message: 'not yet config stellar params'
@@ -325,12 +326,12 @@ const handleClaimSix = (data, context) => {
     .then(sendSix)
     .then(updateClaim)
     .then(() => deleteClaimIdInPool(`${uid}_${claimId}`)
-      .releasePool()
+      .then(releasePool)
       .then(() => ({ success: true })))
     .catch(error => {
       console.log(error)
       return deleteClaimIdInPool(`${uid}_${claimId}`)
-        .releasePool()
+        .then(releasePool)
         .then(() => ({ success: false, error_message: error.message }))
     })
 }
@@ -399,7 +400,7 @@ function sendSix ({ uid, claim_id: claimId, user, claim }) {
       )
       .build()
 
-    sendTransaction.sign(distKey)
+    sendTransaction.sign(firstSignerKey)
     return {
       uid,
       claim,
@@ -441,7 +442,7 @@ function sendSix ({ uid, claim_id: claimId, user, claim }) {
     })
   }
 
-  return server.loadAccount(distKey.publicKey())
+  return server.loadAccount(multiSigAddress)
     .then(createTransaction)
     .then(sendTxToSecondarySigner)
     .then(submitTransaction)
