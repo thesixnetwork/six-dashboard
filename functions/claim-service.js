@@ -191,24 +191,41 @@ const createPool = ({ uid, claim_id: claimId }) => {
     })
 }
 
-const deleteClaimIdInPool = (claimId) => {
+const deleteClaimIdInPool = (body) => {
+  const { uid, claim_id: claimId } = body
+  const claimPoolsId = `${uid}_${claimId}`
+
   return claimPoolsRef
-    .doc(claimId)
+    .doc(claimPoolsId)
     .delete()
+    .then(() => {
+      return body
+    })
     .catch(e => {
       console.error('Error removing document: ', e)
+      return body
     })
 }
 
-const updateState = ({ uid, claim, claim_id: claimId, user }) => {
+/**
+ * 
+ * @param {string} transactionId optional 
+ */
+const updateState = ({ uid, claim, claim_id: claimId, user, state, tx }) => {
   console.log('updateState')
+  let data = {
+    state: state || 1
+  }
+  if (tx) {
+    data.transaction_id = tx.id
+    data.transaction_result = tx
+  }
+
   return claimRef
     .doc(uid)
     .collection('claim_period')
     .doc(String(claimId))
-    .update({
-      state: 1
-    })
+    .update(data)
     .then(() => {
       return {
         uid,
@@ -325,12 +342,26 @@ const handleClaimSix = (data, context) => {
     .then(findClaim)
     .then(sendSix)
     .then(updateClaim)
-    .then(() => deleteClaimIdInPool(`${uid}_${claimId}`)
-      .then(releasePool)
-      .then(() => ({ success: true })))
+    .then(deleteClaimIdInPool)
+    .then((body) => {
+      Object.assign(body, {
+        state: 2
+      })
+      return updateState(body)
+    })
+    .then(releasePool)
+    .then(() => {
+      return { success: true }
+    })
     .catch(error => {
       console.log(error)
-      return deleteClaimIdInPool(`${uid}_${claimId}`)
+      return deleteClaimIdInPool({ uid, claim_id: claimId })
+        .then((body) => {
+          Object.assign(body, {
+            state: 3
+          })
+          return updateState(body)
+        })
         .then(releasePool)
         .then(() => ({ success: false, error_message: error.message }))
     })
@@ -432,12 +463,13 @@ function sendSix ({ uid, claim_id: claimId, user, claim }) {
   }
 
   function submitTransaction ({ uid, claim, claim_id: claimId, user, send_transaction: sendTransaction }) {
-    return server.submitTransaction(sendTransaction).then(() => {
+    return server.submitTransaction(sendTransaction).then((tx) => {
       return {
         uid,
         claim,
         claim_id: claimId,
-        user
+        user,
+        tx
       }
     })
   }
@@ -448,7 +480,7 @@ function sendSix ({ uid, claim_id: claimId, user, claim }) {
     .then(submitTransaction)
 }
 
-const updateClaim = ({ uid, claim, claim_id: claimId, user }) => {
+const updateClaim = ({ uid, claim, claim_id: claimId, user, tx }) => {
   console.log('updateClaim')
   return claimRef
     .doc(uid)
@@ -462,7 +494,8 @@ const updateClaim = ({ uid, claim, claim_id: claimId, user }) => {
         uid,
         claim,
         claim_id: claimId,
-        user
+        user,
+        tx
       }
     })
 }
