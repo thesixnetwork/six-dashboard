@@ -217,7 +217,7 @@ const updateState = ({ uid, claim, claim_id: claimId, user, state, tx }) => {
     state: state || 1
   }
   if (tx) {
-    data.transaction_id = tx.id
+    data.transaction_id = tx.hash
     data.transaction_result = tx
   }
 
