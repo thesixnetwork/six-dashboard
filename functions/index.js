@@ -1477,3 +1477,71 @@ exports.getNotPurchasedUser = functions.https.onRequest((request, response) => {
     })
   }
 })
+
+exports.getNotPurchasedUser = functions.https.onRequest((request, response) => {
+  cors(request, response, () => {});
+  const { password } = request.query;
+  if (password === 'sixsendmailtoday') {
+    admin.firestore().collection('users').get().then(snapshots => {
+      let users = []
+      snapshots.forEach(snapshot => {
+        const data = snapshot.data()
+        const { email, total_six } = data
+        if (total_six && total_six !== null) {
+          if (total_six < 20) {
+            if (email && email !== null) {
+              users.push(email)
+            }
+          }
+        } else {
+          if (email && email !== null) {
+            users.push(email)
+          }
+        }
+      })
+      response.send(users)
+    })
+  } else {
+    response.send({
+      error: 'Password Incorrect.'
+    })
+  }
+})
+
+exports.getUserByCountry = functions.https.onRequest((request, response) => {
+  cors(request, response, () => {});
+  const { password } = request.query;
+  if (password === 'sixsendmailtoday') {
+    const { country, without } = request.query
+    let query = admin.firestore().collection('users')
+    if (country && country !== null) {
+      query = admin.firestore().collection('users').where('country', '==', country)
+    }
+    // if (without && without !== null) {
+    //   query = admin.firestore().collection('users').where('country', '!=', without)
+    // }
+    query.get().then(snapshots => {
+      let users = []
+      snapshots.forEach(snapshot => {
+        const data = snapshot.data()
+        const { email, total_six, country: user_country } = data
+        if (without && without !== null) {
+          if (user_country && user_country !== without) {
+            if (email && email !== null) {
+              users.push(email)
+            }
+          }
+        } else {
+          if (email && email !== null) {
+            users.push(email)
+          }
+        }
+      })
+      response.send(users)
+    })
+  } else {
+    response.send({
+      error: 'Password Incorrect.'
+    })
+  }
+})
