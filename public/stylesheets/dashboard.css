@@ -550,7 +550,7 @@ section#progressContent {
   cursor: pointer;
 }
 
-#recoverWordDialogContent, #congratDialogContent1, #congratDialogContent2, #feeDialogContent {
+#recoverWordDialogContent, #congratDialogContent1, #congratDialogContent2, #feeDialogContent, #newLedgerDialogContent {
   max-width: 500px;
 }
 
@@ -567,6 +567,15 @@ section#progressContent {
   margin: auto;
   position: relative;
   padding: 18px;
+}
+
+#specialSvg {
+  height: 200px;
+  margin: auto;
+  position: relative;
+  display: block;
+  top: 0px;
+  padding: unset;
 }
 
 .dialogContent {
@@ -779,7 +788,7 @@ section#progressContent {
   background: #51A058;
 }
 
-#ledgerMiniContent2 {
+#newLedgerDialog2 {
   display: none;
 }
 
@@ -860,4 +869,14 @@ dialog.normalDisplay {
   border-radius: 16px;
   margin: auto;
   margin-bottom: 150px;
+}
+
+#instructionLedgerContainer {
+  max-width: 600px;
+  margin: auto;
+}
+
+#instructionLedgerContainer a {
+  text-decoration: underline;
+  color: blue;
 }

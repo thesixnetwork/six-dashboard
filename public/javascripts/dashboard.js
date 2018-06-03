@@ -2078,3 +2078,44 @@ function nextRecoveryWord2() {
     }
   })
 }
+
+function nextFirstLedger() {
+  $("#newLedgerDialog").css("display", "none")
+  $("#ledgerBox").css("display", "block")
+}
+
+function unlockLedger() {
+  $("#ledgerContentContainer").addClass("active")
+  const checkbox = document.getElementById("warning10")
+  setEnable([checkbox])
+  $("#ledgerContentContainer h3").text("Ledger wallet found and connected")
+}
+
+function checkWarningLedger() {
+  const warning1DOM = document.getElementById('warning10')
+  if (warning1DOM.checked) {
+    const btnDOM = document.getElementById('submitLedgerBtn')
+    setEnable([btnDOM])
+  } else {
+    const btnDOM = document.getElementById('submitLedgerBtn')
+    setDisable([btnDOM])
+  }
+}
+
+function signinWithLedger() {
+  $("#ledgerBox").css("display", "none")
+  $("#newLedgerDialog2").css("display", "block")
+}
+
+function confirmTrustLedger() {
+  const btn = document.getElementById("ledgerDialogNextBtn2")
+  setEnable([btn])
+}
+
+function addTrustLedger() {
+  $("#claimStep").addClass("current")
+  $("#divClaimBoxLedger").slideToggle(100)
+  $("#rewardClaimBox").slideToggle(100, function() {
+    updateGraph()
+  })
+}
