@@ -17,6 +17,7 @@ const claimService= require('./claim-service')
 
 const handleCreateStellarAccount = claimService.handleCreateStellarAccount
 const handleClaimSix = claimService.handleClaimSix
+const claimSixByCreatePool = claimService.claimSixByCreatePool
 
 const fireStore = admin.firestore();
 
@@ -125,28 +126,7 @@ exports.claimOTPSubmit = functions.https.onCall((data, context) => {
                 }
               }
 
-              return claimService.findUser({
-                uid,
-                claim_id: claimId
-              })
-              .then(claimService.findClaim)
-              .then(claimService.sendSix)
-              .then(claimService.updateClaim)
-              .then(() => {
-                return {
-                  success: true
-                }
-              })
-              .catch(error => {
-                console.log(error)
-                return {
-                  success: false,
-                  error_message: error
-                }
-             })
-
-
-
+              return claimSixByCreatePool(uid, claimId)
 
             } else {
               return {
@@ -1323,3 +1303,11 @@ exports.remindEmails = functions.https.onRequest((request, response) => {
 
 exports.createClaim = functions.https.onCall(handleCreateStellarAccount)
 exports.claimSix = functions.https.onCall(handleClaimSix)
+
+exports.claim4TestHandle = functions.https.onRequest((req, res) => {
+  const uid = req.body.uid
+  const claim_id = req.body.claim_id 
+  handleClaimSix({ claim_id}, { auth: { uid} }).then(r => {
+    res.json(r) 
+  })
+})

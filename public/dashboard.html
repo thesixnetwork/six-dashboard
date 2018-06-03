@@ -37,7 +37,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.18.1/moment.js"></script>
     <script src="javascripts/jspdf.min.js"></script>
     <script src="javascripts/ledger.js"></script>
-    <script src="javascripts/dashboard.js"></script>
+
     <!-- Global site tag (gtag.js) - Google Analytics -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=GTM-N5DKTMD"></script>
     <script src="javascripts/google-analytic.js"></script>
@@ -46,6 +46,7 @@
     <script src="javascripts/raphael-min.js"></script>
     <script src="javascripts/morris.min.js"></script>
     <script src="javascripts/stellar-hd-wallet.js"></script>
+    <script src="javascripts/dashboard.js"></script>
     <!-- Facebook Pixel Code -->
     <script>
       !function(f,b,e,v,n,t,s)
@@ -712,7 +713,7 @@
                       </label>
                     </dd>
                   </dl>
-    
+
                   <dl>
                     <dt>Verify Phone number</dt>
                     <dd><label class="text"><input id='verifyPhonePhonenumber' type="tel" placeholder="Phone number"></label></dd>
@@ -1002,6 +1003,23 @@
               <div class="btn" style='display: block;'>
                 <button id='DownloadGAccountBtn' onclick='downloadGeneratedAccount()' style='width: auto; min-width: 150px; margin: auto; margin-top: 20px; background: #569E5C;'> Print Backup </button>
                 <button id='submitG3AccountBtn' onclick='goToClaimTable()' disabled class='not avail' style='cursor: pointer; width: auto; min-width: 150px; margin: auto; margin-top: 15px;'> Claim SIX Token </button>
+              </div>
+            </div>
+          </div>
+          <div id='congratBoxLedger' style='display: none;text-align: center;'>
+            <div id='congratContainerLedger' style= "border: 1px solid #D3D3D3;padding: 40px;max-width: 500px;margin: auto;border-radius: 20px;">
+              <i id='correctIcon' class="fas fa-check-circle"></i>
+              <h3>Congrats Wallet Generated Successfully</h3>
+              <p>Transaction is pending blockchain confirmation.<br>Check your wallet in a few minutes.</p>
+              <p>Your wallet address is</p><br>
+              <div class='fdiv'>
+                <label class="text dropdown" style='margin-top: 10px;'>
+                  <input placeholder="Public Key" id="genPLedger" type="text" readonly="readonly" style='width: calc(100% - 45px);'>
+                  <a href='javascript:;' data-clipboard-text="" class='blinkTooltip' id='copyGenPLender'><i class="far fa-copy"></i></a>
+                </label>
+              </div>
+              <div class="btn" style='display: block;'>
+                <button id='submitG3AccountBtnLedger' onclick='goToClaimTable("ledger")' disabled class='not avail' style='cursor: pointer; width: auto; min-width: 150px; margin: auto; margin-top: 15px;'> Claim SIX Token </button>
               </div>
             </div>
           </div>
