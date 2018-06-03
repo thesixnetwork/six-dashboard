@@ -5,9 +5,12 @@ const admin = require('firebase-admin')
 const db = admin.firestore()
 const claimRef = db.collection('users_claim')
 const userRef = db.collection('users')
+const claimPoolsRef = db.collection('claim_pools')
+const lockPoolsRef = db.collection('lock_pool').doc('process')
 
 let stellarUrl
 const secondaryClaimUrl = functions.config().secondary_signer.url + '/setPublicKey'
+const secondarySignerUrl = functions.config().secondary_signer.url + '/handleSignSix'
 
 if (functions.config().campaign.is_production === 'true') {
   stellarUrl = 'https://horizon.stellar.org'
@@ -19,8 +22,15 @@ if (functions.config().campaign.is_production === 'true') {
 
 const server = new StellarSdk.Server(stellarUrl)
 
-const distKey = StellarSdk.Keypair.fromSecret(
-  functions.config().xlm.ico_distributor_secret
+const multiSigAddress = functions.config().xlm.multi_sig_address
+// for claim six
+const firstSignerKey = StellarSdk.Keypair.fromSecret(
+  functions.config().xlm.first_signer_secret
+)
+
+// for create account
+const accountCreatorKey = StellarSdk.Keypair.fromSecret(
+  functions.config().xlm.account_creator_secret
 )
 
 const ASSET_CODE = 'SIX'
@@ -29,7 +39,7 @@ const sixAsset = new StellarSdk.Asset(ASSET_CODE, functions.config().xlm.issuer_
 const startingBalance = '2.5'
 
 const handleCreateStellarAccount = (data, context) => {
-  if (!distKey) {
+  if (!accountCreatorKey) {
     return {
       success: false,
       error_message: 'not yet config stellar params'
@@ -109,7 +119,7 @@ const createStellarAccount = ({ uid, public_key: publicKey }) => {
       )
       .build()
 
-    transaction.sign(distKey)
+    transaction.sign(accountCreatorKey)
     return {
       uid,
       public_key: publicKey,
@@ -128,7 +138,7 @@ const createStellarAccount = ({ uid, public_key: publicKey }) => {
   return server.loadAccount(publicKey).then(an_account => {
     if (!checkBalanceForTrust(an_account)) {
       return server
-        .loadAccount(distKey.publicKey())
+        .loadAccount(accountCreatorKey.publicKey())
         .then(createTransaction)
         .then(submitTransaction)
     } else {
@@ -136,7 +146,7 @@ const createStellarAccount = ({ uid, public_key: publicKey }) => {
     }
   }).catch(() => {
     return server
-      .loadAccount(distKey.publicKey())
+      .loadAccount(accountCreatorKey.publicKey())
       .then(createTransaction)
       .then(submitTransaction)
   })
@@ -164,8 +174,154 @@ const updateUserCreatedAccount = ({ uid }) => {
     }, { merge: true })
 }
 
+const createPool = ({ uid, claim_id: claimId }) => {
+  const data = {
+    uid,
+    claim_id: claimId,
+    timestamp: new Date().getTime()
+  }
+  return claimPoolsRef
+    .doc(`${uid}_${claimId}`)
+    .create(data)
+    .then(() => {
+      return {
+        uid,
+        claim_id: claimId
+      }
+    })
+}
+
+const deleteClaimIdInPool = (body) => {
+  const { uid, claim_id: claimId } = body
+  const claimPoolsId = `${uid}_${claimId}`
+
+  return claimPoolsRef
+    .doc(claimPoolsId)
+    .delete()
+    .then(() => {
+      return body
+    })
+    .catch(e => {
+      console.error('Error removing document: ', e)
+      return body
+    })
+}
+
+/**
+ * 
+ * @param {string} transactionId optional 
+ */
+const updateState = ({ uid, claim, claim_id: claimId, user, state, tx, error }) => {
+  console.log('updateState')
+  let data = {
+    state: state || 1
+  }
+  if (tx) {
+    data.transaction_id = tx.hash
+    data.transaction_result = tx
+  }
+  if (error && error.message) {
+    data.error_message = error.message
+  }
+
+  return claimRef
+    .doc(uid)
+    .collection('claim_period')
+    .doc(String(claimId))
+    .update(data)
+    .then(() => {
+      return {
+        uid,
+        claim,
+        claim_id: claimId,
+        user
+      }
+    })
+}
+
+const releasePool = () => lockPoolsRef.set({is_lock: false})
+
+const lockPool = ({ uid, claim_id: claimId }) => {
+  return db.runTransaction(t => {
+    return t.get(lockPoolsRef).then(doc => {
+      // @TODO  create document if not intial lock process
+      if (doc.exists) {
+        const lockStatus = doc.data()
+        if (lockStatus.is_lock) {
+          return {
+            uid,
+            claim_id: claimId,
+            lock_successful: false
+          }
+        }
+      }
+      t.update(lockPoolsRef, { is_lock: true, lock_id: `${uid}_${claimId}`, lock_time: new Date().toString() })
+      return {
+        uid,
+        claim_id: claimId,
+        lock_successful: true
+      }
+    })
+  })
+}
+
+const processNewClaimPool = () => {
+  return claimPoolsRef
+    .orderBy('timestamp')
+    .limit(1)
+    .get()
+    .then((snap) => {
+      if (snap.docs.length > 0) {
+        return snap.docs[0].data()
+      }
+    })
+    .then(claimData => {
+      if (claimData) {
+        return lockPool(claimData)
+      }
+      return {
+        lock_successful: false
+      }
+    })
+    .then(lockInfo => {
+      if (lockInfo.lock_successful) {
+        handleClaimSix({ claim_id: lockInfo.claim_id }, { auth: { uid: lockInfo.uid } })
+          .then(processNewClaimPool)
+      }
+    })
+}
+
+/**
+ * create job on claim_pools.
+ * @param {string} uid
+ * @param {string} claimId
+ */
+const claimSixByCreatePool = (uid, claimId) => {
+  return findClaim({
+    uid,
+    claim_id: claimId
+  })
+    .then(createPool)
+    .then(updateState)
+    .then(() => {
+      processNewClaimPool()
+    })
+    .then(() => {
+      return {
+        success: true
+      }
+    })
+    .catch(error => {
+      console.log(error)
+      return {
+        success: false,
+        error_message: error.message
+      }
+    })
+}
+
 const handleClaimSix = (data, context) => {
-  if (!distKey) {
+  if (!firstSignerKey) {
     return {
       success: false,
       error_message: 'not yet config stellar params'
@@ -189,17 +345,29 @@ const handleClaimSix = (data, context) => {
     .then(findClaim)
     .then(sendSix)
     .then(updateClaim)
+    .then(deleteClaimIdInPool)
+    .then((body) => {
+      Object.assign(body, {
+        state: 2
+      })
+      return updateState(body)
+    })
+    .then(releasePool)
     .then(() => {
-      return {
-        success: true
-      }
+      return { success: true }
     })
     .catch(error => {
       console.log(error)
-      return {
-        success: false,
-        error_message: error.message
-      }
+      return deleteClaimIdInPool({ uid, claim_id: claimId })
+        .then((body) => {
+          Object.assign(body, {
+            state: 3,
+            error
+          })
+          return updateState(body)
+        })
+        .then(releasePool)
+        .then(() => ({ success: false, error_message: error.message }))
     })
 }
 
@@ -235,6 +403,10 @@ function findClaim ({ uid, claim_id: claimId, user }) {
           return Promise.reject(new Error('Claim is not ready'))
         }
 
+        if (claimData.state) {
+          return Promise.reject(new Error('State is existing, already claim even it error'))
+        }
+
         return claimData.claimed === true
           ? Promise.reject(new Error('User already claimed.'))
           : {
@@ -263,7 +435,7 @@ function sendSix ({ uid, claim_id: claimId, user, claim }) {
       )
       .build()
 
-    sendTransaction.sign(distKey)
+    sendTransaction.sign(firstSignerKey)
     return {
       uid,
       claim,
@@ -273,30 +445,46 @@ function sendSix ({ uid, claim_id: claimId, user, claim }) {
     }
   }
 
-  function submitTransaction ({
-    uid,
-    claim,
-    claim_id: claimId,
-    user,
-    send_transaction: sendTransaction
-  }) {
-    return server.submitTransaction(sendTransaction).then(() => {
+  function sendTxToSecondarySigner ({ uid, claim, claim_id: claimId, user, send_transaction: sendTransaction }) {
+    const xdr = sendTransaction.toEnvelope().toXDR('base64')
+    return request({
+      uri: secondarySignerUrl,
+      method: 'POST',
+      body: {
+        uid,
+        claim_id: claimId,
+        xdr
+      },
+      json: true
+    }).then(body => body.error ? Promise.reject(new Error(body.error))
+      : {
+        uid,
+        claim,
+        claim_id: claimId,
+        user,
+        send_transaction: new StellarSdk.Transaction(body.new_xdr)
+      })
+  }
+
+  function submitTransaction ({ uid, claim, claim_id: claimId, user, send_transaction: sendTransaction }) {
+    return server.submitTransaction(sendTransaction).then((tx) => {
       return {
         uid,
         claim,
         claim_id: claimId,
-        user
+        user,
+        tx
       }
     })
   }
 
-  return server
-    .loadAccount(distKey.publicKey())
+  return server.loadAccount(multiSigAddress)
     .then(createTransaction)
+    .then(sendTxToSecondarySigner)
     .then(submitTransaction)
 }
 
-const updateClaim = ({ uid, claim, claim_id: claimId, user }) => {
+const updateClaim = ({ uid, claim, claim_id: claimId, user, tx }) => {
   console.log('updateClaim')
   return claimRef
     .doc(uid)
@@ -310,7 +498,8 @@ const updateClaim = ({ uid, claim, claim_id: claimId, user }) => {
         uid,
         claim,
         claim_id: claimId,
-        user
+        user,
+        tx
       }
     })
 }
@@ -318,6 +507,7 @@ const updateClaim = ({ uid, claim, claim_id: claimId, user }) => {
 module.exports = {
   handleCreateStellarAccount,
   handleClaimSix,
+  claimSixByCreatePool,
   findUser,
   findClaim,
   sendSix,
