@@ -8,7 +8,7 @@ const serviceAccount = require(configPath)
 const airdropUsers = []
 
 const conditions = {
-  'first_day_trade': 1529020800000
+  'first_day_trade': 1528275600000
 }
 
 admin.initializeApp({
@@ -28,7 +28,7 @@ async function listAllUsers (nextPageToken) {
         return db.collection('users').doc(userRecord.uid).get().then(doc => {
           const userInfo = doc.data()
           const airdropClaim = []
-          if (doc.exists && (userInfo.kyc_status === 'approved' || userInfo.private_user === true)) {
+          if (doc.exists && (userInfo.kyc_status === 'approved' || userInfo.private_user === true) && (userInfo.update_time === undefined || userInfo.update_time <= 1527692400000)) {
             airdropClaim.push({
               type: 'free',
               valid_after: conditions.first_day_trade,
