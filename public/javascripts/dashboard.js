@@ -1,6 +1,5 @@
 // Log out function using in Wizardd page to sign current user out
 function logOut () {
-  console.log('logout')
   firebase.auth().signOut()
 }
 
@@ -329,16 +328,13 @@ function submitDepositETH() {
 let globalCurrent
 let percentageGlobalCurrent
 function getCurrentTotal() {
-  return firebase.firestore().collection('total_asset').doc('usd').get().then(doc => {
+  return firebase.firestore().collection('total_asset').doc('six').get().then(doc => {
     const totalAsset = parseFloat(doc.data().total || 0)
-    const privateAsset = parseFloat(doc.data().private_asset || 0)
+    const privateAsset = parseFloat(doc.data().private || 0)
     const currentAsset = privateAsset+totalAsset
-    const softCapAmount = doc.data().soft_cap_usd
-    const percentage = Number(((currentAsset/(doc.data().hard_cap_usd/100)) || 0).toFixed(0))
-    let scalePercentage = Number((((((100-percentage)*99273.68461538461)+currentAsset)/(doc.data().hard_cap_usd/100)) || 0).toFixed(1))
-    if ((scalePercentage + 5) < 100) {
-      scalePercentage = scalePercentage+5
-    }
+    const softCapAmount = doc.data().soft_cap
+    const percentage = Number(((currentAsset/(doc.data().hard_cap/100)) || 0).toFixed(0))
+    let scalePercentage = Number((((((100-percentage)*99273.68461538461)+currentAsset)/(doc.data().hard_cap/100)) || 0).toFixed(1))
     percentageGlobalCurrent = Number(scalePercentage)
     globalCurrent = Number(parseFloat(currentAsset/1000000).toFixed(1))
   })
@@ -352,7 +348,7 @@ function runGlobalNumber() {
       numberStep: function(now, tween) {
         var target = $(tween.elem);
         floored_number = now.toFixed(decimal_places);
-        target.text(floored_number+' M');
+        target.text(floored_number+'M SIX');
       }
     }
   )
@@ -365,11 +361,7 @@ function submitDepositXLMTran() {
   const xlm_value = (parseFloat(xlmToSixInput.value) || 0)
   setDisable([btnDOM])
   let amount = 0
-  if (userData.is_presale === true) {
-    amount = Number((xlm_value*xlmPrice.six_per_xlm).toFixed(7))
-  } else {
-    amount = Number((xlm_value*xlmPrice.six_per_xlm).toFixed(7))*1.06
-  }
+  amount = Number((xlm_value*xlmPrice.six_per_xlm).toFixed(7))
   window.dataLayer = window.dataLayer || [];
   function gtag () {
     dataLayer.push(arguments);
@@ -387,7 +379,6 @@ function submitDepositXLMTran() {
     const elem = buildListTx({ time: thisTime, native_amount: xlm_value, type: "XLM", to: '-', id: '-', time: thisTime, six_amount: amount.toLocaleString(), tx_status: 'pending' })
     $("#userTxs")[0].prepend(elem)
     if (userData.seen_congrat === true) {
-//      $("#backToTxHis").css("display", "block")
       $("#mainBox").css("display", "block")
     } else {
       $("#congratulationBox").css("display", "block")
@@ -403,11 +394,7 @@ function submitDepositETHTran() {
   const eth_value = (parseFloat(ethToSixInput.value) || 0)
   setDisable([btnDOM])
   let amount = 0
-  if (userData.is_presale === true) {
-    amount = Number((eth_value*ethPrice.six_per_eth).toFixed(7))
-  } else {
-    amount = Number((eth_value*ethPrice.six_per_eth).toFixed(7))*1.06
-  }
+  amount = Number((eth_value*ethPrice.six_per_eth).toFixed(7))
   window.dataLayer = window.dataLayer || [];
   function gtag () {
     dataLayer.push(arguments);
@@ -426,7 +413,6 @@ function submitDepositETHTran() {
     const elem = buildListTx({ time: thisTime, native_amount: eth_value, type: "ETH", to: '-', id: '-', time: thisTime, six_amount: amount.toLocaleString(), tx_status: 'pending' })
     $("#userTxs")[0].prepend(elem)
     if (userData.seen_congrat === true) {
-//      $("#backToTxHis").css("display", "block")
       $("#mainBox").css("display", "block")
     } else {
       $("#congratulationBox").css("display", "block")
@@ -444,7 +430,6 @@ function submitCongrat() {
   $("#submitETHBox").css("display", "none")
   $("#depositETHBox").css("display", "none")
   $("#depositXLMBox").css("display", "none")
-//  $("#backToTxHis").css("display", "block")
   $("#mainBox").css("display", "block")
   $("#congratulationBox").css("display", "none")
   $("#walletBox").css("display", "none")
@@ -457,7 +442,6 @@ function backToDashboard() {
   $("#submitETHBox").css("display", "none")
   $("#depositETHBox").css("display", "none")
   $("#depositXLMBox").css("display", "none")
-//  $("#backToTxHis").css("display", "block")
   $("#mainBox").css("display", "block")
   $("#congratulationBox").css("display", "none")
   $("#walletBox").css("display", "none")
@@ -474,6 +458,37 @@ function gotoCurrency() {
   $("#congratulationBox").css("display", "none")
   $("#walletBox").css("display", "none")
   $("#warnBox").css("display", "none")
+}
+
+function buildFreeTx() {
+  var tr = document.createElement("tr");
+  var td1 = document.createElement("td");
+  var txt1 = document.createTextNode('-')
+  td1.appendChild(txt1);
+
+  var td2 = document.createElement("td");
+  var txt2 = document.createTextNode("20 SIX");
+  td2.appendChild(txt2);
+
+  var td3 = document.createElement("td");
+  var txt3 = document.createTextNode("-");
+  td3.appendChild(txt3)
+
+  var td4 = document.createElement("td");
+  var txt4 = document.createTextNode("airdrop");
+  td4.appendChild(txt4)
+
+  var td5 = document.createElement("td");
+  var txt5 = document.createTextNode("-");
+  td5.appendChild(txt5)
+
+  tr.appendChild(td1);
+  tr.appendChild(td2);
+  tr.appendChild(td3);
+  tr.appendChild(td4);
+  tr.appendChild(td5);
+
+  return tr
 }
 
 function buildListTx(doc) {
@@ -560,24 +575,6 @@ function buildTableType(type) {
     var tbody = document.createElement("tbody")
     tbody.className = "claimTxs"
     tbody.id = 'table-'+type
-
-//    var div1 = document.createElement("div")
-//    div1.className = 'donutText'
-//    var div2 = document.createElement("div")
-//    div2.className = 'contractType'
-//    var div3 = document.createElement("div")
-//    div3.className = 'groupStatus'
-//    var h4 = document.createElement("h4")
-//    var txt6 = document.createTextNode(privateType[type].name)
-//    var pDom = document.createElement("p")
-//    var txt7 = document.createTextNode(privateType[type].description)
-
-//    h4.appendChild(txt6)
-//    pDom.appendChild(txt7)
-//    div2.appendChild(div3)
-//    div2.appendChild(h4)
-//    div2.appendChild(pDom)
-//    div1.appendChild(div2)
 
     th1.appendChild(txt1)
     th2.appendChild(txt2)
@@ -1037,14 +1034,22 @@ function getMyWalletBalance() {
   }).catch(err => { console.log(err) })
 }
 
+let totalSix = 20
+
 function getTxs () {
   if (firebase.auth().currentUser !== null) {
+    if (userData.update_time !== undefined && userData.update_time > 1527692400000) {
+      totalSix = 0
+    }
     firebase.firestore().collection('purchase_txs')
     .where("user_id",'==',firebase.auth().currentUser.uid)
     .get()
     .then(snapshot => {
       return firebase.firestore().collection('presale').doc('supply').collection('purchased_presale_tx').doc(firebase.auth().currentUser.uid).get().then(preDoc => {
         let preDocData = preDoc.data()
+        if (preDocData === undefined) {
+          preDocData = {}
+        }
         $('#userTxs').empty()
         $('#userTxs2').empty()
         let allDoc = []
@@ -1056,6 +1061,22 @@ function getTxs () {
           let data = d.data()
           if (preDocData[d.id] !== undefined && preDocData[d.id] !== null) {
             data.six_amount = Number((data.six_amount * 1.06).toFixed(7))
+            totalSix += data.six_amount
+            $('#totalSix').animateNumber(
+              {
+                number: totalSix.toFixed(7),
+                numberStep: percent_number_step
+              }
+            )
+          } else {
+            data.six_amount = Number((data.six_amount).toFixed(7))
+            totalSix += data.six_amount
+            $('#totalSix').animateNumber(
+              {
+                number: totalSix.toFixed(7),
+                numberStep: percent_number_step
+              }
+            )
           }
           const elem = buildListTx(data)
           $("#userTxs")[0].appendChild(elem)
@@ -1068,6 +1089,13 @@ function getTxs () {
           allDoc.push(d)
         })
         allDoc.sort(compare)
+        var percent_number_step = $.animateNumber.numberStepFactories.append(' SIX')
+        $('#totalSix').animateNumber(
+          {
+            number: totalSix.toFixed(7),
+            numberStep: percent_number_step
+          }
+        );
         allDoc.forEach(d => {
           const data = d.data()
           const elem = buildListTx(data)
@@ -1076,9 +1104,13 @@ function getTxs () {
         })
       })
     }).then(() => {
-      if (userData.alloc_transaction === true) {
-        const elem = buildListTx({ time: userData.alloc_time, native_amount: userData.alloc_transaction_amount, type: userData.alloc_transaction_type, to: '-', id: '-', six_amount: userData.alloc_transaction_six_amount, alloc_time: userData.alloc_time, tx_status: 'pending' })
-        $("#userTxs")[0].prepend(elem)
+//      if (userData.alloc_transaction === true) {
+//        const elem = buildListTx({ time: userData.alloc_time, native_amount: userData.alloc_transaction_amount, type: userData.alloc_transaction_type, to: '-', id: '-', six_amount: userData.alloc_transaction_six_amount, alloc_time: userData.alloc_time, tx_status: 'pending' })
+//        $("#userTxs")[0].prepend(elem)
+//      }
+      if (userData.update_time === undefined || userData.update_time < 1527692400000) {
+        const elem = buildFreeTx()
+        $("#userTxs")[0].appendChild(elem)
         $("#userTxs2")[0].prepend(elem)
       }
     })
@@ -1188,7 +1220,6 @@ $(document).ready(function(){
   document.getElementById('xlmToSixInput').onkeyup = function () {
     let number = parseFloat(this.value) || 0
     $("#xlmToSix").html(Number((number*xlmPrice.six_per_xlm).toFixed(7)).toLocaleString())
-    $("#bonusXLM").html(Number(((number*xlmPrice.six_per_xlm)*0.06).toFixed(7)))
     $("#xlmToSixInputAlertText").html("")
     $("#xlmToSixInputAlertText").css("display", "none")
     $("#xlmToSixInputAlert").removeClass("invalid")
@@ -1197,7 +1228,6 @@ $(document).ready(function(){
   document.getElementById('ethToSixInput').onkeyup = function() {
     let number = parseFloat(this.value) || 0
     $("#ethToSix").html(Number((number*ethPrice.six_per_eth).toFixed(7)).toLocaleString())
-    $("#bonusETH").html(Number(((number*ethPrice.six_per_eth)*0.06).toFixed(7)))
     $("#ethToSixInputAlertText").html("")
     $("#ethToSixInputAlertText").css("display", "none")
     $("#ethToSixInputAlert").removeClass("invalid")
@@ -1265,16 +1295,8 @@ $(document).ready(function(){
           $("#firstCharName").html((userData.first_name || "").substr(0,1).toUpperCase())
           $(".myMemo").html(userData.memo)
           $("#memoCopy").attr('data-clipboard-text', userData.memo)
-          if (userData.first_transaction === true) {
-            if (userData.seen_congrat === true) {
-//              $("#backToTxHis").css("display", "block")
-              $("#welcomeBox").css("display", "none")
-              $("#mainBox").css("display", "block")
-            } else {
-              $("#welcomeBox").css("display", "none")
-              $("#congratulationBox").css("display", "block")
-            }
-          }
+          $("#welcomeBox").css("display", "none")
+          $("#mainBox").css("display", "block")
           if (userData.eth_address !== undefined) {
             $("#myWallet").css("display", "block")
             $("#myETHaddress")[0].value = userData.eth_address
@@ -1354,8 +1376,25 @@ $(document).ready(function(){
       })
     }
   })
+  $('body').on('click', '.dropdown a', function() {
+    var dropdown = $(this).parent(".dropdown");
+
+    dropdown.toggleClass("show-dropdown");
+
+    clickBody('dropdown', dropdown, 'show-dropdown');
+  });
 
 });
+
+// Click body for close
+function clickBody(name, elem, rm_class) {
+  if ( elem.hasClass(rm_class) ) {
+    $('body').on('click.'+name, function(){
+      elem.removeClass(rm_class);
+      $('body').off('click.'+name);
+    });
+  }
+}
 
 function goToClaim() {
   $("#welcomeBox").css("display", "none")
@@ -2052,61 +2091,6 @@ function goToLedgerWallet() {
   $("#trustlineStep").addClass("current")
   $("#walletSelectBox").css("display", 'none')
   $("#divClaimBoxLedger").css("display", 'block')
-  $("#assetContent p:last span").text(issuerKey)
-  clickStrPublicKey(function(pk){
-    $("#ledgerContentContainer").addClass("active")
-    $("#ledgerAgreement #warning1").prop("disabled",false)
-    $("#assetContent p:first span").text(pk)
-  })
-}
-
-function argreeLedgerWallet() {
-  const btnDOM = document.getElementById('submitLedgerBtn')
-  let activeledger = $("#ledgerContentContainer").hasClass("active")
-  if(activeledger) {
-    setEnable([btnDOM])
-    $("#submitLedgerBtn").on("click",function(){
-      requestFunction = firebase.functions().httpsCallable('createClaim')
-      let publicKey = $("#assetContent p:first span").text().trim()
-      $("#submitLedgerBtn").prop("disabled",true)
-      requestFunction({public_key: publicKey}).then(response => {
-        if (response.data.success) {
-          $("#ledgerContentContainer").hide()
-          $("#ledgerMiniContent1").hide()
-          $("#ledgerMiniContent2").show()
-          $("#ledgerBox #setupInstruction").hide()
-        } else {
-
-        }
-      })
-    })
-  }
-}
-
-function trustLedgerWallet() {
-    let publicKey = $("#assetContent p:first span").text().trim()
-    $("#submitLedgerTrustBtn").prop("disabled",true)
-    return trustSix(publicKey, issuerKey,function(data){
-      return markTrustlineUser().then(() => {
-        $("#myXlmPublicAddress").text(publicKey)
-        $("#myXlmPublicAddress2").text(publicKey)
-        $("#copyMyXlmAddress").attr("data-clipboard-text", publicKey)
-        $("#copyGenPLender").attr("data-clipboard-text", publicKey)
-        $("#claimStep").addClass("current")
-        $("#ledgerBox").fadeToggle(function() {
-          $("#congratBoxLedger").slideToggle()
-          $(".noWallet").removeClass("noWallet").addClass("haveWallet")
-          let nextBtnDOM = document.getElementById("submitG3AccountBtnLedger")
-          $("#genPLedger").val(publicKey)
-          setEnable([nextBtnDOM])
-        })
-      })
-    }).catch(err => {
-      $(".dialog-reset").addClass("show-dialog")
-      $("#recoveryDialogSubmitBtn3").bind("click",function(){
-        $("#submitLedgerTrustBtn").prop("disabled",false)
-      })
-    })
 }
 
 function submitPhoneNumber() {
@@ -2289,6 +2273,11 @@ function nextRecoveryWord2() {
 function nextFirstLedger() {
   $("#newLedgerDialog").css("display", "none")
   $("#ledgerBox").css("display", "block")
+  clickStrPublicKey(function(pk){
+    $("#ledgerContentContainer").addClass("active")
+    $("#ledgerAgreement #warning10").prop("disabled",false)
+    $("#assetContent span").text(pk)
+  })
 }
 
 function unlockLedger() {
@@ -2310,8 +2299,25 @@ function checkWarningLedger() {
 }
 
 function signinWithLedger() {
-  $("#ledgerBox").css("display", "none")
-  $("#newLedgerDialog2").css("display", "block")
+  let activeledger = $("#ledgerContentContainer").hasClass("active")
+  if(activeledger) {
+    requestFunction = firebase.functions().httpsCallable('createClaim')
+    let publicKey = $("#assetContent span").text().trim()
+    $("#submitLedgerBtn").prop("disabled",true)
+    requestFunction({public_key: publicKey}).then(response => {
+      if (response.data.success) {
+        $("#ledgerBox").css("display", "none")
+        $("#newLedgerDialog2").css("display", "block")
+        $("#ledgerDialogNextBtn2").prop("disabled",false)
+      } else {
+        $("#walletBox").css("display", "block")
+        $("#submitWalletAlertText").html(response.data.error_message)
+        if ($("#submitWalletAlert").css("display") === 'none') {
+          $("#submitWalletAlert").slideToggle()
+        }
+      }
+    })
+  }
 }
 
 function confirmTrustLedger() {
@@ -2320,9 +2326,19 @@ function confirmTrustLedger() {
 }
 
 function addTrustLedger() {
-  $("#claimStep").addClass("current")
-  $("#divClaimBoxLedger").slideToggle(100)
-  $("#rewardClaimBox").slideToggle(100, function() {
-    updateGraph()
+  let publicKey = $("#assetContent span").text().trim()
+  $("#ledgerDialogNextBtn2").prop("disabled",true)
+  return trustSix(publicKey, issuerKey,function(data){
+    return markTrustlineUser().then(() => {
+      $("#claimStep").addClass("current")
+      $("#divClaimBoxLedger").slideToggle(100)
+      $("#rewardClaimBox").slideToggle(100, function() {
+        updateGraph()
+      })
+    })
+  }).catch(err => {
+    alert("Please confirm trust on ledger")
+    $("#ledgerDialogNextBtn2").prop("disabled",false)
   })
+
 }

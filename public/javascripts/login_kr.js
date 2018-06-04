@@ -18,14 +18,14 @@ function forgotPassword () {
   setDisable([emailDOM, btnDOM])
   return firebase.auth().sendPasswordResetEmail(email)
     .then(() => {
-      $('#forgotPasswordText').html('Email sent to inbox')
+      $('#forgotPasswordText').html('이메일이 수신함으로 전송되었습니다.')
       if ($('#forgotPasswordText').css('display') == 'none') {
         $('#forgotPasswordText').slideToggle()
       }
       setEnable([emailDOM, btnDOM])
     })
     .catch(err => {
-      $('#forgotPasswordText').html('Email sent to inbox')
+      $('#forgotPasswordText').html('이메일이 수신함으로 전송되었습니다.')
       if ($('#forgotPasswordText').css('display') == 'none') {
         $('#forgotPasswordText').slideToggle()
       }
@@ -62,7 +62,7 @@ function login () {
     .catch(err => {
       console.log(err)
       if (err.code == 'auth/wrong-password' || err.code == 'auth/user-not-found') {
-        $('#signInAlertText').html('Invalid email or password')
+        $('#signInAlertText').html('올바르지 않은 이메일 또는 비밀번호입니다.')
       } else {
         $('#signInAlertText').html(err.message)
       }
@@ -140,7 +140,7 @@ function signUp () {
   lockSignupForm()
   const parseData = libphonenumber.parse(phone_number_temp, country, {extended: true })
   if (parseData.valid === false) {
-    $('#signUpAlertText').html("Invalid phone number format")
+    $('#signUpAlertText').html('올바르지 않은 전화번호 형식입니다.')
     if ($('#signUpAlert').css('display') == 'none') {
       $('#signUpAlert').slideToggle()
     }
@@ -361,7 +361,7 @@ function checkLoginState (user = undefined) {
   if (user && user.uid && stopRedirection == false) {
     console.log('Go to Wizard')
     console.log('wizard'+window.location.search)
-    window.location.href = 'wizard'+window.location.search
+    window.location.href = 'wizard-kr'+window.location.search
   } else {
     $('#preLoader').fadeToggle()
   }
@@ -373,13 +373,13 @@ $(document).ready(function () {
     if ($(this).hasClass('open-sign-up')) {
       $(this).parents('section').find('.sign-in, .forgot').removeClass('show-detail')
       $(this).parents('section').find('.sign-up').addClass('show-detail')
-      $(this).parent('.btn-tool').find('p').text('Have an account?')
-      $(this).removeClass('open-sign-up').addClass('open-sign-in').text('Sign in')
+      $(this).parent('.btn-tool').find('p').text('회원이신가요?')
+      $(this).removeClass('open-sign-up').addClass('open-sign-in').text('로그인하기')
     } else if ($(this).hasClass('open-sign-in')) {
       $(this).parents('section').find('.sign-up, .forgot').removeClass('show-detail')
       $(this).parents('section').find('.sign-in').addClass('show-detail')
-      $(this).parent('.btn-tool').find('p').text("Don't have an account?")
-      $(this).removeClass('open-sign-in').addClass('open-sign-up').text('Sign up')
+      $(this).parent('.btn-tool').find('p').text('아직 회원이 아니신가요?')
+      $(this).removeClass('open-sign-in').addClass('open-sign-up').text('가입하기')
     }
   })
 
@@ -454,7 +454,6 @@ $(document).ready(function () {
     e.preventDefault()
     signUp()
   })
-
   $('body').on('click', '.dropdown a', function() {
     var dropdown = $(this).parent(".dropdown");
 

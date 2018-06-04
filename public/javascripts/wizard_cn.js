@@ -1,33 +1,32 @@
 let rejectNote = {
-  need_more: `We appreciate that you took the time for the registration. However, we received insufficient information regarding your KYC/ AML documents and/ or information.
+  need_more: `感谢您的注册。但我们收到的关于您的KYC/ AML文件和/或信息的不完整。
 
-We would highly appreciate if you could resubmit the documents and/ or information through the link below.
+我们将非常感激如果您能通过下面的链接重新提交文件和/或信息。
 
-Thank you for your interest in our ICO.
-
-SIX.network`,
-  restricted: `We highly appreciate that you took the time for the registration. After reviewing your submitted application materials, the KYC/AML result does not match with our requirements.
-
-We highly appreciate that you are interested in our ICO. Please do support us in the secondary market soon.
-
-Thank you for your interest in SIX.network and our ICO.
+感谢您对我们公开销售的关注。
 
 SIX.network`,
-  incorrect: `We appreciate that you took the time for the registration. However, we received insufficient information regarding your KYC/ AML documents and/ or information.
+  restricted: `感谢您的注册。在审核完您提交的申请材料后，您的KYC/AML结果与我们的要求不符。
 
-We would highly appreciate if you could resubmit the documents and/ or information through the link below.
+感谢您对我们公开销售的关注。希望您会继续在二级市场支持我们。
 
-Thank you for your interest in our ICO.
+感谢您对SIX.network和我们公开销售的关注。
 
 SIX.network`,
-  photo_corrupted: `We appreciate that you took the time for the registration. However, we received incorrect or unclear information regarding your selfie picture.
+  incorrect: `感谢您的注册。但我们收到的关于您的KYC/ AML文件和/或信息的不完整。
 
-We would highly appreciate if you could resubmit your selfie through the link below.`,
-  other: `We appreciate that you took the time for the registration. However, we received insufficient information regarding your KYC/ AML documents and/ or information.
+我们将非常感激如果您能通过下面的链接重新提交文件和/或信息。
 
-Thank you for your interest in our ICO. `
+感谢您对我们公开销售的关注。
+
+SIX.network`,
+  photo_corrupted: `感谢您的注册。但我们收到的您自拍照片的信息不正确或不清楚。
+
+我们将非常感激如果您能通过下面的链接重新提交您的自拍照片。`,
+  other: `感谢您的注册。但我们收到的关于您的KYC/ AML文件和/或信息的不完整。
+
+感谢您对我们公开销售的关注。 `
 }
-
 // Log out function using in Wizardd page to sign current user out
 function logOut () {
   console.log('logout')
@@ -109,7 +108,6 @@ function initializeAdmin () {
   })
   return promise
 }
-
 function closeErrorMatch() {
   $("div.error-not-match, div.overlay").hide()
 }
@@ -153,7 +151,7 @@ function submitPhoneNumber() {
   let btnDOM = document.getElementById('verifyPhoneBtn')
   setDisable([phoneNumberDOM, btnDOM, countryPhoneDOM])
   if (parseData.valid === false) {
-    $("#verifyPhoneError").html("Invalid phone number format")
+    $("#verifyPhoneError").html("手机号码格式无效")
     if ($("#verifyPhoneError").css("display", "none")) {
       $("#verifyPhoneError").slideToggle()
     }
@@ -201,7 +199,11 @@ function submitPhoneNumber() {
       let countDownNum = response.data.valid_until - Math.round((new Date()).getTime() / 1000)
       countdown({ fromNumber: countDownNum })
     } else {
-      $("#verifyPhoneError").html(response.data.error_message)
+      if (response.data.error_code == 100) {
+        $("#verifyPhoneError").html('手机号码已被使用')
+      } else {
+        $("#verifyPhoneError").html(response.data.error_message)
+      }
       if ($("#verifyPhoneError").css("display", "none")) {
         $("#verifyPhoneError").slideToggle()
       }
@@ -225,8 +227,8 @@ function kycCountryChange() {
     $("#citizenIdPhotoBack").css("display", "block")
     $("#passportNumberPhoto").css("display", "none")
     $("#passportNumber").css("display", "none")
-    $("#itemHoldingHead").html("ID-card")
-    $("#itemHolding").html("ID-card")
+    $("#itemHoldingHead").html("")
+    $("#itemHolding").html("")
     $("#samplePassportSelfie").css('display', 'none')
     $("#sampleIDSelfie").css('display', 'block')
     $("#idHelper").css('display', 'inline-block')
@@ -237,8 +239,8 @@ function kycCountryChange() {
     $("#citizenIdPhotoBack").css("display", "none")
     $("#passportNumberPhoto").css("display", "block")
     $("#passportNumber").css("display", "block")
-    $("#itemHoldingHead").html("Passport")
-    $("#itemHolding").html("passport showing the passport photo page")
+    $("#itemHoldingHead").html("")
+    $("#itemHolding").html("")
     $("#samplePassportSelfie").css('display', 'block')
     $("#sampleIDSelfie").css('display', 'none')
     $("#idHelper").css('display', 'none')
@@ -264,7 +266,13 @@ function submitPhoneNumberCode() {
       document.getElementById("kycCountry").value = countryPhone
       goToKYCStep()
     } else {
-      $("#verifyPhoneSubmitError").html(response.data.error_message)
+      if(response.data.error_code == 100) {
+        $("#verifyPhoneSubmitError").html('手机号码已被使用')
+      } else if (response.data.error_code == 200) {
+        $("#verifyPhoneSubmitError").html('验证码无效')
+      } else {
+        $("#verifyPhoneSubmitError").html(response.data.error_message)
+      }
       if ($("#verifyPhoneSubmitError").css("display", "none")) {
         $("#verifyPhoneSubmitError").slideToggle()
       }
@@ -332,7 +340,7 @@ function resendVerifyEmail() {
     let currentUser = firebase.auth().currentUser
     currentUser.sendEmailVerification().then(() => {
       if ($("#verifyNotice").css("display") == "none") {
-        $("#verifyNotice").html("Email successfully sent to your inbox.")
+        $("#verifyNotice").html("邮件已成功发送到您的收件箱")
         setEnable([resendDOM])
         $("#verifyNotice").slideToggle(400, resolve)
       }
@@ -419,7 +427,6 @@ function setupUserData() {
     }
     rejectReason = String(rejectReason).split("\n").join("<br>")
     $("#rejectReason").html(rejectReason)
-
     if (userData.reject_note_extend !== null && userData.reject_note_extend !== '' && userData.reject_note_extend !== undefined) {
       $("#rejectReasonExtend").html(String(userData.reject_note_extend))
       $("#extendRejectNote").css("display", "block")
@@ -434,55 +441,52 @@ function setupUserData() {
 function initializeStep() {
   let promise = new Promise(function (resolve, reject) {
     let currentUser = firebase.auth().currentUser
-    let db = firebase.firestore()
-    db.collection('users').doc(firebase.auth().currentUser.uid).get().then(doc => {
-      if (doc.data() === undefined) {
-        let requestFunction = firebase.functions().httpsCallable('reworkInitializeUserDoc')
-        requestFunction({}).then(response => {
-          console.log("rework success")
-        })
-      }
-      userData = doc.data() || {}
-      if (userData.private_user === true) {
-        window.location.href = '/dashboard'+window.location.search
-      } else if (currentUser.emailVerified == true) {
-        goToVerifyPhoneStep()
+    if (currentUser.emailVerified == true) {
+      goToVerifyPhoneStep()
+      let db = firebase.firestore()
+      db.collection('users').doc(firebase.auth().currentUser.uid).get().then(doc => {
+        if (doc.data() === undefined) {
+          let requestFunction = firebase.functions().httpsCallable('reworkInitializeUserDoc')
+          requestFunction({}).then(response => {
+            console.log("rework success")
+          })
+        }
+        userData = doc.data() || {}
         if (Date.now() > endtimeOfIco && userData.all_done) {
-          window.location.href = '/dashboard'+window.location.search
-        } else {
-          setupUserData()
-          if (doc.data().phone_verified === true) {
-            goToKYCStep()
-            if (userData.kyc_status === 'pending') {
-              $("#kycContentForm").removeClass("show-detail")
-              $("#kycContentPending").addClass("show-detail")
+          window.location.href = '/dashboard-cn'+window.location.search
+        }
+        setupUserData()
+        if (doc.data().phone_verified === true) {
+          goToKYCStep()
+          if (userData.kyc_status === 'pending') {
+            $("#kycContentForm").removeClass("show-detail")
+            $("#kycContentPending").addClass("show-detail")
+            resolve()
+          } else if (userData.kyc_status === 'rejected') {
+            $("#kycContentForm").removeClass("show-detail")
+            $("#kycContentRejected").addClass("show-detail")
+            resolve()
+          } else if (userData.kyc_status === 'approved') {
+            goToFinishStep()
+            if (userData.all_done === true) {
+              goToICOStep()
               resolve()
-            } else if (userData.kyc_status === 'rejected') {
-              $("#kycContentForm").removeClass("show-detail")
-              $("#kycContentRejected").addClass("show-detail")
-              resolve()
-            } else if (userData.kyc_status === 'approved') {
-              goToFinishStep()
-              if (userData.all_done === true) {
-                goToICOStep()
-                resolve()
-              } else {
-                resolve()
-              }
             } else {
               resolve()
             }
           } else {
             resolve()
           }
+        } else {
+          resolve()
         }
-      } else {
-        $("#emailToVerify").html(currentUser.email)
+      }).catch(() => {
         resolve()
-      }
-    }).catch(() => {
+      })
+    } else {
+      $("#emailToVerify").html(currentUser.email)
       resolve()
-    })
+    }
   })
   return promise
 }
@@ -509,14 +513,20 @@ function proceedToIco() {
     }
     gtag('event','click',{'event_category':'button','event_label':'finish-kyc'});
     if (Date.now() > endtimeOfIco) {
-      window.location.href = '/dashboard'+window.location.search
+      window.location.href = '/dashboard-cn'+window.location.search
     }
     setEnable([icoBtn])
+    $("#icoPage").addClass("show-detail")
+    $('#icoStep').addClass('current')
+    $("#congratulationPage").removeClass("show-detail")
   }).catch(() => {
     if (Date.now() > endtimeOfIco) {
-      window.location.href = '/dashboard'+window.location.search
+      window.location.href = '/dashboard-cn'+window.location.search
     }
     setEnable([icoBtn])
+    $("#icoPage").addClass("show-detail")
+    $('#icoStep').addClass('current')
+    $("#congratulationPage").removeClass("show-detail")
   })
 }
 
@@ -585,7 +595,7 @@ function submitKyc() {
     if ($("#kycFormAlert").css('display') == 'none') {
       $("#kycFormAlert").slideToggle()
     }
-    $("#kycFormAlertText").html("Sorry, Civils in the jurisdiction of the US, China, and Singapore are not able to join this ICO contribution according to the laws. Apologize for inconvenience this may cause.")
+    $("#kycFormAlertText").html("抱歉，美国、中国和新加坡的公民根据相关法律无法参与此次公开销售。由此造成的不便我们深表歉意。")
     validate = false
   }
   if ((citizen_id == '' || citizen_id == undefined) && country === 'TH') { $('#kycCitizenIdAlert').addClass('invalid'); validate = false }
@@ -642,7 +652,7 @@ function submitKyc() {
           $('#kycContentPending').addClass('show-detail')
           $(".overlay, div.loader-checker").hide()
         } else {
-          window.location.href = '/dashboard'+window.location.search
+          window.location.href = '/dashboard-cn' + window.location.search
         }
       } else {
         $("div.loader-checker").hide()
@@ -663,8 +673,6 @@ function uploadFile(fileNumber, file) {
   if ($("#sampleImage"+fileNumber).css('display') == 'block') {
     $("#sampleImage"+fileNumber).fadeToggle(400, function() { $("#sampleImage"+fileNumber).attr("src", "") })
   }
-  //$("#kycPicName"+fileNumber).html(file.name)
-  //$("#kycPicName"+fileNumber).html(escape(file.name))
   $("#kycPicName"+fileNumber).text(file.name)
   $("#kycPic"+fileNumber+"Alert").removeClass("invalid")
   let user = firebase.auth().currentUser
@@ -848,13 +856,13 @@ $(document).ready(function () {
   firebase.auth().onAuthStateChanged(function (user) {
     if (!user) {
       console.log('Go to login')
-      window.location.href = '/'+window.location.search
+      window.location.href = '/cn'+window.location.search
     } else {
       initializeAdmin().then(() => {
         $('#adminShortcut').css('display', 'block')
-      }).catch(() => {}).then(() => {
+      }).finally(() => {
         initializeStep().then(() => {
-        }).catch(() => {}).then(() => {
+        }).finally(() => {
           $('#preLoader').fadeToggle()
         })
       })
@@ -867,6 +875,7 @@ $(document).ready(function () {
 
     clickBody('dropdown', dropdown, 'show-dropdown');
   });
+
 })
 
 // Click body for close
