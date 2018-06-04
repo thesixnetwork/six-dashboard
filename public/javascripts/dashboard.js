@@ -2007,61 +2007,6 @@ function goToLedgerWallet() {
   $("#trustlineStep").addClass("current")
   $("#walletSelectBox").css("display", 'none')
   $("#divClaimBoxLedger").css("display", 'block')
-  $("#assetContent p:last span").text(issuerKey)
-  clickStrPublicKey(function(pk){
-    $("#ledgerContentContainer").addClass("active")
-    $("#ledgerAgreement #warning1").prop("disabled",false)
-    $("#assetContent p:first span").text(pk)
-  })
-}
-
-function argreeLedgerWallet() {
-  const btnDOM = document.getElementById('submitLedgerBtn')
-  let activeledger = $("#ledgerContentContainer").hasClass("active")
-  if(activeledger) {
-    setEnable([btnDOM])
-    $("#submitLedgerBtn").on("click",function(){
-      requestFunction = firebase.functions().httpsCallable('createClaim')
-      let publicKey = $("#assetContent p:first span").text().trim()
-      $("#submitLedgerBtn").prop("disabled",true)
-      requestFunction({public_key: publicKey}).then(response => {
-        if (response.data.success) {
-          $("#ledgerContentContainer").hide()
-          $("#ledgerMiniContent1").hide()
-          $("#ledgerMiniContent2").show()
-          $("#ledgerBox #setupInstruction").hide()
-        } else {
-
-        }
-      })
-    })
-  }
-}
-
-function trustLedgerWallet() {
-    let publicKey = $("#assetContent p:first span").text().trim()
-    $("#submitLedgerTrustBtn").prop("disabled",true)
-    return trustSix(publicKey, issuerKey,function(data){
-      return markTrustlineUser().then(() => {
-        $("#myXlmPublicAddress").text(publicKey)
-        $("#myXlmPublicAddress2").text(publicKey)
-        $("#copyMyXlmAddress").attr("data-clipboard-text", publicKey)
-        $("#copyGenPLender").attr("data-clipboard-text", publicKey)
-        $("#claimStep").addClass("current")
-        $("#ledgerBox").fadeToggle(function() {
-          $("#congratBoxLedger").slideToggle()
-          $(".noWallet").removeClass("noWallet").addClass("haveWallet")
-          let nextBtnDOM = document.getElementById("submitG3AccountBtnLedger")
-          $("#genPLedger").val(publicKey)
-          setEnable([nextBtnDOM])
-        })
-      })
-    }).catch(err => {
-      $(".dialog-reset").addClass("show-dialog")
-      $("#recoveryDialogSubmitBtn3").bind("click",function(){
-        $("#submitLedgerTrustBtn").prop("disabled",false)
-      })
-    })
 }
 
 function submitPhoneNumber() {
@@ -2244,6 +2189,11 @@ function nextRecoveryWord2() {
 function nextFirstLedger() {
   $("#newLedgerDialog").css("display", "none")
   $("#ledgerBox").css("display", "block")
+  clickStrPublicKey(function(pk){
+    $("#ledgerContentContainer").addClass("active")
+    $("#ledgerAgreement #warning10").prop("disabled",false)
+    $("#assetContent span").text(pk)
+  })
 }
 
 function unlockLedger() {
@@ -2265,8 +2215,25 @@ function checkWarningLedger() {
 }
 
 function signinWithLedger() {
-  $("#ledgerBox").css("display", "none")
-  $("#newLedgerDialog2").css("display", "block")
+  let activeledger = $("#ledgerContentContainer").hasClass("active")
+  if(activeledger) {
+    requestFunction = firebase.functions().httpsCallable('createClaim')
+    let publicKey = $("#assetContent span").text().trim()
+    $("#submitLedgerBtn").prop("disabled",true)
+    requestFunction({public_key: publicKey}).then(response => {
+      if (response.data.success) {
+        $("#ledgerBox").css("display", "none")
+        $("#newLedgerDialog2").css("display", "block")
+        $("#ledgerDialogNextBtn2").prop("disabled",false)
+      } else {
+        $("#walletBox").css("display", "block")
+        $("#submitWalletAlertText").html(response.data.error_message)
+        if ($("#submitWalletAlert").css("display") === 'none') {
+          $("#submitWalletAlert").slideToggle()
+        }
+      }
+    })
+  }
 }
 
 function confirmTrustLedger() {
@@ -2275,9 +2242,19 @@ function confirmTrustLedger() {
 }
 
 function addTrustLedger() {
-  $("#claimStep").addClass("current")
-  $("#divClaimBoxLedger").slideToggle(100)
-  $("#rewardClaimBox").slideToggle(100, function() {
-    updateGraph()
+  let publicKey = $("#assetContent span").text().trim()
+  $("#ledgerDialogNextBtn2").prop("disabled",true)
+  return trustSix(publicKey, issuerKey,function(data){
+    return markTrustlineUser().then(() => {
+      $("#claimStep").addClass("current")
+      $("#divClaimBoxLedger").slideToggle(100)
+      $("#rewardClaimBox").slideToggle(100, function() {
+        updateGraph()
+      })
+    })
+  }).catch(err => {
+    alert("Please confirm trust on ledger")
+    $("#ledgerDialogNextBtn2").prop("disabled",false)
   })
+
 }
