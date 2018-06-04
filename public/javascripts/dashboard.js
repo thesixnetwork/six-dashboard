@@ -2329,6 +2329,11 @@ function addTrustLedger() {
   $("#ledgerDialogNextBtn2").prop("disabled",true)
   return trustSix(publicKey, issuerKey,function(data){
     return markTrustlineUser().then(() => {
+      qrcode.makeCode(publicKey);
+      userData.xlm_address = publicKey
+      $("#copyMyXlmAddress").attr("data-clipboard-text", publicKey)
+      $(".noWallet").removeClass("noWallet").addClass("haveWallet")
+      getMyWalletBalance()
       $("#claimStep").addClass("current")
       $("#divClaimBoxLedger").slideToggle(100)
       $("#rewardClaimBox").slideToggle(100, function() {
