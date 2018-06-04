@@ -602,7 +602,7 @@ function numberWithCommas(x) {
 }
 
 function buildListClaim(doc, id) {
-  const { amount, claimed, valid_after, tx_id, type } = doc
+  const { amount, claimed, valid_after, tx_id, type, state } = doc
   var tr = document.createElement("tr")
   $(tr).attr("total-amount", amount)
   var td1 = document.createElement("td");
@@ -640,11 +640,25 @@ function buildListClaim(doc, id) {
       thisbtn.appendChild(txt5)
       thisbtn.disabled = true
     } else {
-      tr.className = 'claimListItem stillAvail'
-      thisbtn.className = "claimMoneyBtn avail"
-      var txt5 = document.createTextNode("Claim")
-      thisbtn.appendChild(txt5)
-      thisbtn.onclick = function() { claimSix(id) }
+      if (state == 1) {
+        tr.className = 'claimListItem stillAvail'
+        thisbtn.className = "claimMoneyBtn processing"
+        var txt5 = document.createTextNode("Processing")
+        thisbtn.appendChild(txt5)
+        thisbtn.disabled = true
+      } else if (state == 3) {
+        tr.className = 'claimListItem stillAvail'
+        thisbtn.className = "claimMoneyBtn claimError"
+        var txt5 = document.createTextNode("Error")
+        thisbtn.appendChild(txt5)
+        thisbtn.disabled = true
+      } else {
+        tr.className = 'claimListItem stillAvail'
+        thisbtn.className = "claimMoneyBtn avail"
+        var txt5 = document.createTextNode("Claim")
+        thisbtn.appendChild(txt5)
+        thisbtn.onclick = function() { claimSix(id) }
+      }
     }
   } else {
     tr.className = 'claimListItem stillNotAvail'
@@ -653,6 +667,7 @@ function buildListClaim(doc, id) {
     thisbtn.appendChild(txt5)
     thisbtn.disabled = true
   }
+  td5.className = "listBtnContainer"
   td5.appendChild(thisbtn)
 
   tr.appendChild(td1)
@@ -661,6 +676,7 @@ function buildListClaim(doc, id) {
   tr.appendChild(td4)
   tr.appendChild(td5)
 
+  tr.id = "list-claim-"+id
   return tr
 }
 
@@ -841,6 +857,29 @@ function getClaims() {
           numberStep: percent_number_step
         }
       );
+    }).then(() => {
+      let query = firebase.firestore().collection('users_claim').doc(firebase.auth().currentUser.uid).collection('claim_period')
+      query.onSnapshot(docs => {
+        docs.forEach(doc => {
+          let data = doc.data()
+          let id = doc.id
+          if (data.state === 1) {
+            setDisable([$("#claim-"+id)[0]])
+            $("#claim-"+id).text("Processing")
+            $("#claim-"+id).addClass("processing").removeClass("avail").removeClass('claimError')
+          } else if (data.state === 2 && data.claimed === true) {
+            setDisable([$("#claim-"+id)[0]])
+            $("#claim-"+id).text("Claimed")
+            $("#claim-"+id).addClass("avail").removeClass("processing").removeClass('claimError')
+            $("#claim-"+id).parent().parent().removeClass("stillAvail").addClass("stillClaimed")
+            updateGraph()
+          } else if (data.state === 3) {
+            setDisable([$("#claim-"+id)[0]])
+            $("#claim-"+id).text("Error")
+            $("#claim-"+id).addClass("claimError").removeClass("avail").removeClass('processing')
+          }
+        })
+      })
     })
   }
 }
@@ -1168,6 +1207,7 @@ $(document).ready(function(){
                 getMyWalletBalance()
                 qrcode.makeCode(userData.xlm_address);
                 $("#myXlmPublicAddress").text(userData.xlm_address)
+                $("#myXlmPublicAddress2").text(userData.xlm_address)
                 $("#copyMyXlmAddress").attr("data-clipboard-text", userData.xlm_address)
               }
             } else {
@@ -1181,6 +1221,7 @@ $(document).ready(function(){
               getMyWalletBalance()
               qrcode.makeCode(userData.xlm_address);
               $("#myXlmPublicAddress").text(userData.xlm_address)
+              $("#myXlmPublicAddress2").text(userData.xlm_address)
               $("#copyMyXlmAddress").attr("data-clipboard-text", userData.xlm_address)
             }
           }
@@ -1415,6 +1456,7 @@ function submitGeneratedAccount() {
                 $("#congratBox").slideToggle()
                 qrcode.makeCode(generatedWallet.getPublicKey(0));
                 $("#myXlmPublicAddress").text(generatedWallet.getPublicKey(0))
+                $("#myXlmPublicAddress2").text(generatedWallet.getPublicKey(0))
                 $("#copyMyXlmAddress").attr("data-clipboard-text", generatedWallet.getPublicKey(0))
                 $(".noWallet").removeClass("noWallet").addClass("haveWallet")
                 getMyWalletBalance()
@@ -1440,20 +1482,21 @@ function markTrustlineUser() {
 }
 
 function submitOTP(id) {
-  if ($("#submitOTPError").css("display")) {
+  if ($("#submitOTPError").css("display") === "block") {
     $("#submitOTPError").slideToggle()
   }
   const btnDOM = document.getElementById('otpSubmitBtn')
   setDisable([btnDOM])
   const requestFunction = firebase.functions().httpsCallable('claimOTPSubmit')
-  requestFunction({ref_code: $("#refVerify").text(), code: $("#otpCode").val(), claim_id: String(id)}).then(response => {
+  requestFunction({ref_code: $("#refVerify2").text(), code: $("#otpCode").val(), claim_id: String(id)}).then(response => {
     console.log(response)
     if (response.data.success === true) {
       $("#otpDialog").removeClass('show-dialog');
       $("#claim-"+id).removeClass("avail").addClass("claimed")
       setDisable([$("#claim-"+id)[0]])
-      $("#claim-"+id).text("Claimed")
-      $("#claim-"+id).parent().parent().removeClass("stillAvail").addClass("stillClaimed")
+      $("#claim-"+id).text("Processing")
+      $("#claim-"+id).addClass("processing").removeClass("avail")
+      //$("#claim-"+id).parent().parent().removeClass("stillAvail").addClass("stillClaimed")
       updateGraph()
       $("#otpCode").val("")
     } else {
@@ -1485,8 +1528,8 @@ function claimSix(id) {
   requestFunction({claim_id: id}).then(response => {
     if (response.data.success === true) {
       $("#otpDialog").addClass("show-dialog")
-      $('#refVerify').html(response.data.ref_code)
-      $('#refPhoneNumber').html(response.data.phone_number)
+      $('#refVerify2').html(response.data.ref_code)
+      $('#refPhoneNumber2').html(response.data.phone_number)
       clearInterval(intervalFunction)
 
       let otpSubmitBtn = document.getElementById('otpSubmitBtn')
@@ -1940,6 +1983,7 @@ function trustLedgerWallet() {
     return trustSix(publicKey, issuerKey,function(data){
       return markTrustlineUser().then(() => {
         $("#myXlmPublicAddress").text(publicKey)
+        $("#myXlmPublicAddress2").text(publicKey)
         $("#copyMyXlmAddress").attr("data-clipboard-text", publicKey)
         $("#copyGenPLender").attr("data-clipboard-text", publicKey)
         $("#claimStep").addClass("current")

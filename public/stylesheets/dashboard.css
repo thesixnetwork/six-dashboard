@@ -223,6 +223,14 @@
   background: #b7b7b7;
 }
 
+.processing {
+  background: #569E5C;
+}
+
+.claimError {
+  background: #ec5151;
+}
+
 .claimTableContainer {
   overflow-x: auto;
   border-radius: 10px;
