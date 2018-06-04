@@ -1601,6 +1601,7 @@ function submitGeneratedAccount() {
                 qrcode.makeCode(generatedWallet.getPublicKey(0));
                 $("#myXlmPublicAddress").text(generatedWallet.getPublicKey(0))
                 $("#myXlmPublicAddress2").text(generatedWallet.getPublicKey(0))
+                userData.xlm_address = generatedWallet.getPublicKey(0)
                 $("#copyMyXlmAddress").attr("data-clipboard-text", generatedWallet.getPublicKey(0))
                 $(".noWallet").removeClass("noWallet").addClass("haveWallet")
                 getMyWalletBalance()
