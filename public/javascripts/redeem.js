@@ -15,6 +15,6 @@ $(document).ready(function () {
   })
   $('#verifyPhoneSubmitBtn').click(function(e) {
     e.preventDefault();
-    submitRedeem()
+    submitPhoneNumberCode()
   })
 })

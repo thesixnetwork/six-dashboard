@@ -26,7 +26,6 @@ main {
 }
 
 #redeemContent, #redeemContentOTP, #redeemContentSetPassword {
-  min-height: 200px;
   background: white;
 }
 
