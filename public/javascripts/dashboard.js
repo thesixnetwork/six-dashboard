@@ -514,20 +514,32 @@ function buildListTx(doc) {
 }
 
 allClaimTable = {}
+var allPrivateContract = 1
 
 function buildTableType(type) {
+  if ((privateType[type] || {}).table === undefined) {
+    type = type
+  } else {
+    type = privateType[type].table
+  }
   if (allClaimTable[type] === undefined) {
     var overallDiv = document.createElement("div")
     var div = document.createElement("div")
     div.id = 'table-container-'+type
-    div.className = "claimTableContainer"
+    var typeTable
+    if ((privateType[type] || {}).type === 'private') {
+      typeTable = 'privateTable'
+    } else {
+      typeTable = 'publicTable'
+    }
+    div.className = "claimTableContainer "+typeTable
     var table = document.createElement("table")
     table.className = "claimTable"
     var thead = document.createElement("thead")
     var tr = document.createElement("tr")
     var th1 = document.createElement("th")
     var txt1
-    if (type == 'private') {
+    if ((privateType[type] || {}).type == 'private') {
       txt1 = document.createTextNode("Unlock Date")
     } else {
       txt1 = document.createTextNode("Available Date")
@@ -582,6 +594,15 @@ function buildTableType(type) {
     table.appendChild(tbody)
     div.appendChild(table)
 //    overallDiv.appendChild(div1)
+
+    if ((privateType[type] || {}).type === 'private') {
+      var pDom = document.createElement("p")
+      var txt7 = document.createTextNode("Contract Type "+allPrivateContract)
+      pDom.className = 'tableContractName privateTable'
+      pDom.appendChild(txt7)
+      overallDiv.appendChild(pDom)
+      allPrivateContract = allPrivateContract + 1
+    }
     overallDiv.appendChild(div)
 
     allClaimTable[type] = true
@@ -602,7 +623,7 @@ function numberWithCommas(x) {
 }
 
 function buildListClaim(doc, id) {
-  const { amount, claimed, valid_after, tx_id, type, state } = doc
+  const { amount, claimed, valid_after, tx_id, type, state, bonus } = doc
   var tr = document.createElement("tr")
   $(tr).attr("total-amount", amount)
   var td1 = document.createElement("td");
@@ -613,8 +634,8 @@ function buildListClaim(doc, id) {
   var txt2
   var td3 = document.createElement("td");
   var txt3
-  if (privateBonus[type] !== undefined) {
-    let bonusPercent = privateBonus[type]
+  if (privateBonus[type] !== undefined || (bonus !== undefined && bonus !== null)) {
+    let bonusPercent = privateBonus[type] || bonus
     let rawAmount = (amount*100)/(100+bonusPercent)
     var txt2 = document.createTextNode(numberWithCommas(parseFloat(getFlooredFixed(rawAmount, 7))).toString() + " SIX")
     var txt3 = document.createTextNode(numberWithCommas(parseFloat(getFlooredFixed((amount-rawAmount), 7))).toString() + " SIX")
@@ -697,31 +718,44 @@ const typeOrder = {
   'K': 13,
   'L': 14,
   'M': 15,
-  'N': 16
+  'N': 16,
+  'Type AV': 17,
+  'Type BN': 18,
+  'Type BN - 2': 19,
+  'Type BN - THB': 20,
+  'Type BT': 21,
+  'Type FR': 22,
+  'Type P0': 23,
+  'Type P1': 24,
+  'Type P1 - THB': 25,
+  'Type P2': 26,
+  'Type P2 - THB': 27,
+  'Type PL': 28,
+  'Type SS': 29
 }
 
 const privateBonus = {
-  'presale': 6,
-  'E': 50,
-  'M': 20,
-  'N': 35
+  'presale': 6
 }
 
 const privateType = {
   'free': {
     name: 'Airdrop',
     description: 'An airdrop SIX Token for one who was submitted KYC before 25 June 2018.',
-    type: 'public'
+    type: 'public',
+    table: 'public'
   },
   'presale': {
     name: 'Presale',
     description: '+6% is added for everyone who contributed SIX Token in the Pre-ICO period.',
-    type: 'public'
+    type: 'public',
+    table: 'public'
   },
   'ico': {
     name: 'Public',
     description: 'General Token contract.',
-    type: 'public'
+    type: 'public',
+    table: 'public'
   },
   'A': {
     name: 'Private Sale contract A',
@@ -792,6 +826,71 @@ const privateType = {
     name: 'Private Sale contract N',
     description: '35% Bonus private sale contract.',
     type: 'private'
+  },
+  'Type AV': {
+    name: 'Type AV',
+    description: '',
+    type: 'private'
+  },
+  'Type BN': {
+    name: 'Type AV',
+    description: '',
+    type: 'private'
+  },
+  'Type BN - 2': {
+    name: 'Type AV',
+    description: '',
+    type: 'private'
+  },
+  'Type BN - THB': {
+    name: 'Type AV',
+    description: '',
+    type: 'private'
+  },
+  'Type BT': {
+    name: 'Type AV',
+    description: '',
+    type: 'private'
+  },
+  'Type FR': {
+    name: 'Type AV',
+    description: '',
+    type: 'private'
+  },
+  'Type P0': {
+    name: 'Type AV',
+    description: '',
+    type: 'private'
+  },
+  'Type P1': {
+    name: 'Type AV',
+    description: '',
+    type: 'private'
+  },
+  'Type P1 - THB': {
+    name: 'Type AV',
+    description: '',
+    type: 'private'
+  },
+  'Type P2': {
+    name: 'Type AV',
+    description: '',
+    type: 'private'
+  },
+  'Type P2 - THB': {
+    name: 'Type AV',
+    description: '',
+    type: 'private'
+  },
+  'Type PL': {
+    name: 'Type AV',
+    description: '',
+    type: 'private'
+  },
+  'Type SS': {
+    name: 'Type AV',
+    description: '',
+    type: 'private'
   }
 }
 
@@ -821,14 +920,14 @@ function getClaims() {
       docs.forEach(function(doc) {
         allData.push(doc)
       })
-      let allType = allData.map(function(doc) { return privateType[doc.data().type].type })
+      let allType = allData.map(function(doc) { return doc.data().type })
       let foundPrivate = false
       allType.forEach(function(thisType) {
-        if (thisType === 'private') {
+        if (privateType[thisType].type === 'private') {
           foundPrivate = true
         }
       })
-      let uniqType = ['public', 'private']
+      let uniqType = uniqArray(allType)
       let targetDiv = document.getElementById("forClaimTable")
       uniqType.forEach(tableType => {
         let newTable = buildTableType(tableType)
@@ -839,13 +938,19 @@ function getClaims() {
       if (foundPrivate === true) {
         $("#menuContainer").css("display", "flex")
       }
-      $("#table-container-private").css("display", "none")
+      $(".privateTable").css("display", "none")
       allData.sort(compare_valid_after)
       allData.forEach(d => {
         let data = d.data()
         const elem = buildListClaim(data, d.id)
         totalSix = totalSix + data.amount
-        let thisTable = document.getElementById("table-"+privateType[data.type].type)
+        let targetTable
+        if (privateType[data.type].table === undefined) {
+          targetTable = data.type
+        } else {
+          targetTable = privateType[data.type].table
+        }
+        let thisTable = document.getElementById("table-"+targetTable)
         thisTable.appendChild(elem)
       })
       updateGraph()
@@ -1931,15 +2036,15 @@ function showXLMWallet() {
 function changeToPublicTable() {
   $("#privateTablebtn").removeClass("currentActive")
   $("#publicTablebtn").addClass("currentActive")
-  $("#table-container-private").css("display", "none")
-  $("#table-container-public").css("display", "block")
+  $(".privateTable").css("display", "none")
+  $(".publicTable").css("display", "block")
 }
 
 function changeToPrivateTable() {
   $("#publicTablebtn").removeClass("currentActive")
   $("#privateTablebtn").addClass("currentActive")
-  $("#table-container-public").css("display", "none")
-  $("#table-container-private").css("display", "block")
+  $(".publicTable").css("display", "none")
+  $(".privateTable").css("display", "block")
 }
 
 function goToLedgerWallet() {

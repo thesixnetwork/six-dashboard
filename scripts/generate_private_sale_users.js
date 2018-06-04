@@ -25,23 +25,23 @@ async function generateUser (user) {
     user.uid = uid
     const message = `email ${user.email} already exists.`
     return db.collection('users').doc(uid)
-      .update({private_user: true})
+      .set({private_user: true}, { merge: true })
       .then(() => {
         return message
       })
   }
-  let uid = `pri-${uuid(user.email, uuid.URL)}`
+  let newUid = `pri-${uuid(user.email, uuid.URL)}`
   let newUser = {
-    uid: uid,
+    uid: newUid,
     email: user.email,
     emailVerified: true,
     password: Math.random().toString(36).slice(-8),
     displayName: `${user.firstname} ${user.lastname}`,
     disabled: false
   }
-  if (user.phone_number !== undefined && user.phone_number !== '' && user.phone_number !== null) {
-    newUser.phoneNumber = user.phone_number
-  }
+//  if (user.phone_number !== undefined && user.phone_number !== '' && user.phone_number !== null) {
+//    newUser.phoneNumber = user.phone_number
+//  }
   return admin.auth().createUser(newUser)
   .then(function (userRecord) {
     // See the UserRecord reference doc for the contents of userRecord.
@@ -51,7 +51,7 @@ async function generateUser (user) {
   })
   .then(userRecord => {
     let setData = {
-      uid: uid,
+      uid: newUid,
       email: user.email,
       registration_time: (new Date()).getTime(),
       private_user: true,
@@ -64,7 +64,7 @@ async function generateUser (user) {
       setData.phone_number = user.phone_number
       setData.phone_verified = true
     }
-    return admin.firestore().collection('users').set(setData, { merge: true }).then(() => {
+    return admin.firestore().collection('users').doc(newUid).set(setData, { merge: true }).then(() => {
       return userRecord
     }).catch(() => {
       return userREcord
