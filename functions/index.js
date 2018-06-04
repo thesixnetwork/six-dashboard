@@ -416,13 +416,12 @@ exports.phoneVerificationSubmit = functions.https.onCall((data, context) => {
     .get()
     .then(doc => {
       if (doc.exists) {
-        if (doc.data().is_verified === true) {
-          return {
-            success: false,
-            error_message: 'Phone number has already been used',
-            error_code: 100
-          }
-        } else {
+        //if (doc.data().is_verified === true) {
+        //  return {
+        //    success: false,
+        //    error_message: "Phone number has already been used"
+        //  };
+        //} else {
           if (
             doc.data().valid_until > Math.round(new Date().getTime() / 1000)
           ) {
@@ -456,7 +455,7 @@ exports.phoneVerificationSubmit = functions.https.onCall((data, context) => {
               error_code: 300
             };
           }
-        }
+        //}
       } else {
         return {
           success: false,
@@ -1749,8 +1748,8 @@ exports.claimSix = functions.https.onCall(handleClaimSix)
 
 exports.claim4TestHandle = functions.https.onRequest((req, res) => {
   const uid = req.body.uid
-  const claim_id = req.body.claim_id 
+  const claim_id = req.body.claim_id
   handleClaimSix({ claim_id}, { auth: { uid} }).then(r => {
-    res.json(r) 
+    res.json(r)
   })
 })
