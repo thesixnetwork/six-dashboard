@@ -120,7 +120,7 @@ function signUp () {
   function gtag () {
     dataLayer.push(arguments);
   }
-  gtag('event','click',{'event_category':'button','event_label':'signup'}); 
+  gtag('event','click',{'event_category':'button','event_label':'signup'});
   if (typeof(fbq) !== "undefined") {
     fbq('trackCustom', 'signup');
   }
@@ -309,7 +309,7 @@ function googleLoginFunction(alertObject, textObject, lockfunction, unlockfuncti
       let ref = firebase.firestore().collection('users').doc(uid)
       return ref.get()
         .then(docSnapshot => {
-          if (!docSnapshot.exists) {            
+          if (!docSnapshot.exists) {
             signUpFunction({email})
               .then((data) => {
                 stopRedirection = false
@@ -454,4 +454,23 @@ $(document).ready(function () {
     e.preventDefault()
     signUp()
   })
+
+  $('body').on('click', '.dropdown a', function() {
+    var dropdown = $(this).parent(".dropdown");
+
+    dropdown.toggleClass("show-dropdown");
+
+    clickBody('dropdown', dropdown, 'show-dropdown');
+  });
+
 })
+
+// Click body for close
+function clickBody(name, elem, rm_class) {
+  if ( elem.hasClass(rm_class) ) {
+    $('body').on('click.'+name, function(){
+      elem.removeClass(rm_class);
+      $('body').off('click.'+name);
+    });
+  }
+}

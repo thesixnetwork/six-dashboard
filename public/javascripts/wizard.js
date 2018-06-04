@@ -860,6 +860,13 @@ $(document).ready(function () {
       })
     }
   })
+  $('body').on('click', '.dropdown a', function() {
+    var dropdown = $(this).parent(".dropdown");
+
+    dropdown.toggleClass("show-dropdown");
+
+    clickBody('dropdown', dropdown, 'show-dropdown');
+  });
 })
 
 // Click body for close
