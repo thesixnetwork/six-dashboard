@@ -379,7 +379,6 @@ function submitDepositXLMTran() {
     const elem = buildListTx({ time: thisTime, native_amount: xlm_value, type: "XLM", to: '-', id: '-', time: thisTime, six_amount: amount.toLocaleString(), tx_status: 'pending' })
     $("#userTxs")[0].prepend(elem)
     if (userData.seen_congrat === true) {
-//      $("#backToTxHis").css("display", "block")
       $("#mainBox").css("display", "block")
     } else {
       $("#congratulationBox").css("display", "block")
@@ -414,7 +413,6 @@ function submitDepositETHTran() {
     const elem = buildListTx({ time: thisTime, native_amount: eth_value, type: "ETH", to: '-', id: '-', time: thisTime, six_amount: amount.toLocaleString(), tx_status: 'pending' })
     $("#userTxs")[0].prepend(elem)
     if (userData.seen_congrat === true) {
-//      $("#backToTxHis").css("display", "block")
       $("#mainBox").css("display", "block")
     } else {
       $("#congratulationBox").css("display", "block")
@@ -432,7 +430,6 @@ function submitCongrat() {
   $("#submitETHBox").css("display", "none")
   $("#depositETHBox").css("display", "none")
   $("#depositXLMBox").css("display", "none")
-//  $("#backToTxHis").css("display", "block")
   $("#mainBox").css("display", "block")
   $("#congratulationBox").css("display", "none")
   $("#walletBox").css("display", "none")
@@ -445,7 +442,6 @@ function backToDashboard() {
   $("#submitETHBox").css("display", "none")
   $("#depositETHBox").css("display", "none")
   $("#depositXLMBox").css("display", "none")
-//  $("#backToTxHis").css("display", "block")
   $("#mainBox").css("display", "block")
   $("#congratulationBox").css("display", "none")
   $("#walletBox").css("display", "none")
@@ -568,24 +564,6 @@ function buildTableType(type) {
     tbody.className = "claimTxs"
     tbody.id = 'table-'+type
 
-//    var div1 = document.createElement("div")
-//    div1.className = 'donutText'
-//    var div2 = document.createElement("div")
-//    div2.className = 'contractType'
-//    var div3 = document.createElement("div")
-//    div3.className = 'groupStatus'
-//    var h4 = document.createElement("h4")
-//    var txt6 = document.createTextNode(privateType[type].name)
-//    var pDom = document.createElement("p")
-//    var txt7 = document.createTextNode(privateType[type].description)
-
-//    h4.appendChild(txt6)
-//    pDom.appendChild(txt7)
-//    div2.appendChild(div3)
-//    div2.appendChild(h4)
-//    div2.appendChild(pDom)
-//    div1.appendChild(div2)
-
     th1.appendChild(txt1)
     th2.appendChild(txt2)
     th3.appendChild(txt3)
@@ -600,7 +578,6 @@ function buildTableType(type) {
     table.appendChild(thead)
     table.appendChild(tbody)
     div.appendChild(table)
-//    overallDiv.appendChild(div1)
     overallDiv.appendChild(div)
 
     allClaimTable[type] = true
