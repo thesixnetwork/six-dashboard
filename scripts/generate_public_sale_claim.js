@@ -13,7 +13,7 @@ const publicUser = []
 const publicTxsPath = __dirname + '/output/public_sale.json'
 
 const conditions = {
-  'first_day_trade': 1529020800000
+  'first_day_trade': 1528275600000
 }
 
 admin.initializeApp({
@@ -142,8 +142,18 @@ function formatTxs (txs, uid) {
       type: tx.buy_period_type,
       tx_id: tx.id
     }
-    if (tx.buy_period_type === 'ico') txObj.amount = tx.six_amount
-    if (tx.buy_period_type === 'presale') txObj.amount = tx.six_amount + tx.bonus
+    if (tx.buy_period_type === 'ico') {
+      txObj.amount = tx.six_amount
+      txObj.bonus = null
+      txObj.normal_six = null
+      txObj.bonus_six = null
+    }
+    if (tx.buy_period_type === 'presale') {
+      txObj.amount = tx.six_amount + tx.bonus
+      txObj.bonus = 6
+      txObj.normal_six = tx.six_amount
+      txObj.bonus_six = tx.bonus
+    }
     obj.claim_periods.push(txObj)
   })
   return obj

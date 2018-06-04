@@ -14,58 +14,87 @@ const times = (x) => f => {
   }
 }
 const model = {
-  'firstname': 2,
-  'lastname': 2,
+  'firstname': 1,
   'email': 3,
   'phone_number': 4,
-  'total_six': 5,
-  'type': 5,
-  'd+0': 7,
-  'd+30': 8,
-  'd+60': 9,
-  'd+90': 10,
-  'd+365': 11,
-  'tx_ids': 12
+  'total_six': 8,
+  'normal_six': 9,
+  'bonus_six': 10,
+  'type': 6,
+  'd+0': 12,
+  'd+30': 13,
+  'd+60': 14,
+  'd+90': 15,
+  'd+180': 16,
+  'd+365': 17,
+  'd+730': 18,
+  'd+1095': 19,
+  'd+630': 20,
+  'tx_ids': 2
 }
 
 const conditions = {
-  'first_day_trade': 1529020800000
+  'first_day_trade': 1528275600000
 }
 
-const addClaimPeriod = (claimPeroids, days, amount, type) => {
+const addClaimPeriod = (claimPeroids, days, amount, type, normalSix, bonusSix) => {
   const dayInMS = days * 86400000
+  let bonus = 0
+  if (normalSix !== undefined && normalSix !== '') {
+    bonus = bonusSix/(normalSix/100)
+  }
   claimPeroids.push({
     amount,
     valid_after: conditions.first_day_trade + dayInMS,
-    type
+    type,
+    bonus,
+    normal_six: normalSix,
+    bonus_six: bonusSix
   })
 }
+
+let allUsers = {}
 
 const toJSON = (d) => {
   return d.map(roll => {
     if (roll[model.firstname] === '') return
     if (roll[model.email] === '') return
-    if (roll[model.phone_number] === '') return
     if (!roll[model.type] && roll[model.type] === '') return
     const type = roll[model.type]
-    const obj = {
-      firstname: roll[model.firstname],
-      lastname: roll[model.lastname] || '',
-      email: roll[model.email],
-      phone_number: roll[model.phone_number],
-      claim_periods: []
+    let obj
+    if (allUsers[roll[model.email]] === undefined) {
+      obj = {
+        firstname: roll[model.firstname],
+        lastname: '',
+        email: roll[model.email],
+        claim_periods: []
+      }
+      if (roll[model.phone_number] !== undefined && roll[model.phone_number] !== '') {
+        obj.phone_number = '+'+roll[model.phone_number].replace(/ /g, '').replace(/-/g, '')
+      }
+    } else {
+      obj = allUsers[roll[model.email]]
     }
-    if (roll[model['d+0']]) addClaimPeriod(obj.claim_periods, 0, parseFloat(roll[model['d+0']].replace(/,/g, '')), type)
-    if (roll[model['d+30']]) addClaimPeriod(obj.claim_periods, 30, parseFloat(roll[model['d+30']].replace(/,/g, '')), type)
-    if (roll[model['d+60']]) addClaimPeriod(obj.claim_periods, 60, parseFloat(roll[model['d+60']].replace(/,/g, '')), type)
-    if (roll[model['d+90']]) addClaimPeriod(obj.claim_periods, 90, parseFloat(roll[model['d+90']].replace(/,/g, '')), type)
-    if (roll[model['d+365']]) addClaimPeriod(obj.claim_periods, 365, parseFloat(roll[model['d+365']].replace(/,/g, '')), type)
+    if (roll[model['d+0']]) addClaimPeriod(obj.claim_periods, 0, parseFloat(roll[model['d+0']].replace(/,/g, '')), type, parseFloat(roll[model.normal_six].replace(/,/g, '')), parseFloat(roll[model.bonus_six].replace(/,/g, '')))
+    if (roll[model['d+30']]) addClaimPeriod(obj.claim_periods, 30, parseFloat(roll[model['d+30']].replace(/,/g, '')), type, parseFloat(roll[model.normal_six].replace(/,/g, '')), parseFloat(roll[model.bonus_six].replace(/,/g, '')))
+    if (roll[model['d+60']]) addClaimPeriod(obj.claim_periods, 60, parseFloat(roll[model['d+60']].replace(/,/g, '')), type, parseFloat(roll[model.normal_six].replace(/,/g, '')), parseFloat(roll[model.bonus_six].replace(/,/g, '')))
+    if (roll[model['d+90']]) addClaimPeriod(obj.claim_periods, 90, parseFloat(roll[model['d+90']].replace(/,/g, '')), type, parseFloat(roll[model.normal_six].replace(/,/g, '')), parseFloat(roll[model.bonus_six].replace(/,/g, '')))
+    if (roll[model['d+180']]) addClaimPeriod(obj.claim_periods, 180, parseFloat(roll[model['d+180']].replace(/,/g, '')), type, parseFloat(roll[model.normal_six].replace(/,/g, '')), parseFloat(roll[model.bonus_six].replace(/,/g, '')))
+    if (roll[model['d+365']]) addClaimPeriod(obj.claim_periods, 365, parseFloat(roll[model['d+365']].replace(/,/g, '')), type, parseFloat(roll[model.normal_six].replace(/,/g, '')), parseFloat(roll[model.bonus_six].replace(/,/g, '')))
+    if (roll[model['d+730']]) addClaimPeriod(obj.claim_periods, 730, parseFloat(roll[model['d+760']].replace(/,/g, '')), type, parseFloat(roll[model.normal_six].replace(/,/g, '')), parseFloat(roll[model.bonus_six].replace(/,/g, '')))
+    if (roll[model['d+1095']]) addClaimPeriod(obj.claim_periods, 1095, parseFloat(roll[model['d+1095']].replace(/,/g, '')), type, parseFloat(roll[model.normal_six].replace(/,/g, '')), parseFloat(roll[model.bonus_six].replace(/,/g, '')))
+    if (roll[model['d+630']]) addClaimPeriod(obj.claim_periods, 630, parseFloat(roll[model['d+630']].replace(/,/g, '')), type, parseFloat(roll[model.normal_six].replace(/,/g, '')), parseFloat(roll[model.bonus_six].replace(/,/g, '')))
     if (roll[model['tx_ids']]) {
       const txs = roll[model['tx_ids']].replace(/ /g, '').split(',')
       obj.tx_ids = roll[model['tx_ids']].replace(/ /g, '').split(',')
       privateSaleTxIds.push(...txs)
     } else obj.tx_ids = []
-    if (obj.claim_periods.length > 0) return obj
+    if (obj.claim_periods.length > 0) {
+      if (allUsers[obj.email] === undefined) {
+        allUsers[obj.email] = obj
+      }
+      return obj
+    }
   })
 }
 
@@ -73,7 +102,11 @@ papa.parse(file, {
   complete: function (results) {
     times(3)(() => shift(results.data))
     const r = _.compact(toJSON(results.data))
-    const json = JSON.stringify(r, null, 2)
+    let arrayOfData = []
+    for(email in allUsers) {
+      arrayOfData.push(allUsers[email])
+    }
+    const json = JSON.stringify(arrayOfData, null, 2)
     const txsJson = JSON.stringify(privateSaleTxIds, null, 2)
     if (!fs.existsSync(outputPath)) fs.mkdirSync(outputPath)
     fs.writeFile(outputPath + '/private_sale.json', json, (err) => {

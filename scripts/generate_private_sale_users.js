@@ -30,14 +30,17 @@ async function generateUser (user) {
         return message
       })
   }
-  const newUser = {
-    uid: `pri-${uuid(user.email, uuid.URL)}`,
+  let uid = `pri-${uuid(user.email, uuid.URL)}`
+  let newUser = {
+    uid: uid,
     email: user.email,
     emailVerified: true,
-    phoneNumber: user.phone_number,
     password: Math.random().toString(36).slice(-8),
     displayName: `${user.firstname} ${user.lastname}`,
     disabled: false
+  }
+  if (user.phone_number !== undefined && user.phone_number !== '' && user.phone_number !== null) {
+    newUser.phoneNumber = user.phone_number
   }
   return admin.auth().createUser(newUser)
   .then(function (userRecord) {
@@ -45,6 +48,27 @@ async function generateUser (user) {
     console.log('Successfully created new user:', userRecord.uid, user.email)
     user.uid = userRecord.uid
     return userRecord
+  })
+  .then(userRecord => {
+    let setData = {
+      uid: uid,
+      email: user.email,
+      registration_time: (new Date()).getTime(),
+      private_user: true,
+      first_name: user.firstname,
+      last_name: user.lastname,
+      is_redeem_account: false,
+      redeem_code: Math.random().toString(36).replace(/[^a-z0-9]+/g, "").toUpperCase()
+    }
+    if (user.phone_number !== undefined && user.phone_number !== '' && user.phone_number !== null) {
+      setData.phone_number = user.phone_number
+      setData.phone_verified = true
+    }
+    return admin.firestore().collection('users').set(setData, { merge: true }).then(() => {
+      return userRecord
+    }).catch(() => {
+      return userREcord
+    })
   })
   .catch(function (error) {
     console.log('Error creating new user:', error)

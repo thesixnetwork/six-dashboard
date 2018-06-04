@@ -403,7 +403,7 @@ function findClaim ({ uid, claim_id: claimId, user }) {
           return Promise.reject(new Error('Claim is not ready'))
         }
 
-        if (claimData.state) {
+        if (claimData.state !== 1 && claimData.state !== undefined) {
           return Promise.reject(new Error('State is existing, already claim even it error'))
         }
 
