@@ -1,4 +1,4 @@
-#redeemContainer {
+.redeemContainer {
   background: unset;
   margin: auto;
   text-align: center;
@@ -14,9 +14,11 @@ html, body, main {
 
 main {
   display: flex;
+  height: calc(100vh - 60px);
 }
 
 #redeemHeader {
+  max-height: 200px;
   background: #4a5ab5;
   padding: 7px;
   color: white;
@@ -25,8 +27,13 @@ main {
   border-top-left-radius: 5px;
 }
 
+#redeemHeader svg {
+  max-height: 200px;
+}
+
 #redeemContent, #redeemContentOTP, #redeemContentSetPassword {
   background: white;
+  padding: 25px;
 }
 
 .fdiv {
@@ -48,10 +55,28 @@ main {
   color: #4a5ab5;
 }
 
-#redeemContentSetPassword, #redeemContentOTP {
+#redeemContainer3, #redeemContainer2 {
   display: none;
 }
 
 #redeemContentOTP {
   padding: 10px;
+}
+
+.redeemContainer h3 {
+  padding-top: 30px;
+  padding-bottom: 10px;
+}
+
+#redeemError, #passwordError {
+  display: none;
+  color: red;
+}
+
+.countdown-verify {
+  font-size: 20px;
+  font-weight: bold;
+  margin-top: 10px;
+  margin-bottom: 10px;
+  color: #4a5ab5;
 }
