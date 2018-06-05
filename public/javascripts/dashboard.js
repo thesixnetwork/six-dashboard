@@ -1570,6 +1570,7 @@ function submitGeneratedAccount() {
   if (Object.keys(answerMnemonic).length != 12) {
     validate = false
     $("#mnemonicAnswerShowing").addClass("customAlert")
+    $("#mnemonicError").text("An order of recovery words is invalid")
   }
   if (validate === false) {
     return false
@@ -1802,6 +1803,7 @@ var indexAnswerMnemonic = {}
 var lastIndexMnemonic = 0
 function submitAnswerMnemonic(word) {
   $("#mnemonicAnswerShowing").removeClass("customAlert")
+  $("#mnemonicError").text(" ")
   if (answerMnemonic[word] === undefined) {
     let newSpan = document.createElement("span")
     let newTxt = document.createTextNode((lastIndexMnemonic+1)+"."+word+"\n")
@@ -1893,8 +1895,7 @@ function submitOldAccount() {
 
 function downloadMnemonic() {
   let splittedWords = mnemonicWords.split(" ")
-  let data = `Recovery words (Mnemonic words) :
-${mnemonicWords}
+  let data = `SIX.Network Recovery words (Mnemonic words) :
 
 1. ${splittedWords[0]}
 2. ${splittedWords[1]}
@@ -2337,7 +2338,7 @@ function addTrustLedger() {
       })
     })
   }).catch(err => {
-    alert("Please confirm trust on ledger")
+    $(".dialog-ledger-trustline").addClass("show-dialog")
     $("#ledgerDialogNextBtn2").prop("disabled",false)
   })
 
