@@ -227,7 +227,7 @@ function generateClaimVerificationCode(user_id, claim_id, phoneNumber) {
   let code = Math.random()
     .toString()
     .substr(2, 6);
-  let validUntil = Math.round(new Date().getTime() / 1000) + 180;
+  let validUntil = Math.round(new Date().getTime() / 1000) + (5*60);
   var http = require("https");
   var options = {
     method: "POST",
@@ -439,15 +439,15 @@ exports.phoneVerificationSubmitRedeem = functions.https.onCall((data, context) =
                   })
                   .catch(err => {
                     return { success: false, error_message: err.message }
-                  }) 
-              } else { 
+                  })
+              } else {
                 return {
                   success: false,
                   error_message: 'Invalid verification code',
                   error_code: 200
                 }
               }
-            } else { 
+            } else {
               return {
                 success: false,
                 error_message: "Verification session expired",
@@ -1889,7 +1889,7 @@ exports.changeRedeemPassword = functions.https.onCall((data, context) => {
           found = true
           foundCounter++
         }
-      }) 
+      })
       if (found && foundCounter === 1) {
         return admin.auth().getUserByEmail(thisEmail).then(userRecord => {
             return admin.auth().updateUser(userRecord.uid, {
@@ -1902,7 +1902,7 @@ exports.changeRedeemPassword = functions.https.onCall((data, context) => {
                 })
               })
           })
-      } else { 
+      } else {
         return { success: false, message: 'Invalid redeem code' }
       }
     })
