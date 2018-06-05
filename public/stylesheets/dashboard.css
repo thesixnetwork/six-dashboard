@@ -566,7 +566,7 @@ section#progressContent {
   cursor: pointer;
 }
 
-#recoverWordDialogContent, #congratDialogContent1, #congratDialogContent2, #feeDialogContent, #newLedgerDialogContent, #ledgerTrustAlertDialogContent {
+#recoverWordDialogContent, #congratDialogContent1, #congratDialogContent2, #feeDialogContent, #newLedgerDialogContent, #ledgerTrustAlertDialogContent, #claimErrorDialogContent, #whatsNextDialogContent {
   max-width: 500px;
 }
 
@@ -902,5 +902,14 @@ dialog.normalDisplay {
   margin-top: 10px;
   text-align: center;
   font-weight: bold;
+  color: #4a5ab5;
+}
+
+.transactionId {
+  max-width: 250px;
+}
+
+.transactionId a {
+  text-decoration: underline;
   color: #4a5ab5;
 }

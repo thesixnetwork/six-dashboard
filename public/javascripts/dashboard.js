@@ -618,7 +618,7 @@ function numberWithCommas(x) {
 }
 
 function buildListClaim(doc, id) {
-  const { amount, claimed, valid_after, tx_id, type, state, bonus } = doc
+  const { amount, claimed, valid_after, transaction_id, type, state, bonus } = doc
   var tr = document.createElement("tr")
   $(tr).attr("total-amount", amount)
   var td1 = document.createElement("td");
@@ -642,8 +642,28 @@ function buildListClaim(doc, id) {
   td3.appendChild(txt3)
 
   var td4 = document.createElement("td");
-  var txt4 = document.createTextNode(tx_id || '-')
-  td4.appendChild(txt4)
+  td4.className = "transactionId truncate"
+  var a4 = document.createElement("a");
+  a4.className = ""
+  if (transaction_id === undefined) {
+    a4.href = "#"
+  } else {
+    let stellarChainiUrl
+    var domain = window.location.href
+    if (domain.match('localhost')) {
+      stellarChainUrl = 'http://testnet.stellarchain.io'
+    } else if (domain.match('six-dashboard')) {
+      stellarChainUrl = 'http://testnet.stellarchain.io'
+    } else if (domain.match('ico.six.network')) {
+      stellarChainUrl = 'https://stellarchain.io'
+    } else {
+      stellarChainUrl = 'http://testnet.stellarchain.io'
+    }
+    a4.href = stellarChainUrl+"/tx/"+transaction_id
+  }
+  var txt4 = document.createTextNode(transaction_id || '-')
+  a4.appendChild(txt4)
+  td4.appendChild(a4)
 
   var td5 = document.createElement("td")
   var thisbtn = document.createElement("button")
@@ -665,7 +685,7 @@ function buildListClaim(doc, id) {
       } else if (state == 3) {
         tr.className = 'claimListItem stillAvail'
         thisbtn.className = "claimMoneyBtn claimError"
-        var txt5 = document.createTextNode("Error")
+        var txt5 = document.createTextNode("Pending")
         thisbtn.appendChild(txt5)
         thisbtn.disabled = true
       } else {
@@ -960,6 +980,7 @@ function getClaims() {
     }).then(() => {
       let query = firebase.firestore().collection('users_claim').doc(firebase.auth().currentUser.uid).collection('claim_period')
       query.onSnapshot(docs => {
+        let moreAvailableClaim = []
         docs.forEach(doc => {
           let data = doc.data()
           let id = doc.id
@@ -972,13 +993,39 @@ function getClaims() {
             $("#claim-"+id).text("Claimed")
             $("#claim-"+id).addClass("avail").removeClass("processing").removeClass('claimError')
             $("#claim-"+id).parent().parent().removeClass("stillAvail").addClass("stillClaimed")
+            $("#list-claim-"+id+".transactionId a").text(data.transaction_id)
+            let stellarChainiUrl
+            var domain = window.location.href
+            if (domain.match('localhost')) {
+              stellarChainUrl = 'http://testnet.stellarchain.io'
+            } else if (domain.match('six-dashboard')) {
+              stellarChainUrl = 'http://testnet.stellarchain.io'
+            } else if (domain.match('ico.six.network')) {
+              stellarChainUrl = 'https://stellarchain.io'
+            } else {
+              stellarChainUrl = 'http://testnet.stellarchain.io'
+            }
+            $("#list-claim-"+id+".transactionId a").attr('href', stellarChainUrl+"/tx/"+data.transaction_id)
             updateGraph()
           } else if (data.state === 3) {
             setDisable([$("#claim-"+id)[0]])
             $("#claim-"+id).text("Error")
             $("#claim-"+id).addClass("claimError").removeClass("avail").removeClass('processing')
+            if (localStorage[userData.uid+"seen_error"] === undefined) {
+              $(".dialog-claim-error").addClass("show-dialog")
+              localStorage[userData.uid+"seen_error"] = true
+            }
+          }
+          if (data.claimed !== true) {
+            moreAvailableClaim.push(data)
           }
         })
+        if (moreAvailableClaim.length === 0) {
+          if (localStorage[userData.uid+"seen_whats_next"] === undefined) {
+            $(".dialog-whats-next").addClass("show-dialog")
+            localStorage[userData.uid+"seen_whats_next"] = true
+          }
+        }
       })
     })
   }
@@ -2026,6 +2073,11 @@ function wcNext() {
 
 function submitDialog() {
   $('[class^="dialog-"]').removeClass('show-dialog')
+}
+
+function submitDialogError() {
+  window.location.href = "https://m.me/thesixnetwork"
+  submitDialog()
 }
 
 function nextDialog() {

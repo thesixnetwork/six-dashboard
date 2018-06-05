@@ -34,6 +34,8 @@ main {
 #redeemContent, #redeemContentOTP, #redeemContentSetPassword {
   background: white;
   padding: 25px;
+  border-bottom-left-radius: 10px;
+  border-bottom-right-radius: 10px;
 }
 
 .fdiv {
@@ -55,11 +57,11 @@ main {
   color: #4a5ab5;
 }
 
-#redeemContainer3, #redeemContainer2 {
+#redeemContainer3, #redeemContainer2, #redeemContainer1 {
   display: none;
 }
 
-#redeemContentOTP {
+#.redeemContentOTP {
   padding: 10px;
 }
 
@@ -79,4 +81,13 @@ main {
   margin-top: 10px;
   margin-bottom: 10px;
   color: #4a5ab5;
+}
+
+.welcomeImage {
+  max-width: 100%;
+  background: white;
+  border-top-left-radius: 10px;
+  border-top-right-radius: 10px;
+  padding-right: 8px;
+  padding-left: 8px;
 }
