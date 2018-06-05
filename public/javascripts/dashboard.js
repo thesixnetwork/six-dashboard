@@ -1525,15 +1525,24 @@ function updateGraph() {
 }
 
 function nextGeneratedAccount() {
-  $( "#accordion" ).accordion({
-    active: 1
-  });
+  $("#showWordNew").fadeToggle(100, () => {
+    $("#answerWordNew").fadeToggle(100)
+  })
 }
 
 function goBackToMnemonic() {
-  $( "#accordion" ).accordion({
-    active: 0
-  });
+  $("#answerWordNew").fadeToggle(100, () => {
+    answerMnemonic = {}
+    indexAnswerMnemonic = {}
+    lastIndexMnemonic = 0
+    let usedWord = $(".usedWord")
+    for(let i = 0; i < usedWord.length; i++) {
+      let oldDom = document.getElementById('mnemonicAnswer'+usedWord[i].text.trim())
+      oldDom.remove()
+    }
+    $(".usedWord").removeClass("usedWord").addClass("unusedWord")
+    $("#showWordNew").fadeToggle(100)
+  })
 }
 
 function goToRepeat() {
@@ -1623,6 +1632,7 @@ function submitGeneratedAccount() {
   }
   setDisable([btnDOM, btn2DOM])
   $("#accordion").fadeToggle(100, function() {
+    $("#overAllLoadingContainer").css("display", "flex")
     $("#progressContainer").fadeToggle(function() {
       $("#accountPg").css('width', '25%')
       setTimeout(function(){
@@ -1642,7 +1652,7 @@ function submitGeneratedAccount() {
                 $("#genS").val(generatedWallet.getSecret(0))
                 $("#claimStep").addClass("current")
                 $("#divClaimBoxNew").slideToggle()
-                $("#progressContainer").slideToggle()
+                $("#overAllLoadingContainer").slideToggle()
                 $("#congratBox").slideToggle()
                 qrcode.makeCode(generatedWallet.getPublicKey(0));
                 $("#myXlmPublicAddress").text(generatedWallet.getPublicKey(0))
@@ -1936,7 +1946,7 @@ function submitOldAccount() {
 }
 
 function downloadMnemonic() {
-  let dom = document.getElementById("submitG2AccountBtn")
+  let dom = document.getElementById("submitG2AccountBtn515")
   setEnable([dom])
   let splittedWords = mnemonicWords.split(" ")
   let data = `SIX.Network Recovery words (Mnemonic words) :
@@ -2301,20 +2311,20 @@ function backRecoveryWord() {
 function nextRecoveryWord2() {
   $("#dialogRecov2").css("display", 'none')
   $("#newClaimContent").css("display", 'block')
-  $( "#accordion" ).accordion();
-  $( "#accordion" ).accordion({
-    beforeActivate: function( event, ui ) {
-      answerMnemonic = {}
-      indexAnswerMnemonic = {}
-      lastIndexMnemonic = 0
-      let usedWord = $(".usedWord")
-      for(let i = 0; i < usedWord.length; i++) {
-        let oldDom = document.getElementById('mnemonicAnswer'+usedWord[i].text.trim())
-        oldDom.remove()
-      }
-      $(".usedWord").removeClass("usedWord").addClass("unusedWord")
-    }
-  })
+//  $( "#accordion" ).accordion();
+//  $( "#accordion" ).accordion({
+//    beforeActivate: function( event, ui ) {
+//      answerMnemonic = {}
+//      indexAnswerMnemonic = {}
+//      lastIndexMnemonic = 0
+//      let usedWord = $(".usedWord")
+//      for(let i = 0; i < usedWord.length; i++) {
+//        let oldDom = document.getElementById('mnemonicAnswer'+usedWord[i].text.trim())
+//        oldDom.remove()
+//      }
+//      $(".usedWord").removeClass("usedWord").addClass("unusedWord")
+//    }
+//  })
 }
 
 function nextFirstLedger() {
