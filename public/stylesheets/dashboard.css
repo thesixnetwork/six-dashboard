@@ -566,7 +566,7 @@ section#progressContent {
   cursor: pointer;
 }
 
-#recoverWordDialogContent, #congratDialogContent1, #congratDialogContent2, #feeDialogContent, #newLedgerDialogContent {
+#recoverWordDialogContent, #congratDialogContent1, #congratDialogContent2, #feeDialogContent, #newLedgerDialogContent, #ledgerTrustAlertDialogContent {
   max-width: 500px;
 }
 

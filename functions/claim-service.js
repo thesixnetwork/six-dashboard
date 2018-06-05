@@ -6,6 +6,7 @@ const db = admin.firestore()
 const claimRef = db.collection('users_claim')
 const userRef = db.collection('users')
 const claimPoolsRef = db.collection('claim_pools')
+const claimLogRef = db.collection('claim_tx_logs')
 const lockPoolsRef = db.collection('lock_pool').doc('process')
 
 let stellarUrl
@@ -207,9 +208,13 @@ const deleteClaimIdInPool = (body) => {
     })
 }
 
+function setClaimTxLog (data) {
+  return claimLogRef.doc().set(data)
+}
+
 /**
- * 
- * @param {string} transactionId optional 
+ *
+ * @param {string} transactionId optional
  */
 const updateState = ({ uid, claim, claim_id: claimId, user, state, tx, error }) => {
   console.log('updateState')
@@ -229,6 +234,12 @@ const updateState = ({ uid, claim, claim_id: claimId, user, state, tx, error }) 
     .collection('claim_period')
     .doc(String(claimId))
     .update(data)
+    .then(() => {
+      if (data.state > 1) {
+        return setClaimTxLog(Object.assign({ uid, claim_id: claimId, is_error: !!data.error_message }, data)
+        )
+      }
+    })
     .then(() => {
       return {
         uid,
