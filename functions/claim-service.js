@@ -299,13 +299,7 @@ const updateState = ({ uid, claim, claim_id: claimId, user, state, tx, error }) 
       const { amount } = userClaimRefData
       var domain = window.location.href
       const xlm_address = public_key
-      if (domain.match('localhost')) {
-        stellarUrl = 'https://horizon-testnet.stellar.org'
-        StellarSdk.Network.useTestNetwork()
-      } else if (domain.match('six-dashboard')) {
-        stellarUrl = 'https://horizon-testnet.stellar.org'
-        StellarSdk.Network.useTestNetwork()
-      } else if (domain.match('ico.six.network')) {
+      if (functions.config().campaign.is_production === 'true') {
         stellarUrl = 'https://horizon.stellar.org'
         StellarSdk.Network.usePublicNetwork()
       } else {
