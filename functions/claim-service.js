@@ -218,8 +218,10 @@ function setClaimTxLog (data) {
  */
 const updateState = ({ uid, claim, claim_id: claimId, user, state, tx, error }) => {
   console.log('updateState')
+  const update_timestamp = Date.now()
   let data = {
-    state: state || 1
+    state: state || 1,
+    update_timestamp
   }
   if (tx) {
     data.transaction_id = tx.hash
