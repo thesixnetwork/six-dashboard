@@ -338,6 +338,7 @@ let current_startDate = null
 let current_endDate = null
 let dataTable = null
 let current_documents = []
+
 // Initialize database to query data and draw to view
 function initializeDatabase(status, country, startDate, endDate) {
   return new Promise((resolve) => {
@@ -357,60 +358,126 @@ function initializeDatabase(status, country, startDate, endDate) {
           return Object.assign(claim_data, { email })
         })
       })
-      
+
+      let second_promises = []
+      let claim_tx_logs_data = []
+            
       let total_passed = 0
       let total_not_passed = 0
+      let total_pending = 0
 
       Promise.all(promises).then(snapshots => {
-        let documents = []
+        let t = []
         snapshots.forEach(snapshot => {
-          const { state, uid } = snapshot
-          let status = ''
-          if (state === 3) {
-            status = '<span style="color: red;">Not Passed</span>'
-            total_not_passed += 1
-          } else if (state === 2) {
-            status = '<span style="color: green;">Passed</span>'
-            total_passed += 1
-          }
-          let transaction_id = ''
-          if (state === 2) {
-            const { transaction_id: raw_transaction_id } = snapshot
-            transaction_id = `<a href="http://testnet.stellarchain.io/tx/${raw_transaction_id}" target="_blank">${raw_transaction_id}</a>`
-          }
-          const userId = uid && uid !== null ? `<a href="/user-dashboard.html?uid=${uid}" target="_blank">${uid}</a>` : ''
-          documents.push(Object.assign(snapshot, { status, userId, transaction_id }))
+          const { claim_id, uid } = snapshot
+          claim_tx_logs_data.push(snapshot)
+          t.push(firebase.firestore().collection('users_claim').doc(uid).collection('claim_period').doc(claim_id).get())
         })
-
-        documents.forEach(doc => {
-          console.log(doc, 'doc...')
+        return t
+      }).then(z => {
+        Promise.all(z).then(snapshots => {
+          let final_data = []
+          snapshots.forEach(snapshot => {
+            const data = snapshot.data()
+            const uid = snapshot.ref.parent.parent.id
+            const claim_id = snapshot.id
+            const target_data = claim_tx_logs_data.find(c => c.uid === uid && c.claim_id === claim_id)
+            final_data.push(Object.assign(target_data, data))
+            
+          })
+          let documents = []
+          final_data.forEach(data => {
+            const { state, uid } = data
+            let status = ''
+            let amount = ''
+            if (state === 3) {
+              status = '<span style="color: red;">Not Passed</span>'
+              total_not_passed += 1
+            } else if (state === 2) {
+              status = '<span style="color: green;">Passed</span>'
+              total_passed += 1
+            } else if (!state) {
+              status = '<span>Pending</span>'
+              total_pending += 1
+            }
+            let transaction_id = ''
+            if (state === 2) {
+              const { transaction_id: raw_transaction_id } = data
+              transaction_id = `<a href="http://testnet.stellarchain.io/tx/${raw_transaction_id}" target="_blank">${raw_transaction_id}</a>`
+            }
+            if (data.amount) {
+              amount = data.amount.toLocaleString()
+            }
+            const userId = uid && uid !== null ? `<a href="/user-dashboard.html?uid=${uid}" target="_blank">${uid}</a>` : ''
+            documents.push(Object.assign(data, { status, userId, transaction_id, amount }))
+          })
+          current_documents = documents
+          console.log(documents, 'documents')
+          dataTable = $('#claim-table').DataTable({
+            data: documents,
+            columns: [
+              { data: 'email' },
+              { data: 'userId' },
+              { data: 'status' },
+              { data: 'amount' },
+              { data: 'transaction_id' }
+            ]
+          });
+          document.getElementById('total_passed').innerHTML = total_passed
+          document.getElementById('total_not_passed').innerHTML = total_not_passed
         })
-
-        current_documents = documents
-
-        dataTable = $('#claim-table').DataTable({
-          data: documents,
-          columns: [
-            { data: 'email' },
-            { data: 'userId' || '' },
-            { data: 'status' },
-            { data: 'transaction_id' }
-          ]
-        });
-        document.getElementById('total_passed').innerHTML = total_passed
-        document.getElementById('total_not_passed').innerHTML = total_not_passed
-        
-        // Promise.all(internal_promises).then(dd => {
-
-        //   // dd.forEach(s => {
-        //   //   console.log(s, 's...')
-        //   //   const { amount, userId, type, valid_after, claimed, email } = s
-        //   //   const elm = buildListUser({ amount, userId, type, valid_after, claimed, email }) 
-        //   //   $('#claim_list')[0].appendChild(elm) 
-        //   // })
-        // })
-        
       })
+
+      // Promise.all(promises).then(snapshots => {
+      //   let documents = []
+      //   snapshots.forEach(snapshot => {
+      //     const { state, uid } = snapshot
+      //     let status = ''
+      //     if (state === 3) {
+      //       status = '<span style="color: red;">Not Passed</span>'
+      //       total_not_passed += 1
+      //     } else if (state === 2) {
+      //       status = '<span style="color: green;">Passed</span>'
+      //       total_passed += 1
+      //     }
+      //     let transaction_id = ''
+      //     if (state === 2) {
+      //       const { transaction_id: raw_transaction_id } = snapshot
+      //       transaction_id = `<a href="http://testnet.stellarchain.io/tx/${raw_transaction_id}" target="_blank">${raw_transaction_id}</a>`
+      //     }
+      //     const userId = uid && uid !== null ? `<a href="/user-dashboard.html?uid=${uid}" target="_blank">${uid}</a>` : ''
+      //     documents.push(Object.assign(snapshot, { status, userId, transaction_id }))
+      //   })
+
+      //   documents.forEach(doc => {
+      //     console.log(doc, 'doc...')
+      //   })
+
+      //   current_documents = documents
+
+      //   dataTable = $('#claim-table').DataTable({
+      //     data: documents,
+      //     columns: [
+      //       { data: 'email' },
+      //       { data: 'userId' || '' },
+      //       { data: 'status' },
+      //       { data: 'transaction_id' }
+      //     ]
+      //   });
+      //   document.getElementById('total_passed').innerHTML = total_passed
+      //   document.getElementById('total_not_passed').innerHTML = total_not_passed
+        
+      //   // Promise.all(internal_promises).then(dd => {
+
+      //   //   // dd.forEach(s => {
+      //   //   //   console.log(s, 's...')
+      //   //   //   const { amount, userId, type, valid_after, claimed, email } = s
+      //   //   //   const elm = buildListUser({ amount, userId, type, valid_after, claimed, email }) 
+      //   //   //   $('#claim_list')[0].appendChild(elm) 
+      //   //   // })
+      //   // })
+        
+      // })
 
   
       resolve()
@@ -586,6 +653,18 @@ $(document).ready(function() {
       let not_passed = []
       current_documents.forEach(doc => {
         if (doc.state === target_status) {
+          new_data.push(doc)
+        }
+      })
+      dataTable.rows.add(new_data).draw()
+    } else if (e.target.value === 'pending') {
+      const target_status = parseInt(e.target.value)
+      dataTable.clear().draw()
+      const new_data = []
+      const passed = []
+      let not_passed = []
+      current_documents.forEach(doc => {
+        if (!doc.status) {
           new_data.push(doc)
         }
       })
