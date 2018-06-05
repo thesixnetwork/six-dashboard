@@ -970,8 +970,8 @@
                       <p>3. For higher security, delete the digital copy from your computer.</p>
                       <br>
                       <dl style='flex-wrap: unset;'>
-                        <dd style='min-width: 150px; margin: auto; max-width: 150px;'><button id='recoveryDialogSubmitBtn' onclick='backRecoveryWord()'>Back</button></dd>
-                        <dd style='min-width: 150px; margin: auto; max-width: 150px;'><button id='recoveryDialogSubmitBtn' onclick='nextRecoveryWord2()'>OK!</button></dd>
+                        <dd class='twoButton'><button id='recoveryDialogSubmitBtn' onclick='backRecoveryWord()'>Back</button></dd>
+                        <dd class='twoButton'><button id='recoveryDialogSubmitBtn' onclick='nextRecoveryWord2()'>OK!</button></dd>
                       </dl>
                     </div>
                   </div>
@@ -980,41 +980,44 @@
             </div>
             <div id='newClaimContent' style='display: none;'>
               <div id="accordion">
-                <h3 class='accordionHeader'>Save your recovery words</h3>
-                <div class='accordionContent'>
-                  <p style='font-weight: bold; line-height: 15px; text-align: center;'>Recovery words</p>
-                  <span style="text-align: center; display: block; font-size: 11px;">(Mnemonic words)</span><br>
-                  <p style='text-align: center;'>It’s an important as your private key. So, we strongly recommend you to <br><span style="color: #4a5ab5; font-weight: bold;">write it down or print it out and keep it safe</span> in only place you could access to it.</p>
-                  <br>
-                  <div id='mnemonicWordContainer'>
-                    <span id='mnemonicShowing'>
-                    </span>
+                <div id='showWordNew'>
+                  <h3 class='accordionHeader'>Save your recovery words</h3>
+                  <div class='accordionContent'>
+                    <p style='font-weight: bold; line-height: 15px; text-align: center;'>Recovery words</p>
+                    <span style="text-align: center; display: block; font-size: 11px;">(Mnemonic words)</span><br>
+                    <p style='text-align: center;'>It’s an important as your private key. So, we strongly recommend you to <br><span style="color: #4a5ab5; font-weight: bold;">write it down or print it out and keep it safe</span> in only place you could access to it.</p>
+                    <br>
+                    <div id='mnemonicWordContainer'>
+                      <span id='mnemonicShowing'>
+                      </span>
+                    </div>
+                    <br>
+                    <div class="btn">
+                      <button id='submitG2AccountBtn516' onclick='downloadMnemonic()'> Download </button>
+                      <button id='submitG2AccountBtn515' onclick='nextGeneratedAccount()' disabled> Next </button>
+                    </div>
                   </div>
-                  <br>
-                  <div class="btn">
-                    <button id='submitG2AccountBtn5' onclick='downloadMnemonic()' style='width: auto; margin-bottom: 10px; min-width: 150px; margin-right: 50px; background: #569E5C;'> Download </button>
-                    <button id='submitG2AccountBtn' onclick='nextGeneratedAccount()' style='width: auto; margin-bottom: 10px; min-width: 150px;' disabled> Next </button>
-                  </div>
-
                 </div>
-                <h3 class='accordionHeader'>Repeat your recovery words</h3>
-                <div class='accordionContent'>
-                  <p style='text-align: center;'>Please choose your recovery words in their original order, to ensure you stored, or saved them correctly.</p><br>
-                  <p style='font-weight: bold; line-height: 15px; text-align: center;'>Recovery words</p>
-                  <span style="text-align: center; display: block; font-size: 11px;">(Mnemonic words)</span><br>
-                  <p id="mnemonicError" style="line-height: 0px;text-align: center;color: red;">&nbsp;</p><br>
-                  <div id='mnemonicWordAnswerContainer'>
-                    <span id='mnemonicAnswerShowing'>
-                    </span>
-                  </div>
-                  <br>
-                  <div id='answerMnemonicContainer'>
-                    <span id='answerMnemonicShowing'>
-                    </span>
-                  </div>
-                  <div class="btn">
-                    <button id='backAccountBtn' onclick='goBackToMnemonic()' style='width: auto; margin-bottom: 10px; min-width: 150px; background: #C7C7C7; margin-right: 70px;'> Previous </button>
-                    <button id='submitGAccountBtn' onclick='submitGeneratedAccount()' style='width: auto; margin-bottom: 10px; min-width: 150px;'> Submit </button>
+                <div id='answerWordNew'>
+                  <h3 class='accordionHeader'>Repeat your recovery words</h3>
+                  <div class='accordionContent'>
+                    <p style='text-align: center;'>Please choose your recovery words in their original order, to ensure you stored, or saved them correctly.</p><br>
+                    <p style='font-weight: bold; line-height: 15px; text-align: center;'>Recovery words</p>
+                    <span style="text-align: center; display: block; font-size: 11px;">(Mnemonic words)</span><br>
+                    <p id="mnemonicError" style="line-height: 0px;text-align: center;color: red;">&nbsp;</p><br>
+                    <div id='mnemonicWordAnswerContainer'>
+                      <span id='mnemonicAnswerShowing'>
+                      </span>
+                    </div>
+                    <br>
+                    <div id='answerMnemonicContainer'>
+                      <span id='answerMnemonicShowing'>
+                      </span>
+                    </div>
+                    <div class="btn">
+                      <button id='backAccountBtn' onclick='goBackToMnemonic()'> Previous </button>
+                      <button id='submitGAccountBtn' onclick='submitGeneratedAccount()'> Submit </button>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -1039,8 +1042,8 @@
                 </label>
               </div>
               <div class="btn" style='display: block;'>
-                <button id='DownloadGAccountBtn' onclick='downloadGeneratedAccount()' style='width: auto; min-width: 150px; margin: auto; margin-top: 20px; background: #569E5C;'> Print Backup </button>
-                <button id='submitG3AccountBtn' onclick='goToClaimTable()' disabled class='not avail' style='cursor: pointer; width: auto; min-width: 150px; margin: auto; margin-top: 15px;'> Claim SIX Token </button>
+                <button id='DownloadGAccountBtn' onclick='downloadGeneratedAccount()'> Print Backup </button>
+                <button id='submitG3AccountBtn' onclick='goToClaimTable()' disabled class='not avail'> Claim SIX Token </button>
               </div>
             </div>
           </div>
@@ -1108,7 +1111,7 @@
               </div>
             </div>
             <br>
-            <p style='text-align: center'>My wallet address : <span style='font-weight: bold;' class='truncate' id='myXlmPublicAddress2'></span></p>
+            <p style='text-align: center' class='truncate'>My wallet address : <span style='font-weight: bold;' class='truncate' id='myXlmPublicAddress2'></span></p>
             <br>
             <div id='menuContainer' style='display: none;'>
               <div class='tableMenu'>
@@ -1155,19 +1158,21 @@
             </div>
           </div>
         </section>
-        <div style='max-width: 650px; margin: auto;'>
-          <div id='progressContainer' style='display: none;'>
-            <p style="margin-top: 50px; color: #4a5ab5; text-align: center; font-weight: bold; font-size: 32px; line-height: 40px;">Please wait</p>
-            <p style='text-align: center;'>While we generating your wallet</p>
-            <div class="spinner" style='display: block; text-align: center; margin: auto; margin-bottom: 15px; margin-top: 10px;'>
-              <div class="bounce1"></div>
-              <div class="bounce2"></div>
-              <div class="bounce3"></div>
+        <div id='overAllLoadingContainer'>
+          <div style='max-width: 650px; margin: auto;'>
+            <div id='progressContainer'>
+              <p style="margin-top: 50px; color: #4a5ab5; text-align: center; font-weight: bold; font-size: 32px; line-height: 40px;">Please wait</p>
+              <p style='text-align: center;'>While we generating your wallet</p>
+              <div class="spinner" style='display: block; text-align: center; margin: auto; margin-bottom: 15px; margin-top: 10px;'>
+                <div class="bounce1"></div>
+                <div class="bounce2"></div>
+                <div class="bounce3"></div>
+              </div>
+              <div id='accountPgB'>
+                <div id='accountPg'></div>
+              </div>
+              <p id='progressText'>Initialize processing<p>
             </div>
-            <div id='accountPgB'>
-              <div id='accountPg'></div>
-            </div>
-            <p id='progressText'>Initialize processing<p>
           </div>
         </div>
       </div>
