@@ -37,7 +37,7 @@ const accountCreatorKey = StellarSdk.Keypair.fromSecret(
 const ASSET_CODE = 'SIX'
 const sixAsset = new StellarSdk.Asset(ASSET_CODE, functions.config().xlm.issuer_public)
 
-const startingBalance = '2.5'
+const startingBalance = '2.0'
 
 const handleCreateStellarAccount = (data, context) => {
   if (!accountCreatorKey) {

@@ -153,6 +153,10 @@ $(document).ready(function () {
     e.preventDefault();
     setNewPassword()
   })
+  $('#nextWelcome').click(function(e) {
+    e.preventDefault();
+    nextWelcome()
+  })
   $('body').on('click', '.dropdown a', function() {
     var dropdown = $(this).parent(".dropdown");
     dropdown.toggleClass("show-dropdown");
@@ -176,3 +180,10 @@ function clickBody(name, elem, rm_class) {
   }
 }
 
+
+function nextWelcome() {
+  $("#redeemContainer0").fadeToggle(100, () => {
+    $("#redeemContainer1").fadeToggle(100, () => {
+    })
+  })
+}

@@ -49,5 +49,9 @@ service cloud.firestore {
     match /users_log/{timeStamp}{
       allow read: if exists(/databases/$(database)/documents/admins/$(request.auth.uid));
     }
+    match /claim_tx_logs/{claimId}{
+      allow write, read: if request.auth.token.admin == true;
+      allow read: if exists(/databases/$(database)/documents/admins/$(request.auth.uid));
+    }
   }
 }
