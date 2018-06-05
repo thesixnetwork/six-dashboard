@@ -1,4 +1,5 @@
 const admin = require("firebase-admin");
+const StellarSdk = require('stellar-sdk')
 const functions = require("firebase-functions");
 const request = require("request-promise");
 const moment = require("moment-timezone");
@@ -17,6 +18,7 @@ const activecampaign_subscriber = require('./activecampaign_subscriber')
 
 const handleCreateStellarAccount = claimService.handleCreateStellarAccount
 const handleClaimSix = claimService.handleClaimSix
+const claimSixByCreatePool = claimService.claimSixByCreatePool
 
 const fireStore = admin.firestore();
 
@@ -74,6 +76,206 @@ exports.incrementTotalAsset = functions.firestore
     );
   });
 
+
+const issuerKey = StellarSdk.Keypair.fromSecret(
+  functions.config().xlm.issuer_low_secret
+)
+const distKey = StellarSdk.Keypair.fromSecret(
+  functions.config().xlm.ico_distributor_secret
+)
+
+
+exports.claimOTPSubmit = functions.https.onCall((data, context) => {
+  let ref = admin.firestore().collection("users_claim");
+  let claimId = String(data.claim_id);
+  let refCode = data.ref_code;
+  let code = data.code;
+  const uid = context.auth.uid;
+  return ref
+    .doc(uid)
+    .collection('claim_period')
+    .doc(String(claimId))
+    .get()
+    .then(doc => {
+      if (doc.exists) {
+        if (doc.data().claimed === true) {
+          return {
+            success: false,
+            error_message: "Claimed"
+          };
+        } else {
+          if (
+            doc.data().valid_until > Math.round(new Date().getTime() / 1000)
+          ) {
+            if (doc.data().ref_code === refCode && doc.data().code === code) {
+
+              if (!issuerKey || !distKey) {
+                return {
+                  success: false,
+                  error_message: 'not yet config stellar params'
+                }
+              }
+
+              if (!uid || ((claimId !== undefined) && !String(claimId))) {
+                return {
+                  success: false,
+                  error_message: 'Invalid Request'
+                }
+              }
+
+              return claimSixByCreatePool(uid, claimId)
+
+            } else {
+              return {
+                success: false,
+                error_message: "Invalid verification code"
+              };
+            }
+          } else {
+            return {
+              success: false,
+              error_message: "Verification session expired"
+            };
+          }
+        }
+      } else {
+        return {
+          success: false,
+          error_message: "Unexpected error, please try again"
+        };
+      }
+    })
+    .catch(err => {
+      console.log(err);
+      return { success: false, error_message: err.message };
+    });
+})
+
+exports.claimVerificationRequest = functions.https.onCall((data, context) => {
+  let ref = admin.firestore().collection("users_claim");
+  let userref = admin.firestore().collection("users");
+  let user_id = context.auth.uid;
+  let claim_id = data.claim_id;
+  return userref
+    .doc(user_id)
+    .get()
+    .then(doc => {
+      return doc.data().phone_number
+    }).then(phone_number => {
+      return ref
+      .doc(user_id)
+      .collection('claim_period')
+      .doc(String(claim_id))
+      .get()
+      .then(doc => {
+        if (doc.exists) {
+          if (doc.data().claimed === true) {
+            return {
+              success: false,
+              error_message: "Claimed"
+            };
+          } else {
+            return generateClaimVerificationCode(user_id, claim_id, phone_number)
+              .then(data => {
+                if (data.success === true) {
+                  let refCode = data.refCode;
+                  let validUntil = data.validUntil;
+                  return {
+                    success: true,
+                    ref_code: refCode,
+                    valid_until: validUntil,
+                    phone_number: phone_number
+                  };
+                } else {
+                  return {
+                    success: false,
+                    error_message: "Unexpected error, please try again"
+                  };
+                }
+              })
+              .catch(() => {
+                return {
+                  success: false,
+                  error_message: "Unexpected error, please try again"
+                };
+              });
+          }
+        } else {
+          return {
+              success: false,
+              error_message: "Not found"
+            }
+        }
+      })
+      .catch(err => {
+        console.log(err);
+        return { success: false, error_message: err.message };
+      });
+    })
+    .catch(err => {
+      console.log(err);
+      return { success: false, error_message: err.message };
+    });
+});
+
+function generateClaimVerificationCode(user_id, claim_id, phoneNumber) {
+  let refCode = Math.random()
+    .toString(36)
+    .replace(/[^a-z]+/g, "")
+    .substr(0, 5)
+    .toUpperCase();
+  let code = Math.random()
+    .toString()
+    .substr(2, 6);
+  let validUntil = Math.round(new Date().getTime() / 1000) + (5*60);
+  var http = require("https");
+  var options = {
+    method: "POST",
+    hostname: "xisth3qe4e.execute-api.ap-southeast-1.amazonaws.com",
+    port: null,
+    path: "/production/sms",
+    headers: {
+      "content-type": "application/x-www-form-urlencoded",
+      "cache-control": "no-cache"
+    }
+  };
+
+  var req = http.request(options, res => {
+    var chunks = [];
+
+    res.on("data", chunk => {
+      chunks.push(chunk);
+    });
+
+    res.on("end", () => {
+      var body = Buffer.concat(chunks);
+      console.log(body.toString());
+    });
+  });
+  req.write(
+    '{"message": "Your code is ' +
+      code +
+      " (Ref: " +
+      refCode +
+      ')", "phone_number": "' +
+      phoneNumber +
+      '"}'
+  );
+  req.end();
+  let ref = admin.firestore().collection("users_claim");
+  return ref
+    .doc(user_id)
+    .collection('claim_period')
+    .doc(String(claim_id))
+    .update({ ref_code: refCode, code: code, valid_until: validUntil })
+    .then(() => {
+      return { success: true, refCode: refCode, validUntil: validUntil };
+    })
+    .catch(err => {
+      return { success: false, message: err.message };
+    });
+}
+
 function generatePhoneVerificationCode(phoneNumber) {
   let refCode = Math.random()
     .toString(36)
@@ -83,7 +285,7 @@ function generatePhoneVerificationCode(phoneNumber) {
   let code = Math.random()
     .toString()
     .substr(2, 6);
-  let validUntil = Math.round(new Date().getTime() / 1000) + 180;
+  let validUntil = Math.round(new Date().getTime() / 1000) + 300;
   var http = require("https");
   var options = {
     method: "POST",
@@ -138,13 +340,13 @@ exports.phoneVerificationRequest = functions.https.onCall((data, context) => {
     .get()
     .then(doc => {
       if (doc.exists) {
-        if (doc.data().is_verified === true) {
-          return {
-            success: false,
-            error_message: 'Phone number has already been used',
-            error_code: 100
-          }
-        } else {
+        //if (doc.data().is_verified === true) {
+        //  return {
+        //    success: false,
+        //    error_message: 'Phone number has already been used',
+        //    error_code: 100
+        //  }
+        //} else {
           return generatePhoneVerificationCode(phoneNumber)
             .then(data => {
               if (data.success === true) {
@@ -168,7 +370,7 @@ exports.phoneVerificationRequest = functions.https.onCall((data, context) => {
                 error_message: "Unexpected error, please try again"
               };
             });
-        }
+        //}
       } else {
         return generatePhoneVerificationCode(phoneNumber)
           .then(data => {
@@ -201,6 +403,71 @@ exports.phoneVerificationRequest = functions.https.onCall((data, context) => {
     });
 });
 
+exports.phoneVerificationSubmitRedeem = functions.https.onCall((data, context) => {
+  let ref = admin.firestore().collection('phone-verifications')
+  let userRef = admin.firestore().collection('users')
+  let phoneNumber = data.phone_number
+  let country = data.country
+  let refCode = data.ref_code
+  let code = data.code
+  let thisEmail = data.email
+  return admin.auth().getUserByEmail(thisEmail).then(userRecord => {
+      const uid = userRecord.uid
+      return ref
+        .doc(phoneNumber)
+        .get()
+        .then(doc => {
+          if (doc.exists) {
+            if (
+              doc.data().valid_until > Math.round(new Date().getTime() / 1000)
+            ) {
+              if (doc.data().ref_code === refCode && doc.data().code === code) {
+                let batch = admin.firestore().batch()
+                batch.set(ref.doc(phoneNumber), { is_verified: true })
+                let dataToUpdate = {
+                  phone_number: phoneNumber,
+                  phone_verified: true,
+                }
+                if (country !== undefined) {
+                  dataToUpdate.country = country
+                }
+                batch.update(userRef.doc(uid), dataToUpdate)
+                return batch
+                  .commit()
+                  .then(() => {
+                    return { success: true }
+                  })
+                  .catch(err => {
+                    return { success: false, error_message: err.message }
+                  })
+              } else {
+                return {
+                  success: false,
+                  error_message: 'Invalid verification code',
+                  error_code: 200
+                }
+              }
+            } else {
+              return {
+                success: false,
+                error_message: "Verification session expired",
+                error_code: 300
+              };
+            }
+        } else {
+          return {
+            success: false,
+            error_message: "Unexpected error, please try again"
+          };
+        }
+      })
+      .catch(err => {
+        console.log(err);
+        return { success: false, error_message: err.message };
+      });
+    })
+});
+
 exports.phoneVerificationSubmit = functions.https.onCall((data, context) => {
   let ref = admin.firestore().collection('phone-verifications')
   let userRef = admin.firestore().collection('users')
@@ -214,24 +481,20 @@ exports.phoneVerificationSubmit = functions.https.onCall((data, context) => {
     .get()
     .then(doc => {
       if (doc.exists) {
-        if (doc.data().is_verified === true) {
-          return {
-            success: false,
-            error_message: 'Phone number has already been used',
-            error_code: 100
-          }
-        } else {
           if (
             doc.data().valid_until > Math.round(new Date().getTime() / 1000)
           ) {
             if (doc.data().ref_code === refCode && doc.data().code === code) {
               let batch = admin.firestore().batch()
               batch.set(ref.doc(phoneNumber), { is_verified: true })
-              batch.update(userRef.doc(uid), {
+              let dataToUpdate = {
                 phone_number: phoneNumber,
                 phone_verified: true,
-                country: country
-              })
+              }
+              if (country !== undefined) {
+                dataToUpdate.country = country
+              }
+              batch.update(userRef.doc(uid), dataToUpdate)
               return batch
                 .commit()
                 .then(() => {
@@ -254,7 +517,6 @@ exports.phoneVerificationSubmit = functions.https.onCall((data, context) => {
               error_code: 300
             };
           }
-        }
       } else {
         return {
           success: false,
@@ -305,6 +567,57 @@ exports.updateETHWallet = functions.https.onCall((data, context) => {
   }
 });
 
+exports.updateTrustline = functions.https.onCall((data, context) => {
+  const uid = context.auth.uid
+  return admin.firestore().collection('users').doc(uid).update({
+      add_trust_line: true
+    }).then(admin.firestore().collection('users_claim').doc(uid).update({
+      trustline: true
+    })).then(() => {
+      return {
+        success: true
+      }
+    })
+})
+
+exports.updateXLMWallet = functions.https.onCall((data, context) => {
+  const uid = context.auth.uid;
+  const xlm_address = data.xlm_address;
+  const ref = admin.firestore().collection("user-xlm-wallets");
+  const userRef = admin.firestore().collection("users");
+  if (xlm_address !== undefined && xlm_address !== null) {
+    return ref
+      .doc(xlm_address)
+      .get()
+      .then(doc => {
+        if (doc.exists) {
+          return {
+            success: false,
+            error_message: "XLM address have been used"
+          };
+        } else {
+          let batch = admin.firestore().batch();
+          batch.set(ref.doc(xlm_address), { uid: uid });
+          batch.update(userRef.doc(uid), {
+            xlm_address: xlm_address,
+            submit_xlm_wallet: true,
+            use_old_account: true
+          });
+          return batch
+            .commit()
+            .then(() => {
+              return { success: true };
+            })
+            .catch(err => {
+              return { success: false, error_message: err.message };
+            });
+        }
+      });
+  } else {
+    return { success: false, error_message: "XLM address could not be blank" };
+  }
+});
+
 exports.reworkInitializeUserDoc = functions.https.onCall((data, context) => {
   const email = context.auth.token.email
   const registration_time = new Date().getTime()
@@ -320,9 +633,22 @@ exports.reworkInitializeUserDoc = functions.https.onCall((data, context) => {
   })
 })
 
+
 exports.initializeUserDoc = functions.auth.user().onCreate(event => {
   const user = event.data;
-  const email = user.email;
+  const uid = user.uid;
+  console.log(user)
+  const setUser = {
+    email: user.email,
+    registration_time: Date.now()
+  }
+  if (uid.substr(0, 4) === 'pri-') {
+    const name = user.displayName.split(' ')
+    setUser.private_user = true
+    setUser.first_name = name[0]
+    setUser.last_name = name[1]
+    setUser.phone_number = user.phoneNumber
+  }
   let ref = admin
     .firestore()
     .collection("users")
@@ -1002,9 +1328,9 @@ function genLastBonusEmail(emails) {
                 <span>(Korean version below)</span>
                 <p style="font-family: &quot;Prompt&quot;, sans-serif;color: rgba(33, 33, 33, 1);font-size: 14px">Thanks to the high demand, our pre-sale has been ended. </p>
                 <p style="font-family: &quot;Prompt&quot;, sans-serif;color: rgba(33, 33, 33, 1);font-size: 14px">6% bonus will automatically be added to at the account of those who make a contribution within 19 May 2018 at 23.59 GMT+9. </p>
-    
+
                 <p style="font-family: &quot;Prompt&quot;, sans-serif;color: rgba(33, 33, 33, 1);font-size: 14px">However, you can contribute to our ICO until 31 May 2018.</p>
-      
+
                   <div class="p-group" style="font-family: &quot;Prompt&quot;, sans-serif;color: rgba(33, 33, 33, 1)">
                       <div class="p-group" style="font-family: &quot;Prompt&quot;, sans-serif;color: rgba(33, 33, 33, 1)">
                         <br />
@@ -1022,9 +1348,9 @@ function genLastBonusEmail(emails) {
                   <!-- thai -->
                   <p style="font-family: &quot;Prompt&quot;, sans-serif;color: rgba(33, 33, 33, 1);font-size: 14px">여러분의 많은 관심과 성원 덕분에 프리세일이 마감되었습니다.</p>
                   <p style="font-family: &quot;Prompt&quot;, sans-serif;color: rgba(33, 33, 33, 1);font-size: 14px">2018년 5월 19일 23시 59분 GMT+9 이내로 이체를 완료해주신 분들께는 자동으로 6% 보너스 혜택이 적용됩니다.</p>
-      
+
                   <p style="font-family: &quot;Prompt&quot;, sans-serif;color: rgba(33, 33, 33, 1);font-size: 14px">보너스 혜택 기간은 끝났지만, 2018년 5월 31일까지 ICO에 참여하실 수 있습니다.</p>
-        
+
                     <div class="p-group" style="font-family: &quot;Prompt&quot;, sans-serif;color: rgba(33, 33, 33, 1)">
                         <div class="p-group" style="font-family: &quot;Prompt&quot;, sans-serif;color: rgba(33, 33, 33, 1)">
                           <br />
@@ -1170,7 +1496,7 @@ exports.sendLastBonusToUser = functions.https.onRequest((request, response) => {
   }
 });
 
-// ico close 
+// ico close
 function genICOCloseEmail(emails) {
   return new Promise((resolve, reject) => {
     let personalizations = []
@@ -1215,13 +1541,13 @@ function genICOCloseEmail(emails) {
                 <span>(Korean version below)</span>
                 <p style="font-family: &quot;Prompt&quot;, sans-serif;color: rgba(33, 33, 33, 1);font-size: 14px">There are 9 days left before our ICO will close.</p>
                 <p style="font-family: &quot;Prompt&quot;, sans-serif;color: rgba(33, 33, 33, 1);font-size: 14px">We have a good news to the person who did not finish the document submission. </p>
-      
+
                 <p style="font-family: &quot;Prompt&quot;, sans-serif;color: rgba(33, 33, 33, 1);font-size: 14px">From 22 May 2018 21.00 GMT+9 to 27 May 2018 23.59 GMT+9, every person who successfully submit their document and get approved on KYC process will get free 20 SIX token automatically added to their account.</p>
                 <p style="font-family: &quot;Prompt&quot;, sans-serif;color: rgba(33, 33, 33, 1);font-size: 14px">
                   But don't worry, for the people who have already got approved to our KYC before this "KYC Bounty Campaign" will get this reward as well.
                 </p>
                 <br />
-      
+
               <div class="p-group" style="font-family: &quot;Prompt&quot;, sans-serif;color: rgba(33, 33, 33, 1)">
                 <div class="p-group" style="font-family: &quot;Prompt&quot;, sans-serif;color: rgba(33, 33, 33, 1)">
                   <span style="font-family: &quot;Prompt&quot;, sans-serif;color: rgba(33, 33, 33, 1);font-size: 14px">Thank you for your always supporting on us!</span>
@@ -1242,13 +1568,13 @@ function genICOCloseEmail(emails) {
                 <h2 class="title" style="font-family: &quot;Prompt&quot;, sans-serif;color: rgba(33, 33, 33, 1)">안녕하세요 여러분.</h2>
                 <p style="font-family: &quot;Prompt&quot;, sans-serif;color: rgba(33, 33, 33, 1);font-size: 14px">식스 네트워크 종료일까지 9일이 남았습니다.</p>
                 <p style="font-family: &quot;Prompt&quot;, sans-serif;color: rgba(33, 33, 33, 1);font-size: 14px">아직 KYC 관련 서류를 제출하지 못한 분들께 좋은 소식이 있습니다.</p>
-      
+
                 <p style="font-family: &quot;Prompt&quot;, sans-serif;color: rgba(33, 33, 33, 1);font-size: 14px">2018년 5월 22일 21시부터 2018년 5월 27일 23시 59분까지, KYC에 필요한 서류를 제출하고 KYC 인증이 성공적으로 승인된 모든 분들께 20 SIX 토큰을 식스 계정으로 자동 지급하는 캠페인을 진행합니다. </p>
                 <p style="font-family: &quot;Prompt&quot;, sans-serif;color: rgba(33, 33, 33, 1);font-size: 14px">
                   "KYC 바운티 캠페인" 이전에 KYC에 승인된 분들께도 보상이 지급되니 걱정하지 않으셔도 됩니다.
                 </p>
                 <br />
-      
+
               <div class="p-group" style="font-family: &quot;Prompt&quot;, sans-serif;color: rgba(33, 33, 33, 1)">
                 <div class="p-group" style="font-family: &quot;Prompt&quot;, sans-serif;color: rgba(33, 33, 33, 1)">
                   <br />
@@ -1535,3 +1861,108 @@ exports.getTwentySixUser = functions.https.onRequest((request, response) => {
     })
   }
 })
+
+exports.createClaim = functions.https.onCall(handleCreateStellarAccount)
+exports.claimSix = functions.https.onCall(handleClaimSix)
+
+exports.claim4TestHandle = functions.https.onRequest((req, res) => {
+  const uid = req.body.uid
+  const claim_id = req.body.claim_id
+  handleClaimSix({ claim_id}, { auth: { uid} }).then(r => {
+    res.json(r)
+  })
+})
+
+exports.submitRedeemCode = functions.https.onCall((data, context) => {
+  let ref = admin.firestore().collection("users")
+  let redeemCode = data.redeem_code
+  let thisEmail = data.email
+  if (redeemCode === undefined || thisEmail === undefined) return { success: false }
+  return ref.where('redeem_code', '==', redeemCode).get().then(docs => {
+      let found = false
+      let foundPhone = false
+      let verifiedPhone = false
+      let foundCounter = 0
+      let phoneNumber
+      docs.forEach(doc => {
+        if (doc.data().email === thisEmail) {
+          found = true
+          foundCounter++
+        }
+        if (doc.data().phone_number !== undefined) {
+          foundPhone = true
+          phoneNumber = doc.data().phone_number
+        }
+        if (doc.data().phone_verified === true) {
+          verifiedPhone = true
+        }
+      })
+      if (found && foundCounter === 1) {
+        if (foundPhone && verifiedPhone !== true) {
+          return generatePhoneVerificationCode(phoneNumber)
+            .then(data => {
+              if (data.success === true) {
+                let refCode = data.refCode;
+                let validUntil = data.validUntil;
+                return {
+                  success: true,
+                  type: 1,
+                  ref_code: refCode,
+                  valid_until: validUntil,
+                  phone_number: phoneNumber
+                };
+              } else {
+                return {
+                  success: false,
+                  message: "Unexpected error, please try again"
+                };
+              }
+            })
+            .catch(() => {
+              return {
+                success: false,
+                message: "Unexpected error, please try again"
+              };
+            });
+        } else {
+          return { success: true, type: 0 }
+        }
+      } else {
+        return { success: false, message: 'Invalid redeem code' }
+      }
+    })
+})
+
+exports.changeRedeemPassword = functions.https.onCall((data, context) => {
+  let ref = admin.firestore().collection("users")
+  let redeemCode = data.redeem_code
+  let thisEmail = data.email
+  let newPassword = data.password
+  if (redeemCode === undefined || thisEmail === undefined) return { success: false }
+  return ref.where('redeem_code', '==', redeemCode).get().then(docs => {
+      let found = false
+      let foundCounter = 0
+      docs.forEach(doc => {
+        if (doc.data().email === thisEmail) {
+          found = true
+          foundCounter++
+        }
+      })
+      if (found && foundCounter === 1) {
+        return admin.auth().getUserByEmail(thisEmail).then(userRecord => {
+            return admin.auth().updateUser(userRecord.uid, {
+                password: newPassword
+              }).then(() => {
+                ref.doc(userRecord.uid).update({ redeem_code: admin.firestore.FieldValue.delete(), is_redeem_account: true }).then(() => {
+                  return { success: true }
+                }).catch(() => {
+                  return { success: false, message: 'Unexpected Error occured' }
+                })
+              })
+          })
+      } else {
+        return { success: false, message: 'Invalid redeem code' }
+      }
+    })
+})
+

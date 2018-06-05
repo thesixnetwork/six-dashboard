@@ -47,6 +47,10 @@
     "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
     "rewrites": [
       {
+        "source": "/redeem",
+        "destination": "/redeem.html"
+      },
+      {
         "source": "/cn",
         "destination": "/login_cn.html"
       },

@@ -1,3 +1,13 @@
+#sendToEmailBtn, #sendToEmailBtn2 {
+  display: none;
+  margin: auto;
+  padding-left: 18px;
+  padding-right: 18px;
+  margin-bottom: 10px;
+  height: 36px;
+  width: auto;
+}
+
 #progressContent {
   padding: 32px;
   margin: 0px;
@@ -100,7 +110,6 @@
 
 #trnsBtnContainer {
   display: flex;
-  max-width: 500px;
   margin: auto;
 }
 
@@ -110,16 +119,16 @@
   margin-bottom: 25px;
 }
 
-#tableContainer {
+.tableContainer {
   overflow-x: auto;
   width: 100%;
 }
 
-#txHistoryTable {
+.txHistoryTable {
   min-width: 970px;
 }
 
-#howToETH, #backToTxHis {
+#howToETH, #backToTxHis, #goToClaim {
   color: white;
   font-weight: bold;
   background: #4a5ab5;
@@ -162,8 +171,966 @@
   .content {
     min-height: 100vh;
   }
+
+  #thankImage {
+    display: none;
+  }
+
+  #thankImage2 {
+    display: block;
+  }
 }
 
 .dashboard-2 section.progress .bar {
   background: #ffffff;
+}
+
+#divClaimBoxNew, #divClaimBoxOld, #divClaimBoxLedger {
+  max-width: 800px;
+  margin: auto;
+}
+
+.fdiv {
+  display: flex;
+}
+
+.fdiv p {
+  width: 170px;
+  line-height: 58px;
+  font-size: 15px;
+}
+
+#accountPgB {
+  width: 100%;
+  height: 10px;
+  border-radius: 5px;
+  background: #EFEFEF;
+  box-shadow: inset 0 1px 2px #e3e3e3,0 -1px 1px #fff,0 1px 0 #fff;
+}
+
+#accountPg {
+  min-width: 0px;
+  -webkit-transition: width 0.5s;
+  transition: width 0.5s;
+  width: 0%;
+  height: 10px;
+  background: #4a5ab5;
+  border-radius: 5px;
+}
+
+#progressContainer {
+  margin-left: 20px;
+  margin-right: 20px;
+  margin-bottom: 40px;
+}
+
+#progressText {
+  display: block;
+  text-align: center;
+  margin-top: 10px;
+  font-size: 15px;
+}
+
+.claimMoneyBtn {
+  width: 100%;
+  text-align: center;
+  display: block;
+  height: 40px;
+  border-radius: 20px;
+}
+
+.notAvail {
+  background: #b7b7b7;
+}
+
+.processing {
+  background: #569E5C;
+}
+
+.claimError {
+  background: #ec5151;
+}
+
+.claimTableContainer {
+  overflow-x: auto;
+  border-radius: 10px;
+  border: 1px solid #CFCFCF;
+  margin-bottom: 15px;
+}
+
+.claimTxs tr {
+  line-height: 40px;
+}
+
+.claimTxs tr td {
+  text-align: center;
+}
+
+.claimTable {
+  min-width: 970px;
+}
+
+.claimTable tbody tr {
+  display: table-row!important;
+  border-bottom: 1px solid #CFCFCF;
+}
+
+.claimTable tbody tr:last-of-type {
+  border-bottom: none;
+}
+
+.claimTable thead tr {
+  display: table-row!important;
+  background: #4a5ab5;
+  color: white;
+  text-align: center;
+}
+
+.claimTable thead tr th {
+  opacity: 1;
+  text-align: center;
+  width: unset!important;
+}
+
+.claimTable tbody tr td {
+  width: unset!important;
+}
+
+#otpContent {
+  padding: 20px;
+}
+
+#otpContent header h2 {
+  width: 100%;
+  margin-bottom: 16px;
+  color: #4a5ab5;
+  font-weight: 500;
+  text-align: center;
+}
+
+#newWalletSelect {
+  max-width: 350px;
+  margin: auto;
+  margin-top: 45px;
+  margin-bottom: 35px;
+}
+
+#swbtn {
+  max-width: 150px;
+  margin: auto;
+}
+
+#toggleSecret, #toggleSecretMnemonic, #toggleSecret2, #toggleSecretMnemonic2 {
+  cursor: pointer;
+}
+
+.new_wizard .step ul li {
+  width: 7%!important;
+}
+
+.new_wizard .step ul li.current::before, .new_wizard .step ul li.current .circle {
+  background: #dddfe6!important;
+}
+
+#claimWelcomeBox {
+  max-width: 800px;
+  margin: auto;
+}
+
+#cwcbtn {
+  max-width: 200px;
+  margin: auto;
+  margin-top: 50px;
+}
+
+.new_wizard .step {
+  padding: 30px 0 0px 0!important;
+}
+
+#walletSelection {
+  display: flex;
+  max-width: 800px;
+  margin: auto;
+  margin-top: 20px;
+}
+
+#walletSelection li {
+  width: 100%;
+  border: 1px solid rgb(210,210,210);
+  border-radius: 11px;
+  padding: 20px;
+  margin-bottom: 30px;
+  min-height: 160px;
+  margin-left:10px;
+  margin-right: 10px;
+}
+
+#walletSelection li a {
+  display: block;
+  position: relative;
+}
+
+#walletSelection li:hover {
+  border: 1px solid #4a5ab5;
+}
+
+#walletSelection li.active {
+  border: 1px solid #569E5C;
+}
+
+#walletSelection li.active:hover {
+  border: 1px solid #569E5C;
+}
+
+#walletSelection li h2 {
+  font-size: 16px;
+  color: rgb(74, 74, 72);
+  margin-bottom: 0px;
+  text-align: center;
+}
+
+.choiceText {
+  max-width: 530px;
+}
+
+.correctSign {
+  position: absolute;
+  display: none;
+  background: white;
+  right: -30px;
+  top: -30px;
+}
+
+#walletSelection li:hover .choiceText {
+}
+
+#walletSelection li:hover h2 {
+  color: #4a5ab5;
+}
+
+#walletSelection li.active .correctSign {
+  display: block;
+}
+
+.choiceIcon {
+  max-width: 110px;
+  margin: auto;
+}
+
+.choiceIcon svg {
+  width: 110px;
+  height: 110px;
+  margin: auto;
+}
+
+.accordionContent {
+  padding: 20px;
+  border: 1px solid rgb(210, 210, 210);
+}
+
+h3.accordionHeader {
+  background: #4a5ab5;
+  color: white;
+  font-size: 15px;
+  padding: 5px;
+  padding-left: 20px;
+  padding-right: 20px;
+  text-align: center;
+  margin-top: 1px;
+}
+
+h3.accordionHeader:first-of-type {
+  border-top-left-radius: 5px;
+  border-top-right-radius: 5px;
+}
+
+.wizard .step ul li .circle::before {
+  content: "";
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  position: absolute;
+  top: 4px;
+  left: 4px;
+  background: #fff;
+}
+
+.dashboard-2 aside {
+  padding: 0px!important;
+}
+
+section.user-detail {
+  padding: 32px 24px 24px 24px!important;
+}
+
+section#progressContent {
+  padding: 32px 56px 32px 56px!important;
+}
+
+.dashboard-2 section {
+  padding: 24px 48px 24px 48px!important;
+}
+
+.noWallet {
+  display: flex;
+  font-size: 17px;
+  padding: 12px;
+  text-align: center;
+  color: #BBBBBB;
+  border-bottom: 1px solid #e3e3e3;
+}
+
+#xlmWalletIcon {
+  width: 30px;
+  height: 30px;
+  margin-left: auto;
+  margin-right: 15px;
+}
+
+#xlmWalletText {
+  margin-right: auto;
+}
+
+#mnemonicWordContainer, #mnemonicWordAnswerContainer, #answerMnemonicContainer {
+  text-align: justify;
+  -moz-text-align-last: center;
+  text-align-last: center;
+  word-spacing: 35px;
+}
+
+#mnemonicShowing, #mnemonicAnswerShowing, #answerMnemonicShowing {
+  font-size: 14px;
+  background: #f1f4f9;
+  padding: 10px 30px;
+  display: block;
+  margin: 0 55px;
+}
+
+#mnemonicShowing {
+  position: relative;
+}
+
+#mnemonicAnswerShowing {
+  min-height: 72px;
+}
+
+#answerMnemonicShowing {
+  background: unset;
+  line-height: 38px;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: space-between;
+}
+
+#answerMnemonicShowing a {
+  border: 1px solid #D3D3D3;
+  padding: 5px 10px;
+  border-radius: 3px;
+  margin: 5px 12px;
+  line-height: 20px;
+}
+
+#answerMnemonicShowing a.unusedWord:hover {
+  border: 1px solid #4a5ab5;
+  color: #4a5ab5;
+}
+
+#answerMnemonicShowing a.usedWord {
+  background: #F5F5F5;
+  border: 1px solid #EFEFEF;
+  color: rgb(150, 150, 150);
+}
+
+.customAlert {
+  border: 1px solid red;
+}
+
+#congratContainer {
+  border: 1px solid #D3D3D3;
+  padding: 40px;
+  max-width: 500px;
+  margin: auto;
+  border-radius: 20px;
+}
+
+#congratBox {
+  text-align: center;
+}
+
+#correctIcon, .correctSign {
+  font-size: 50px;
+  margin-bottom: 25px;
+  color: #569E5C;
+}
+
+#manualTrustlineBox {
+  text-align: left;
+  margin: auto;
+  max-width: 650px;
+}
+
+#mnemonicWordDownloadContainer {
+  background: #4a5ab5;
+  position: absolute;
+  width: 35px;
+  height: 30px;
+  padding: 3px;
+  right: -35px;
+  top: 21px;
+  border-top-right-radius: 15px;
+  border-bottom-right-radius: 15px;
+  padding-right: 10px;
+  cursor: pointer;
+}
+
+#recoverWordDialogContent, #congratDialogContent1, #congratDialogContent2, #feeDialogContent, #newLedgerDialogContent, #ledgerTrustAlertDialogContent, #claimErrorDialogContent, #whatsNextDialogContent, #waittingDialogContent {
+  max-width: 500px;
+}
+
+.dialogHeader {
+  max-height: 200px;
+  text-align: center;
+  background: #4a5ab5;
+  border-top-right-radius: 15px;
+  border-top-left-radius: 15px;
+}
+
+.dialogHeader svg {
+  max-height: 200px;
+  width: 100%;
+  margin: auto;
+  position: relative;
+  padding: 18px;
+}
+
+#specialSvg {
+  height: 200px;
+  margin: auto;
+  position: relative;
+  display: block;
+  top: 0px;
+  padding: unset;
+}
+
+.dialogContent {
+  text-align: center;
+  background: white;
+  padding: 30px;
+  color: #494949;
+  border-bottom-right-radius: 15px;
+  border-bottom-left-radius: 15px;
+}
+
+.haveWallet {
+  display: flex;
+  font-size: 17px;
+  padding: 12px;
+  text-align: center;
+  color: white;
+  background: #4a5ab5;
+  border-bottom: 1px solid #e3e3e3;
+}
+
+.haveWallet svg .cls-3 {
+  fill: #FFFFFF;
+}
+
+#showXLMWalletSection {
+  text-align: center;
+}
+
+#myWalletMenuContainer {
+  display: flex;
+}
+
+.myWalletItem {
+  cursor: pointer;
+  width: 30px;
+  height: 30px;
+  display: block;
+  background: #4a5ab5;
+  color: white;
+  border-radius: 2px;
+  line-height: 30px;
+  margin-left: 5px;
+  margin-right: 5px;
+}
+
+.myWalletItem:first-of-type {
+  margin-left: auto;
+}
+
+.myWalletItem:last-of-type {
+  margin-right: auto;
+}
+
+#donut-container {
+  max-height: 300px;
+  display: flex;
+}
+
+#donut-graph {
+  max-height: 230px;
+  max-width: 230px;
+  margin: auto;
+}
+
+#donutGraphContainer, .donutText {
+  margin: auto:
+}
+
+#donutGraphContainer {
+  margin: auto!important;
+}
+
+#donutGraphContainer {
+  min-width: 400px;
+}
+
+.donutText {
+  margin-top: 25px!important;
+  margin: auto;
+}
+
+.contractType {
+  padding: 9px;
+  border-radius: 10px;
+  line-height: 20px;
+  margin-bottom: 10px;
+  border: 1px solid #CCCC;
+}
+
+.circleB {
+  display: inline-block;
+  width: 15px;
+  height: 15px;
+  border-radius: 50%;
+  top: 3px;
+  position: relative;
+  left: -5px;
+}
+
+.legend {
+  margin: auto;
+  display: inline-block;
+}
+
+#donutLegend {
+  display: flex;
+}
+
+#CBready {
+  background: #4a5ab5;
+}
+
+#CBnotAvail {
+  background: #B7B7B7;
+}
+
+#CBclaim {
+  background: #A3ABD9;
+}
+
+.groupStatus {
+  display: inline-block;
+  width: 15px;
+  height: 15px;
+  border-radius: 50%;
+  top: 2px;
+  position: relative;
+  left: -5px;
+  background: #4a5ab5;
+  margin-left: 10px;
+}
+
+.contractType h4 {
+  display: inline-block;
+}
+
+#menuContainer {
+  display: flex;
+}
+
+.tableMenu a {
+  display: flex;
+  margin: 20px;
+  padding: 20px;
+  border: 1px solid rgb(210, 210, 210);
+  border-radius: 10px;
+}
+
+.tableMenu a div h2 {
+  font-size: 17px;
+  text-align: left;
+  margin-bottom: 0px;
+  color: rgb(74, 74, 72);
+}
+
+.tableMenu a:hover {
+  border: 1px solid #4a5ab5;
+}
+
+.tableMenu a.currentActive {
+  background: #4a5ab5;
+  color: white;
+}
+
+.tableMenu a.currentActive  div h2 {
+  color: white;
+}
+
+.tableMenu a.currentActive .cls-161, .tableMenu a.currentActive .cls-171{
+  fill: #fff;
+}
+
+#ledgerContentContainer {
+  margin-left: 40px;
+  margin-right: 40px;
+  padding: 20px;
+  background: #EEEEEE;
+  border-radius: 10px;
+}
+
+#ledgerAgreement {
+  padding: 10px;
+  background: #DDDDDD;
+  border-radius: 10px;
+  margin-top: 10px;
+  font-size: 12px;
+}
+
+#ledgerSetupIcon {
+  width: 130px;
+  margin: auto;
+  margin-right: 17px;
+  border-right: 1px solid rgb(210, 210, 210);
+}
+
+#submitLedgerBtn:disabled {
+  background: #555555;
+}
+
+#ledgerContentContainer.active {
+  background: #F0FAF1;
+}
+
+#ledgerContentContainer.active #ledgerAgreement {
+  background: #C5EAC6;
+}
+
+#ledgerContentContainer.active #submitLedgerBtn {
+  background: #51A058;
+}
+
+#newLedgerDialog2 {
+  display: none;
+}
+
+#ledgerAssetContainer {
+  display: flex;
+}
+
+#assetLogo {
+  height: 120px;
+}
+
+#assetLogo svg {
+  height: 120px;
+}
+
+#ledgerAllIcon {
+  height: 70px;
+}
+
+#ledgerAssetContainer {
+  border: 2px solid #4a5ab5;
+  border-radius: 11px;
+  margin-left: 30px;
+  margin-top: 25px;
+  margin-right: 30px;
+  margin-bottom: 10px;
+}
+
+#assetContent {
+  text-align: left;
+  margin-left: 20px;
+  margin-top: auto;
+  margin-bottom: auto;
+}
+
+#showXLMWalletBalanceSection {
+  display: block;
+  margin: 15px;
+  padding: 10px;
+  background: white;
+  border: 1px solid #DDDDEE;
+}
+
+#myCurrentBalance, #myCurrentBalance2 {
+  font-weight: bold;
+  color: #4a5ab5;
+}
+
+.trustlineImage {
+  max-width: 650px;
+  width: 100%;
+}
+
+#recommended {
+  color: #F0B94F;
+  text-align: center;
+}
+
+.welcomeImage {
+  max-width: 100%;
+  display: block;
+  position: relative;
+}
+
+#mainClaimWelcomeContent {
+  line-height: 20px;
+}
+
+#claimBox {
+}
+
+dialog.normalDisplay {
+  line-height: 22px;
+  background: unset;
+  display: block;
+  position: relative;
+  border: 1px solid #BBBBBB;
+  border-radius: 16px;
+  margin: auto;
+}
+
+#instructionLedgerContainer {
+  max-width: 600px;
+  margin: auto;
+}
+
+#instructionLedgerContainer a {
+  text-decoration: underline;
+  color: blue;
+}
+
+.tableContractName {
+  margin-bottom: 10px;
+  margin-top: 10px;
+  text-align: center;
+  font-weight: bold;
+  color: #4a5ab5;
+}
+
+.transactionId {
+  max-width: 250px;
+}
+
+.transactionId a {
+  text-decoration: underline;
+  color: #4a5ab5;
+}
+
+#walletSelection li.disable a {
+  cursor: default;
+}
+
+#walletSelection li.disable:hover {
+  border: 1px solid rgb(210,210,210);
+}
+
+#walletSelection li.disable:hover h2 {
+  color: rgb(74, 74, 72);
+}
+
+#walletSelection li.disable .cls-811 {
+  fill: rgb(74, 74, 72);
+}
+
+#walletSelection li.disable {
+  opacity: 0.3;
+}
+
+.twoButton {
+  min-width: 150px;
+  margin: auto;
+  max-width: 150px;
+}
+
+#answerWordNew {
+  display: none;
+}
+
+#submitG2AccountBtn516 {
+  width: auto;
+  margin-bottom: 10px;
+  min-width: 150px;
+  margin-right: 50px;
+  background: #569E5C;
+}
+
+#submitG2AccountBtn515 {
+  width: auto;
+  margin-bottom: 10px;
+  min-width: 150px;
+}
+
+#backAccountBtn {
+  width: auto;
+  margin-bottom: 10px;
+  min-width: 150px;
+  background: #C7C7C7;
+  margin-right: 70px;
+}
+
+#submitGAccountBtn {
+  width: auto;
+  margin-bottom: 10px;
+  min-width: 150px;
+}
+
+#overAllLoadingContainer {
+  height: 100vh;
+  width: 100%;
+  display: none;
+}
+
+#DownloadGAccountBtn {
+  width: auto;
+  min-width: 150px;
+  margin: auto;
+  margin-top: 20px;
+  background: #569E5C;
+}
+
+#submitG3AccountBtn {
+  cursor: pointer;
+  width: auto;
+  min-width: 150px;
+  margin: auto;
+  margin-top: 15px;
+}
+
+dialog {
+  overflow: auto;
+  margin-top: auto;
+  margin-bottom: auto;
+}
+
+[class^="dialog-"] {
+  align-items: unset;
+}
+
+[class^="dialog-"]::before {
+  position: fixed;
+  width: 100%;
+  height: 100vh;
+}
+
+[class^="dialog-"].show-dialog {
+  overflow: auto;
+}
+
+
+@media only screen and (max-width: 1024px) {
+  .dashboard-2 section.user-detail {
+    padding: 21px 0 16px 94px !important;
+  }
+
+  #firstCharName {
+    position: absolute;
+    top: 49px;
+    left: 19px;
+  }
+
+  .dashboard-2 section {
+    padding: 24px 24px 24px 24px !important;
+  }
+
+  #claimWelcomeBox, .normalDisplay, #claimBox {
+  }
+}
+
+@media only screen and (max-width: 750px) {
+  .choiceIcon {
+    max-width: 80px;
+    margin: auto;
+  }
+
+  .choiceIcon svg {
+    width: 80px;
+    height: 80px;
+  }
+
+  #walletSelection li h2 {
+    font-size: 14px;
+  }
+}
+
+@media only screen and (max-width: 660px) {
+  #walletSelection {
+    display: block;
+  }
+
+  #walletSelection li {
+    width: unset;
+  }
+}
+
+@media only screen and (max-width: 550px) {
+  .new_wizard .step ul li {
+    width: 12% !important;
+  }
+
+  .wizard .step ul li {
+    width: 22$ !important;
+  }
+
+  #claimWelcomeBox, .normalDisplay, #claimBox {
+  }
+
+  dialog.normalDisplay {
+    width: 100%;
+  }
+
+  .twoButton {
+    min-width: 100px; 
+    margin: auto; 
+    max-width: 100px;
+  }
+
+  .twoButton button {
+    font-size: 13px;
+    height: 36px;
+  }
+
+  #submitG2AccountBtn516, #backAccountBtn, #submitG2AccountBtn515, #submitGAccountBtn, #DownloadGAccountBtn, #submitG3AccountBtn {
+    min-width: 100px; 
+    height: 36px;
+  }
+
+  #submitLedgerBtn {
+    height: 36px;
+  }
+
+  #donut-graph {
+    width: 200px;
+    height: 200px;
+  }
+
+  #ledgerContentContainer {
+    margin-left: 0px;
+    margin-right: 0px;
+  }
+}
+
+@media only screen and (max-width: 480px) {
+  #mnemonicShowing span, #mnemonicAnswerShowing span {
+    display: block;
+  }
+
+  #answerMnemonicShowing, #answerMnemonicShowing a {
+    display: block;
+  }
 }

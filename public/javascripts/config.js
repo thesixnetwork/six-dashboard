@@ -1,4 +1,5 @@
 const endtimeOfIco = new Date('2018-04-03T11:00:00+07:00')
+const closeIco = new Date('2018-03-31T23:59:59+07:00')
 //const endtimeOfIco = new Date('2018-01-03T10:00:00+07:00')
 var domain = window.location.href
 let appId, pageId
