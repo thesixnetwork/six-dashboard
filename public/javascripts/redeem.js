@@ -25,6 +25,10 @@ function submitRedeem() {
   let dom2 = document.getElementById('email')
   let dom3 = document.getElementById('submit')
   setDisable([dom1, dom2, dom3])
+  let codeDOM = document.getElementById('verifyCode')
+  let btnDOM = document.getElementById('verifyPhoneSubmitBtn')
+  setEnable([codeDOM, btnDOM])
+  $("#verifyCode").val("")
   let requestFunction = firebase.functions().httpsCallable('submitRedeemCode')
   requestFunction({redeem_code: dom1.value, email: dom2.value}).then(response => {
     redeemCode = dom1.value
@@ -97,8 +101,8 @@ function submitPhoneNumberCode() {
   let btnDOM = document.getElementById('verifyPhoneSubmitBtn')
   const code = codeDOM.value
   setDisable([codeDOM, btnDOM])
-  let requestFunction = firebase.functions().httpsCallable('phoneVerificationSubmit')
-  requestFunction({phone_number: phoneNumber, ref_code: $('#refVerify').html(), code: code}).then(response => {
+  let requestFunction = firebase.functions().httpsCallable('phoneVerificationSubmitRedeem')
+  requestFunction({phone_number: phoneNumber, email: email, ref_code: $('#refVerify').html(), code: code}).then(response => {
     if (response.data.success === true) {
       $("#redeemContainer2").fadeToggle(100, () => {
         $("#redeemContainer3").fadeToggle()

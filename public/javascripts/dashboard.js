@@ -929,7 +929,7 @@ function uniqArray(arrArg) {
 
 function getClaims() {
   if (firebase.auth().currentUser !== null) {
-    let totalSix = 0
+    let totalSix2 = 0
     firebase.firestore().collection('users_claim').doc(firebase.auth().currentUser.uid).collection('claim_period').get().then(docs => {
       let allData = []
       docs.forEach(function(doc) {
@@ -958,7 +958,7 @@ function getClaims() {
       allData.forEach(d => {
         let data = d.data()
         const elem = buildListClaim(data, d.id)
-        totalSix = totalSix + data.amount
+        totalSix2 = totalSix2 + data.amount
         let targetTable
         if (privateType[data.type].table === undefined) {
           targetTable = data.type
@@ -973,7 +973,7 @@ function getClaims() {
       var percent_number_step = $.animateNumber.numberStepFactories.append(' SIX')
       $('#totalSix').animateNumber(
         {
-          number: totalSix.toFixed(7),
+          number: totalSix2.toFixed(7),
           numberStep: percent_number_step
         }
       );
@@ -993,7 +993,7 @@ function getClaims() {
             $("#claim-"+id).text("Claimed")
             $("#claim-"+id).addClass("avail").removeClass("processing").removeClass('claimError')
             $("#claim-"+id).parent().parent().removeClass("stillAvail").addClass("stillClaimed")
-            $("#list-claim-"+id+".transactionId a").text(data.transaction_id)
+            $("#list-claim-"+id+" .transactionId a").text(data.transaction_id)
             let stellarChainiUrl
             var domain = window.location.href
             if (domain.match('localhost')) {
@@ -1005,7 +1005,7 @@ function getClaims() {
             } else {
               stellarChainUrl = 'http://testnet.stellarchain.io'
             }
-            $("#list-claim-"+id+".transactionId a").attr('href', stellarChainUrl+"/tx/"+data.transaction_id)
+            $("#list-claim-"+id+" .transactionId a").attr('href', stellarChainUrl+"/tx/"+data.transaction_id)
             updateGraph()
           } else if (data.state === 3) {
             setDisable([$("#claim-"+id)[0]])
@@ -1106,21 +1106,21 @@ function getTxs () {
           if (preDocData[d.id] !== undefined && preDocData[d.id] !== null) {
             data.six_amount = Number((data.six_amount * 1.06).toFixed(7))
             totalSix += data.six_amount
-            $('#totalSix').animateNumber(
-              {
-                number: totalSix.toFixed(7),
-                numberStep: percent_number_step
-              }
-            )
+            //$('#totalSix').animateNumber(
+            //  {
+            //    number: totalSix.toFixed(7),
+            //    numberStep: percent_number_step
+            //  }
+            //)
           } else {
             data.six_amount = Number((data.six_amount).toFixed(7))
               totalSix += data.six_amount
-              $('#totalSix').animateNumber(
-              {
-              number: totalSix.toFixed(7),
-              numberStep: percent_number_step
-              }
-            )
+              //$('#totalSix').animateNumber(
+              //{
+              //number: totalSix.toFixed(7),
+              //numberStep: percent_number_step
+              //}
+              //)
           }
           const elem = buildListTx(data)
           $("#userTxs")[0].appendChild(elem)
@@ -1134,12 +1134,12 @@ function getTxs () {
         })
         allDoc.sort(compare)
         var percent_number_step = $.animateNumber.numberStepFactories.append(' SIX')
-        $('#totalSix').animateNumber(
-          {
-            number: totalSix.toFixed(7),
-            numberStep: percent_number_step
-          }
-        );
+        //$('#totalSix').animateNumber(
+        //  {
+        //    number: totalSix.toFixed(7),
+        //    numberStep: percent_number_step
+        //  }
+        //);
         allDoc.forEach(d => {
           const data = d.data()
           const elem = buildListTx(data)
@@ -1580,6 +1580,12 @@ function checkTrustAccount() {
           updateGraph()
         })
         $("#claimStep").addClass("current")
+        qrcode.makeCode(userData.xlm_address);
+        $("#myXlmPublicAddress").text(userData.xlm_address)
+        $("#myXlmPublicAddress2").text(userData.xlm_address)
+        $("#copyMyXlmAddress").attr("data-clipboard-text", userData.xlm_address)
+        $(".noWallet").removeClass("noWallet").addClass("haveWallet")
+        getMyWalletBalance()
       }).catch(err => {
         setEnable([btnDOM])
         console.log(err)
@@ -1683,6 +1689,10 @@ function submitOTP(id) {
       //$("#claim-"+id).parent().parent().removeClass("stillAvail").addClass("stillClaimed")
       updateGraph()
       $("#otpCode").val("")
+      if (localStorage[userData.uid+"seen_waitting"] === undefined) {
+        $(".dialog-waitting").addClass("show-dialog")
+        localStorage[userData.uid+"seen_waitting"] = true
+      }
     } else {
       $("#submitOTPError").text(response.data.error_message)
       if ($("#submitOTPError").css("display") === "none") {
@@ -1926,6 +1936,8 @@ function submitOldAccount() {
 }
 
 function downloadMnemonic() {
+  let dom = document.getElementById("submitG2AccountBtn")
+  setEnable([dom])
   let splittedWords = mnemonicWords.split(" ")
   let data = `SIX.Network Recovery words (Mnemonic words) :
 
