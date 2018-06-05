@@ -32,7 +32,7 @@ module.exports = function (admin, functions, fireStore) {
   }, {
     'name': 'sendPhoneVerficationtoEmail',
     'module': functions.https.onCall((data, context) => sendPhoneVerficationtoEmail(admin, functions, data, context))
-   }
+  }
   ]
 }
 
