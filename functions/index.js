@@ -439,15 +439,15 @@ exports.phoneVerificationSubmitRedeem = functions.https.onCall((data, context) =
                   })
                   .catch(err => {
                     return { success: false, error_message: err.message }
-                  }) 
-              } else { 
+                  })
+              } else {
                 return {
                   success: false,
                   error_message: 'Invalid verification code',
                   error_code: 200
                 }
               }
-            } else { 
+            } else {
               return {
                 success: false,
                 error_message: "Verification session expired",

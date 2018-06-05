@@ -26,7 +26,13 @@ module.exports = function (admin, functions, fireStore) {
   }, {
     'name': 'checkKycAstemis',
     'module': functions.pubsub.topic('check-kyc-astemis').onPublish(event => checkKycAstemis(admin, functions, fireStore))
-  }
+  }, {
+    'name': 'sendClaimVerificationtoEmail',
+    'module': functions.https.onCall((data, context) => sendClaimVerificationtoEmail(admin, functions, data, context))
+  }, {
+    'name': 'sendPhoneVerficationtoEmail',
+    'module': functions.https.onCall((data, context) => sendPhoneVerficationtoEmail(admin, functions, data, context))
+   }
   ]
 }
 
@@ -373,5 +379,83 @@ function checkKycAstemis (admin, functions, fireStore) {
       }))
     })
     return Promise.all(checkUsers)
+  })
+}
+
+function sendClaimVerificationtoEmail (admin, functions, data, context) {
+  const mailTransport = nodemailer.createTransport({
+    host: functions.config().email.host,
+    port: functions.config().email.port,
+    secure: true, // true for 465, false for other ports
+    auth: {
+      user: functions.config().email.user, // generated ethereal user
+      pass: functions.config().email.password // generated ethereal password
+    }
+  })
+  const mailOptions = {
+    from: functions.config().email.from,
+    to: context.auth.token.email
+  }
+  mailOptions.subject = 'OTP Claim.'
+
+  let ref = admin.firestore().collection('users_claim')
+  let userId = context.auth.uid
+  let claimId = data.claim_id
+  return ref.doc(userId).collection('claim_period').doc(String(claimId)).get().then(doc => {
+    if (doc.exists) {
+      if (doc.data().claimed === true) {
+        return {
+          success: false,
+          error_message: 'Claimed'
+        }
+      } else {
+        mailOptions.html = emailTemplate.otp({ref_code: doc.data().ref_code, code: doc.data().code})
+        return mailTransport.sendMail(mailOptions).then(data => {
+          return {
+            success: true
+          }
+        })
+      }
+    } else {
+      return {
+        success: false,
+        error_message: 'Not found'
+      }
+    }
+  })
+}
+
+function sendPhoneVerficationtoEmail (admin, functions, data, context) {
+  const mailTransport = nodemailer.createTransport({
+    host: functions.config().email.host,
+    port: functions.config().email.port,
+    secure: true, // true for 465, false for other ports
+    auth: {
+      user: functions.config().email.user, // generated ethereal user
+      pass: functions.config().email.password // generated ethereal password
+    }
+  })
+  const mailOptions = {
+    from: functions.config().email.from,
+    to: context.auth.token.email
+  }
+  mailOptions.subject = 'OTP Phone.'
+
+  let ref = admin.firestore().collection('phone-verifications')
+  let phoneNumber = data.phone_number
+  return ref.doc(phoneNumber).get().then(doc => {
+    if (doc.exists) {
+      mailOptions.html = emailTemplate.otp({ref_code: doc.data().ref_code, code: doc.data().code})
+      return mailTransport.sendMail(mailOptions).then(data => {
+        return {
+          success: true
+        }
+      })
+    } else {
+      return {
+        success: false,
+        error_message: 'Not found'
+      }
+    }
   })
 }
