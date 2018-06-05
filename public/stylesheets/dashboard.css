@@ -1,3 +1,13 @@
+#sendToEmailBtn, #sendToEmailBtn2 {
+  display: none;
+  margin: auto;
+  padding-left: 18px;
+  padding-right: 18px;
+  margin-bottom: 10px;
+  height: 36px;
+  width: auto;
+}
+
 #progressContent {
   padding: 32px;
   margin: 0px;

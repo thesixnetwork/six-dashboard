@@ -285,7 +285,7 @@ function generatePhoneVerificationCode(phoneNumber) {
   let code = Math.random()
     .toString()
     .substr(2, 6);
-  let validUntil = Math.round(new Date().getTime() / 1000) + 180;
+  let validUntil = Math.round(new Date().getTime() / 1000) + 300;
   var http = require("https");
   var options = {
     method: "POST",
