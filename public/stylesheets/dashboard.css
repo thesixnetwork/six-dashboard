@@ -566,7 +566,7 @@ section#progressContent {
   cursor: pointer;
 }
 
-#recoverWordDialogContent, #congratDialogContent1, #congratDialogContent2, #feeDialogContent, #newLedgerDialogContent, #ledgerTrustAlertDialogContent, #claimErrorDialogContent, #whatsNextDialogContent {
+#recoverWordDialogContent, #congratDialogContent1, #congratDialogContent2, #feeDialogContent, #newLedgerDialogContent, #ledgerTrustAlertDialogContent, #claimErrorDialogContent, #whatsNextDialogContent, #waittingDialogContent {
   max-width: 500px;
 }
 
@@ -912,4 +912,24 @@ dialog.normalDisplay {
 .transactionId a {
   text-decoration: underline;
   color: #4a5ab5;
+}
+
+#walletSelection li.disable a {
+  cursor: default;
+}
+
+#walletSelection li.disable:hover {
+  border: 1px solid rgb(210,210,210);
+}
+
+#walletSelection li.disable:hover h2 {
+  color: rgb(74, 74, 72);
+}
+
+#walletSelection li.disable .cls-811 {
+  fill: rgb(74, 74, 72);
+}
+
+#walletSelection li.disable {
+  opacity: 0.3;
 }
