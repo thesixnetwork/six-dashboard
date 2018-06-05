@@ -590,8 +590,6 @@ function buildTableType(type) {
     table.appendChild(thead)
     table.appendChild(tbody)
     div.appendChild(table)
-//    overallDiv.appendChild(div1)
-
     if ((privateType[type] || {}).type === 'private') {
       var pDom = document.createElement("p")
       var txt7 = document.createTextNode("Contract Type "+allPrivateContract)
@@ -1004,7 +1002,6 @@ function getMyWalletBalance() {
     stellarUrl = 'https://horizon-testnet.stellar.org'
     StellarSdk.Network.useTestNetwork()
   }
-
   const server = new StellarSdk.Server(stellarUrl)
   let accountCaller = server.accounts()
   accountCaller.accountId(userData.xlm_address)
@@ -1070,11 +1067,11 @@ function getTxs () {
             )
           } else {
             data.six_amount = Number((data.six_amount).toFixed(7))
-            totalSix += data.six_amount
-            $('#totalSix').animateNumber(
+              totalSix += data.six_amount
+              $('#totalSix').animateNumber(
               {
-                number: totalSix.toFixed(7),
-                numberStep: percent_number_step
+              number: totalSix.toFixed(7),
+              numberStep: percent_number_step
               }
             )
           }
@@ -1202,6 +1199,7 @@ $(document).ready(function(){
     $('#oldAddress').removeClass("invalid")
     $("#alertOldAddress").html("")
   }
+
   let clipboard = new ClipboardJS('.blinkTooltip')
   clipboard.on('success', function(e) {
     let bodyRect = document.body.getBoundingClientRect()
@@ -1264,7 +1262,7 @@ $(document).ready(function(){
 
     $('body').on('click', '[class^="dialog-"]', function(){
 			$(this).removeClass('show-dialog');
-                        $("#otpCode").val("")
+      $("#otpCode").val("")
     });
 
     $('body').on('click', '[class^="dialog-"] dialog a.close', function(){
@@ -1384,7 +1382,7 @@ $(document).ready(function(){
     clickBody('dropdown', dropdown, 'show-dropdown');
   });
 
-});
+})
 
 // Click body for close
 function clickBody(name, elem, rm_class) {
@@ -1433,12 +1431,10 @@ function goToClaimTable(type) {
   })
 }
 
-
 var mainGraph
 function updateGraph() {
   let allClaim = 0
   let allAvailable = 0
-
   let claimedItems = $(".claimListItem.stillClaimed")
   for(let i = 0; i < claimedItems.length; i++) {
     allClaim += parseFloat($(claimedItems[i]).attr("total-amount"))
@@ -1447,12 +1443,10 @@ function updateGraph() {
   for(let i = 0; i < notAvailItems.length; i++) {
     allAvailable += parseFloat($(notAvailItems[i]).attr("total-amount"))
   }
-
   let availItems = $(".claimListItem.stillAvail")
   for(let i = 0; i < availItems.length; i++) {
     allAvailable += parseFloat($(availItems[i]).attr("total-amount"))
   }
-
   if (mainGraph === undefined) {
     mainGraph = Morris.Donut({
       element: 'donut-graph',
@@ -1525,7 +1519,6 @@ function checkTrustAccount() {
     stellarUrl = 'https://horizon-testnet.stellar.org'
     StellarSdk.Network.useTestNetwork()
   }
-
   const server = new StellarSdk.Server(stellarUrl)
   let accountCaller = server.accounts()
   accountCaller.accountId(userData.xlm_address)
@@ -1576,7 +1569,6 @@ function submitGeneratedAccount() {
   }
   setDisable([btnDOM, btn2DOM])
   $("#accordion").fadeToggle(100, function() {
-
     $("#progressContainer").fadeToggle(function() {
       $("#accountPg").css('width', '25%')
       setTimeout(function(){
@@ -1617,7 +1609,6 @@ function submitGeneratedAccount() {
         })
       }, 1200);
     })
-
   })
 }
 
@@ -1676,7 +1667,6 @@ function claimSix(id) {
       $('#refVerify2').html(response.data.ref_code)
       $('#refPhoneNumber2').html(response.data.phone_number)
       clearInterval(intervalFunction)
-
       let otpSubmitBtn = document.getElementById('otpSubmitBtn')
       otpSubmitBtn.onclick = function() {
         submitOTP(id)
@@ -1721,7 +1711,6 @@ function shuffle(array) {
   while (0 !== currentIndex) {
     randomIndex = Math.floor(Math.random() * currentIndex);
     currentIndex -= 1;
-
     temporaryValue = array[currentIndex];
     array[currentIndex] = array[randomIndex];
     array[randomIndex] = temporaryValue;
@@ -1772,7 +1761,6 @@ function goToGenerateNewWallet() {
     adom.onclick = function() { submitAnswerMnemonic(shuffleWords[j]) }
     choiceDOM.append(adom)
   }
-
   let generatedwallet = StellarHDWallet.fromMnemonic(mnemonic)
   generatedWallet = generatedwallet
   $("#genS").val(generatedwallet.getSecret(0))
@@ -1841,9 +1829,7 @@ function goToOldWallet() {
 }
 
 function automatedChangeTrustToSix() {
-
   const server = new StellarSdk.Server(stellarUrl)
-
   let userWallet = StellarSdk.Keypair.fromSecret(generatedWallet.getSecret(0))
   return server.loadAccount(generatedWallet.getPublicKey(0)).then(account => {
     let transaction = new StellarSdk.TransactionBuilder(account)
@@ -1853,7 +1839,6 @@ function automatedChangeTrustToSix() {
         })
       )
       .build()
-
     transaction.sign(userWallet)
     return server.submitTransaction(transaction)
   })
@@ -1913,7 +1898,6 @@ var doc = new jsPDF()
 doc.setFontSize(12)
 doc.text(data,10,10)
 doc.save('six_stellar_wallet_recovery_words_'+userData.email+'.pdf')
-
 }
 
 function downloadGeneratedAccount() {
@@ -1997,9 +1981,7 @@ var intervalFunction
 function requestOTP() {
   $("#requestOTPContent").slideToggle()
   $("#submitOTPContent").slideToggle()
-
   clearInterval(intervalFunction)
-
   // Countdown verify
   'use strict'
   function countdown (options = {}) {
@@ -2058,6 +2040,7 @@ function goToFee() {
 }
 
 var walletOpen = false
+
 function showXLMWallet() {
   if ($(".noWallet").length == 0) {
     if (walletOpen == true) {
@@ -2124,7 +2107,6 @@ function submitPhoneNumber() {
       $('#refVerify').html(response.data.ref_code)
       $('#refPhoneNumber').html(phone_number)
       clearInterval(intervalFunction)
-
       // Countdown verify
       'use strict'
       function countdown (options = {}) {
@@ -2345,5 +2327,4 @@ function addTrustLedger() {
     alert("Please confirm trust on ledger")
     $("#ledgerDialogNextBtn2").prop("disabled",false)
   })
-
 }
