@@ -4,7 +4,7 @@ firebase functions:config:set xlm.address="GDYALW6CVL6PRL6RZHJMQZ4VXGJXRKPZHJH6V
 firebase functions:config:set astemis.host='https://p4.cynopsis.co' astemis.app='artemis_sixnetwork' astemis.token='46a68d50-8446-4ba2-8a7d-d4762f5694b6' astemis.domain_name='SIXNETWORK'
 firebase database:set /country database.json  --confirm
 firebase functions:config:set xlm.address="GDJGQJHY3FNOP7P3BBSUHDKP5NMZL7FABPCBFE7W3OTDVEHEQMVX6B32" eth.address="0x51ac9a6bd8de95898a85fa6dbd5f1bfef957d854" xlm.issuer_public="GBVX36SLDLLXCVMGFLKNQ5XB76Z4SIXCFKYHKMSJTLANXB6AH27LUKEP"
-firebase functions:config:set secondary_signer.url="https://us-central1-multisigner-21cd5.cloudfunctions.net"
+firebase functions:config:set secondary_signer.url="https://sixnetwork:1212312121@us-central1-multisigner-21cd5.cloudfunctions.net"
 firebase functions:config:set xlm.account_creator_secret="SCNV255Q7E6GEBXZJRESDV6BYQ6PDJMUCJI7SQPCU52PCYLLGRDXPW4T"
 firebase functions:config:set xlm.first_signer_secret="SDHRW7PSXPFZ3B7O7QRUUWBG5QLBURDMVRDIUPN5UKDOWBTH6VUDJAJN"
 firebase functions:config:set xlm.multi_sig_address="GA4KFM4RTWXMH26534H7KNTIQJT3MRFIHZQY7FMHIOFSWGJWEEVAL6EW"
