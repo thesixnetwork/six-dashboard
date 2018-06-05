@@ -340,13 +340,13 @@ exports.phoneVerificationRequest = functions.https.onCall((data, context) => {
     .get()
     .then(doc => {
       if (doc.exists) {
-        if (doc.data().is_verified === true) {
-          return {
-            success: false,
-            error_message: 'Phone number has already been used',
-            error_code: 100
-          }
-        } else {
+        //if (doc.data().is_verified === true) {
+        //  return {
+        //    success: false,
+        //    error_message: 'Phone number has already been used',
+        //    error_code: 100
+        //  }
+        //} else {
           return generatePhoneVerificationCode(phoneNumber)
             .then(data => {
               if (data.success === true) {
@@ -370,7 +370,7 @@ exports.phoneVerificationRequest = functions.https.onCall((data, context) => {
                 error_message: "Unexpected error, please try again"
               };
             });
-        }
+        //}
       } else {
         return generatePhoneVerificationCode(phoneNumber)
           .then(data => {
@@ -428,11 +428,14 @@ exports.phoneVerificationSubmit = functions.https.onCall((data, context) => {
             if (doc.data().ref_code === refCode && doc.data().code === code) {
               let batch = admin.firestore().batch()
               batch.set(ref.doc(phoneNumber), { is_verified: true })
-              batch.update(userRef.doc(uid), {
+              let dataToUpdate = {
                 phone_number: phoneNumber,
                 phone_verified: true,
-                country: country
-              })
+              }
+              if (country !== undefined) {
+                dataToUpdate.country = country
+              }
+              batch.update(userRef.doc(uid), dataToUpdate)
               return batch
                 .commit()
                 .then(() => {
@@ -1752,4 +1755,97 @@ exports.claim4TestHandle = functions.https.onRequest((req, res) => {
   handleClaimSix({ claim_id}, { auth: { uid} }).then(r => {
     res.json(r)
   })
+})
+
+exports.submitRedeemCode = functions.https.onCall((data, context) => {
+  let ref = admin.firestore().collection("users")
+  let redeemCode = data.redeem_code
+  let thisEmail = data.email
+  if (redeemCode === undefined || thisEmail === undefined) return { success: false }
+  return ref.where('redeem_code', '==', redeemCode).get().then(docs => {
+      let found = false
+      let foundPhone = false
+      let verifiedPhone = false
+      let foundCounter = 0
+      let phoneNumber
+      docs.forEach(doc => {
+        if (doc.data().email === thisEmail) {
+          found = true
+          foundCounter++
+        }
+        if (doc.data().phone_number !== undefined) {
+          foundPhone = true
+          phoneNumber = doc.data().phone_number
+        }
+        if (doc.data().phone_verified === true) {
+          verifiedPhone = true
+        }
+      })
+      if (found && foundCounter === 1) {
+        if (foundPhone && verifiedPhone !== true) {
+          return generatePhoneVerificationCode(phoneNumber)
+            .then(data => {
+              if (data.success === true) {
+                let refCode = data.refCode;
+                let validUntil = data.validUntil;
+                return {
+                  success: true,
+                  type: 1,
+                  ref_code: refCode,
+                  valid_until: validUntil,
+                  phone_number: phoneNumber
+                };
+              } else {
+                return {
+                  success: false,
+                  message: "Unexpected error, please try again"
+                };
+              }
+            })
+            .catch(() => {
+              return {
+                success: false,
+                message: "Unexpected error, please try again"
+              };
+            });
+        } else {
+          return { success: true, type: 0 }
+        }
+      } else {
+        return { success: false, message: 'Invalid redeem code' }
+      }
+    })
+})
+
+exports.changeRedeemPassword = functions.https.onCall((data, context) => {
+  let ref = admin.firestore().collection("users")
+  let redeemCode = data.redeem_code
+  let thisEmail = data.email
+  let newPassword = data.password
+  if (redeemCode === undefined || thisEmail === undefined) return { success: false }
+  return ref.where('redeem_code', '==', redeemCode).get().then(docs => {
+      let found = false
+      let foundCounter = 0
+      docs.forEach(doc => {
+        if (doc.data().email === thisEmail) {
+          found = true
+          foundCounter++
+        }
+      }) 
+      if (found && foundCounter === 1) {
+        return admin.auth().getUserByEmail(thisEmail).then(userRecord => {
+            return admin.auth().updateUser(userRecord.uid, {
+                password: newPassword
+              }).then(() => {
+                ref.doc(userRecord.uid).update({ redeem_code: admin.firestore.FieldValue.delete(), is_redeem_account: true }).then(() => {
+                  return { success: true }
+                }).catch(() => {
+                  return { success: false, message: 'Unexpected Error occured' }
+                })
+              })
+          })
+      } else { 
+        return { success: false, message: 'Invalid redeem code' }
+      }
+    })
 })

@@ -62,7 +62,7 @@ async function generateUser (user) {
     }
     if (user.phone_number !== undefined && user.phone_number !== '' && user.phone_number !== null) {
       setData.phone_number = user.phone_number
-      setData.phone_verified = true
+      //setData.phone_verified = true
     }
     return admin.firestore().collection('users').doc(newUid).set(setData, { merge: true }).then(() => {
       return userRecord
