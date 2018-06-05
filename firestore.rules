@@ -1,12 +1,11 @@
 service cloud.firestore {
   match /databases/{database}/documents {
-    match /users_claim/{userId} {
-      allow read: if request.auth.uid == userId;
+    match /claim_tx_logs {
       allow read, update, create: if exists(/databases/$(database)/documents/admins/$(request.auth.uid))
     }
-    match /users_claim/{userId}/claim_period/{claimId}{
+    match /claim_tx_logs/{userId} {
       allow read: if request.auth.uid == userId;
-      allow create, read, update: if exists(/databases/$(database)/documents/admins/$(request.auth.uid));
+      allow read, update, create: if exists(/databases/$(database)/documents/admins/$(request.auth.uid))
     }
     match /users/{userId}{
       allow read: if request.auth.uid == userId;
