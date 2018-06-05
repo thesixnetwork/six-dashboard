@@ -227,7 +227,7 @@ function generateClaimVerificationCode(user_id, claim_id, phoneNumber) {
   let code = Math.random()
     .toString()
     .substr(2, 6);
-  let validUntil = Math.round(new Date().getTime() / 1000) + 180;
+  let validUntil = Math.round(new Date().getTime() / 1000) + (5*60);
   var http = require("https");
   var options = {
     method: "POST",
@@ -403,6 +403,71 @@ exports.phoneVerificationRequest = functions.https.onCall((data, context) => {
     });
 });
 
+exports.phoneVerificationSubmitRedeem = functions.https.onCall((data, context) => {
+  let ref = admin.firestore().collection('phone-verifications')
+  let userRef = admin.firestore().collection('users')
+  let phoneNumber = data.phone_number
+  let country = data.country
+  let refCode = data.ref_code
+  let code = data.code
+  let thisEmail = data.email
+  return admin.auth().getUserByEmail(thisEmail).then(userRecord => {
+      const uid = userRecord.uid
+      return ref
+        .doc(phoneNumber)
+        .get()
+        .then(doc => {
+          if (doc.exists) {
+            if (
+              doc.data().valid_until > Math.round(new Date().getTime() / 1000)
+            ) {
+              if (doc.data().ref_code === refCode && doc.data().code === code) {
+                let batch = admin.firestore().batch()
+                batch.set(ref.doc(phoneNumber), { is_verified: true })
+                let dataToUpdate = {
+                  phone_number: phoneNumber,
+                  phone_verified: true,
+                }
+                if (country !== undefined) {
+                  dataToUpdate.country = country
+                }
+                batch.update(userRef.doc(uid), dataToUpdate)
+                return batch
+                  .commit()
+                  .then(() => {
+                    return { success: true }
+                  })
+                  .catch(err => {
+                    return { success: false, error_message: err.message }
+                  })
+              } else {
+                return {
+                  success: false,
+                  error_message: 'Invalid verification code',
+                  error_code: 200
+                }
+              }
+            } else {
+              return {
+                success: false,
+                error_message: "Verification session expired",
+                error_code: 300
+              };
+            }
+        } else {
+          return {
+            success: false,
+            error_message: "Unexpected error, please try again"
+          };
+        }
+      })
+      .catch(err => {
+        console.log(err);
+        return { success: false, error_message: err.message };
+      });
+    })
+});
+
 exports.phoneVerificationSubmit = functions.https.onCall((data, context) => {
   let ref = admin.firestore().collection('phone-verifications')
   let userRef = admin.firestore().collection('users')
@@ -416,12 +481,6 @@ exports.phoneVerificationSubmit = functions.https.onCall((data, context) => {
     .get()
     .then(doc => {
       if (doc.exists) {
-        //if (doc.data().is_verified === true) {
-        //  return {
-        //    success: false,
-        //    error_message: "Phone number has already been used"
-        //  };
-        //} else {
           if (
             doc.data().valid_until > Math.round(new Date().getTime() / 1000)
           ) {
@@ -458,7 +517,6 @@ exports.phoneVerificationSubmit = functions.https.onCall((data, context) => {
               error_code: 300
             };
           }
-        //}
       } else {
         return {
           success: false,
@@ -1831,7 +1889,7 @@ exports.changeRedeemPassword = functions.https.onCall((data, context) => {
           found = true
           foundCounter++
         }
-      }) 
+      })
       if (found && foundCounter === 1) {
         return admin.auth().getUserByEmail(thisEmail).then(userRecord => {
             return admin.auth().updateUser(userRecord.uid, {
@@ -1844,7 +1902,7 @@ exports.changeRedeemPassword = functions.https.onCall((data, context) => {
                 })
               })
           })
-      } else { 
+      } else {
         return { success: false, message: 'Invalid redeem code' }
       }
     })
