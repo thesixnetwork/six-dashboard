@@ -789,6 +789,7 @@
             </div>
           </main>
           <div id='walletSelectBox'>
+            <p style="text-align: center;font-size: 20px;font-weight: bold;margin-top: 30px;">"Choose one method"</p>
             <ul id='walletSelection'>
               <li id='newChoice' class='active'>
                 <a href='javascript:;' onclick='selectChoice("new")'>
@@ -984,6 +985,8 @@
                 <div class='accordionContent'>
                   <p style='font-weight: bold; line-height: 15px; text-align: center;'>Recovery words</p>
                   <span style="text-align: center; display: block; font-size: 11px;">(Mnemonic words)</span><br>
+                  <p style='text-align: center;'>It’s an important as your private key. So, we strongly recommend you to <br><span style="color: #4a5ab5; font-weight: bold;">write it down or print it out and keep it safe</span> in only place you could access to it.</p>
+                  <br>
                   <div id='mnemonicWordContainer'>
                     <span id='mnemonicShowing'>
                     </span>
@@ -1000,6 +1003,7 @@
                   <p style='text-align: center;'>Please choose your recovery words in their original order, to ensure you stored, or saved them correctly.</p><br>
                   <p style='font-weight: bold; line-height: 15px; text-align: center;'>Recovery words</p>
                   <span style="text-align: center; display: block; font-size: 11px;">(Mnemonic words)</span><br>
+                  <p id="mnemonicError" style="line-height: 0px;text-align: center;color: red;"> </p><br>
                   <div id='mnemonicWordAnswerContainer'>
                     <span id='mnemonicAnswerShowing'>
                     </span>
@@ -1238,6 +1242,22 @@
         <p>An error occurs when activating your wallet. Please try again.</p>
         <br>
         <dl><dd><button id='recoveryDialogSubmitBtn3' onclick='submitDialog()'>Submit</button></dd></dl>
+      </div>
+    </div>
+  </dialog>
+</div>
+<div id='ledgerTrustAlertDialog' class='dialog-ledger-trustline'>
+  <dialog style='background: unset;'>
+    <div id='ledgerTrustAlertDialogContent'>
+      <div class='dialogHeader'>
+        <svg id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 344 417.96"><defs><style>.cls-87541{fill:#ffd664;}.cls-87542{fill:#333a4d;}.cls-87543{fill:#727270;fill-rule:evenodd;}</style></defs><title>icon</title><circle class="cls-87541" cx="172.42" cy="197.81" r="124.84"/><path class="cls-87542" d="M172.42,326.12a128.3,128.3,0,1,1,128.3-128.3A128.45,128.45,0,0,1,172.42,326.12Zm0-249.67A121.37,121.37,0,1,0,293.8,197.81,121.51,121.51,0,0,0,172.42,76.44Z"/><path class="cls-87543" d="M172,123.4a71.21,71.21,0,0,0-71.19,71.19H129.7c0-23.48,19.28-43,42.76-43,23.23,0,42.51,19.53,42.51,43a42.67,42.67,0,0,1-42.51,42.51h-22V222.77l-49.68,28.42,49.68,28.18V265.78h22A71.19,71.19,0,1,0,172,123.4Z"/></svg>
+      </div>
+      <div class='dialogContent'>
+        <h3>Action is canceled or timeout</h3>
+        <br>
+        <p>An action has been canceled or timeout. Please try again.</p>
+        <br>
+        <dl><dd><button id='ledgerTrustAlertDialogSubmitBtn3' onclick='submitDialog()'>Submit</button></dd></dl>
       </div>
     </div>
   </dialog>
