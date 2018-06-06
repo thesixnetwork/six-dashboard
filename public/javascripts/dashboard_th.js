@@ -1334,7 +1334,7 @@ $(document).ready(function(){
   firebase.auth().onAuthStateChanged(function (user) {
     if (!user) {
       console.log('Go to login')
-      window.location.href = '/kr'+window.location.search
+      window.location.href = '/th'+window.location.search
     } else {
       initializeAdmin().then(() => {
         return $('#adminShortcut').css('display', 'block')
@@ -1342,7 +1342,7 @@ $(document).ready(function(){
         return firebase.firestore().collection('users').doc(user.uid).get().then(doc => {
           const endtime = endtimeOfIco
           if (!(Date.now() > endtime && doc.data().all_done) && doc.data().private_user !== true) {
-            window.location.href = '/wizard-kr'+window.location.search
+            window.location.href = '/wizard-th'+window.location.search
           }
           userData = doc.data()
           let name = (userData.first_name || "") + " " + (userData.last_name || "")

@@ -2,6 +2,7 @@ const admin = require('firebase-admin')
 const uuid = require('uuid/v5')
 const _ = require('underscore')
 const fs = require('fs')
+const readline = require('readline')
 const configPath = __dirname + '/config/config.json'
 const privateUserPath = __dirname + '/output/private_sale.json'
 const privateTxsPath = __dirname + '/output/private_sale_txs.json'
@@ -21,17 +22,20 @@ admin.initializeApp({
   databaseURL: 'https://sixdashboard.firebaseio.com'
 })
 const db = admin.firestore()
+const batchCount = 0
+const batch = 500
+let currentNo = 0
+const totalUser = 6916
 
 async function listAllUsers (nextPageToken) {
   // List batch of users, 1000 at a time.
   admin
     .auth()
-    .listUsers(700, nextPageToken)
+    .listUsers(batch, nextPageToken)
     .then(listUsersResult => {
       const promiseMap = listUsersResult
         .users
         .map(userRecord => {
-          console.log('user', userRecord.uid)
           return findTxByUid(userRecord.uid)
             .then(async (txs) => {
               const presaleTxs = await findPresaleByUid(userRecord.uid)
@@ -48,6 +52,8 @@ async function listAllUsers (nextPageToken) {
               return fmt
             })
             .then(txs => {
+              currentNo++
+              writeSuperBeautifulPrompt((currentNo / totalUser), `user: ${userRecord.uid}`)
               const claimPeriodsGroup = mergeTxs(txs.claim_periods)
               txs.claim_periods = claimPeriodsGroup
               return txs
@@ -159,4 +165,16 @@ function formatTxs (txs, uid) {
   return obj
 }
 // Start listing users from the beginning, 1000 at a time.
+function writeSuperBeautifulPrompt (p, msg = '') {
+  readline.clearLine(process.stdout, 0)
+  readline.cursorTo(process.stdout, 0, null)
+  const l = 20
+  const pipeStr = '|'
+  const remainingStr = '.'
+  const progress = pipeStr.repeat(Math.floor(p * l))
+  const remaining = remainingStr.repeat(Math.ceil((1 - p) * l))
+  const text = `\u001b[1;36mwaiting ... [${progress}${remaining}] (${(p * 100).toFixed(1)}%)\u001b[0m - ${msg}`
+  process.stdout.write(text)
+}
+
 listAllUsers()
