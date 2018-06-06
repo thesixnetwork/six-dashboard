@@ -76,7 +76,7 @@ td3.appendChild(txt3);
 
 // valid_after column
 var td4 = document.createElement("td");
-var txt4 = document.createTextNode(moment(valid_after).format('DD/MM/YYYY HH:mm:ss'));
+var txt4 = document.createTextNode(moment(valid_after).format('DD/MM/YYYY'));
 td4.appendChild(txt4);
 
 // Allow trust column
@@ -308,7 +308,7 @@ $("#hasWatchingText").text(``);
 }
 
 function renderRegistrationTime(id, data) {
-const date_string = data.registration_time && data.registration_time !== null ? moment(new Date(parseInt(data.registration_time))).format('DD/MM/YYYY HH:mm:ss') : ''
+const date_string = data.registration_time && data.registration_time !== null ? moment(new Date(parseInt(data.registration_time))).format('DD/MM/YYYY') : ''
 const dom = document.getElementById(`remarkText_${id}`)
 dom.textContent = date_string
 }
@@ -352,7 +352,7 @@ let claim_data = raw_doc.data()
 claim_data = Object.assign(struct, claim_data)
 
 if (claim_data.update_timestamp && claim_data.update_timestamp !== '') {
-claim_data.update_timestamp = moment(parseInt(claim_data.update_timestamp)).format('DD/MM/YYYY HH:mm:ss')
+claim_data.update_timestamp = `${moment(parseInt(claim_data.update_timestamp)).format('DD/MM/YYYY (HH:mm:ss)')}`
 }
 const { uid } = claim_data
 return firebase.firestore().collection('users').doc(uid).get().then(res => {
