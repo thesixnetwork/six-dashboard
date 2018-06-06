@@ -8,7 +8,7 @@ const serviceAccount = require(configPath)
 
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
-  databaseURL: 'https://six-dashboard.firebaseio.com'
+  databaseURL: 'https://sixdashboard.firebaseio.com'
 })
 const db = admin.firestore()
 Promise.all(privateUsers.map(generateUser))
@@ -33,7 +33,7 @@ async function generateUser (user) {
   let newUid = `pri-${uuid(user.email, uuid.URL)}`
   let newUser = {
     uid: newUid,
-    email: user.email,
+    email: user.email.trim(),
     emailVerified: true,
     password: Math.random().toString(36).slice(-8),
     displayName: `${user.firstname} ${user.lastname}`,
@@ -52,7 +52,7 @@ async function generateUser (user) {
   .then(userRecord => {
     let setData = {
       uid: newUid,
-      email: user.email,
+      email: user.email.trim(),
       registration_time: (new Date()).getTime(),
       private_user: true,
       first_name: user.firstname,

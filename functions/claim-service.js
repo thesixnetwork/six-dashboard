@@ -2,6 +2,7 @@ const functions = require('firebase-functions')
 const StellarSdk = require('stellar-sdk')
 const request = require('request-promise')
 const admin = require('firebase-admin')
+
 const db = admin.firestore()
 const claimRef = db.collection('users_claim')
 const userRef = db.collection('users')
@@ -212,55 +213,16 @@ function setClaimTxLog (data) {
   return claimLogRef.doc().set(data)
 }
 
-function sendClaimUpdateEmail (email, amount, total) {
-    const content = `
-    <div style="font-family: &quot;Prompt&quot;, sans-serif;color: rgba(33, 33, 33, 1);margin: 0;">
-    <div className="section" style="font-family: &quot;Prompt&quot;, sans-serif;color: rgba(33, 33, 33, 1);position: relative;padding-bottom: 10px;height: 100%;z-index: 1">
-      <!-- <img className="top-header" src="https://firebasestorage.googleapis.com/v0/b/devson-f46f4.appspot.com/o/public%2Fheader.png?alt=media&token=9f32b7f1-6def-45f2-bf1a-2cea15326450"
-              alt=""> -->
-      <div className="card-content" style="font-family: &quot;Prompt&quot;, sans-serif;color: rgba(33, 33, 33, 1);padding: 5px;margin-top: -20px;transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);background: #FFF">
-        <div style="font-family: &quot;Prompt&quot;, sans-serif;color: rgba(33, 33, 33, 1);padding: 2%">
-          <!-- thai -->
-          <p style="margin-bottom: 10px;font-family: &quot;Prompt&quot;, sans-serif;color: rgba(33, 33, 33, 1);font-size: 17px">You successfully claimed the SIX token with the following details:</h2>
-            <br />
-            <p style="font-family: &quot;Prompt&quot;, sans-serif;color: rgba(33, 33, 33, 1);font-size: 14px"></p>Transaction ID (TX Hash): r23Hdk4j3k4oj4t3DFG2DFSD</p>
-          <p style="font-family: &quot;Prompt&quot;, sans-serif;color: rgba(33, 33, 33, 1);font-size: 14px"></p>Claim Amount: ${amount} SIX tokens</p>
-          <p style="font-family: &quot;Prompt&quot;, sans-serif;color: rgba(33, 33, 33, 1);font-size: 14px"></p>Your Total Balance: ${balance} SIX tokens</p>
-          <p style="margin-bottom: 10px; margin-top: 10px;font-family: &quot;Prompt&quot;, sans-serif;color: rgba(33, 33, 33, 1);font-size: 14px"></p>Furthermore, you can review your transaction by logging to the system at:
-          <a href=" https://ico.six.network"> https://ico.six.network</a>
-          </p>
-          <p style=" margin-top: 10px;font-family: &quot;Prompt&quot;, sans-serif;color: rgba(33, 33, 33, 1);font-size: 14px"></p>Best regards,</p>
-          <p style="font-family: &quot;Prompt&quot;, sans-serif;color: rgba(33, 33, 33, 1);font-size: 14px"></p>SIX network team</p>
-        </div>
-      </div>
-    </div>
-  </div>
-    `
-    const personalization = [{
-      to: [{ email }],
-      subject: '[SIX network] Transaction completed'
-    }]
-    const mailOptions = {
-      personalization,
-      from: {email: 'no-reply@six.network'},
-      content: [{
-        type: 'text/html',
-        value: content
-      }]
-    }
-    axios.post('https://cors-anywhere.herokuapp.com/https://api.sendgrid.com/v3/mail/send', mailOptions, { headers: { Authorization: `Bearer ${SENDGRID_API_KEY}`}})
-}
-
 /**
  *
  * @param {string} transactionId optional
  */
 const updateState = ({ uid, claim, claim_id: claimId, user, state, tx, error }) => {
   console.log('updateState')
-  const update_timestamp = Date.now()
+  const updateTimestamp = Date.now()
   let data = {
     state: state || 1,
-    update_timestamp
+    update_timestamp: updateTimestamp
   }
   if (tx) {
     data.transaction_id = tx.hash
@@ -270,9 +232,7 @@ const updateState = ({ uid, claim, claim_id: claimId, user, state, tx, error }) 
     data.error_message = error.message
   }
 
-  const userClaimRef = claimRef.doc(uid).collection('claim_period').doc(string(claimId))
-  let public_key = ''
-  let email = ''
+  const userClaimRef = claimRef.doc(uid).collection('claim_period').doc(String(claimId))
   return userClaimRef
     .update(data)
     .then(() => {
@@ -280,45 +240,6 @@ const updateState = ({ uid, claim, claim_id: claimId, user, state, tx, error }) 
         return setClaimTxLog(Object.assign({ uid, claim_id: claimId, is_error: !!data.error_message }, data)
         )
       }
-    })
-    .then(() => claimRef.doc(uid).get())
-    .then(snapshot => snapshot.data())
-    .then(userClaimData => {
-      public_key = userClaimData.public_key
-      return public_key
-    })
-    .then(() => userRef(uid).get())
-    .then(snapshot => snapshot.data())
-    .then(userData => {
-      email = userData.email
-      return email
-    })
-    .then(() => userClaimRef.get())
-    .then(snapshot => snapshot.data())
-    .then(userClaimRefData => {
-      const { amount } = userClaimRefData
-      var domain = window.location.href
-      const xlm_address = public_key
-      if (functions.config().campaign.is_production === 'true') {
-        stellarUrl = 'https://horizon.stellar.org'
-        StellarSdk.Network.usePublicNetwork()
-      } else {
-        stellarUrl = 'https://horizon-testnet.stellar.org'
-        StellarSdk.Network.useTestNetwork()
-      }
-      const server = new StellarSdk.Server(stellarUrl)
-      let accountCaller = server.accounts()
-      accountCaller.accountId(xlm_address)
-      return accountCaller.call().then(account => {
-        let sixAsset = account.balances.find(x => { return x.asset_code == 'SIX' })
-        if (sixAsset !== undefined) {
-          let thisAccBalance = parseFloat(sixAsset.balance)
-          return sendClaimUpdateEmail(email, amount, thisAccBalance)
-        } else {
-          // ไม่มี หรือไม่ได้ trust อื่นๆ
-          return
-        }
-      })
     })
     .then(() => {
       return {
@@ -520,7 +441,7 @@ function sendSix ({ uid, claim_id: claimId, user, claim }) {
       .addOperation(
         StellarSdk.Operation.payment({
           destination: user.public_key,
-          amount: claim.amount.toString(),
+          amount: claim.amount.toFixed(7).toString(),
           asset: sixAsset
         })
       )

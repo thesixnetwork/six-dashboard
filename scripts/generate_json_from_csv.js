@@ -27,9 +27,8 @@ const model = {
   'd+90': 15,
   'd+180': 16,
   'd+365': 17,
-  'd+730': 18,
-  'd+1095': 19,
-  'd+630': 20,
+  'd+1095': 18,
+  'd+630': 19,
   'tx_ids': 2
 }
 
@@ -58,7 +57,7 @@ let allUsers = {}
 const toJSON = (d) => {
   return d.map(roll => {
     if (roll[model.firstname] === '') return
-    if (roll[model.email] === '') return
+    if (roll[model.email] === '' || roll[model.email] === undefined) return
     if (!roll[model.type] && roll[model.type] === '') return
     const type = roll[model.type]
     let obj
@@ -66,14 +65,14 @@ const toJSON = (d) => {
       obj = {
         firstname: roll[model.firstname],
         lastname: '',
-        email: roll[model.email],
+        email: roll[model.email].trim(),
         claim_periods: []
       }
       if (roll[model.phone_number] !== undefined && roll[model.phone_number] !== '') {
         obj.phone_number = '+'+roll[model.phone_number].replace(/ /g, '').replace(/-/g, '')
       }
     } else {
-      obj = allUsers[roll[model.email]]
+      obj = allUsers[roll[model.email].trim()]
     }
     if (roll[model['d+0']]) addClaimPeriod(obj.claim_periods, 0, parseFloat(roll[model['d+0']].replace(/,/g, '')), type, parseFloat(roll[model.normal_six].replace(/,/g, '')), parseFloat(roll[model.bonus_six].replace(/,/g, '')))
     if (roll[model['d+30']]) addClaimPeriod(obj.claim_periods, 30, parseFloat(roll[model['d+30']].replace(/,/g, '')), type, parseFloat(roll[model.normal_six].replace(/,/g, '')), parseFloat(roll[model.bonus_six].replace(/,/g, '')))
