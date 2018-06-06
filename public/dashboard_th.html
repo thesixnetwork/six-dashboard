@@ -810,8 +810,8 @@
                 </a>
               </li>
 
-              <li id='oldChoice' class='disable'>
-                <a href='javascript:;'>
+              <li id='oldChoice'>
+                <a href='javascript:;' onclick='selectChoice("old")'>
                   <i class="correctSign fas fa-check-circle"></i>
                   <p id='recommended'>&nbsp;</p>
                   <div class='choiceIcon'>
@@ -1184,7 +1184,7 @@
       </div>
   </main>
 </html>
-<div id="assetContent">
+<div id="assetContent" style="display:none">
   <span> </span>
 </div>
 
@@ -1267,9 +1267,9 @@
         <svg id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 344 417.96"><defs><style>.cls-87541{fill:#ffd664;}.cls-87542{fill:#333a4d;}.cls-87543{fill:#727270;fill-rule:evenodd;}</style></defs><title>icon</title><circle class="cls-87541" cx="172.42" cy="197.81" r="124.84"/><path class="cls-87542" d="M172.42,326.12a128.3,128.3,0,1,1,128.3-128.3A128.45,128.45,0,0,1,172.42,326.12Zm0-249.67A121.37,121.37,0,1,0,293.8,197.81,121.51,121.51,0,0,0,172.42,76.44Z"/><path class="cls-87543" d="M172,123.4a71.21,71.21,0,0,0-71.19,71.19H129.7c0-23.48,19.28-43,42.76-43,23.23,0,42.51,19.53,42.51,43a42.67,42.67,0,0,1-42.51,42.51h-22V222.77l-49.68,28.42,49.68,28.18V265.78h22A71.19,71.19,0,1,0,172,123.4Z"/></svg>
       </div>
       <div class='dialogContent'>
-        <h3>Action is canceled or timeout</h3>
+        <h3>กระบวนการถูกยกเลิก หรือ หมดเวลา</h3>
         <br>
-        <p>An action has been canceled or timeout. Please try again.</p>
+        <p>กระบวนการถูกยกเลิก หรือ หมดเวลา กรุณาลองใหม่อีก.</p>
         <br>
         <dl><dd><button id='ledgerTrustAlertDialogSubmitBtn3' onclick='submitDialog()'>Submit</button></dd></dl>
       </div>
