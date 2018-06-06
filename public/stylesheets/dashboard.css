@@ -6,129 +6,129 @@
   margin-bottom: 10px;
   height: 36px;
   width: auto;
-}
-
-#progressContent {
+  }
+  
+  #progressContent {
   padding: 32px;
   margin: 0px;
-}
-
-#exchange-ul {
+  }
+  
+  #exchange-ul {
   display: flex;
   width: 100%;
-}
-
-.exchange-li {
+  }
+  
+  .exchange-li {
   width: 100%;
   text-align: center;
-}
-
-.exchange li:not(:last-of-type) {
+  }
+  
+  .exchange li:not(:last-of-type) {
   border-right: 1px solid rgba(180,180,180,0.2);
-}
-
-.truncate {
+  }
+  
+  .truncate {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-}
-
-#exchange {
+  }
+  
+  #exchange {
   margin: 0px 32px 0px;
-}
-
-#warnBox {
+  }
+  
+  #warnBox {
   display: none;
-}
-
-#nwbtn {
+  }
+  
+  #nwbtn {
   max-width: 200px;
   margin: auto;
   margin-top: 30px;
-}
-
-#questionSelect {
+  }
+  
+  #questionSelect {
   max-width: 300px;
   margin-left: auto;
   margin-right: auto;
   margin-bottom: 20px;
   margin-top: 20px;
-}
-
-#questionBox {
+  }
+  
+  #questionBox {
   display: none;
-}
-
-.warning-label {
+  }
+  
+  .warning-label {
   min-width: 0px!important;
-}
-
-#depositETHBox, #depositXLMBox, #submitXLMBox, #submitETHBox, #congratulationBox {
+  }
+  
+  #depositETHBox, #depositXLMBox, #submitXLMBox, #submitETHBox, #congratulationBox {
   display: none;
-}
-
-.Exexchange {
+  }
+  
+  .Exexchange {
   display: flex;
-}
-
-.Exexchange p {
+  }
+  
+  .Exexchange p {
   line-height: 45px;
   margin-left: 8px;
   display: block;
   width: 100%;
-}
-
-.Exexchange label {
+  }
+  
+  .Exexchange label {
   display: block;
   width: 100%;
-}
-
-#welcomeBox {
+  }
+  
+  #welcomeBox {
   max-width: 750px;
   margin: auto;
-}
-
-.deposit-box, .submit-box, #congratulationBox {
+  }
+  
+  .deposit-box, .submit-box, #congratulationBox {
   max-width: 750px;
   margin: auto;
-}
-
-#submitDepositXLM {
+  }
+  
+  #submitDepositXLM {
   max-width: 200px;
   margin: auto;
-}
-
-.qrCenter {
+  }
+  
+  .qrCenter {
   width: 100%;
-}
-
-.qrContainer {
+  }
+  
+  .qrContainer {
   max-width: 300px;
   max-height: 300px;
   margin: auto;
-}
-
-#trnsBtnContainer {
+  }
+  
+  #trnsBtnContainer {
   display: flex;
   margin: auto;
-}
-
-.btnInline {
+  }
+  
+  .btnInline {
   margin-left: 10px;
   margin-right: 10px;
   margin-bottom: 25px;
-}
-
-.tableContainer {
+  }
+  
+  .tableContainer {
   overflow-x: auto;
   width: 100%;
-}
-
-.txHistoryTable {
+  }
+  
+  .txHistoryTable {
   min-width: 970px;
-}
-
-#howToETH, #backToTxHis, #goToClaim {
+  }
+  
+  #howToETH, #backToTxHis, #goToClaim {
   color: white;
   font-weight: bold;
   background: #4a5ab5;
@@ -137,13 +137,13 @@
   text-align: center;
   border-radius: 5px;
   margin-top: 7px;
-}
-
-.faqMenu {
+  }
+  
+  .faqMenu {
   text-decoration: underline;
-}
-
-#copiedTooltip {
+  }
+  
+  #copiedTooltip {
   position: absolute;
   background: rgb(0,0,0);
   color: white;
@@ -153,62 +153,62 @@
   opacity: 0;
   -webkit-transition: opacity 0.2s;
   transition: opacity 0.2s;
-}
-
-.showToolTip {
+  }
+  
+  .showToolTip {
   opacity: 0.9!important;
-}
-
-#XLMaddressToCopyText, #ETHaddressToCopyText, #myETHWalletAddress, #memoCopy {
+  }
+  
+  #XLMaddressToCopyText, #ETHaddressToCopyText, #myETHWalletAddress, #memoCopy {
   cursor: pointer;
-}
-
-.content {
-  min-height: calc(100vh-60px);
-}
-
-@media only screen and (max-width: 1024px) {
+  }
+  
   .content {
-    min-height: 100vh;
+  min-height: calc(100vh-60px);
   }
-
+  
+  @media only screen and (max-width: 1024px) {
+  .content {
+  min-height: 100vh;
+  }
+  
   #thankImage {
-    display: none;
+  display: none;
   }
-
+  
   #thankImage2 {
-    display: block;
+  display: block;
   }
-}
-
-.dashboard-2 section.progress .bar {
+  }
+  
+  .dashboard-2 section.progress .bar {
   background: #ffffff;
-}
-
-#divClaimBoxNew, #divClaimBoxOld, #divClaimBoxLedger {
+  }
+  
+  #divClaimBoxNew, #divClaimBoxOld, #divClaimBoxLedger {
   max-width: 800px;
   margin: auto;
-}
-
-.fdiv {
+  }
+  
+  .fdiv {
   display: flex;
-}
-
-.fdiv p {
+  }
+  
+  .fdiv p {
   width: 170px;
   line-height: 58px;
   font-size: 15px;
-}
-
-#accountPgB {
+  }
+  
+  #accountPgB {
   width: 100%;
   height: 10px;
   border-radius: 5px;
   background: #EFEFEF;
   box-shadow: inset 0 1px 2px #e3e3e3,0 -1px 1px #fff,0 1px 0 #fff;
-}
-
-#accountPg {
+  }
+  
+  #accountPg {
   min-width: 0px;
   -webkit-transition: width 0.5s;
   transition: width 0.5s;
@@ -216,145 +216,145 @@
   height: 10px;
   background: #4a5ab5;
   border-radius: 5px;
-}
-
-#progressContainer {
+  }
+  
+  #progressContainer {
   margin-left: 20px;
   margin-right: 20px;
   margin-bottom: 40px;
-}
-
-#progressText {
+  }
+  
+  #progressText {
   display: block;
   text-align: center;
   margin-top: 10px;
   font-size: 15px;
-}
-
-.claimMoneyBtn {
+  }
+  
+  .claimMoneyBtn {
   width: 100%;
   text-align: center;
   display: block;
   height: 40px;
   border-radius: 20px;
-}
-
-.notAvail {
+  }
+  
+  .notAvail {
   background: #b7b7b7;
-}
-
-.processing {
+  }
+  
+  .processing {
   background: #569E5C;
-}
-
-.claimError {
+  }
+  
+  .claimError {
   background: #ec5151;
-}
-
-.claimTableContainer {
+  }
+  
+  .claimTableContainer {
   overflow-x: auto;
   border-radius: 10px;
   border: 1px solid #CFCFCF;
   margin-bottom: 15px;
-}
-
-.claimTxs tr {
+  }
+  
+  .claimTxs tr {
   line-height: 40px;
-}
-
-.claimTxs tr td {
+  }
+  
+  .claimTxs tr td {
   text-align: center;
-}
-
-.claimTable {
+  }
+  
+  .claimTable {
   min-width: 970px;
-}
-
-.claimTable tbody tr {
+  }
+  
+  .claimTable tbody tr {
   display: table-row!important;
   border-bottom: 1px solid #CFCFCF;
-}
-
-.claimTable tbody tr:last-of-type {
+  }
+  
+  .claimTable tbody tr:last-of-type {
   border-bottom: none;
-}
-
-.claimTable thead tr {
+  }
+  
+  .claimTable thead tr {
   display: table-row!important;
   background: #4a5ab5;
   color: white;
   text-align: center;
-}
-
-.claimTable thead tr th {
+  }
+  
+  .claimTable thead tr th {
   opacity: 1;
   text-align: center;
   width: unset!important;
-}
-
-.claimTable tbody tr td {
+  }
+  
+  .claimTable tbody tr td {
   width: unset!important;
-}
-
-#otpContent {
+  }
+  
+  #otpContent {
   padding: 20px;
-}
-
-#otpContent header h2 {
+  }
+  
+  #otpContent header h2 {
   width: 100%;
   margin-bottom: 16px;
   color: #4a5ab5;
   font-weight: 500;
   text-align: center;
-}
-
-#newWalletSelect {
+  }
+  
+  #newWalletSelect {
   max-width: 350px;
   margin: auto;
   margin-top: 45px;
   margin-bottom: 35px;
-}
-
-#swbtn {
+  }
+  
+  #swbtn {
   max-width: 150px;
   margin: auto;
-}
-
-#toggleSecret, #toggleSecretMnemonic, #toggleSecret2, #toggleSecretMnemonic2 {
+  }
+  
+  #toggleSecret, #toggleSecretMnemonic, #toggleSecret2, #toggleSecretMnemonic2 {
   cursor: pointer;
-}
-
-.new_wizard .step ul li {
+  }
+  
+  .new_wizard .step ul li {
   width: 7%!important;
-}
-
-.new_wizard .step ul li.current::before, .new_wizard .step ul li.current .circle {
+  }
+  
+  .new_wizard .step ul li.current::before, .new_wizard .step ul li.current .circle {
   background: #dddfe6!important;
-}
-
-#claimWelcomeBox {
+  }
+  
+  #claimWelcomeBox {
   max-width: 800px;
   margin: auto;
-}
-
-#cwcbtn {
+  }
+  
+  #cwcbtn {
   max-width: 200px;
   margin: auto;
   margin-top: 50px;
-}
-
-.new_wizard .step {
+  }
+  
+  .new_wizard .step {
   padding: 30px 0 0px 0!important;
-}
-
-#walletSelection {
+  }
+  
+  #walletSelection {
   display: flex;
   max-width: 800px;
   margin: auto;
   margin-top: 20px;
-}
-
-#walletSelection li {
+  }
+  
+  #walletSelection li {
   width: 100%;
   border: 1px solid rgb(210,210,210);
   border-radius: 11px;
@@ -363,72 +363,72 @@
   min-height: 160px;
   margin-left:10px;
   margin-right: 10px;
-}
-
-#walletSelection li a {
+  }
+  
+  #walletSelection li a {
   display: block;
   position: relative;
-}
-
-#walletSelection li:hover {
+  }
+  
+  #walletSelection li:hover {
   border: 1px solid #4a5ab5;
-}
-
-#walletSelection li.active {
+  }
+  
+  #walletSelection li.active {
   border: 1px solid #569E5C;
-}
-
-#walletSelection li.active:hover {
+  }
+  
+  #walletSelection li.active:hover {
   border: 1px solid #569E5C;
-}
-
-#walletSelection li h2 {
+  }
+  
+  #walletSelection li h2 {
   font-size: 16px;
   color: rgb(74, 74, 72);
   margin-bottom: 0px;
   text-align: center;
-}
-
-.choiceText {
+  }
+  
+  .choiceText {
   max-width: 530px;
-}
-
-.correctSign {
+  }
+  
+  .correctSign {
   position: absolute;
   display: none;
   background: white;
   right: -30px;
   top: -30px;
-}
-
-#walletSelection li:hover .choiceText {
-}
-
-#walletSelection li:hover h2 {
+  }
+  
+  #walletSelection li:hover .choiceText {
+  }
+  
+  #walletSelection li:hover h2 {
   color: #4a5ab5;
-}
-
-#walletSelection li.active .correctSign {
+  }
+  
+  #walletSelection li.active .correctSign {
   display: block;
-}
-
-.choiceIcon {
+  }
+  
+  .choiceIcon {
   max-width: 110px;
   margin: auto;
-}
-
-.choiceIcon svg {
+  }
+  
+  .choiceIcon svg {
   width: 110px;
   height: 110px;
   margin: auto;
-}
-
-.accordionContent {
+  }
+  
+  .accordionContent {
   padding: 20px;
   border: 1px solid rgb(210, 210, 210);
-}
-
-h3.accordionHeader {
+  }
+  
+  h3.accordionHeader {
   background: #4a5ab5;
   color: white;
   font-size: 15px;
@@ -437,14 +437,14 @@ h3.accordionHeader {
   padding-right: 20px;
   text-align: center;
   margin-top: 1px;
-}
-
-h3.accordionHeader:first-of-type {
+  }
+  
+  h3.accordionHeader:first-of-type {
   border-top-left-radius: 5px;
   border-top-right-radius: 5px;
-}
-
-.wizard .step ul li .circle::before {
+  }
+  
+  .wizard .step ul li .circle::before {
   content: "";
   width: 12px;
   height: 12px;
@@ -453,124 +453,124 @@ h3.accordionHeader:first-of-type {
   top: 4px;
   left: 4px;
   background: #fff;
-}
-
-.dashboard-2 aside {
+  }
+  
+  .dashboard-2 aside {
   padding: 0px!important;
-}
-
-section.user-detail {
+  }
+  
+  section.user-detail {
   padding: 32px 24px 24px 24px!important;
-}
-
-section#progressContent {
+  }
+  
+  section#progressContent {
   padding: 32px 56px 32px 56px!important;
-}
-
-.dashboard-2 section {
+  }
+  
+  .dashboard-2 section {
   padding: 24px 48px 24px 48px!important;
-}
-
-.noWallet {
+  }
+  
+  .noWallet {
   display: flex;
   font-size: 17px;
   padding: 12px;
   text-align: center;
   color: #BBBBBB;
   border-bottom: 1px solid #e3e3e3;
-}
-
-#xlmWalletIcon {
+  }
+  
+  #xlmWalletIcon {
   width: 30px;
   height: 30px;
   margin-left: auto;
   margin-right: 15px;
-}
-
-#xlmWalletText {
+  }
+  
+  #xlmWalletText {
   margin-right: auto;
-}
-
-#mnemonicWordContainer, #mnemonicWordAnswerContainer, #answerMnemonicContainer {
+  }
+  
+  #mnemonicWordContainer, #mnemonicWordAnswerContainer, #answerMnemonicContainer {
   text-align: justify;
   -moz-text-align-last: center;
   text-align-last: center;
   word-spacing: 35px;
-}
-
-#mnemonicShowing, #mnemonicAnswerShowing, #answerMnemonicShowing {
+  }
+  
+  #mnemonicShowing, #mnemonicAnswerShowing, #answerMnemonicShowing {
   font-size: 14px;
   background: #f1f4f9;
   padding: 10px 30px;
   display: block;
   margin: 0 55px;
-}
-
-#mnemonicShowing {
+  }
+  
+  #mnemonicShowing {
   position: relative;
-}
-
-#mnemonicAnswerShowing {
+  }
+  
+  #mnemonicAnswerShowing {
   min-height: 72px;
-}
-
-#answerMnemonicShowing {
+  }
+  
+  #answerMnemonicShowing {
   background: unset;
   line-height: 38px;
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
   justify-content: space-between;
-}
-
-#answerMnemonicShowing a {
+  }
+  
+  #answerMnemonicShowing a {
   border: 1px solid #D3D3D3;
   padding: 5px 10px;
   border-radius: 3px;
   margin: 5px 12px;
   line-height: 20px;
-}
-
-#answerMnemonicShowing a.unusedWord:hover {
+  }
+  
+  #answerMnemonicShowing a.unusedWord:hover {
   border: 1px solid #4a5ab5;
   color: #4a5ab5;
-}
-
-#answerMnemonicShowing a.usedWord {
+  }
+  
+  #answerMnemonicShowing a.usedWord {
   background: #F5F5F5;
   border: 1px solid #EFEFEF;
   color: rgb(150, 150, 150);
-}
-
-.customAlert {
+  }
+  
+  .customAlert {
   border: 1px solid red;
-}
-
-#congratContainer {
+  }
+  
+  #congratContainer {
   border: 1px solid #D3D3D3;
   padding: 40px;
   max-width: 500px;
   margin: auto;
   border-radius: 20px;
-}
-
-#congratBox {
+  }
+  
+  #congratBox {
   text-align: center;
-}
-
-#correctIcon, .correctSign {
+  }
+  
+  #correctIcon, .correctSign {
   font-size: 50px;
   margin-bottom: 25px;
   color: #569E5C;
-}
-
-#manualTrustlineBox {
+  }
+  
+  #manualTrustlineBox {
   text-align: left;
   margin: auto;
   max-width: 650px;
-}
-
-#mnemonicWordDownloadContainer {
+  }
+  
+  #mnemonicWordDownloadContainer {
   background: #4a5ab5;
   position: absolute;
   width: 35px;
@@ -582,47 +582,47 @@ section#progressContent {
   border-bottom-right-radius: 15px;
   padding-right: 10px;
   cursor: pointer;
-}
-
-#recoverWordDialogContent, #congratDialogContent1, #congratDialogContent2, #feeDialogContent, #newLedgerDialogContent, #ledgerTrustAlertDialogContent, #claimErrorDialogContent, #whatsNextDialogContent, #waittingDialogContent {
+  }
+  
+  #recoverWordDialogContent, #congratDialogContent1, #congratDialogContent2, #feeDialogContent, #newLedgerDialogContent, #ledgerTrustAlertDialogContent, #claimErrorDialogContent, #whatsNextDialogContent, #waittingDialogContent {
   max-width: 500px;
-}
-
-.dialogHeader {
+  }
+  
+  .dialogHeader {
   max-height: 200px;
   text-align: center;
   background: #4a5ab5;
   border-top-right-radius: 15px;
   border-top-left-radius: 15px;
-}
-
-.dialogHeader svg {
+  }
+  
+  .dialogHeader svg {
   max-height: 200px;
   width: 100%;
   margin: auto;
   position: relative;
   padding: 18px;
-}
-
-#specialSvg {
+  }
+  
+  #specialSvg {
   height: 200px;
   margin: auto;
   position: relative;
   display: block;
   top: 0px;
   padding: unset;
-}
-
-.dialogContent {
+  }
+  
+  .dialogContent {
   text-align: center;
   background: white;
   padding: 30px;
   color: #494949;
   border-bottom-right-radius: 15px;
   border-bottom-left-radius: 15px;
-}
-
-.haveWallet {
+  }
+  
+  .haveWallet {
   display: flex;
   font-size: 17px;
   padding: 12px;
@@ -630,21 +630,21 @@ section#progressContent {
   color: white;
   background: #4a5ab5;
   border-bottom: 1px solid #e3e3e3;
-}
-
-.haveWallet svg .cls-3 {
+  }
+  
+  .haveWallet svg .cls-3 {
   fill: #FFFFFF;
-}
-
-#showXLMWalletSection {
+  }
+  
+  #showXLMWalletSection {
   text-align: center;
-}
-
-#myWalletMenuContainer {
+  }
+  
+  #myWalletMenuContainer {
   display: flex;
-}
-
-.myWalletItem {
+  }
+  
+  .myWalletItem {
   cursor: pointer;
   width: 30px;
   height: 30px;
@@ -655,53 +655,53 @@ section#progressContent {
   line-height: 30px;
   margin-left: 5px;
   margin-right: 5px;
-}
-
-.myWalletItem:first-of-type {
+  }
+  
+  .myWalletItem:first-of-type {
   margin-left: auto;
-}
-
-.myWalletItem:last-of-type {
+  }
+  
+  .myWalletItem:last-of-type {
   margin-right: auto;
-}
-
-#donut-container {
+  }
+  
+  #donut-container {
   max-height: 300px;
   display: flex;
-}
-
-#donut-graph {
+  }
+  
+  #donut-graph {
   max-height: 230px;
   max-width: 230px;
   margin: auto;
-}
-
-#donutGraphContainer, .donutText {
+  }
+  
+  #donutGraphContainer, .donutText {
   margin: auto:
-}
-
-#donutGraphContainer {
+  }
+  
+  #donutGraphContainer {
   margin: auto!important;
-}
-
-#donutGraphContainer {
+  }
+  
+  #donutGraphContainer {
   min-width: 400px;
-}
-
-.donutText {
+  }
+  
+  .donutText {
   margin-top: 25px!important;
   margin: auto;
-}
-
-.contractType {
+  }
+  
+  .contractType {
   padding: 9px;
   border-radius: 10px;
   line-height: 20px;
   margin-bottom: 10px;
   border: 1px solid #CCCC;
-}
-
-.circleB {
+  }
+  
+  .circleB {
   display: inline-block;
   width: 15px;
   height: 15px;
@@ -709,30 +709,30 @@ section#progressContent {
   top: 3px;
   position: relative;
   left: -5px;
-}
-
-.legend {
+  }
+  
+  .legend {
   margin: auto;
   display: inline-block;
-}
-
-#donutLegend {
+  }
+  
+  #donutLegend {
   display: flex;
-}
-
-#CBready {
+  }
+  
+  #CBready {
   background: #4a5ab5;
-}
-
-#CBnotAvail {
+  }
+  
+  #CBnotAvail {
   background: #B7B7B7;
-}
-
-#CBclaim {
+  }
+  
+  #CBclaim {
   background: #A3ABD9;
-}
-
-.groupStatus {
+  }
+  
+  .groupStatus {
   display: inline-block;
   width: 15px;
   height: 15px;
@@ -742,160 +742,160 @@ section#progressContent {
   left: -5px;
   background: #4a5ab5;
   margin-left: 10px;
-}
-
-.contractType h4 {
+  }
+  
+  .contractType h4 {
   display: inline-block;
-}
-
-#menuContainer {
+  }
+  
+  #menuContainer {
   display: flex;
-}
-
-.tableMenu a {
+  }
+  
+  .tableMenu a {
   display: flex;
   margin: 20px;
   padding: 20px;
   border: 1px solid rgb(210, 210, 210);
   border-radius: 10px;
-}
-
-.tableMenu a div h2 {
+  }
+  
+  .tableMenu a div h2 {
   font-size: 17px;
   text-align: left;
   margin-bottom: 0px;
   color: rgb(74, 74, 72);
-}
-
-.tableMenu a:hover {
+  }
+  
+  .tableMenu a:hover {
   border: 1px solid #4a5ab5;
-}
-
-.tableMenu a.currentActive {
+  }
+  
+  .tableMenu a.currentActive {
   background: #4a5ab5;
   color: white;
-}
-
-.tableMenu a.currentActive  div h2 {
+  }
+  
+  .tableMenu a.currentActive div h2 {
   color: white;
-}
-
-.tableMenu a.currentActive .cls-161, .tableMenu a.currentActive .cls-171{
+  }
+  
+  .tableMenu a.currentActive .cls-161, .tableMenu a.currentActive .cls-171{
   fill: #fff;
-}
-
-#ledgerContentContainer {
+  }
+  
+  #ledgerContentContainer {
   margin-left: 40px;
   margin-right: 40px;
   padding: 20px;
   background: #EEEEEE;
   border-radius: 10px;
-}
-
-#ledgerAgreement {
+  }
+  
+  #ledgerAgreement {
   padding: 10px;
   background: #DDDDDD;
   border-radius: 10px;
   margin-top: 10px;
   font-size: 12px;
-}
-
-#ledgerSetupIcon {
+  }
+  
+  #ledgerSetupIcon {
   width: 130px;
   margin: auto;
   margin-right: 17px;
   border-right: 1px solid rgb(210, 210, 210);
-}
-
-#submitLedgerBtn:disabled {
+  }
+  
+  #submitLedgerBtn:disabled {
   background: #555555;
-}
-
-#ledgerContentContainer.active {
+  }
+  
+  #ledgerContentContainer.active {
   background: #F0FAF1;
-}
-
-#ledgerContentContainer.active #ledgerAgreement {
+  }
+  
+  #ledgerContentContainer.active #ledgerAgreement {
   background: #C5EAC6;
-}
-
-#ledgerContentContainer.active #submitLedgerBtn {
+  }
+  
+  #ledgerContentContainer.active #submitLedgerBtn {
   background: #51A058;
-}
-
-#newLedgerDialog2 {
+  }
+  
+  #newLedgerDialog2 {
   display: none;
-}
-
-#ledgerAssetContainer {
+  }
+  
+  #ledgerAssetContainer {
   display: flex;
-}
-
-#assetLogo {
+  }
+  
+  #assetLogo {
   height: 120px;
-}
-
-#assetLogo svg {
+  }
+  
+  #assetLogo svg {
   height: 120px;
-}
-
-#ledgerAllIcon {
+  }
+  
+  #ledgerAllIcon {
   height: 70px;
-}
-
-#ledgerAssetContainer {
+  }
+  
+  #ledgerAssetContainer {
   border: 2px solid #4a5ab5;
   border-radius: 11px;
   margin-left: 30px;
   margin-top: 25px;
   margin-right: 30px;
   margin-bottom: 10px;
-}
-
-#assetContent {
+  }
+  
+  #assetContent {
   text-align: left;
   margin-left: 20px;
   margin-top: auto;
   margin-bottom: auto;
-}
-
-#showXLMWalletBalanceSection {
+  }
+  
+  #showXLMWalletBalanceSection {
   display: block;
   margin: 15px;
   padding: 10px;
   background: white;
   border: 1px solid #DDDDEE;
-}
-
-#myCurrentBalance, #myCurrentBalance2 {
+  }
+  
+  #myCurrentBalance, #myCurrentBalance2 {
   font-weight: bold;
   color: #4a5ab5;
-}
-
-.trustlineImage {
+  }
+  
+  .trustlineImage {
   max-width: 650px;
   width: 100%;
-}
-
-#recommended {
+  }
+  
+  #recommended {
   color: #F0B94F;
   text-align: center;
-}
-
-.welcomeImage {
+  }
+  
+  .welcomeImage {
   max-width: 100%;
   display: block;
   position: relative;
-}
-
-#mainClaimWelcomeContent {
+  }
+  
+  #mainClaimWelcomeContent {
   line-height: 20px;
-}
-
-#claimBox {
-}
-
-dialog.normalDisplay {
+  }
+  
+  #claimBox {
+  }
+  
+  dialog.normalDisplay {
   line-height: 22px;
   background: unset;
   display: block;
@@ -903,234 +903,238 @@ dialog.normalDisplay {
   border: 1px solid #BBBBBB;
   border-radius: 16px;
   margin: auto;
-}
-
-#instructionLedgerContainer {
+  }
+  
+  #instructionLedgerContainer {
   max-width: 600px;
   margin: auto;
-}
-
-#instructionLedgerContainer a {
+  }
+  
+  #instructionLedgerContainer a {
   text-decoration: underline;
   color: blue;
-}
-
-.tableContractName {
+  }
+  
+  .tableContractName {
   margin-bottom: 10px;
   margin-top: 10px;
   text-align: center;
   font-weight: bold;
   color: #4a5ab5;
-}
-
-.transactionId {
+  }
+  
+  .transactionId {
   max-width: 250px;
-}
-
-.transactionId a {
+  }
+  
+  .transactionId a {
   text-decoration: underline;
   color: #4a5ab5;
-}
-
-#walletSelection li.disable a {
+  }
+  
+  #walletSelection li.disable a {
   cursor: default;
-}
-
-#walletSelection li.disable:hover {
+  }
+  
+  #walletSelection li.disable:hover {
   border: 1px solid rgb(210,210,210);
-}
-
-#walletSelection li.disable:hover h2 {
+  }
+  
+  #walletSelection li.disable:hover h2 {
   color: rgb(74, 74, 72);
-}
-
-#walletSelection li.disable .cls-811 {
+  }
+  
+  #walletSelection li.disable .cls-811 {
   fill: rgb(74, 74, 72);
-}
-
-#walletSelection li.disable {
+  }
+  
+  #walletSelection li.disable {
   opacity: 0.3;
-}
-
-.twoButton {
+  }
+  
+  .twoButton {
   min-width: 150px;
   margin: auto;
   max-width: 150px;
-}
-
-#answerWordNew {
+  }
+  
+  #answerWordNew {
   display: none;
-}
-
-#submitG2AccountBtn516 {
+  }
+  
+  #submitG2AccountBtn516 {
   width: auto;
   margin-bottom: 10px;
   min-width: 150px;
   margin-right: 50px;
   background: #569E5C;
-}
-
-#submitG2AccountBtn515 {
+  }
+  
+  #submitG2AccountBtn515 {
   width: auto;
   margin-bottom: 10px;
   min-width: 150px;
-}
-
-#backAccountBtn {
+  }
+  
+  #backAccountBtn {
   width: auto;
   margin-bottom: 10px;
   min-width: 150px;
   background: #C7C7C7;
   margin-right: 70px;
-}
-
-#submitGAccountBtn {
+  }
+  
+  #submitGAccountBtn {
   width: auto;
   margin-bottom: 10px;
   min-width: 150px;
-}
-
-#overAllLoadingContainer {
+  }
+  
+  #overAllLoadingContainer {
   height: 100vh;
   width: 100%;
   display: none;
-}
-
-#DownloadGAccountBtn {
+  }
+  
+  #DownloadGAccountBtn {
   width: auto;
   min-width: 150px;
   margin: auto;
   margin-top: 20px;
   background: #569E5C;
-}
-
-#submitG3AccountBtn {
+  }
+  
+  #submitG3AccountBtn {
   cursor: pointer;
   width: auto;
   min-width: 150px;
   margin: auto;
   margin-top: 15px;
-}
-
-dialog {
+  }
+  
+  dialog {
   overflow: auto;
   margin-top: auto;
   margin-bottom: auto;
-}
-
-[class^="dialog-"] {
+  }
+  
+  [class^="dialog-"] {
   align-items: unset;
-}
-
-[class^="dialog-"]::before {
+  }
+  
+  [class^="dialog-"]::before {
   position: fixed;
   width: 100%;
   height: 100vh;
-}
-
-[class^="dialog-"].show-dialog {
+  }
+  
+  [class^="dialog-"].show-dialog {
   overflow: auto;
-}
-
-
-@media only screen and (max-width: 1024px) {
+  }
+  
+  
+  @media only screen and (max-width: 1024px) {
   .dashboard-2 section.user-detail {
-    padding: 21px 0 16px 94px !important;
+  padding: 21px 0 16px 94px !important;
   }
-
+  
   #firstCharName {
-    position: absolute;
-    top: 49px;
-    left: 19px;
+  position: absolute;
+  top: 49px;
+  left: 19px;
   }
-
+  
   .dashboard-2 section {
-    padding: 24px 24px 24px 24px !important;
+  padding: 24px 24px 24px 24px !important;
   }
-
+  
   #claimWelcomeBox, .normalDisplay, #claimBox {
   }
-}
-
-@media only screen and (max-width: 750px) {
+  }
+  
+  @media only screen and (max-width: 750px) {
   .choiceIcon {
-    max-width: 80px;
-    margin: auto;
+  max-width: 80px;
+  margin: auto;
   }
-
+  
   .choiceIcon svg {
-    width: 80px;
-    height: 80px;
+  width: 80px;
+  height: 80px;
   }
-
+  
   #walletSelection li h2 {
-    font-size: 14px;
+  font-size: 14px;
   }
-}
-
-@media only screen and (max-width: 660px) {
+  }
+  
+  @media only screen and (max-width: 660px) {
   #walletSelection {
-    display: block;
+  display: block;
   }
-
+  
   #walletSelection li {
-    width: unset;
+  width: unset;
   }
-}
-
-@media only screen and (max-width: 550px) {
+  }
+  
+  @media only screen and (max-width: 550px) {
   .new_wizard .step ul li {
-    width: 12% !important;
+  width: 12% !important;
   }
-
+  
   .wizard .step ul li {
-    width: 22$ !important;
+  width: 22$ !important;
   }
-
+  
   #claimWelcomeBox, .normalDisplay, #claimBox {
   }
-
+  
   dialog.normalDisplay {
-    width: 100%;
+  width: 100%;
   }
-
+  
   .twoButton {
-    min-width: 100px; 
-    margin: auto; 
-    max-width: 100px;
+  min-width: 100px;
+  margin: auto;
+  max-width: 100px;
   }
-
+  
   .twoButton button {
-    font-size: 13px;
-    height: 36px;
+  font-size: 13px;
+  height: 36px;
   }
-
+  
   #submitG2AccountBtn516, #backAccountBtn, #submitG2AccountBtn515, #submitGAccountBtn, #DownloadGAccountBtn, #submitG3AccountBtn {
-    min-width: 100px; 
-    height: 36px;
+  min-width: 100px;
+  height: 36px;
   }
-
+  
   #submitLedgerBtn {
-    height: 36px;
+  height: 36px;
   }
-
+  
   #donut-graph {
-    width: 200px;
-    height: 200px;
+  width: 200px;
+  height: 200px;
   }
-
+  
   #ledgerContentContainer {
-    margin-left: 0px;
-    margin-right: 0px;
+  margin-left: 0px;
+  margin-right: 0px;
   }
-}
-
-@media only screen and (max-width: 480px) {
+  }
+  
+  @media only screen and (max-width: 480px) {
   #mnemonicShowing span, #mnemonicAnswerShowing span {
-    display: block;
+  display: block;
   }
-
+  
   #answerMnemonicShowing, #answerMnemonicShowing a {
-    display: block;
+  display: block;
   }
-}
+  }
+  
+  
+  .overlay {
+  }
