@@ -9,6 +9,7 @@ const claimPoolsRef = db.collection('claim_pools')
 const claimLogRef = db.collection('claim_tx_logs')
 const lockPoolsRef = db.collection('lock_pool').doc('process')
 const axios = require('axios')
+const SENDGRID_API_KEY = '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'
 
 let stellarUrl
 const secondaryClaimUrl = functions.config().secondary_signer.url + '/setPublicKey'
