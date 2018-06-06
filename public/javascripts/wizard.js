@@ -1,7 +1,98 @@
+let rejectNote = {
+  need_more: `We appreciate that you took the time for the registration. However, we received insufficient information regarding your KYC/ AML documents and/ or information.
+
+We would highly appreciate if you could resubmit the documents and/ or information through the link below.
+
+Thank you for your interest in our ICO.
+
+SIX.network`,
+  restricted: `We highly appreciate that you took the time for the registration. After reviewing your submitted application materials, the KYC/AML result does not match with our requirements.
+
+We highly appreciate that you are interested in our ICO. Please do support us in the secondary market soon.
+
+Thank you for your interest in SIX.network and our ICO.
+
+SIX.network`,
+  incorrect: `We appreciate that you took the time for the registration. However, we received insufficient information regarding your KYC/ AML documents and/ or information.
+
+We would highly appreciate if you could resubmit the documents and/ or information through the link below.
+
+Thank you for your interest in our ICO.
+
+SIX.network`,
+  photo_corrupted: `We appreciate that you took the time for the registration. However, we received incorrect or unclear information regarding your selfie picture.
+
+We would highly appreciate if you could resubmit your selfie through the link below.`,
+  other: `We appreciate that you took the time for the registration. However, we received insufficient information regarding your KYC/ AML documents and/ or information.
+
+Thank you for your interest in our ICO. `
+}
+
 // Log out function using in Wizardd page to sign current user out
 function logOut () {
   console.log('logout')
   firebase.auth().signOut()
+}
+
+function closeSample() {
+  if ($("#sampleFader").css('display') !== 'none') {
+    $("#sampleFader").fadeToggle()
+  }
+}
+
+function showSample1() {
+  if ($("#sampleFader").css('display') === 'none') {
+    $('#sample1').css('display', 'block')
+    $('#sample2').css('display', 'none')
+    $('#sample3').css('display', 'none')
+    $('#sample5').css('display', 'none')
+    $('#sample6').css('display', 'none')
+    $("#sampleFader").fadeToggle()
+  }
+}
+
+function showSample2() {
+  if ($("#sampleFader").css('display') === 'none') {
+    $('#sample1').css('display', 'none')
+    $('#sample2').css('display', 'block')
+    $('#sample3').css('display', 'none')
+    $('#sample5').css('display', 'none')
+    $('#sample6').css('display', 'none')
+    $("#sampleFader").fadeToggle()
+  }
+}
+
+function showSample3() {
+  if ($("#sampleFader").css('display') === 'none') {
+    $('#sample1').css('display', 'none')
+    $('#sample2').css('display', 'none')
+    $('#sample3').css('display', 'block')
+    $('#sample5').css('display', 'none')
+    $('#sample6').css('display', 'none')
+    $("#sampleFader").fadeToggle()
+  }
+}
+
+function showSample5() {
+  if ($("#sampleFader").css('display') === 'none') {
+    $('#sample1').css('display', 'none')
+    $('#sample2').css('display', 'none')
+    $('#sample3').css('display', 'none')
+    $('#sample5').css('display', 'block')
+    $('#sample6').css('display', 'none')
+    $("#sampleFader").fadeToggle()
+  }
+}
+
+function showSample6() {
+  if ($("#sampleFader").css('display') === 'none') {
+    $('#sample1').css('display', 'none')
+    $('#sample2').css('display', 'none')
+    $('#sample3').css('display', 'none')
+    $('#sample5').css('display', 'none')
+    $('#sample6').css('display', 'block')
+    $("#sampleFader").fadeToggle()
+  }
 }
 
 // Chack if admin or not
@@ -19,6 +110,14 @@ function initializeAdmin () {
   return promise
 }
 
+function closeErrorMatch() {
+  $("div.error-not-match, div.overlay").hide()
+}
+// Update User
+function updateUser (data) {
+  var updateUserOncall = firebase.functions().httpsCallable('updateUser')
+  return updateUserOncall(data)
+}
 // Set disbled to dom
 function setDisable (doms) {
   doms.forEach(function (dom) {
@@ -37,8 +136,8 @@ let intervalFunction
 let userData
 let pic1Url
 let pic2Url
-let pic3Url
 let pic4Url
+let pic5Url
 
 function submitPhoneNumber() {
   if ($("#verifyPhoneError").css("display", "block")) {
@@ -53,12 +152,12 @@ function submitPhoneNumber() {
   const parseData = libphonenumber.parse(phoneNumberDOM.value, countryPhone, {extended: true })
   let btnDOM = document.getElementById('verifyPhoneBtn')
   setDisable([phoneNumberDOM, btnDOM, countryPhoneDOM])
-  if (parseData.valid === false) {  
+  if (parseData.valid === false) {
     $("#verifyPhoneError").html("Invalid phone number format")
     if ($("#verifyPhoneError").css("display", "none")) {
       $("#verifyPhoneError").slideToggle()
     }
-    setEnable([phoneNumberDOM, btnDOM, countryPhoneDOM]) 
+    setEnable([phoneNumberDOM, btnDOM, countryPhoneDOM])
     return false
   }
   const phone_number = '+'+parseData.countryCallingCode+parseData.phone
@@ -123,9 +222,27 @@ function kycCountryChange() {
   if (country === "TH") {
     $("#citizenId").css("display", "block")
     $("#citizenIdPhoto").css("display", "block")
+    $("#citizenIdPhotoBack").css("display", "block")
+    $("#passportNumberPhoto").css("display", "none")
+    $("#passportNumber").css("display", "none")
+    $("#itemHoldingHead").html("ID-card")
+    $("#itemHolding").html("ID-card")
+    $("#samplePassportSelfie").css('display', 'none')
+    $("#sampleIDSelfie").css('display', 'block')
+    $("#idHelper").css('display', 'inline-block')
+    $("#passportHelper").css('display', 'none')
   } else {
     $("#citizenId").css("display", "none")
     $("#citizenIdPhoto").css("display", "none")
+    $("#citizenIdPhotoBack").css("display", "none")
+    $("#passportNumberPhoto").css("display", "block")
+    $("#passportNumber").css("display", "block")
+    $("#itemHoldingHead").html("Passport")
+    $("#itemHolding").html("passport showing the passport photo page")
+    $("#samplePassportSelfie").css('display', 'block')
+    $("#sampleIDSelfie").css('display', 'none')
+    $("#idHelper").css('display', 'none')
+    $("#passportHelper").css('display', 'inline-block')
   }
 }
 
@@ -174,6 +291,7 @@ function goToKYCStep() {
   $('#verifyPhoneStep').addClass('current')
   $('#kycStep').addClass('current')
   $('#kycContent').addClass('show-detail')
+  kycCountryChange()
 }
 
 function goToFinishStep() {
@@ -212,7 +330,7 @@ function resendVerifyEmail() {
   let promise = new Promise(function (resolve, reject) {
     let resendDOM = document.getElementById('verifyResendBtn')
     let currentUser = firebase.auth().currentUser
-    currentUser.sendEmailVerification().then(() => { 
+    currentUser.sendEmailVerification().then(() => {
       if ($("#verifyNotice").css("display") == "none") {
         $("#verifyNotice").html("Email successfully sent to your inbox.")
         setEnable([resendDOM])
@@ -253,13 +371,17 @@ function setupUserData() {
   if (userData.address !== undefined) {
     document.getElementById("kycAddress").value = userData.address
   }
-  if (userData.estimate !== undefined) {
-    document.getElementById("kycEstimate").value = userData.estimate
+  if (userData.is_presale === true) {
+    $("#presale_congrat").css('display', 'block')
+    $("#normal_congrat").css('display', 'none')
+  } else {
+    $("#presale_congrat").css('display', 'none')
+    $("#normal_congrat").css('display', 'block')
   }
   pic1Url = userData.pic1
   pic2Url = userData.pic2
-  pic3Url = userData.pic3
   pic4Url = userData.pic4
+  pic5Url = userData.pic5
   if (pic1Url !== undefined) {
     $("#sampleImage1").attr("src", pic1Url)
     $("#sampleImage1").toggle()
@@ -268,16 +390,43 @@ function setupUserData() {
     $("#sampleImage2").attr("src", pic2Url)
     $("#sampleImage2").toggle()
   }
-  if (pic3Url !== undefined) {
-    $("#sampleImage3").attr("src", pic3Url)
-    $("#sampleImage3").toggle()
-  }
   if (pic4Url !== undefined) {
     $("#sampleImage4").attr("src", pic4Url)
     $("#sampleImage4").toggle()
   }
+  if (pic5Url !== undefined) {
+    $("#sampleImage5").attr("src", pic5Url)
+    $("#sampleImage5").toggle()
+  }
   if (userData.kyc_status === 'rejected') {
-    $("#rejectReason").html(userData.reject_note)
+    let rejectReason
+    switch (userData.reject_type) {
+      case 'need_more':
+        rejectReason = rejectNote['need_more']
+        break
+      case 'restricted':
+        rejectReason = rejectNote['restricted']
+        break
+      case 'incorrect':
+        rejectReason = rejectNote['incorrect']
+        break
+      case 'photo_corrupted':
+        rejectReason = rejectNote['photo_corrupted']
+        break
+      case 'other':
+        rejectReason = rejectNote['other']
+        break
+    }
+    rejectReason = String(rejectReason).split("\n").join("<br>")
+    $("#rejectReason").html(rejectReason)
+
+    if (userData.reject_note_extend !== null && userData.reject_note_extend !== '' && userData.reject_note_extend !== undefined) {
+      $("#rejectReasonExtend").html(String(userData.reject_note_extend))
+      $("#extendRejectNote").css("display", "block")
+    }
+  }
+  if (userData.is_restricted === true) {
+    $("#resubmission").css("display", "none")
   }
 }
 
@@ -285,42 +434,55 @@ function setupUserData() {
 function initializeStep() {
   let promise = new Promise(function (resolve, reject) {
     let currentUser = firebase.auth().currentUser
-    if (currentUser.emailVerified == true) {
-      goToVerifyPhoneStep()
-      let db = firebase.firestore()
-      db.collection('users').doc(firebase.auth().currentUser.uid).get().then(doc => {
-        userData = doc.data()
-        setupUserData()
-        if (doc.data().phone_verified === true) {
-          goToKYCStep()
-          if (userData.kyc_status === 'pending') {
-            $("#kycContentForm").removeClass("show-detail")
-            $("#kycContentPending").addClass("show-detail")
-            resolve()
-          } else if (userData.kyc_status === 'rejected') {
-            $("#kycContentForm").removeClass("show-detail")
-            $("#kycContentRejected").addClass("show-detail")
-            resolve()
-          } else if (userData.kyc_status === 'approved') {
-            goToFinishStep()
-            if (userData.all_done === true) {
-              goToICOStep()
+    let db = firebase.firestore()
+    db.collection('users').doc(firebase.auth().currentUser.uid).get().then(doc => {
+      if (doc.data() === undefined) {
+        let requestFunction = firebase.functions().httpsCallable('reworkInitializeUserDoc')
+        requestFunction({}).then(response => {
+          console.log("rework success")
+        })
+      }
+      userData = doc.data() || {}
+      if (userData.private_user === true) {
+        window.location.href = '/dashboard'+window.location.search
+      } else if (currentUser.emailVerified == true) {
+        goToVerifyPhoneStep()
+        if (Date.now() > endtimeOfIco && userData.all_done) {
+          window.location.href = '/dashboard'+window.location.search
+        } else {
+          setupUserData()
+          if (doc.data().phone_verified === true) {
+            goToKYCStep()
+            if (userData.kyc_status === 'pending') {
+              $("#kycContentForm").removeClass("show-detail")
+              $("#kycContentPending").addClass("show-detail")
               resolve()
+            } else if (userData.kyc_status === 'rejected') {
+              $("#kycContentForm").removeClass("show-detail")
+              $("#kycContentRejected").addClass("show-detail")
+              resolve()
+            } else if (userData.kyc_status === 'approved') {
+              goToFinishStep()
+              if (userData.all_done === true) {
+                goToICOStep()
+                resolve()
+              } else {
+                resolve()
+              }
             } else {
               resolve()
             }
           } else {
             resolve()
           }
-        } else {
-          resolve()
         }
-      }).catch(() => {
+      } else {
+        $("#emailToVerify").html(currentUser.email)
         resolve()
-      })
-    } else {
+      }
+    }).catch(() => {
       resolve()
-    }
+    })
   })
   return promise
 }
@@ -329,22 +491,57 @@ function resubmission() {
   $("#kycContentForm").addClass("show-detail")
   $("#kycContentRejected").removeClass("show-detail")
   let uid = firebase.auth().currentUser.uid
-  firebase.firestore().collection('users').doc(uid).update({
-    kyc_status: null
+  updateUser({
+    kyc_status: null,
+    reject_note_extend: null
   })
+  $("#extendRejectNote").css("display", "none")
 }
 
 function proceedToIco() {
-  $("#icoPage").addClass("show-detail")
-  $('#icoStep').addClass('current')
-  $("#congratulationPage").removeClass("show-detail")
+  const icoBtn = document.getElementById('toIcoBtn')
+  setDisable([icoBtn])
   let uid = firebase.auth().currentUser.uid
-  firebase.firestore().collection('users').doc(uid).update({
-    all_done: true
+  updateUser({all_done: true}).then(() => {
+    window.dataLayer = window.dataLayer || [];
+    function gtag () {
+      dataLayer.push(arguments);
+    }
+    gtag('event','click',{'event_category':'button','event_label':'finish-kyc'});
+    if (Date.now() > endtimeOfIco) {
+      window.location.href = '/dashboard'+window.location.search
+    }
+    setEnable([icoBtn])
+  }).catch(() => {
+    if (Date.now() > endtimeOfIco) {
+      window.location.href = '/dashboard'+window.location.search
+    }
+    setEnable([icoBtn])
   })
 }
 
 function submitKyc() {
+  if ($("#kycFormAlert").css('display') == 'block') {
+    $("#kycFormAlert").slideToggle()
+  }
+  window.dataLayer = window.dataLayer || [];
+  function gtag () {
+    dataLayer.push(arguments);
+  }
+  gtag('event','click',{'event_category':'button','event_label':'Certified'});
+  if (typeof(fbq) !== "undefined") {
+    fbq('trackCustom', 'Certified');
+  }
+
+  var strUser = firebase.auth().currentUser.uid;
+  window._paq = window._paq || [];
+  _paq.push(['track_code',"3bf5292d-0432-4171-896f-13f513b2ba19"]);
+  _paq.push(['user_id',SHA1(strUser)]);
+  _paq.push(['event_name','CA_CONVERSION']);
+  _paq.push(['send_event']);
+  (function() { var u="//image.cauly.co.kr/script/"; var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0]; g.type='text/javascript'; g.async=true; g.defer=true; g.src=u+'caulytracker_async.js'; s.parentNode.insertBefore(g,s); }
+  )();
+
   $(".kycinput").removeClass('invalid')
   let btnDOM = document.getElementById('kycSubmitBtn')
   let firstNameDOM = document.getElementById('kycFirstName')
@@ -355,10 +552,9 @@ function submitKyc() {
   let addressDOM = document.getElementById('kycAddress')
   let pic1DOM = document.getElementById('kycPic1')
   let pic2DOM = document.getElementById('kycPic2')
-  let pic3DOM = document.getElementById('kycPic3')
   let pic4DOM = document.getElementById('kycPic4')
-  let estimateDOM = document.getElementById('kycEstimate')
-  setDisable([btnDOM, firstNameDOM, lastNameDOM, countryDOM, citizenIdDOM, passportNumberDOM, addressDOM, pic1DOM, pic2DOM, pic3DOM, pic4DOM, estimateDOM])
+  let pic5DOM = document.getElementById('kycPic5')
+  setDisable([btnDOM, firstNameDOM, lastNameDOM, countryDOM, citizenIdDOM, passportNumberDOM, addressDOM, pic1DOM, pic2DOM, pic4DOM, pic5DOM])
   const first_name = firstNameDOM.value
   const last_name = lastNameDOM.value
   const country = countryDOM.value
@@ -367,9 +563,8 @@ function submitKyc() {
   const address = addressDOM.value
   const pic1 = pic1DOM.files[0]
   const pic2 = pic2DOM.files[0]
-  const pic3 = pic3DOM.files[0]
   const pic4 = pic4DOM.files[0]
-  const estimate = estimateDOM.value
+  const pic5 = pic5DOM.files[0]
   let validate = true
   if (first_name == '' || first_name == undefined) { $('#kycFirstNameAlert').addClass('invalid'); validate = false }
   if (/^[a-zA-Z ]+$/.test(first_name) === false) {
@@ -386,6 +581,13 @@ function submitKyc() {
     $("#kycLastNameError").css('display', 'block')
   }
   if (country == '' || country == undefined) { $('#kycCountryAlert').addClass('invalid'); validate = false }
+  if (country === 'SG' || country === 'CN' || country === 'US') {
+    if ($("#kycFormAlert").css('display') == 'none') {
+      $("#kycFormAlert").slideToggle()
+    }
+    $("#kycFormAlertText").html("Sorry, Civils in the jurisdiction of the US, China, and Singapore are not able to join this ICO contribution according to the laws. Apologize for inconvenience this may cause.")
+    validate = false
+  }
   if ((citizen_id == '' || citizen_id == undefined) && country === 'TH') { $('#kycCitizenIdAlert').addClass('invalid'); validate = false }
   if (/^[a-zA-Z0-9 ]+$/.test(citizen_id) === false && country === 'TH') {
     $('#kycCitizenIdAlert').addClass('invalid')
@@ -393,59 +595,63 @@ function submitKyc() {
     $("#kycCitizenIdError").html('Citizen ID should contain only alphabetic characters and digits')
     $("#kycCitizenIdError").css('display', 'block')
   }
-  if (passport_number == '' || passport_number == undefined) { $('#kycPassportNumberAlert').addClass('invalid'); validate = false }
-  if (/^[a-zA-Z0-9 ]+$/.test(passport_number) === false) {
+  if ((passport_number == '' || passport_number == undefined) && country !== 'TH') { $('#kycPassportNumberAlert').addClass('invalid'); validate = false }
+  if (/^[a-zA-Z0-9 ]+$/.test(passport_number) === false && country !== 'TH') {
     $('#kycPassportNumberAlert').addClass('invalid')
     validate = false
     $("#kycPassportNumberError").html('Citizen ID should contain only alphabetic characters and digits')
     $("#kycPassportNumberError").css('display', 'block')
   }
   if (address == '' || address == undefined) { $('#kycAddressAlert').addClass('invalid'); validate = false }
-  if (/^[a-zA-Z!”$%&’()*\+, \/;\[\\\]\^_`{|}~]+$/.test(address) === false) {
-    $('#kycAddressAlert').addClass('invalid')
-    validate = false
-    $("#kycAddressError").html('Address should contain only alphabetic characters, digits, and special characters')
-    $("#kycAddressError").css('display', 'block')
-  }
+//  if (/^[a-zA-Z0-9!”$%&’()*\+, \/;\[\\\]\^_`{|}~\n]+$/.test(address) === false) {
+//    $('#kycAddressAlert').addClass('invalid')
+//    validate = false
+//    $("#kycAddressError").html('Address should contain only alphabetic characters, digits, and special characters')
+//    $("#kycAddressError").css('display', 'block')
+//  }
   if ((pic1 == '' || pic1 == undefined) && pic1Url === undefined && country === 'TH') { $('#kycPic1Alert').addClass('invalid'); validate = false }
   if ((pic2 == '' || pic2 == undefined) && pic2Url === undefined) { $('#kycPic2Alert').addClass('invalid'); validate = false }
-  if ((pic3 == '' || pic3 == undefined) && pic3Url === undefined) { $('#kycPic3Alert').addClass('invalid'); validate = false }
-  if ((pic4 == '' || pic4 == undefined) && pic4Url === undefined) { $('#kycPic4Alert').addClass('invalid'); validate = false }
-  if (estimate == '' || estimate == undefined) { $('#kycEstimateAlert').addClass('invalid'); validate = false }
-  if (/^[0-9\.]+$/.test(estimate) === false) {
-    $('#kycEstimateAlert').addClass('invalid')
-    validate = false
-    $("#kycEstimateError").html('Investment amount should contain only digits and period')
-    $("#kycEstimateError").css('display', 'block')
-  }
+  if ((pic4 == '' || pic4 == undefined) && pic4Url === undefined && country !== 'TH') { $('#kycPic4Alert').addClass('invalid'); validate = false }
+  if ((pic5 == '' || pic5 == undefined) && pic5Url === undefined && country === 'TH') { $('#kycPic5Alert').addClass('invalid'); validate = false }
   if (validate === false) {
-    setEnable([btnDOM, firstNameDOM, lastNameDOM, countryDOM, citizenIdDOM, passportNumberDOM, addressDOM, pic1DOM, pic2DOM, pic3DOM, pic4DOM, estimateDOM])
+    setEnable([btnDOM, firstNameDOM, lastNameDOM, countryDOM, citizenIdDOM, passportNumberDOM, addressDOM, pic1DOM, pic2DOM, pic4DOM, pic5DOM])
   } else {
     let uid = firebase.auth().currentUser.uid
     let dataToUpdate = {
       first_name: first_name,
       last_name: last_name,
       country: country,
-      passport_number: passport_number,
       address: address,
       pic2: pic2Url,
-      pic3: pic3Url,
-      pic4: pic4Url,
-      estimate: estimate,
       kyc_status: 'pending',
       kyc_submit_time: Math.round((new Date()).getTime() / 1000)
     }
     if (country === 'TH') {
       dataToUpdate.pic1 = pic1Url
+      dataToUpdate.pic5 = pic5Url
       dataToUpdate.citizen_id = citizen_id
+    } else {
+      dataToUpdate.pic4 = pic4Url
+      dataToUpdate.passport_number = passport_number
     }
-    firebase.firestore().collection('users').doc(uid).update(dataToUpdate).then(() => {
-      $("#kycContentForm").removeClass("show-detail")
-      $("#kycContentPending").addClass("show-detail")
-      setEnable([btnDOM, firstNameDOM, lastNameDOM, countryDOM, citizenIdDOM, passportNumberDOM, addressDOM, pic1DOM, pic2DOM, pic3DOM, pic4DOM, estimateDOM])
+    $(".overlay, div.loader-checker").show()
+    return updateUser(dataToUpdate).then(response => {
+      if (response.data.success) {
+        if (response.data.code === 205) {
+          $('#kycContentForm').removeClass('show-detail')
+          $('#kycContentPending').addClass('show-detail')
+          $(".overlay, div.loader-checker").hide()
+        } else {
+          window.location.href = '/dashboard'+window.location.search
+        }
+      } else {
+        $("div.loader-checker").hide()
+        $("div.error-not-match").show()
+      }
+      setEnable([btnDOM, firstNameDOM, lastNameDOM, countryDOM, citizenIdDOM, passportNumberDOM, addressDOM, pic1DOM, pic2DOM, pic4DOM, pic5DOM])
     }).catch(err => {
       console.log(err.message)
-      setEnable([btnDOM, firstNameDOM, lastNameDOM, countryDOM, citizenIdDOM, passportNumberDOM, addressDOM, pic1DOM, pic2DOM, pic3DOM, pic4DOM, estimateDOM])
+      setEnable([btnDOM, firstNameDOM, lastNameDOM, countryDOM, citizenIdDOM, passportNumberDOM, addressDOM, pic1DOM, pic2DOM, pic4DOM, pic5DOM])
     })
   }
 }
@@ -455,9 +661,11 @@ function uploadFile(fileNumber, file) {
     $("#pgbarPic"+fileNumber).slideToggle()
   }
   if ($("#sampleImage"+fileNumber).css('display') == 'block') {
-    $("#sampleImage"+fileNumber).slideToggle(400, function() { $("#sampleImage"+fileNumber).attr("src", "") })
+    $("#sampleImage"+fileNumber).fadeToggle(400, function() { $("#sampleImage"+fileNumber).attr("src", "") })
   }
-  $("#kycPicName"+fileNumber).html(file.name)
+  //$("#kycPicName"+fileNumber).html(file.name)
+  //$("#kycPicName"+fileNumber).html(escape(file.name))
+  $("#kycPicName"+fileNumber).text(file.name)
   $("#kycPic"+fileNumber+"Alert").removeClass("invalid")
   let user = firebase.auth().currentUser
   let storageRef = firebase.storage().ref()
@@ -494,8 +702,8 @@ function uploadFile(fileNumber, file) {
       pic1Url = downloadURL
     } else if (fileNumber == 2) {
       pic2Url = downloadURL
-    } else if (fileNumber == 3) {
-      pic3Url = downloadURL
+    } else if (fileNumber == 5) {
+      pic5Url = downloadURL
     } else {
       pic4Url = downloadURL
     }
@@ -519,7 +727,7 @@ $(document).ready(function () {
     $("#kycFirstNameError").html('')
     $("#kycFirstNameError").css('display', 'none')
   }
-  document.getElementById('kycLastName').onkeydown = function() { 
+  document.getElementById('kycLastName').onkeydown = function() {
     $('#kycLastNameAlert').removeClass("invalid")
     $("#kycLastNameError").html('')
     $("#kycLastNameError").css('display', 'none')
@@ -539,27 +747,22 @@ $(document).ready(function () {
     $("#kycAddressError").html('')
     $("#kycAddressError").css('display', 'none')
   }
-  document.getElementById('kycEstimate').onkeydown = function() {
-    $('#kycEstimateAlert').removeClass("invalid")
-    $("#kycEstimateError").html('')
-    $("#kycEstimateError").css('display', 'none')
-  }
   $('#kycPic1').change(function () {
     uploadFile(1, this.files[0])
   })
   $('#kycPic2').change(function () {
     uploadFile(2, this.files[0])
   })
-  $('#kycPic3').change(function () {
-    uploadFile(3, this.files[0])
-  })
   $('#kycPic4').change(function () {
     uploadFile(4, this.files[0])
+  })
+  $('#kycPic5').change(function () {
+    uploadFile(5, this.files[0])
   })
   // ===================== //
   // ===== Countdown ===== //
   // ===================== //
-  var countDownDate = new Date('April 3, 2018 10:00:00').getTime()
+  var countDownDate = endtimeOfIco.getTime()
   var now = new Date().getTime()
   var distance = countDownDate - now
 
@@ -645,17 +848,33 @@ $(document).ready(function () {
   firebase.auth().onAuthStateChanged(function (user) {
     if (!user) {
       console.log('Go to login')
-      window.location.href = '/'
+      window.location.href = '/'+window.location.search
     } else {
       initializeAdmin().then(() => {
         $('#adminShortcut').css('display', 'block')
-      }).finally(() => {
+      }).catch(() => {}).then(() => {
         initializeStep().then(() => {
-          
-        }).finally(() => {
+        }).catch(() => {}).then(() => {
           $('#preLoader').fadeToggle()
         })
       })
     }
   })
+  $('body').on('click', '.dropdown a', function() {
+    var dropdown = $(this).parent(".dropdown");
+
+    dropdown.toggleClass("show-dropdown");
+
+    clickBody('dropdown', dropdown, 'show-dropdown');
+  });
 })
+
+// Click body for close
+function clickBody(name, elem, rm_class) {
+  if ( elem.hasClass(rm_class) ) {
+    $('body').on('click.'+name, function(){
+      elem.removeClass(rm_class);
+      $('body').off('click.'+name);
+    });
+  }
+}

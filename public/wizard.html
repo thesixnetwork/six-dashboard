@@ -4,6 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
+    <meta property="og:url" content="https://ico.six.network/"/>
+    <meta property="og:type" content="article"/>
+    <meta property="og:title" content="SIX | Reinventing the digital economy" />
+    <meta property="og:description" content="SIX aims to bring a better liquidity, ownership, and wealth distribution back to the digital creators."/>
+    <meta property="og:image" content="https://ico.six.network/images/logo/six-logo-property.png"/>
+
     <!-- Include firebase : update the version number as needed -->
     <script defer src="/__/firebase/4.12.0/firebase-app.js"></script>
     <script defer src="/__/firebase/4.12.0/firebase-auth.js"></script>
@@ -19,11 +25,130 @@
     <link rel="shortcut icon" href="images/logo/fav.ico" type="image/x-icon">
     <link rel="stylesheet" href="stylesheets/style.css">
     <link rel="stylesheet" href="stylesheets/loading.css">
+    <link rel="stylesheet" href="stylesheets/responsive2.css">
     <script src="javascripts/jquery-3.2.1.min.js"></script>
+    <script src="javascripts/url_replacer.js"></script>
     <script src="javascripts/libphonenumber-js.min.js"></script>
+    <script src="javascripts/config.js"></script>
     <script src="javascripts/wizard.js"></script>
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=GTM-N5DKTMD"></script>
+    <script src="javascripts/google-analytic.js"></script>
+    <script type="text/javascript" src="//image.cauly.co.kr/cpa/util_sha1.js" ></script>
+    <!-- Facebook Pixel Code -->
+    <script>
+      !function(f,b,e,v,n,t,s)
+      {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+      n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+      if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+      n.queue=[];t=b.createElement(e);t.async=!0;
+      t.src=v;s=b.getElementsByTagName(e)[0];
+      s.parentNode.insertBefore(t,s)}(window, document,'script',
+      'https://connect.facebook.net/en_US/fbevents.js');
+      fbq('init', '191771061455429');
+      fbq('track', 'PageView');
+    </script>
+    <noscript><img height="1" width="1" style="display:none"
+      src="https://www.facebook.com/tr?id=191771061455429&ev=PageView&noscript=1"
+    /></noscript>
+    <!-- End Facebook Pixel Code -->
+
+    <!-- Facebook Pixel Code -->
+    <script>
+      !function(f,b,e,v,n,t,s)
+      {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+      n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+      if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+      n.queue=[];t=b.createElement(e);t.async=!0;
+      t.src=v;s=b.getElementsByTagName(e)[0];
+      s.parentNode.insertBefore(t,s)}(window, document,'script',
+      'https://connect.facebook.net/en_US/fbevents.js');
+      fbq('init', '788942741294425');
+      fbq('track', 'PageView');
+    </script>
+    <noscript><img height="1" width="1" style="display:none"
+      src="https://www.facebook.com/tr?id=788942741294425&ev=PageView&noscript=1"
+    /></noscript>
+    <!-- End Facebook Pixel Code -->
   </head>
   <body>
+  <script>
+      var s = document.createElement('div')
+      s.className = 'fb-customerchat'
+      var att = document.createAttribute("page_id")
+      att.value = pageId
+      s.setAttributeNode(att)
+      document.body.appendChild(s)
+
+      window.fbAsyncInit = function() {
+        FB.init({
+          appId            : appId,
+          autoLogAppEvents : true,
+          xfbml            : true,
+          version          : 'v2.11'
+        });
+      };
+
+      (function(d, s, id){
+         var js, fjs = d.getElementsByTagName(s)[0];
+         if (d.getElementById(id)) {return;}
+         js = d.createElement(s); js.id = id;
+         js.src = "https://connect.facebook.net/en_US/sdk.js";
+         fjs.parentNode.insertBefore(js, fjs);
+       }(document, 'script', 'facebook-jssdk'));
+     </script>
+
+     <div class="overlay" style="display:none">
+     	<div class="error-not-match" style="display:none">
+     		<img src="./images/exclamation-mark.png" alt="Data not match">
+     		<p>Face detection not match</p>
+     		<p>We can not match your photo. Please try again</p>
+     		<a href="#" onclick="closeErrorMatch()" class="close">Close this window</a>
+     	</div>
+     	<div class="loader-checker" style="display:none">
+     		<div class="loading-pulse"></div>
+     		<p>Data has been loading.</p>
+     	</div>
+     </div>
+
+     <style>
+
+     	.overlay { background-color: rgba(0,0,0,0.5); position: fixed; left: 0; top: 0; width: 100%; height: 100%; display: flex; justify-content: center; align-items: center; z-index: 1}
+     	.loader-checker { width: 320px; padding: 60px 40px; background-color: rgba(0,0,0,0.25); border-radius: 4px; }
+     	.loader-checker p { text-align: center; color: #FFFFFF; }
+     	.error-not-match { width: 480px; padding: 60px 40px; background-color: #FFFFFF; border-radius: 4px; }
+     	.error-not-match img { display: block; width: 64px; margin: 0 auto 40px auto; }
+     	.error-not-match p { text-align: center; }
+     	.error-not-match p:nth-of-type(01) { color: #F44336; font-size: 24px; font-weight: bold; margin-bottom: 10px; }
+     	.error-not-match p:nth-of-type(02) { color: #777777; margin-bottom: 20px; }
+     	.error-not-match a.close { display: block; text-align: center; font-size: 12px; color: #777777; opacity: 0.75; }
+
+     	.loading-pulse { margin-left: auto; margin-right: auto; margin-bottom: 30px; display: block; position: relative; width: 6px; height: 24px; background: rgba(255, 255, 255, 0.2); -webkit-animation: pulse 750ms infinite; animation: pulse 750ms infinite; -webkit-animation-delay: 250ms; animation-delay: 250ms; }
+     	.loading-pulse:before, .loading-pulse:after { content: ''; position: absolute; display: block; height: 16px; width: 6px; background: rgba(255, 255, 255, 0.2); top: 50%; -webkit-transform: translateY(-50%); transform: translateY(-50%); -webkit-animation: pulse 750ms infinite; animation: pulse 750ms infinite; }
+     	.loading-pulse:before { left: -12px; }
+     	.loading-pulse:after { left: 12px; -webkit-animation-delay: 500ms; animation-delay: 500ms; }
+     		@keyframes spin {
+     			0% {
+     				-webkit-transform: rotate(0deg);
+     				transform: rotate(0deg);
+     			}
+     		100% {
+     				-webkit-transform: rotate(360deg);
+     				transform: rotate(360deg);
+     			}
+     		}
+     		@-webkit-keyframes pulse {
+     			50% {
+     				background: white;
+     			}
+     		}
+     		@keyframes pulse {
+     			50% {
+     				background: white;
+     			}
+     		}
+     </style>
+
     <div id='preLoader'>
       <div id='preloadWrapper'>
         <img id='preloadImage'src="images/six_network.png">
@@ -34,16 +159,54 @@
         </div>
       </div>
     </div>
+    <div id='sampleFader' style='display: none;'>
+      <a href='javascript:;' onclick='closeSample()'>
+        <div id='sampleWrapper'>
+          <img id='sample1' style='display:none;' class='sampleImg' src='images/content/ID-card.jpg'></img>
+          <img id='sample2' style='display:none;' class='sampleImg' src='images/content/passport.jpg'></img>
+          <img id='sample3' style='display:none;' class='sampleImg' src='images/content/selfie.jpg'></img>
+          <img id='sample5' style='display:none;' class='sampleImg' src='images/content/id-card-back.jpeg'></img>
+          <img id='sample6' style='display:none;' class='sampleImg' src='images/content/selfie-id-card.jpg'></img>
+        </div>
+      </a>
+    </div>
     <header class="header">
       <a href="" class="logo"><img src="images/logo/six-logo.png"></a>
       <ul class="menu">
         <li id='adminShortcut' style='display: none;'><a href="/kyc_manager">Admin</a></li>
+        <li>
+          <div class="dropdown">
+            <a><img src="images/united-kingdom.png"><i class="fas fa-angle-down"></i></a>
+            <ul style="z-index: 9999;">
+              <li><a href="/wizard-kr"><img src="images/south-korea.png">&nbsp;&nbsp;KR</a></li>
+              <li><a href="/wizard-cn"><img src="images/chinese.png">&nbsp;&nbsp;CN</a></li>
+            </ul>
+          </div>
+        </li>
       </ul>
       <a href="javascript:;" onclick='logOut()' class="logout">Logout&nbsp;<i class="fas fa-sign-out-alt"></i></a>
     </header>
   </body>
 
-  <main class="wizard">
+  <div id='thankContainer'>
+    <div id='thankYouDiv'>
+      <img src='images/thank_you.png'>
+      <h2 style='text-align: center; color: #4a5ab5;'>Sorry, SIX network token sale has ended.</h2>
+      <h3>520M of 520M SIX tokens has been sold.</h3>
+      <h4>For token distribution schedule, exchange listing, and future updates. Please stay tunes on our communication channels in order not to miss out!</h4>
+      <ul class="social-list">
+        <li><a target="_black" href="https://six.network/"><i class="fas fa-link"></i></a></li>
+        <li><a target="_black" href="https://www.facebook.com/thesixnetwork/"><i class="fab fa-facebook-f"></i></a></li>
+        <li><a target="_black" href="https://twitter.com/theSIXnetwork"><i class="fab fa-twitter"></i></a></li>
+        <li><a target="_black" href="https://t.me/SIXNetwork"><i class="fab fa-telegram-plane"></i></a></li>
+        <li><a target="_black" href="https://t.me/joinchat/IbZW9A-J0UfCg2cKbSH4-g"><i class="fab fa-telegram-plane"></i><img class="flag" src="images/flags/south-korea.png"></a></li>
+        <li><a target="_black" href="https://t.me/sixcn"><i class="fab fa-telegram-plane"></i><img class="flag" src="images/flags/chinese-square.png"></a></li>
+        <hr>
+      </ul>
+      <dl><dd><button style="width: unset; text-align: center; margin: auto; padding: 10px 25px;" id='backToWebsiteBtn' onclick='window.location = "https://six.network"'>Back to website</button></dd></dl>
+    </div>
+  </div>
+  <main class="wizard" style='display: none;'>
     <div class="step">
       <div class="container">
         <ul>
@@ -59,7 +222,7 @@
       <div class="container">
         <section id='verifyEmailContent' class="verify-email show-detail">
           <h1>Verify Email</h1>
-          <p>Thanks for signing up. To proceed to the next step, please verify your email address.</p>
+          <p>Thanks for signing up. To proceed to the next step, please verify your email address. (<span id='emailToVerify'></span>)</p>
           <dl><dd><button id='verifyResendBtn' onclick='resendVerifyEmailClick()'>Resend verification email</button></dd></dl>
           <p id='verifyNotice' class="alert-text" style='display: none;'></p>
         </section>
@@ -189,8 +352,7 @@
                       <option value="KZ">Kazakhstan</option>
                       <option value="KE">Kenya</option>
                       <option value="KI">Kiribati</option>
-                      <option value="KP">Korea, Democratic People's Republic of</option>
-                      <option value="KR">Korea, Republic of</option>
+                      <option value="KR">Korea</option>
                       <option value="KW">Kuwait</option>
                       <option value="KG">Kyrgyzstan</option>
                       <option value="LA">Lao People's Democratic Republic</option>
@@ -353,7 +515,7 @@
         <section id='kycContent' class="information">
           <article id='kycContentForm' class="profile-form show-detail">
             <fieldset>
-              <legend>Information</legend>
+              <legend>Information (Please fill in English only)</legend>
               <dl>
                 <dt>Name</dt>
                 <dd class="combine">
@@ -489,8 +651,7 @@
                       <option value="KZ">Kazakhstan</option>
                       <option value="KE">Kenya</option>
                       <option value="KI">Kiribati</option>
-                      <option value="KP">Korea, Democratic People's Republic of</option>
-                      <option value="KR">Korea, Republic of</option>
+                      <option value="KR">Korea</option>
                       <option value="KW">Kuwait</option>
                       <option value="KG">Kyrgyzstan</option>
                       <option value="LA">Lao People's Democratic Republic</option>
@@ -636,23 +797,23 @@
 
               <dl id='passportNumber'>
                 <dt>Passport number
-                  <span>* พาสปอร์ตต้องใช้เพราะสิงคโปรไรสักอย่าง</span>
+                  <span>As SIX.network is registered in Singapore, we require your passport ID to do the KYC process</span>
                 </dt>
                 <dd><label class="text kycinput" id="kycPassportNumberAlert">
                   <input type="text" id='kycPassportNumber' placeholder="Passport number">
                   <p id='kycPassportNumberError' style='display: none;'></p>
                 </label></dd>
               </dl>
-              
+
               <dl>
-                <dt>Address according to Passport</dt>
+                <dt>Local address</dt>
                 <dd><label class="textarea kycinput" id="kycAddressAlert">
-                  <textarea id='kycAddress' placeholder="Address according to Passport"></textarea>
+                  <textarea id='kycAddress' placeholder="Local address"></textarea>
                   <p id='kycAddressError' style='display: none;'></p>
                 </label></dd>
               </dl>
               <dl id='citizenIdPhoto'>
-                <dt>Photo of ID with signature</dt>
+                <dt><i class="animate-flicker fas fa-question-circle" style='cursor: pointer; color: #555555; font-size: 17px;' onclick='showSample1()'></i> &nbsp;&nbsp;Photo of ID card with signature and a paper with the word for "SIX.network"</dt>
                 <dd>
                   <label class="file kycinput" id="kycPic1Alert">
                     <input type="file" id='kycPic1'>
@@ -667,13 +828,44 @@
                   </div>
                 </dd>
                 <dd id='sampleImage1Container'>
-                  <span class="image">
-                    <img class='sample_image' id='sampleImage1' style='display: none;'>
+                  <span class="image" style='display: flex;'>
+                    <div style='width: 100%;'>
+                      <img class='sample_image' id='sampleImage1' style='display: none;'>
+                    </div>
+                    <div style='width: 100%;'>
+                      <img class='sample_image' src='images/content/exam-ID-card.jpg' style='display: block; cursor: pointer;' onclick='showSample1()'>
+                    </div>
                   </span>
                 </dd>
               </dl>
-              <dl>
-                <dt>Photo of Passport with signature</dt>
+              <dl id='citizenIdPhotoBack'>
+                <dt><i class="animate-flicker fas fa-question-circle" style='cursor: pointer; color: #555555; font-size: 17px;' onclick='showSample5()'></i> &nbsp;&nbsp;Photo of the back side of ID card with signature and a paper with the word for "SIX.network"</dt>
+                <dd>
+                  <label class="file kycinput" id="kycPic5Alert">
+                    <input type="file" id='kycPic5'>
+                    <p id='kycPicName5'>Choose File</p>
+                    <i class="fas fa-upload"></i>
+                  </label>
+                </dd>
+                <dd>
+                  <div class="kycProgressBar" id="pgbarPic5">
+                    <div class="kycProgressBarContent" id='pgbarCPic5'>
+                    </div>
+                  </div>
+                </dd>
+                <dd id='sampleImage5Container'>
+                  <span class="image" style='display: flex;'>
+                    <div style='width: 100%;'>
+                      <img class='sample_image' id='sampleImage5' style='display: none;'>
+                    </div>
+                    <div style='width: 100%;'>
+                      <img class='sample_image' src='images/content/lasor-code.jpg' style='display: block; cursor: pointer;' onclick='showSample5()'>
+                    </div>
+                  </span>
+                </dd>
+              </dl>
+              <dl id='passportNumberPhoto'>
+                <dt><i class="animate-flicker fas fa-question-circle" style='cursor: pointer; color: #555555; font-size: 17px;' onclick='showSample2()'></i> &nbsp;&nbsp;Photo of Passport with signature and a paper with the word for "SIX.network"</dt>
                 <dd>
                   <label class="file kycinput" id="kycPic4Alert">
                     <input type="file" id='kycPic4'>
@@ -688,15 +880,20 @@
                   </div>
                 </dd>
                 <dd id='sampleImage4Container'>
-                  <span class="image">
-                    <img class='sample_image' id='sampleImage4' style='display: none;'>
+                  <span class="image" style='display: flex'>
+                    <div style='width: 100%;'>
+                      <img class='sample_image' id='sampleImage4' style='display: none;'>
+                    </div>
+                    <div style='width: 100%;'>
+                      <img class='sample_image' src='images/content/exam-passport.jpg' style='display: block; cursor: pointer;' onclick='showSample2()'>
+                    </div>
                   </span>
                 </dd>
               </dl>
               <dl>
                 <dt>
-                  Photo of you holding a Passport
-                  <span>A photo of you holding a copy of Passport with a word 'SIX.network' and current date written on it.</span>
+                  <i id='idHelper' class="animate-flicker fas fa-question-circle" style='cursor: pointer; color: #555555; font-size: 17px; display: none;' onclick='showSample6()'></i><i id='passportHelper' class="animate-flicker fas fa-question-circle" style='cursor: pointer; color: #555555; font-size: 17px;' onclick='showSample3()'></i> &nbsp;&nbsp;Photo of you holding a <holding id='itemHoldingHead'>Passport</holding>
+                  <span>A selfie of you holding your official <holding id='itemHolding'>passport showing the passport photo page</holding> and a paper with the word "for SIX.network on the date of registration"</span>
                 </dt>
                 <dd>
                   <label class="file kycinput" id="kycPic2Alert">
@@ -712,62 +909,48 @@
                   </div>
                 </dd>
                 <dd id='sampleImage2Container'>
-                  <span class="image">
-                    <img class='sample_image' id='sampleImage2' style='display: none;'>
-                  </span>
-                </dd>
-              </dl>
-              <dl>
-                <dt>Photo of utitlity bill to verify address</dt>
-                <dd>
-                  <label class="file kycinput" id="kycPic3Alert">
-                    <input type="file" id='kycPic3'>
-                    <p id='kycPicName3'>Choose File</p>
-                    <i class="fas fa-upload"></i>
-                  </label>
-                </dd>
-                <dd>
-                  <div class="kycProgressBar" id="pgbarPic3">
-                    <div class="kycProgressBarContent" id='pgbarCPic3'>
+                  <span class="image" style='display: flex'>
+                    <div style='width: 100%;'>
+                      <img class='sample_image' id='sampleImage2' style='display: none;'>
                     </div>
-                  </div>
-                </dd>
-                <dd id='sampleImage3Container'>
-                  <span class="image">
-                    <img class='sample_image' id='sampleImage3' style='display: none;'>
+                    <div style='width: 100%;'>
+                      <img class='sample_image' id='samplePassportSelfie' src='images/content/exam-selfie.jpg' style='display: block; cursor: pointer;' onclick='showSample3()'>
+                      <img class='sample_image' id='sampleIDSelfie' src='images/content/exam-selfie-id-card.jpg' style='display: block; cursor: pointer;' onclick='showSample6()'>
+                    </div>
                   </span>
                 </dd>
               </dl>
             </fieldset>
-            <fieldset>
-              <legend>Investment amount (USD)</legend>
-              <dl>
-                <dd><label class="text kycinput" id="kycEstimateAlert">
-                  <input type="text" id='kycEstimate' placeholder="1000"></label>
-                  <p id='kycEstimateError' style='display: none;'></p>
-                </dd>
-              </dl>
-            </fieldset>
+            <div id='kycFormAlert' class="alert-error">
+              <p id='kycFormAlertText'>Sorry, Civils in the jurisdiction of the US, China, and Singapore are not able to join this ICO contribution according to the laws. Apologize for inconvenience this may cause.</p>
+            </div>
             <dl>
               <dd><button id='kycSubmitBtn' onclick='submitKyc()'>Submit</button></dd>
             </dl>
           </article>
 
           <article class="approved" id='kycContentPending'>
-            <h1>Wait for approved</h1>
-            <p>Usually the approval takes 15 minutes up to 4 hours, but sometimes it might take longer – up to 1 day. After we review your account – a notification email is sent to all administrators of the account.</p>
+            <h1>Waiting for approval</h1>
+            <p>The approval process takes up to 72 business hours. After we review your account information and KYC/ AML documents, you will receive an email confirmation on your KYC/ AML result.</p>
+            <img id='headerEmailSample'src="images/header_email_sample.png">
+            <img id='bodyEmailSample'src="images/body_email_sample.png">
           </article>
 
           <article class="rejected" id='kycContentRejected'>
             <h1>Your submission has been rejected</h1>
-            <p>Reason: <span id='rejectReason'></span></p>
+            <p><span id='rejectReason'></span></p>
+            <div id='extendRejectNote' style='display: none'>
+              <br>
+              <p><strong>Note</strong> : <span id='rejectReasonExtend'></span></p>
+            </div>
             <a href='javascript:;' onclick='resubmission()' class="back" id='resubmission' >Resubmission</a>
           </article>
         </section>
 
         <section class="finished" id='congratulationPage'>
           <h1>Congratulation</h1>
-          <p>Lorem, ipsum dolor sit amet consectetur adipisicing elit. Adipisci libero alias mollitia. Aspernatur, ut excepturi. Eum.</p>
+          <p id='presale_congrat'>You are now listed in our exclusive pre-sale list. You are eligible for 6% bonus by contributing to our project.</p>
+          <p id='normal_congrat'>Your KYC application was APPROVED. Next step, please proceed on ICO contribution by click on the button below.</p>
           <dl><dd><button id='toIcoBtn' onclick='proceedToIco()'>Proceed to ICO</button></dd></dl>
         </section>
 

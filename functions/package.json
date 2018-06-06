@@ -18,15 +18,19 @@
     "express": "^4.16.3",
     "firebase-admin": "~5.10.0",
     "firebase-functions": "^0.9.1",
+    "handlebars": "^4.0.11",
     "lodash": "^4.17.5",
     "moment-timezone": "^0.5.14",
+    "nodemailer": "^4.6.3",
+    "nodemailer-sendgrid-transport": "^0.2.0",
     "query-string": "^6.0.0",
+    "regenerator-runtime": "^0.11.1",
     "request": "^2.85.0",
     "request-promise": "^4.2.2",
     "standard": "^11.0.1",
-    "web3": "^0.14.1",
     "stellar-sdk": "^0.8.0",
-    "nodemailer": "^4.6.3"
+    "web3": "^0.14.1",
+    "form-data": "^2.3.2"
   },
   "private": true,
   "devDependencies": {

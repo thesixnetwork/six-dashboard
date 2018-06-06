@@ -1,11 +1,17 @@
+const functions = require('firebase-functions')
 const _ = require('lodash')
 const Web3 = require('web3')
 const admin = require('firebase-admin')
 const bluebird = require('bluebird')
 
 const web3 = new Web3()
+const etherscan = require('etherscan-api')
 
-let api = require('etherscan-api').init('IG895QW58QRX3ENJ6MDFZTM4B3AF2UA6EZ', 'ropsten')
+const closeICO = new Date('2018-05-31T22:00:00+07:00')
+
+const isProduction = functions.config().campaign.is_production === 'true'
+const ethAddress = functions.config().eth.address
+let api = isProduction ? etherscan.init(ethAddress) : etherscan.init(ethAddress, 'ropsten')
 
 const db = admin.firestore()
 
@@ -64,14 +70,14 @@ function savePurchaseTxs (transactionId, data) {
     .get()
     .then((doc) => {
       if (!doc.exists) {
-        return db.collection(col).doc(transactionId).set(data)
+        return db.collection(col).doc(transactionId).set(data).then(() => { return db.collection('users').doc(data.user_id).set({ alloc_transaction: false }, {merge: true})})
       }
     })
 }
 
-function userByUserNumber (userNumber) {
+function userBySenderAddress (ethAddress) {
   return db.collection('users')
-    .where('user_number', '==', userNumber)
+    .where('eth_address', '==', ethAddress)
     .get()
     .then(snapshot => {
       if (!snapshot) {
@@ -94,17 +100,7 @@ function filterTransactions (transactions, contractAddress) {
     if (transaction.to !== contractAddress) {
       return null
     }
-    const inputText = web3.toAscii(transaction.input)
-    console.log('inputText = ', inputText)
-    try {
-      const _memo = JSON.parse(inputText)
-      if (_memo.n) {
-        transaction.user_number = _memo.n
-      }
-      return transaction
-    } catch (err) {
-      return transaction
-    }
+    return transaction
   })
   _transactions = _.compact(_transactions)
   return _transactions
@@ -113,14 +109,13 @@ function filterTransactions (transactions, contractAddress) {
 function mapUserTransactions (transactions, contractAddress) {
   return bluebird.map(transactions, (transaction) => {
     // Promise.map awaits for returned promises as well.
-    if (!transaction.user_number) {
+    if (!transaction.from) {
       return transaction
     }
-    return userByUserNumber(transaction.user_number)
+    return userBySenderAddress(transaction.from.toLowerCase())
       .then((userId) => {
         console.log('userId = ', userId)
         if (!userId) {
-          transaction.user_number = transaction.user_number
           return transaction
         }
         transaction.user_id = userId
@@ -129,8 +124,8 @@ function mapUserTransactions (transactions, contractAddress) {
   })
 }
 
-function monitor (contractAddress) {
-  contractAddress = contractAddress.toLowerCase()
+function monitor () {
+  const contractAddress = ethAddress.toLowerCase()
   // latestBlockNumber for update to latest in firebase
   let latestBlockNumber
 
@@ -151,7 +146,11 @@ function monitor (contractAddress) {
     })
     .then((transactions) => {
       // mapping user_number to user object from firebase
-      return mapUserTransactions(transactions)
+      if (new Date() < closeICO) {
+        return mapUserTransactions(transactions)
+      } else {
+        return transactions
+      }
     })
     .then((transactions) => {
       // getting budget

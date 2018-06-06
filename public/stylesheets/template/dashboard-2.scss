@@ -1,0 +1,180 @@
+.dashboard-2 {
+	.container {
+		max-width: 1280px; display: flex;
+		.twin { display: flex;
+			justify-content: space-between;
+			section { width: calc(50% - 10px); }
+		}
+	}
+
+	aside { background: $gray; width: 350px; height: calc(100vh - 60px); padding: $space-l; position: relative; }
+
+	.content { width: calc(100% - 350px); height: calc(100vh - 60px); overflow: auto; }
+
+	section {
+		padding: $space-l;
+
+		h2 { width: 100%; margin-bottom: $space-m; color: $blue; font-weight: 500; text-align: center; }
+
+		&.user-detail {
+			border-bottom: 1px solid $border; padding: $space-s 0 $space-l 0;
+
+			.avatar { margin: 0 auto $space-m auto; }
+
+			p {
+				display: block; text-align: center; font-size: $font-size-xl;
+
+				span { font-weight: bold; color: $blue; }
+			}
+		}
+
+		&.progress {
+			padding: $space-xl 0;
+
+			.bar {
+				position: relative ;margin: $space-l 0; height: 30px; width: 100%; background-color: $white; border-radius: 3px; border: 2px solid $border;
+
+				&:before { content:""; height: 100%; width: 2px; background: $yellow; position: absolute; top: 0; left: 50%; z-index: 1; }
+
+				.top, .bottom {
+					position: absolute; left: 0; width: 100%; display: flex;
+
+					p {
+						width: 33.333%; line-height: 20px;
+
+						&:nth-of-type(02) { text-align: center; }
+						&:last-of-type { text-align: right; }
+					}
+				}
+
+				.top { top: -30px; font-weight: bold; }
+
+				.bottom { bottom: -30px; }
+
+				.available {
+					font-weight: bold; width: 10%; min-width: 100px; height: 100%; position: absolute; top: 0; left: 0; background-color: $blue; border-radius: 3px; padding: 0 $space-s; text-align: center;
+
+					em { color: $white; font-style: inherit; line-height: 26px; display: block; }
+				}
+			}
+		}
+
+		&.video {
+			transition: 0.2s; opacity: 0.5; position: relative; background: $blue url(../images/about-six.jpg) no-repeat center; text-align: center; color: $white;
+
+			&:before { content: ""; background: rgba($blue, 0.9); width: 100%; height: 100%; position: absolute; top: 0; left: 0; }
+
+			.btn-play {
+				display: block;  width: 50px; height: 50px; margin: 0 auto $space-s auto; transform: scale(0.9); border: 2px solid $white; color: $white; border-radius: 50%;
+
+				i { position: relative; left: 2px; line-height: 48px; }
+
+				&:hover { background: rgba($white,0.25); }
+			}
+
+			&:hover {
+				opacity: 1;
+
+				a { transform: scale(1); }
+			}
+
+			p { position: relative; color: $white; }
+		}
+
+		&.static-link {
+			display: flex; justify-content: center; position: absolute; bottom: 0; left: 0; width: 100%; padding: $space-m 0;
+
+			a {
+				display: block; border-right: 1px solid $border; font-size: $font-size-s; padding: 0 $space-s;
+
+				&:hover { text-decoration: underline; }
+				&:last-of-type { border: none; }
+			}
+		}
+
+		&.payment-box {
+			flex-wrap: wrap; display: none;
+
+			.option-list {
+				li {
+					> p { line-height: 45px; margin: 0 $space-m; }
+
+					label {
+						width: auto;
+
+						&:nth-of-type(02) { width: 400px; margin-right: $space-m; }
+					}
+
+					&:not(:last-of-type) {
+						label { font-weight: bold; }
+					}
+
+					&:last-of-type {
+						margin-top: $space-l; padding-top: $space-l; border-top: 1px solid $border; justify-content: center;
+
+						.option {
+							min-width: auto; padding-left: 20px;
+
+							.check-mark {
+								width: 20px; height: 20px;
+
+								&:before { top: 5px; left: 3px; }
+							}
+						}
+
+						p { width: 70%; line-height: 30px; }
+					}
+				}
+			}
+
+			.btn {
+				margin-top: $space-l;
+				button { width: 300px; }
+			}
+
+			&.show-detail { display: block; }
+		}
+
+		&.address {
+			padding-bottom: 0;
+
+			ul.address-list {
+				border-bottom: 1px solid $border; padding-bottom: $space-xl;
+
+				li {
+					margin-bottom: $space-xl;
+
+					> p { margin-bottom: $space-s; }
+
+					.exchange {
+						display: flex;
+
+						label { width: 200px; }
+
+						p { line-height: 45px; margin-left: $space-s; }
+					}
+
+					&:last-of-type { margin-bottom: 0; }
+				}
+			}
+		}
+	}
+
+	.address-history {
+		display: none;
+
+		&.show-detail { display: block; }
+	}
+
+	.loader-more {
+		padding: $space-m;
+
+		a { display: block; text-align: center; line-height: 30px; width: 100px; border: 2px solid $blue; color: $blue; border-radius: 3px; margin: auto; font-size: 14px; }
+	}
+
+	table {
+		tbody {
+			tr:hover { background: transparent; }
+		}
+	}
+}

@@ -1,0 +1,115 @@
+.filter-row {
+	display: flex;
+	flex-direction: row;
+	justify-content: space-around;
+	margin-bottom: 40px;
+}
+
+.tab-button {
+    background: #FFF !important;
+    color: black !important;
+    border: 0.5px solid #dbdbdb;
+}
+
+.tab-button:hover {
+    background:#4a5ab5 !important;
+    color: #FFF !important;
+    border: 0.5px solid #4a5ab5;
+}
+
+.is-active {
+    background:#4a5ab5 !important;
+    color: #FFF !important;
+    border: 0.5px solid #4a5ab5;
+}
+
+.table-nav-wrapper {
+    display: flex !important;
+    flex-direction: row;
+    padding-bottom: 20px;
+}
+
+.table-nav-wrapper > button {
+    background: #FFF;
+    border: 0.5px solid #4a5ab5;
+    color:#4a5ab5;
+    margin-left: 20px;
+    margin-right: 20px;
+}
+
+.table-nav-wrapper > button:hover {
+    background:#4a5ab5 !important;
+    color: #FFF !important;
+    border: 0.5px solid #4a5ab5;
+    margin-left: 20px;
+    margin-right: 20px;
+}
+
+.dropdown-select {
+    margin: 10px;
+    border: 1px solid grey !important;
+    padding: 10px;
+    padding-left: 20px;
+    padding-right: 20px;
+    float: right;
+}
+
+.table-option {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-end;
+    align-items: center;
+    vertical-align: middle;
+}
+
+.small-btn {
+    max-width: 100px !important;
+}
+
+.date-picker {
+    border: 1px solid grey;
+    padding: 10px 10px;
+    margin-right: 10px;
+    width: 25%;
+}
+
+.widget-row {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    margin-bottom: 30px;
+}
+
+.widget {
+    width: 40%;
+    border: 0.5px solid #dbdbdb;
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.widget > .value {
+    font-size: 35px;
+}
+
+.widget > .title {
+    font-size: 20px;
+}
+
+.red {
+    color: red;
+}
+
+.green {
+    color: green;
+}
+
+.block-content {
+    position: absolute;
+    top: 0;
+    right: 0;
+    left: 0;
+    bottom: 0;
+}

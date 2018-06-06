@@ -1,0 +1,87 @@
+[
+  {
+    "name": "generator",
+    "docs": [
+      {
+        "name": "user",
+        "fields": {
+          "lanumber": 0
+        }
+      }
+    ]
+  },
+  {
+    "name": "total_asset",
+    "docs": [
+      {
+        "name": "eth",
+        "fields": {
+          "total": 0
+        }
+      },
+      {
+        "name": "xlm",
+        "fields": {
+          "total": 0
+        }
+      },
+      {
+        "name": "btc",
+        "fields": {
+          "total": 0
+        }
+      },
+      {
+        "name": "six",
+        "fields": {
+          "total": 0
+        }
+      },
+      {
+        "name": "usd",
+        "fields": {
+          "hard_cap_usd": 42905579,
+          "soft_cap_usd" : 15000000,
+          "total": 0
+        }
+      }
+    ]
+  },
+  {
+    "name": "latest_block_sync",
+    "docs": [
+      {
+        "name": "eth",
+        "fields": {
+          "block_number": 0
+        }
+      },
+      {
+        "name": "xlm",
+        "fields": {
+          "ts": 1522651074000
+        }
+      },
+      {
+        "name": "btc",
+        "fields": {
+          "block_number": 0
+        }
+      }
+    ]
+  },
+  {
+    "name": "presale",
+    "docs": [
+      {
+        "name": "supply",
+        "fields": {
+          "total_eth": 0,
+          "total_presale_six": 0,
+          "limit_presale_six": 52695489.62,
+          "bonus_times": 0.06
+        }
+      }
+    ]
+  }
+]

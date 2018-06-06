@@ -1,0 +1,111 @@
+.redeemContainer {
+  background: unset;
+  margin: auto;
+  text-align: center;
+  flex-grow: 1; 
+  flex-shrink: 1; 
+  max-width: 600px;
+}
+
+html, body, main {
+  width: 100%;
+  height: 100%;
+}
+
+main {
+  display: flex;
+  height: calc(100vh - 60px);
+}
+
+#redeemHeader {
+  max-height: 200px;
+  background: #4a5ab5;
+  padding: 7px;
+  color: white;
+  font-weight: bold;
+  border-top-right-radius: 5px;
+  border-top-left-radius: 5px;
+}
+
+#redeemHeader svg {
+  max-height: 200px;
+}
+
+#redeemContent, #redeemContentOTP, #redeemContentSetPassword {
+  background: white;
+  padding: 25px;
+  border-bottom-left-radius: 10px;
+  border-bottom-right-radius: 10px;
+}
+
+.fdiv {
+  padding: 10px;
+}
+
+.fdiv label {
+}
+
+.fdiv label input {
+  text-align: center;
+}
+
+.fdiv p {
+  font-weight: bold;
+  text-align: left;
+  margin-left: 10px;
+  margin-bottom: 15px;
+  color: #4a5ab5;
+}
+
+#redeemContainer3, #redeemContainer2, #redeemContainer1 {
+  display: none;
+}
+
+#.redeemContentOTP {
+  padding: 10px;
+}
+
+.redeemContainer h3 {
+  padding-top: 30px;
+  padding-bottom: 10px;
+}
+
+#redeemError, #passwordError {
+  display: none;
+  color: red;
+}
+
+.countdown-verify {
+  font-size: 20px;
+  font-weight: bold;
+  margin-top: 10px;
+  margin-bottom: 10px;
+  color: #4a5ab5;
+}
+
+.welcomeImage {
+  max-width: 100%;
+  background: white;
+  border-top-left-radius: 10px;
+  border-top-right-radius: 10px;
+  padding-right: 8px;
+  padding-left: 8px;
+}
+
+#sendToEmailBtn {
+  display: none;
+  margin: auto;
+  padding-left: 18px;
+  padding-right: 18px;
+  margin-bottom: 10px;
+  height: 36px;
+  width: auto;
+}
+
+@media only screen and (max-width: 550px) {
+  #nextWelcome, #submit, #verifyPhoneSubmitBtn, #submitPassword, #sendToEmailBtn {
+    min-width: 100px;
+    height: 36px;
+  }
+}
+

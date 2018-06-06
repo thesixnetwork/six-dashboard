@@ -1,8 +1,8 @@
 service firebase.storage {
   match /b/{bucket}/o {
     match /{userId}/{timeStamp}/{type}/{fileName} {
-      allow read, write: if request.auth.uid == userId
-                        || exists(/databases/$(database)/documents/admins/$(request.auth.uid));
+      allow read: if (request.auth.uid == userId || exists(/databases/$(database)/documents/admins/$(request.auth.uid)));
+      allow write: if request.auth.uid == userId
     }
   }
 }

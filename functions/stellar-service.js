@@ -1,11 +1,10 @@
-const functions = require('firebase-functions');
+const functions = require('firebase-functions')
 const StellarSdk = require('stellar-sdk')
-const admin = require('firebase-admin') //delet
+const admin = require('firebase-admin')
 const Promise = require('bluebird')
+const fireStore = admin.firestore()
 
-const serviceAccount = require('./service-account')
-
-const fireStore = admin.firestore() //detelete
+const closeICO = new Date('2018-05-31T22:00:00+07:00')
 
 function StellarService(event) {
   this.stellarUrl = functions.config().campaign.is_production === 'true'
@@ -27,6 +26,7 @@ function StellarService(event) {
           if (new Date(payments.records[i].created_at).getTime() <= cursor) {
             break;
           }
+          console.log('doing i', i)
 
           recordPromise.push(payments.records[i].transaction()
             .then(findUser)
@@ -39,10 +39,12 @@ function StellarService(event) {
 
               tx.operations()
                 .then((operations) => {
-                  const records = operations._embedded.records
-                  const operationLength = operations._embedded.records.length
+
+                  const records = (operations._embedded === undefined ? operations : operations._embedded).records
+                  const operationLength = (operations._embedded === undefined ? operations : operations._embedded).records.length
                   const operationTxs = []
 
+                  console.log('j length', operationLength)
                   for (let j = 0; j < operationLength; j++) {
                     if (records[j].type !== 'payment') {
                       continue
@@ -82,8 +84,12 @@ function updateCursor(newTime) {
 }
 
 function handleOperation(user, tx, operation, n, price, priceTime) {
+  if (+operation.amount < 1) {
+      console.log(`Amount too low : ${tx.hash}`)
+      return Promise.resolve()
+  }
   const hash = tx.hash
-  const id = `${hash}_${n}`
+  const id = `${hash}_${operation.id}`
   const memo = tx.memo || ''
   const native_amount = +operation.amount
   const six_amount = +(operation.amount * price.six_per_xlm).toFixed(7)
@@ -113,32 +119,55 @@ function handleOperation(user, tx, operation, n, price, priceTime) {
     xlm_meta
   }
 
+  console.log('user = ', user)
+  console.log('body = ', body)
+
   if (!user) {
-    return fireStore
-      .collection('undefined_purchase_txs')
-      .doc(`${hash}_${operation.id}`)
-      .set(body)
+    return fireStore.runTransaction(transaction => {
+      let documentRef = fireStore
+        .collection('undefined_purchase_txs')
+        .doc(`${hash}_${operation.id}`);
+
+      return transaction.get(documentRef).then(doc => {
+        if (!doc.exists) {
+          return transaction.create(documentRef, body);
+        }
+      });
+    });
   }
 
 
   const user_id = user.id
   body.user_id = user_id
 
-  return fireStore
-    .collection('purchase_txs')
-    .doc(`${hash}_${operation.id}`)
-    .set(body)
+  return fireStore.runTransaction(transaction => {
+    let documentRef = fireStore
+      .collection('purchase_txs')
+      .doc(`${hash}_${operation.id}`);
+    let userRef = fireStore
+      .collection('users')
+      .doc(user_id)
+    return transaction.get(documentRef).then(doc => {
+      if (!doc.exists) {
+        transaction.update(userRef, { alloc_transaction: false })
+        return transaction.create(documentRef, body);
+      }
+      const resultText = `Not insert : ${id} already exists`;
+      console.log(resultText)
+      return Promise.resolve(resultText)
+    });
+  });
 }
 
 function findUser(tx) {
-  if (!tx.hasOwnProperty('memo')) {
+  if (!tx.hasOwnProperty('memo') || !(new Date() < closeICO)) {
     return {
       tx
     }
   }
   return fireStore
     .collection('users')
-    .where('xlm_memo', '==', tx.memo)
+    .where('memo', '==', tx.memo)
     .get()
     .then((snapshot) => {
       const users = [];

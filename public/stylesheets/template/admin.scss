@@ -13,7 +13,7 @@
 		}
 
 		.list-user {
-			box-shadow: 0 0 40px 0 rgba(74, 90, 181,0.125); background: $white; margin-bottom: $space-l;
+			background: $white; margin-bottom: $space-l;
 
 			table tbody tr { cursor: pointer; }
 		}
@@ -67,6 +67,8 @@
 .admin-detail {
 	.container {
 		section { padding: $space-l; }
+
+		a.back { text-align: right; color: $blue; }
 
 		.detail {
 			border-bottom: 1px solid $border;

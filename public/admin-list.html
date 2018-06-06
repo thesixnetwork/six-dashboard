@@ -3,29 +3,47 @@
   <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Content-Security-Policy" content="script-src 'self' 'unsafe-inline' https://*.jsdelivr.net https://*.cloudflare.com http://*.jsdelivr.net https://www.googletagmanager.com https://www.google-analytics.com https://*.facebook.com https://*.firebaseio.com https://*.googleapis.com;">    
+    <meta property="og:url" content="https://ico.six.network/">
+    <meta property="og:type" content="article">
+    <meta property="og:title" content="SIX | Reinventing the digital economy">
+    <meta property="og:description" content="SIX aims to bring a better liquidity, ownership, and wealth distribution back to the digital creators.">
+    <meta property="og:image" content="https://ico.six.network/images/logo/six-logo-property.png">
 
     <!-- Include firebase : update the version number as needed -->
-    <script defer src="/__/firebase/4.12.0/firebase-app.js"></script>
-    <script defer src="/__/firebase/4.12.0/firebase-auth.js"></script>
-    <script defer src="/__/firebase/4.12.0/firebase-database.js"></script>
-    <script defer src="/__/firebase/4.12.0/firebase-firestore.js"></script>
-    <script defer src="/__/firebase/4.12.0/firebase-messaging.js"></script>
-    <script defer src="/__/firebase/4.12.0/firebase-storage.js"></script>
-    <script defer src="/__/firebase/init.js"></script>
-  
+    <script src="/__/firebase/4.12.0/firebase-app.js" defer></script>
+    <script src="/__/firebase/4.12.0/firebase-auth.js" defer></script>
+    <script src="/__/firebase/4.12.0/firebase-database.js" defer></script>
+    <script src="/__/firebase/4.12.0/firebase-firestore.js" defer></script>
+    <script src="/__/firebase/4.12.0/firebase-messaging.js" defer></script>
+    <script src="/__/firebase/4.12.0/firebase-storage.js" defer></script>
+    <script src="/__/firebase/init.js" defer></script>
+
         <meta http-equiv="X-UA-Compatible" content="ie=edge">
         <title>SIX | Reinventing the digital economy</title>
-        <link rel="shortcut icon" href="images/logo/fav.ico" type="image/x-icon">
-        <link rel="stylesheet" href="stylesheets/style.css">
-        <link rel="stylesheet" href="stylesheets/loading.css">
+        <link type="image/x-icon" href="images/logo/fav.ico" rel="shortcut icon">
+        <link href="stylesheets/style.css" rel="stylesheet">
+        <link href="stylesheets/style2.css" rel="stylesheet">
+        <link href="stylesheets/loading.css" rel="stylesheet">
+        <link href="stylesheets/admin.css" rel="stylesheet">
+        <link rel="stylesheet" type="text/css" href="//cdn.jsdelivr.net/bootstrap/3/css/bootstrap.css" />
         <script src="javascripts/jquery-3.2.1.min.js"></script>
+        <script src="javascripts/url_replacer.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/lodash@4.17.5/lodash.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.18.1/moment.js"></script>
+        <!-- Include Date Range Picker -->
+        <script type="text/javascript" src="//cdn.jsdelivr.net/bootstrap.daterangepicker/2/daterangepicker.js"></script>
+        <link rel="stylesheet" type="text/css" href="//cdn.jsdelivr.net/bootstrap.daterangepicker/2/daterangepicker.css" />
+
         <script src="javascripts/admin-list.js"></script>
         <!-- <script src="javascripts/wizard.js"></script> -->
+        <!-- Global site tag (gtag.js) - Google Analytics -->
+        <script src="javascripts/google-analytic.js"></script>
   </head>
   <body>
-    <div id='preLoader'>
-      <div id='preloadWrapper'>
-        <img id='preloadImage'src="images/six_network.png">
+    <div id="preLoader">
+      <div id="preloadWrapper">
+        <img id="preloadImage" src="images/six_network.png">
         <div class="spinner">
           <div class="bounce1"></div>
           <div class="bounce2"></div>
@@ -34,95 +52,381 @@
       </div>
     </div>
     <header class="header">
-      <a href="" class="logo"><img src="images/logo/six-logo.png"></a>
+      <a class="logo" href><img src="images/logo/six-logo.png"></a>
       <ul class="menu">
       </ul>
-            <a href="login.html" class="logout">Logout&nbsp;<i class="fas fa-sign-out-alt"></i></a>
+            <a class="logout" href="login.html">Logout&nbsp;<i class="fas fa-sign-out-alt"></i></a>
     </header>
   </body>
 
     <main class="admin" id='adminListMain'>
-        <div class="container">
+        <div id='adminContainer' class="container">
       <div class="search">
         <label class="text">
           <i class="fas fa-search"></i>
           <input type="text" placeholder="Search">
         </label>
       </div>
+      <section class="row widget-row">
+        <div class="widget">
+          <h3 class="value" id='total_contibrute'>0</h3>
+          <h6 class="title">Contributed / Total User</h6>
+        </div>
+        <div class="widget">
+            <h3 class="value" id='total_six'>0</h3>
+            <h6 class="title">Total Contributed SIX</h6>
+          </div>
+      </section>
+      <section class="row filter-row">
+        <button id="all" onclick="handleFilter('all')" class="tab-button is-active">All</button>
+        <button id="approved" onclick="handleFilter('approved')" class="tab-button">Approved</button>
+        <button id="rejected" onclick="handleFilter('rejected')" class="tab-button">Rejected</button>
+        <button id="pending" onclick="handleFilter('pending')" class="tab-button">Pending</button>
+        <button id="notComplete" onclick="handleFilter('notComplete')" class="tab-button">Not complete</button>
+      </section>
       <section class="list-user with-table">
-        <table>
-          <thead>
-            <tr>
-              <th>Name</th>
-              <th width="150">Date</th>
-              <th width="200">Time</th>
-            </tr>
-          </thead>
-          <tbody id='adminList'>
-          </tbody>
-        </table>
+        <div class="table-option">
+            <input type="text" class="date-picker" id="date-picker" name="daterange" placeholder="เลือกช่วงเวลา" />
+            <a id="exportCsv">Export CSV</a>
+            <select name="country" id="country" class="dropdown-select">
+                <option value="ALL">All</option>
+                <option value="AF">Afghanistan</option>
+                <option value="AX">Åland Islands</option>
+                <option value="AL">Albania</option>
+                <option value="DZ">Algeria</option>
+                <option value="AS">American Samoa</option>
+                <option value="AD">Andorra</option>
+                <option value="AO">Angola</option>
+                <option value="AI">Anguilla</option>
+                <option value="AQ">Antarctica</option>
+                <option value="AG">Antigua and Barbuda</option>
+                <option value="AR">Argentina</option>
+                <option value="AM">Armenia</option>
+                <option value="AW">Aruba</option>
+                <option value="AU">Australia</option>
+                <option value="AT">Austria</option>
+                <option value="AZ">Azerbaijan</option>
+                <option value="BS">Bahamas</option>
+                <option value="BH">Bahrain</option>
+                <option value="BD">Bangladesh</option>
+                <option value="BB">Barbados</option>
+                <option value="BY">Belarus</option>
+                <option value="BE">Belgium</option>
+                <option value="BZ">Belize</option>
+                <option value="BJ">Benin</option>
+                <option value="BM">Bermuda</option>
+                <option value="BT">Bhutan</option>
+                <option value="BO">Bolivia, Plurinational State of</option>
+                <option value="BQ">Bonaire, Sint Eustatius and Saba</option>
+                <option value="BA">Bosnia and Herzegovina</option>
+                <option value="BW">Botswana</option>
+                <option value="BV">Bouvet Island</option>
+                <option value="BR">Brazil</option>
+                <option value="IO">British Indian Ocean Territory</option>
+                <option value="BN">Brunei Darussalam</option>
+                <option value="BG">Bulgaria</option>
+                <option value="BF">Burkina Faso</option>
+                <option value="BI">Burundi</option>
+                <option value="KH">Cambodia</option>
+                <option value="CM">Cameroon</option>
+                <option value="CA">Canada</option>
+                <option value="CV">Cape Verde</option>
+                <option value="KY">Cayman Islands</option>
+                <option value="CF">Central African Republic</option>
+                <option value="TD">Chad</option>
+                <option value="CL">Chile</option>
+                <option value="CN">China</option>
+                <option value="CX">Christmas Island</option>
+                <option value="CC">Cocos (Keeling) Islands</option>
+                <option value="CO">Colombia</option>
+                <option value="KM">Comoros</option>
+                <option value="CG">Congo</option>
+                <option value="CD">Congo, the Democratic Republic of the</option>
+                <option value="CK">Cook Islands</option>
+                <option value="CR">Costa Rica</option>
+                <option value="CI">Côte d'Ivoire</option>
+                <option value="HR">Croatia</option>
+                <option value="CU">Cuba</option>
+                <option value="CW">Curaçao</option>
+                <option value="CY">Cyprus</option>
+                <option value="CZ">Czech Republic</option>
+                <option value="DK">Denmark</option>
+                <option value="DJ">Djibouti</option>
+                <option value="DM">Dominica</option>
+                <option value="DO">Dominican Republic</option>
+                <option value="EC">Ecuador</option>
+                <option value="EG">Egypt</option>
+                <option value="SV">El Salvador</option>
+                <option value="GQ">Equatorial Guinea</option>
+                <option value="ER">Eritrea</option>
+                <option value="EE">Estonia</option>
+                <option value="ET">Ethiopia</option>
+                <option value="FK">Falkland Islands (Malvinas)</option>
+                <option value="FO">Faroe Islands</option>
+                <option value="FJ">Fiji</option>
+                <option value="FI">Finland</option>
+                <option value="FR">France</option>
+                <option value="GF">French Guiana</option>
+                <option value="PF">French Polynesia</option>
+                <option value="TF">French Southern Territories</option>
+                <option value="GA">Gabon</option>
+                <option value="GM">Gambia</option>
+                <option value="GE">Georgia</option>
+                <option value="DE">Germany</option>
+                <option value="GH">Ghana</option>
+                <option value="GI">Gibraltar</option>
+                <option value="GR">Greece</option>
+                <option value="GL">Greenland</option>
+                <option value="GD">Grenada</option>
+                <option value="GP">Guadeloupe</option>
+                <option value="GU">Guam</option>
+                <option value="GT">Guatemala</option>
+                <option value="GG">Guernsey</option>
+                <option value="GN">Guinea</option>
+                <option value="GW">Guinea-Bissau</option>
+                <option value="GY">Guyana</option>
+                <option value="HT">Haiti</option>
+                <option value="HM">Heard Island and McDonald Islands</option>
+                <option value="VA">Holy See (Vatican City State)</option>
+                <option value="HN">Honduras</option>
+                <option value="HK">Hong Kong</option>
+                <option value="HU">Hungary</option>
+                <option value="IS">Iceland</option>
+                <option value="IN">India</option>
+                <option value="ID">Indonesia</option>
+                <option value="IR">Iran, Islamic Republic of</option>
+                <option value="IQ">Iraq</option>
+                <option value="IE">Ireland</option>
+                <option value="IM">Isle of Man</option>
+                <option value="IL">Israel</option>
+                <option value="IT">Italy</option>
+                <option value="JM">Jamaica</option>
+                <option value="JP">Japan</option>
+                <option value="JE">Jersey</option>
+                <option value="JO">Jordan</option>
+                <option value="KZ">Kazakhstan</option>
+                <option value="KE">Kenya</option>
+                <option value="KI">Kiribati</option>
+                <option value="KP">Korea, Democratic People's Republic of</option>
+                <option value="KR">Korea, Republic of</option>
+                <option value="KW">Kuwait</option>
+                <option value="KG">Kyrgyzstan</option>
+                <option value="LA">Lao People's Democratic Republic</option>
+                <option value="LV">Latvia</option>
+                <option value="LB">Lebanon</option>
+                <option value="LS">Lesotho</option>
+                <option value="LR">Liberia</option>
+                <option value="LY">Libya</option>
+                <option value="LI">Liechtenstein</option>
+                <option value="LT">Lithuania</option>
+                <option value="LU">Luxembourg</option>
+                <option value="MO">Macao</option>
+                <option value="MK">Macedonia, the former Yugoslav Republic of</option>
+                <option value="MG">Madagascar</option>
+                <option value="MW">Malawi</option>
+                <option value="MY">Malaysia</option>
+                <option value="MV">Maldives</option>
+                <option value="ML">Mali</option>
+                <option value="MT">Malta</option>
+                <option value="MH">Marshall Islands</option>
+                <option value="MQ">Martinique</option>
+                <option value="MR">Mauritania</option>
+                <option value="MU">Mauritius</option>
+                <option value="YT">Mayotte</option>
+                <option value="MX">Mexico</option>
+                <option value="FM">Micronesia, Federated States of</option>
+                <option value="MD">Moldova, Republic of</option>
+                <option value="MC">Monaco</option>
+                <option value="MN">Mongolia</option>
+                <option value="ME">Montenegro</option>
+                <option value="MS">Montserrat</option>
+                <option value="MA">Morocco</option>
+                <option value="MZ">Mozambique</option>
+                <option value="MM">Myanmar</option>
+                <option value="NA">Namibia</option>
+                <option value="NR">Nauru</option>
+                <option value="NP">Nepal</option>
+                <option value="NL">Netherlands</option>
+                <option value="NC">New Caledonia</option>
+                <option value="NZ">New Zealand</option>
+                <option value="NI">Nicaragua</option>
+                <option value="NE">Niger</option>
+                <option value="NG">Nigeria</option>
+                <option value="NU">Niue</option>
+                <option value="NF">Norfolk Island</option>
+                <option value="MP">Northern Mariana Islands</option>
+                <option value="NO">Norway</option>
+                <option value="OM">Oman</option>
+                <option value="PK">Pakistan</option>
+                <option value="PW">Palau</option>
+                <option value="PS">Palestinian Territory, Occupied</option>
+                <option value="PA">Panama</option>
+                <option value="PG">Papua New Guinea</option>
+                <option value="PY">Paraguay</option>
+                <option value="PE">Peru</option>
+                <option value="PH">Philippines</option>
+                <option value="PN">Pitcairn</option>
+                <option value="PL">Poland</option>
+                <option value="PT">Portugal</option>
+                <option value="PR">Puerto Rico</option>
+                <option value="QA">Qatar</option>
+                <option value="RE">Réunion</option>
+                <option value="RO">Romania</option>
+                <option value="RU">Russian Federation</option>
+                <option value="RW">Rwanda</option>
+                <option value="BL">Saint Barthélemy</option>
+                <option value="SH">Saint Helena, Ascension and Tristan da Cunha</option>
+                <option value="KN">Saint Kitts and Nevis</option>
+                <option value="LC">Saint Lucia</option>
+                <option value="MF">Saint Martin (French part)</option>
+                <option value="PM">Saint Pierre and Miquelon</option>
+                <option value="VC">Saint Vincent and the Grenadines</option>
+                <option value="WS">Samoa</option>
+                <option value="SM">San Marino</option>
+                <option value="ST">Sao Tome and Principe</option>
+                <option value="SA">Saudi Arabia</option>
+                <option value="SN">Senegal</option>
+                <option value="RS">Serbia</option>
+                <option value="SC">Seychelles</option>
+                <option value="SL">Sierra Leone</option>
+                <option value="SG">Singapore</option>
+                <option value="SX">Sint Maarten (Dutch part)</option>
+                <option value="SK">Slovakia</option>
+                <option value="SI">Slovenia</option>
+                <option value="SB">Solomon Islands</option>
+                <option value="SO">Somalia</option>
+                <option value="ZA">South Africa</option>
+                <option value="GS">South Georgia and the South Sandwich Islands</option>
+                <option value="SS">South Sudan</option>
+                <option value="ES">Spain</option>
+                <option value="LK">Sri Lanka</option>
+                <option value="SD">Sudan</option>
+                <option value="SR">Suriname</option>
+                <option value="SJ">Svalbard and Jan Mayen</option>
+                <option value="SZ">Swaziland</option>
+                <option value="SE">Sweden</option>
+                <option value="CH">Switzerland</option>
+                <option value="SY">Syrian Arab Republic</option>
+                <option value="TW">Taiwan, Province of China</option>
+                <option value="TJ">Tajikistan</option>
+                <option value="TZ">Tanzania, United Republic of</option>
+                <option value="TH">Thailand</option>
+                <option value="TL">Timor-Leste</option>
+                <option value="TG">Togo</option>
+                <option value="TK">Tokelau</option>
+                <option value="TO">Tonga</option>
+                <option value="TT">Trinidad and Tobago</option>
+                <option value="TN">Tunisia</option>
+                <option value="TR">Turkey</option>
+                <option value="TM">Turkmenistan</option>
+                <option value="TC">Turks and Caicos Islands</option>
+                <option value="TV">Tuvalu</option>
+                <option value="UG">Uganda</option>
+                <option value="UA">Ukraine</option>
+                <option value="AE">United Arab Emirates</option>
+                <option value="GB">United Kingdom</option>
+                <option value="US">United States</option>
+                <option value="UM">United States Minor Outlying Islands</option>
+                <option value="UY">Uruguay</option>
+                <option value="UZ">Uzbekistan</option>
+                <option value="VU">Vanuatu</option>
+                <option value="VE">Venezuela, Bolivarian Republic of</option>
+                <option value="VN">Viet Nam</option>
+                <option value="VG">Virgin Islands, British</option>
+                <option value="VI">Virgin Islands, U.S.</option>
+                <option value="WF">Wallis and Futuna</option>
+                <option value="EH">Western Sahara</option>
+                <option value="YE">Yemen</option>
+                <option value="ZM">Zambia</option>
+                <option value="ZW">Zimbabwe</option>
+            </select>
+        </div>
+        <br>
+        <div style="overflow-x: auto;width: 100%;">
+          <table>
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th width="200" id='kycColumn'>KYC Submit Datetime</th>
+                <th width="200" id='contributeColumn'>Estimate Contribute (ETH)</th>
+                <th width="500" id="remarkColumn">Registration Date</th>
+                <th width="100" id="remindStatus"></th>
+              </tr>
+            </thead>
+            <tbody id="adminList">
+            </tbody>
+          </table>
+        </div>
       </section>
         </div>
     </main>
-    <main class="admin-detail" id='adminDetail' style='display: none;'>
+    <main class="admin-detail" id="adminDetail" style="display: none;">
     <div class="container">
-      <a href="javascript:;" class="back" onclick='goBack()'>Back</a>
+      <a class="back" href="javascript:;" onclick="goBack()">Back</a>
       <section class="detail">
         <fieldset>
           <legend>Information</legend>
           <dl>
-            <dt>Name</dt>
+            <dt><u>Name</u></dt>
             <dd class="combine">
-              <p id='detailFirstName'>Chanyanuch</p>
-              <p id='detailLastName'>Sitti</p>
+              <p id='detailFirstName'></p>
+              <p id='detailLastName'></p>
             </dd>
           </dl>
           <dl>
-            <dt>Email</dt>
+            <dt><u>Email</u></dt>
             <dd>
-              <p id='detailEmail'>chanyanuc@computerlogy.com</p>
+              <p id='detailEmail'></p>
             </dd>
           </dl>
           <dl>
-            <dt>Phone number</dt>
+            <dt><u>Phone number</u></dt>
             <dd>
-              <p id='detailPhoneNumber'>091-2345678</p>
+              <p id='detailPhoneNumber'></p>
             </dd>
           </dl>
           <dl>
-            <dt>Nationality</dt>
+            <dt><u>Nationality</u></dt>
             <dd>
-              <p id='detailCountry'>Thai</p>
+              <p id='detailCountry'></p>
             </dd>
           </dl>
-          <dl id='citizenIdContainer'>
-            <dt>Citizen ID</dt>
+          <dl id="citizenIdContainer">
+            <dt><u>Citizen ID</u></dt>
             <dd>
-              <p id='detailCitizenId'></p>
+              <p id="detailCitizenId"></p>
+            </dd>
+          </dl>
+          <dl id='passportNumber'>
+            <dt><u>Passport number</u></dt>
+            <dd>
+              <p id="detailPassportNumber"></p>
             </dd>
           </dl>
           <dl>
-            <dt>Passport number</dt>
+            <dt><u>Local address</u></dt>
             <dd>
-              <p id='detailPassportNumber'></p>
-            </dd>
-          </dl>
-          <dl>
-            <dt>Address according to Passport</dt>
-            <dd>
-              <p id='detailAddress'>124/434 Pattaya city Chonburi 20000</p>
+              <p id='detailAddress'></p>
             </dd>
           </dl>
           <dl id='citizenIdPhotoContainer'>
-            <dt>Photo of ID with signture</dt>
+            <dt><u>Photo of ID with signature</u></dt>
             <dd>
               <span class="image">
-                <img id='detailPic1'>
+                <img id="detailPic1">
               </span>
             </dd>
           </dl>
-          <dl>
-            <dt>Photo of Passport with signture</dt>
+          <dl id='citizenIdPhotoBackContainer'>
+            <dt><u>Photo of the back of ID with signature</u></dt>
+            <dd>
+              <span class="image">
+                <img id='detailPic5'>
+              </span>
+            </dd>
+          </dl>
+          <dl id='passportPhoto'>
+            <dt><u>Photo of Passport with signature</u></dt>
             <dd>
               <span class="image">
                 <img id='detailPic4'>
@@ -131,8 +435,7 @@
           </dl>
           <dl>
             <dt>
-              Photo of you holding a Passport
-              <span>A photo of you holding a Passport with a word 'SIX.network' and current date written on it.</span>
+              <u>Selfie with id or passport photo</u>
             </dt>
             <dd>
               <span class="image">
@@ -140,49 +443,39 @@
               </span>
             </dd>
           </dl>
-          <dl>
-            <dt>
-              Photo of utitlity bill to verify address
-            </dt>
-            <dd>
-              <span class="image">
-                <img id='detailPic3'>
-              </span>
-            </dd>
-          </dl>
         </fieldset>
         <fieldset>
-          <legend>Estimate ICO investment budget</legend>
-          <p id='detailEstimate'>1K USD - 2K USD</p>
+          <legend><u>Estimate ICO investment budget</u></legend>
+          <p id='detailEstimate'></p>
         </fieldset>
       </section>
-      <section class="reject-template detail">
+      <section id='rejctBox' class="reject-template detail">
         <fieldset>
           <legend>Reject template</legend>
           <dl>
             <dd>
               <label class="dropdown">
-                <select id='rejectSelect' name="value" id="value">
+                <select id="rejectSelect" name="value">
                   <option value="need_more">Need more information</option>
                   <option value="restricted">Restricted country</option>
-                  <option value="incorrect">Incorrect information</option>
+                  <option value="photo_corrupted">Photo uploaded corrupted</option>
                   <option value="other">Other</option>
                 </select>
                 <i class="fas fa-angle-down"></i>
               </label>
 
-                <li style='list-style: none; margin-top: 5px;'>
-                  <label class="textarea" id='rejectNote'><textarea placeholder="Message"></textarea></label>
+                <li style="list-style: none; margin-top: 5px;">
+                  <label class="textarea"><textarea placeholder="Message" id="rejectNote"></textarea></label>
                 </li>
               </ul>
             </dd>
           </dl>
         </fieldset>
-        <dl><dd><button class="yellow" id='rejectBtn' style='background: #ef5555; color: white;' onclick='reject()'>Reject</button></dd></dl>
+        <dl><dd><button class="yellow" id="rejectBtn" style="background: #ef5555; color: white;" onclick="rejectUser()">Reject</button></dd></dl>
       </section>
-      <section class=''>
+      <section class="" id='approveBox'>
         <dl>
-          <dd><button id='approveBtn' onclick='approve()'>Approve</button></dd>
+          <dd><button id="approveBtn" onclick="approve()">Approve</button></dd>
         </dl>
       </section>
     </div>

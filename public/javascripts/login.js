@@ -1,6 +1,12 @@
 // global variable for stopping register from redirect before insert to db
 var stopRedirection = false
 
+// Update User
+function signUpFunction (data) {
+  var signUpOncall = firebase.functions().httpsCallable('signUp')
+  return signUpOncall(data)
+}
+
 // Forgot password function using in Login page for recovering user's account
 function forgotPassword () {
   if ($('#forgotPasswordText').css('display') == 'block') {
@@ -43,7 +49,9 @@ function setEnable (doms) {
 
 // Login function using in Login page to authorize user with email and password and also check verified status
 function login () {
-  $('#signInAlert').removeClass('show-alert')
+  if ($('#signInAlert').css('display') == 'block') {
+    $('#signInAlert').slideToggle()
+  }
   let emailDOM = document.getElementById('signInEmail')
   let passwordDOM = document.getElementById('signInPassword')
   let btnDOM = document.getElementById('signInBtn')
@@ -58,7 +66,9 @@ function login () {
       } else {
         $('#signInAlertText').html(err.message)
       }
-      $('#signInAlert').addClass('show-alert')
+      if ($('#signInAlert').css('display') == 'none') {
+        $('#signInAlert').slideToggle()
+      }
       setEnable([emailDOM, passwordDOM, btnDOM])
     })
 }
@@ -71,6 +81,17 @@ function lockSigninForm () {
   setDisable([emailDOM, passwordDOM, btnDOM])
 }
 
+function lockSignupForm () {
+  let emailDOM = document.getElementById('signUpEmail')
+  let firstNameDOM = document.getElementById('signUpFirstName')
+  let lastNameDOM = document.getElementById('signUpLastName')
+  let phoneNumberDOM = document.getElementById('signUpPhoneNumber')
+  let passwordDOM = document.getElementById('signUpPassword')
+  let countryDOM = document.getElementById('signUpCountry')
+  let btnDOM = document.getElementById('signUpBtn')
+  setDisable([emailDOM, firstNameDOM, lastNameDOM, phoneNumberDOM, passwordDOM, btnDOM, countryDOM])
+}
+
 // Unlock signin form after authorize using socialmedia
 function unlockSigninForm () {
   let emailDOM = document.getElementById('signInEmail')
@@ -79,9 +100,30 @@ function unlockSigninForm () {
   setEnable([emailDOM, passwordDOM, btnDOM])
 }
 
+function unlockSignupForm () {
+  let emailDOM = document.getElementById('signUpEmail')
+  let firstNameDOM = document.getElementById('signUpFirstName')
+  let lastNameDOM = document.getElementById('signUpLastName')
+  let phoneNumberDOM = document.getElementById('signUpPhoneNumber')
+  let passwordDOM = document.getElementById('signUpPassword')
+  let countryDOM = document.getElementById('signUpCountry')
+  let btnDOM = document.getElementById('signUpBtn')
+  setEnable([emailDOM, firstNameDOM, lastNameDOM, phoneNumberDOM, passwordDOM, btnDOM, countryDOM])
+}
+
 // Sign up function using in Login page to register user with email and password
 function signUp () {
-  $('#signUpAlert').removeClass('show-alert')
+  if ($('#signUpAlert').css('display') == 'block') {
+    $('#signUpAlert').slideToggle()
+  }
+  window.dataLayer = window.dataLayer || [];
+  function gtag () {
+    dataLayer.push(arguments);
+  }
+  gtag('event','click',{'event_category':'button','event_label':'signup'});
+  if (typeof(fbq) !== "undefined") {
+    fbq('trackCustom', 'signup');
+  }
   let emailDOM = document.getElementById('signUpEmail')
   let firstNameDOM = document.getElementById('signUpFirstName')
   let lastNameDOM = document.getElementById('signUpLastName')
@@ -95,12 +137,22 @@ function signUp () {
   const phone_number_temp = phoneNumberDOM.value
   const password = passwordDOM.value
   const country = countryDOM.value
-  setDisable([emailDOM, firstNameDOM, lastNameDOM, phoneNumberDOM, passwordDOM, btnDOM, countryDOM])
+  lockSignupForm()
   const parseData = libphonenumber.parse(phone_number_temp, country, {extended: true })
   if (parseData.valid === false) {
     $('#signUpAlertText').html("Invalid phone number format")
-    $('#signUpAlert').addClass('show-alert')
-    setEnable([emailDOM, firstNameDOM, lastNameDOM, phoneNumberDOM, passwordDOM, btnDOM, countryDOM])
+    if ($('#signUpAlert').css('display') == 'none') {
+      $('#signUpAlert').slideToggle()
+    }
+    unlockSignupForm()
+    return false
+  }
+  if (/script.*src/.test(first_name) || /img.*src/.test(first_name) || /script.*src/.test(last_name) || /img.*src/.test(last_name) || /script.*src/.test(phone_number_temp) || /img.*src/.test(phone_number_temp) || /script.*src/.test(country) || /img.*src/.test(country)) {
+    $('#signUpAlertText').html("Script detected")
+    if ($('#signUpAlert').css('display') == 'none') {
+      $('#signUpAlert').slideToggle()
+    }
+    unlockSignupForm()
     return false
   }
   const phone_number = '+'+parseData.countryCallingCode+parseData.phone
@@ -110,24 +162,26 @@ function signUp () {
     .then(res => {
       const {uid} = res
       res.sendEmailVerification()
-      return firebase.firestore().collection('users').doc(uid).set({
+      return signUpFunction({
         email,
         first_name,
         last_name,
         phone_number,
-        country
+        country,
+        registration_time: Date.now()
+      }).then(() => {
+        stopRedirection = false
+        checkLoginState()
       })
-        .then(() => {
-          stopRedirection = false
-          checkLoginState()
-        })
         .catch((err) => {
-          firebase.auth().signOut()
+        firebase.auth().signOut()
           stopRedirection = false
           console.log(err)
           $('#signUpAlertText').html(err.message)
-          $('#signUpAlert').addClass('show-alert')
-          setEnable([emailDOM, firstNameDOM, lastNameDOM, phoneNumberDOM, passwordDOM, btnDOM, countryDOM])
+          if ($('#signUpAlert').css('display') == 'none') {
+            $('#signUpAlert').slideToggle()
+          }
+          unlockSignupForm()
         })
     })
     .catch(err => {
@@ -135,13 +189,34 @@ function signUp () {
       stopRedirection = false
       console.log(err)
       $('#signUpAlertText').html(err.message)
-      $('#signUpAlert').addClass('show-alert')
-      setEnable([emailDOM, firstNameDOM, lastNameDOM, phoneNumberDOM, passwordDOM, btnDOM, countryDOM])
+      if ($('#signUpAlert').css('display') == 'none') {
+        $('#signUpAlert').slideToggle()
+      }
+      unlockSignupForm()
     })
 }
 
 // AuthFacebook function using in Login page for authorize user's facebook account
-function authFacebook () {
+function authFacebook() {
+  facebookLoginFunction($('#signInAlert'), $('#signInAlertText'), lockSigninForm, unlockSigninForm)
+}
+
+function authFacebookS() {
+  facebookLoginFunction($('#signUpAlert'), $('#signUpAlertText'), lockSignupForm, unlockSignupForm)
+}
+
+function facebookLoginFunction(alertObject, textObject, lockfunction, unlockfunction) {
+  if (alertObject.css('display') == 'block') {
+    alertObject.slideToggle()
+  }
+  window.dataLayer = window.dataLayer || [];
+  function gtag () {
+    dataLayer.push(arguments);
+  }
+  gtag('event','click',{'event_category':'button','event_label':'Fsignup'});
+  if (typeof(fbq) !== "undefined") {
+    fbq('trackCustom', 'signup');
+  }
   let provider = new firebase.auth.FacebookAuthProvider()
   provider.addScope('email')
   firebase.auth().languageCode = 'en_EN'
@@ -149,7 +224,7 @@ function authFacebook () {
     'display': 'popup'
   })
   stopRedirection = true
-  lockSigninForm()
+  lockfunction()
   return firebase.auth().signInWithPopup(provider)
     .then(res => {
       const {uid} = res.user
@@ -158,9 +233,7 @@ function authFacebook () {
       return ref.get()
         .then(docSnapshot => {
           if (!docSnapshot.exists) {
-            ref.set({
-              email
-            })
+            signUpFunction({email})
               .then(() => {
                 stopRedirection = false
                 checkLoginState()
@@ -168,7 +241,11 @@ function authFacebook () {
               .catch((err) => {
                 firebase.auth().signOut()
                 stopRedirection = false
-                unlockSigninForm()
+                textObject.html(err.message)
+                if (alertObject.css('display') == 'none') {
+                  alertObject.slideToggle()
+                }
+                unlockfunction()
                 console.log('Authorize Facebook : error : ', err)
               })
           } else {
@@ -179,25 +256,52 @@ function authFacebook () {
         .catch((err) => {
           firebase.auth().signOut()
           stopRedirection = false
-          unlockSigninForm()
+          textObject.html(err.message)
+          if (alertObject.css('display') == 'none') {
+            alertObject.slideToggle()
+          }
+          unlockfunction()
           console.log('Authorize Facebook : error : ', err)
         })
     })
     .catch(err => {
       firebase.auth().signOut()
       stopRedirection = false
-      unlockSigninForm()
+      textObject.html(err.message)
+      if (alertObject.css('display') == 'none') {
+        alertObject.slideToggle()
+      }
+      unlockfunction()
       console.log('Authorize Facebook : error : ', err)
     })
 }
 
 // AuthGoogle function using in Login page for authorize user's google account
-function authGoogle () {
+function authGoogle() {
+  googleLoginFunction($('#signInAlert'), $('#signInAlertText'), lockSigninForm, unlockSigninForm)
+}
+
+function authGoogleS() {
+  googleLoginFunction($('#signUpAlert'), $('#signUpAlertText'), lockSignupForm, unlockSignupForm)
+}
+
+function googleLoginFunction(alertObject, textObject, lockfunction, unlockfunction) {
+  if (alertObject.css('display') == 'block') {
+    alertObject.slideToggle()
+  }
+  window.dataLayer = window.dataLayer || [];
+  function gtag () {
+    dataLayer.push(arguments);
+  }
+  gtag('event','click',{'event_category':'button','event_label':'Gsignup'});
+  if (typeof(fbq) !== "undefined") {
+    fbq('trackCustom', 'signup');
+  }
   let provider = new firebase.auth.GoogleAuthProvider()
   provider.addScope('email')
   firebase.auth().languageCode = 'en'
   stopRedirection = true
-  lockSigninForm()
+  lockfunction()
   return firebase.auth().signInWithPopup(provider)
     .then(res => {
       const {uid} = res.user
@@ -206,17 +310,19 @@ function authGoogle () {
       return ref.get()
         .then(docSnapshot => {
           if (!docSnapshot.exists) {
-            ref.set({
-              email
-            })
-              .then(() => {
+            signUpFunction({email})
+              .then((data) => {
                 stopRedirection = false
                 checkLoginState()
               })
               .catch((err) => {
                 firebase.auth().signOut()
                 stopRedirection = false
-                unlockSigninForm()
+                textObject.html(err.message)
+                if (alertObject.css('display') == 'none') {
+                  alertObject.slideToggle()
+                }
+                unlockfunction()
                 console.log('Authorize Google : error : ', err)
               })
           } else {
@@ -227,14 +333,22 @@ function authGoogle () {
         .catch((err) => {
           firebase.auth().signOut()
           stopRedirection = false
-          unlockSigninForm()
+          textObject.html(err.message)
+          if (alertObject.css('display') == 'none') {
+            alertObject.slideToggle()
+          }
+          unlockfunction()
           console.log('Authorize Google : error : ', err)
         })
     })
     .catch(err => {
       firebase.auth().signOut()
       stopRedirection = false
-      unlockSigninForm()
+      textObject.html(err.message)
+      if (alertObject.css('display') == 'none') {
+        alertObject.slideToggle()
+      }
+      unlockfunction()
       console.log('Authorize Google : error : ', err)
     })
 }
@@ -246,7 +360,8 @@ function checkLoginState (user = undefined) {
   }
   if (user && user.uid && stopRedirection == false) {
     console.log('Go to Wizard')
-    window.location.href = 'wizard'
+    console.log('wizard'+window.location.search)
+    window.location.href = 'wizard'+window.location.search
   } else {
     $('#preLoader').fadeToggle()
   }
@@ -339,4 +454,23 @@ $(document).ready(function () {
     e.preventDefault()
     signUp()
   })
+
+  $('body').on('click', '.dropdown a', function() {
+    var dropdown = $(this).parent(".dropdown");
+
+    dropdown.toggleClass("show-dropdown");
+
+    clickBody('dropdown', dropdown, 'show-dropdown');
+  });
+
 })
+
+// Click body for close
+function clickBody(name, elem, rm_class) {
+  if ( elem.hasClass(rm_class) ) {
+    $('body').on('click.'+name, function(){
+      elem.removeClass(rm_class);
+      $('body').off('click.'+name);
+    });
+  }
+}
