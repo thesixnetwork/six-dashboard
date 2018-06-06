@@ -52,7 +52,7 @@ async function generateUser (user) {
   .then(userRecord => {
     let setData = {
       uid: newUid,
-      email: user.email,
+      email: user.email.trim(),
       registration_time: (new Date()).getTime(),
       private_user: true,
       first_name: user.firstname,
