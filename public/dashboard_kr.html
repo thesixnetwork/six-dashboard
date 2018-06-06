@@ -761,6 +761,10 @@
                 <h1>Enter the code</h1>
                 <p>An SMS message with verification code is sent to you (<span id='refPhoneNumber'></span>). Ref: <span id='refVerify'></span></p>
                 <div class="countdown-verify"></div>
+                <div style='width: 100%; text-align: center;'>
+                  <p id='sendToEmailError' class="alert-text error" style='display: none;'></p>
+                  <button id='sendToEmailBtn'>Send code to my email</button>
+                </div>
                 <fieldset>
                   <dl>
                     <dt>Code</dt>
@@ -984,9 +988,9 @@ Yes를 선택한 후 두개의 버튼을 동시에 눌러주세요. </p>
             <div id='newClaimContent' style='display: none;'>
               <div id="accordion">
                 <div id='showWordNew'>
-                  <h3 class='accordionHeader'>Save your recovery words</h3>
+                  <h3 class='accordionHeader'>복구용 단어 저장하기</h3>
                   <div class='accordionContent'>
-                    <p style='font-weight: bold; line-height: 15px; text-align: center;'>Recovery words</p>
+                    <p style='font-weight: bold; line-height: 15px; text-align: center;'>복구용 단어</p>
                     <span style="text-align: center; display: block; font-size: 11px;">(Mnemonic words)</span><br>
                     <p style='text-align: center;'>It’s an important as your private key. So, we strongly recommend you to <br><span style="color: #4a5ab5; font-weight: bold;">write it down or print it out and keep it safe</span> in only place you could access to it.</p>
                     <br>
@@ -996,16 +1000,16 @@ Yes를 선택한 후 두개의 버튼을 동시에 눌러주세요. </p>
                     </div>
                     <br>
                     <div class="btn">
-                      <button id='submitG2AccountBtn516' onclick='downloadMnemonic()'> Download </button>
-                      <button id='submitG2AccountBtn515' onclick='nextGeneratedAccount()' disabled> Next </button>
+                      <button id='submitG2AccountBtn516' onclick='downloadMnemonic()'> 다운로드 </button>
+                      <button id='submitG2AccountBtn515' onclick='nextGeneratedAccount()' disabled> 다음 </button>
                     </div>
                   </div>
                 </div>
                 <div id='answerWordNew'>
-                  <h3 class='accordionHeader'>Repeat your recovery words</h3>
+                  <h3 class='accordionHeader'>복구용 단어 반복하기</h3>
                   <div class='accordionContent'>
-                    <p style='text-align: center;'>Please choose your recovery words in their original order, to ensure you stored, or saved them correctly.</p><br>
-                    <p style='font-weight: bold; line-height: 15px; text-align: center;'>Recovery words</p>
+                    <p style='text-align: center;'>안전하게 저장했다는 것을 확인하기 위해 복구용 단어를 기존의 순서대로 반복해주세요.</p><br>
+                    <p style='font-weight: bold; line-height: 15px; text-align: center;'>복구용 단어</p>
                     <span style="text-align: center; display: block; font-size: 11px;">(Mnemonic words)</span><br>
                     <p id="mnemonicError" style="line-height: 0px;text-align: center;color: red;">&nbsp;</p><br>
                     <div id='mnemonicWordAnswerContainer'>
@@ -1175,7 +1179,7 @@ Yes를 선택한 후 두개의 버튼을 동시에 눌러주세요. </p>
                 <div id='accountPg'></div>
               </div>
               <p id='progressText'>Initialize processing<p>
-            </div>            
+            </div>
           </div>
         </div>
       </div>
@@ -1195,6 +1199,10 @@ Yes를 선택한 후 두개의 버튼을 동시에 눌러주세요. </p>
         <article>
           <p>An SMS message with one time password is sent to you (<span id='refPhoneNumber2'></span>). Ref: <span id='refVerify2'></span></p>
           <h2 style='color: #4a5ab5; margin-bottom: 10px; margin-top: 10px;'><div class="countdown-verify-2" style='text-align: center;'></div></h2>
+          <div style='width: 100%; text-align: center'>
+            <p id='sendToEmailError2' class="alert-text error" style='display: none;'></p>
+            <button id='sendToEmailBtn2'>Send code to my email</button>
+          </div>
           <fieldset>
             <dl>
               <dd><label class="text"><input id='otpCode' type="text" placeholder="Code" style='text-align: center;'></label></dd>
