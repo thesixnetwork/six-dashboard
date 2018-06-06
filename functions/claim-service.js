@@ -8,6 +8,7 @@ const userRef = db.collection('users')
 const claimPoolsRef = db.collection('claim_pools')
 const claimLogRef = db.collection('claim_tx_logs')
 const lockPoolsRef = db.collection('lock_pool').doc('process')
+const axios = require('axios')
 
 let stellarUrl
 const secondaryClaimUrl = functions.config().secondary_signer.url + '/setPublicKey'
@@ -225,7 +226,7 @@ function sendClaimUpdateEmail (email, amount, total) {
             <br />
             <p style="font-family: &quot;Prompt&quot;, sans-serif;color: rgba(33, 33, 33, 1);font-size: 14px"></p>Transaction ID (TX Hash): r23Hdk4j3k4oj4t3DFG2DFSD</p>
           <p style="font-family: &quot;Prompt&quot;, sans-serif;color: rgba(33, 33, 33, 1);font-size: 14px"></p>Claim Amount: ${amount} SIX tokens</p>
-          <p style="font-family: &quot;Prompt&quot;, sans-serif;color: rgba(33, 33, 33, 1);font-size: 14px"></p>Your Total Balance: ${balance} SIX tokens</p>
+          <p style="font-family: &quot;Prompt&quot;, sans-serif;color: rgba(33, 33, 33, 1);font-size: 14px"></p>Your Total Balance: ${total} SIX tokens</p>
           <p style="margin-bottom: 10px; margin-top: 10px;font-family: &quot;Prompt&quot;, sans-serif;color: rgba(33, 33, 33, 1);font-size: 14px"></p>Furthermore, you can review your transaction by logging to the system at:
           <a href=" https://ico.six.network"> https://ico.six.network</a>
           </p>
@@ -270,7 +271,7 @@ const updateState = ({ uid, claim, claim_id: claimId, user, state, tx, error }) 
     data.error_message = error.message
   }
 
-  const userClaimRef = claimRef.doc(uid).collection('claim_period').doc(string(claimId))
+  const userClaimRef = claimRef.doc(uid).collection('claim_period').doc(String(claimId))
   let public_key = ''
   let email = ''
   return userClaimRef
@@ -287,7 +288,7 @@ const updateState = ({ uid, claim, claim_id: claimId, user, state, tx, error }) 
       public_key = userClaimData.public_key
       return public_key
     })
-    .then(() => userRef(uid).get())
+    .then(() => userRef.doc(uid).get())
     .then(snapshot => snapshot.data())
     .then(userData => {
       email = userData.email
@@ -297,7 +298,6 @@ const updateState = ({ uid, claim, claim_id: claimId, user, state, tx, error }) 
     .then(snapshot => snapshot.data())
     .then(userClaimRefData => {
       const { amount } = userClaimRefData
-      var domain = window.location.href
       const xlm_address = public_key
       if (functions.config().campaign.is_production === 'true') {
         stellarUrl = 'https://horizon.stellar.org'
