@@ -285,7 +285,7 @@ function generatePhoneVerificationCode(phoneNumber) {
   let code = Math.random()
     .toString()
     .substr(2, 6);
-  let validUntil = Math.round(new Date().getTime() / 1000) + 180;
+  let validUntil = Math.round(new Date().getTime() / 1000) + 300;
   var http = require("https");
   var options = {
     method: "POST",
@@ -1804,6 +1804,64 @@ exports.getNotPurchasedUser = functions.https.onRequest((request, response) => {
   }
 })
 
+exports.getUserByCountry = functions.https.onRequest((request, response) => {
+  cors(request, response, () => {});
+  const { password } = request.query;
+  if (password === 'sixsendmailtoday') {
+    const { country, without } = request.query
+    let query = admin.firestore().collection('users')
+    if (country && country !== null) {
+      query = admin.firestore().collection('users').where('country', '==', country)
+    }
+    // if (without && without !== null) {
+    //   query = admin.firestore().collection('users').where('country', '!=', without)
+    // }
+    query.get().then(snapshots => {
+      let users = []
+      snapshots.forEach(snapshot => {
+        const data = snapshot.data()
+        const { email, total_six, country: user_country } = data
+        if (without && without !== null) {
+          if (user_country && user_country !== without) {
+            if (email && email !== null) {
+              users.push(email)
+            }
+          }
+        } else {
+          if (email && email !== null) {
+            users.push(email)
+          }
+        }
+      })
+      response.send(users)
+    })
+  } else {
+    response.send({
+      error: 'Password Incorrect.'
+    })
+  }
+})
+
+exports.getTwentySixUser = functions.https.onRequest((request, response) => {
+  cors(request, response, () => {});
+  const { password } = request.query;
+  if (password === 'sixsendmailtoday') {
+    admin.firestore().collection('users').where("total_six", "==", 20).get().then(snapshots => {
+      let users = []
+      snapshots.forEach(snapshot => {
+        const data = snapshot.data()
+        const { email } = data
+        users.push(email)
+      })
+      response.send(users)
+    })
+  } else {
+    response.send({
+      error: 'Password Incorrect.'
+    })
+  }
+})
+
 exports.createClaim = functions.https.onCall(handleCreateStellarAccount)
 exports.claimSix = functions.https.onCall(handleClaimSix)
 
@@ -1907,3 +1965,4 @@ exports.changeRedeemPassword = functions.https.onCall((data, context) => {
       }
     })
 })
+

@@ -32,7 +32,7 @@ module.exports = function (admin, functions, fireStore) {
   }, {
     'name': 'sendPhoneVerficationtoEmail',
     'module': functions.https.onCall((data, context) => sendPhoneVerficationtoEmail(admin, functions, data, context))
-   }
+  }
   ]
 }
 
@@ -435,11 +435,17 @@ function sendPhoneVerficationtoEmail (admin, functions, data, context) {
       pass: functions.config().email.password // generated ethereal password
     }
   })
+  let email
+  if (context.auth === undefined) {
+    email = data.email
+  } else {
+    email = context.auth.token.email
+  }
   const mailOptions = {
     from: functions.config().email.from,
-    to: context.auth.token.email
+    to: email
   }
-  mailOptions.subject = 'OTP Phone.'
+  mailOptions.subject = 'One Time Password verification'
 
   let ref = admin.firestore().collection('phone-verifications')
   let phoneNumber = data.phone_number

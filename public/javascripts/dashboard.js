@@ -1216,6 +1216,16 @@ var randomedWords
 var qrcode
 var stellarUrl, issuerKey
 $(document).ready(function(){
+  $('#sendToEmailBtn').click(function(e) {
+    e.preventDefault();
+    sendCodeToEmail()
+  })
+
+  $('#sendToEmailBtn2').click(function(e) {
+    e.preventDefault();
+    sendCodeToEmailClaim()
+  })
+
   // Variable
 
   var domain = window.location.href
@@ -1525,15 +1535,24 @@ function updateGraph() {
 }
 
 function nextGeneratedAccount() {
-  $( "#accordion" ).accordion({
-    active: 1
-  });
+  $("#showWordNew").fadeToggle(100, () => {
+    $("#answerWordNew").fadeToggle(100)
+  })
 }
 
 function goBackToMnemonic() {
-  $( "#accordion" ).accordion({
-    active: 0
-  });
+  $("#answerWordNew").fadeToggle(100, () => {
+    answerMnemonic = {}
+    indexAnswerMnemonic = {}
+    lastIndexMnemonic = 0
+    let usedWord = $(".usedWord")
+    for(let i = 0; i < usedWord.length; i++) {
+      let oldDom = document.getElementById('mnemonicAnswer'+usedWord[i].text.trim())
+      oldDom.remove()
+    }
+    $(".usedWord").removeClass("usedWord").addClass("unusedWord")
+    $("#showWordNew").fadeToggle(100)
+  })
 }
 
 function goToRepeat() {
@@ -1623,6 +1642,7 @@ function submitGeneratedAccount() {
   }
   setDisable([btnDOM, btn2DOM])
   $("#accordion").fadeToggle(100, function() {
+    $("#overAllLoadingContainer").css("display", "flex")
     $("#progressContainer").fadeToggle(function() {
       $("#accountPg").css('width', '25%')
       setTimeout(function(){
@@ -1642,7 +1662,7 @@ function submitGeneratedAccount() {
                 $("#genS").val(generatedWallet.getSecret(0))
                 $("#claimStep").addClass("current")
                 $("#divClaimBoxNew").slideToggle()
-                $("#progressContainer").slideToggle()
+                $("#overAllLoadingContainer").slideToggle()
                 $("#congratBox").slideToggle()
                 qrcode.makeCode(generatedWallet.getPublicKey(0));
                 $("#myXlmPublicAddress").text(generatedWallet.getPublicKey(0))
@@ -1729,6 +1749,15 @@ function claimSix(id) {
       otpSubmitBtn.onclick = function() {
         submitOTP(id)
       }
+
+      let otpSubmitBtn2 = document.getElementById('sendToEmailBtn2')
+      otpSubmitBtn2.onclick = function() {
+        sendCodeToEmailClaim(id)
+      }
+
+      $("#sendToEmailBtn2").css("display", "none")
+      $("#sendToEmailError2").css("display", "none")
+
       // Countdown verify
       'use strict'
       function countdown (options = {}) {
@@ -1736,6 +1765,7 @@ function claimSix(id) {
         }
         let settings = Object.assign({}, defaults, options),
           startNum = settings.fromNumber,
+          firstNum = settings.fromNumber,
           block = document.querySelector(settings.cssClass)
         function appendText () {
           let countText = `<p class="countdown-number">${startNum}</p>`
@@ -1746,6 +1776,11 @@ function claimSix(id) {
           if (startNum < 0) {
             startNum = settings.fromNumber
           } else {
+            if (startNum < firstNum-30) {
+              $("#sendToEmailBtn2").css("display", "inline-block")
+            } else {
+              $("#sendToEmailBtn2").css("display", "none")
+            }
             appendText()
           }
           if (startNum == 0) {
@@ -1936,7 +1971,7 @@ function submitOldAccount() {
 }
 
 function downloadMnemonic() {
-  let dom = document.getElementById("submitG2AccountBtn")
+  let dom = document.getElementById("submitG2AccountBtn515")
   setEnable([dom])
   let splittedWords = mnemonicWords.split(" ")
   let data = `SIX.Network Recovery words (Mnemonic words) :
@@ -2171,6 +2206,8 @@ function submitPhoneNumber() {
       $('#verifyCodeContent2').addClass('show-detail')
       $('#refVerify').html(response.data.ref_code)
       $('#refPhoneNumber').html(phone_number)
+      $("#sendToEmailBtn").css("display", "none")
+      $("#sendToEmailError").css("display", "none")
       clearInterval(intervalFunction)
       // Countdown verify
       'use strict'
@@ -2179,6 +2216,7 @@ function submitPhoneNumber() {
         }
         let settings = Object.assign({}, defaults, options),
           startNum = settings.fromNumber,
+          firstNum = settings.fromNumber,
           block = document.querySelector(settings.cssClass)
         function appendText () {
           let countText = `<p class="countdown-number">${startNum}</p>`
@@ -2189,6 +2227,11 @@ function submitPhoneNumber() {
           if (startNum < 0) {
             startNum = settings.fromNumber
           } else {
+            if (startNum < firstNum-30) {
+              $("#sendToEmailBtn").css("display", "inline-block")
+            } else {
+              $("#sendToEmailBtn").css("display", "none")
+            }
             appendText()
           }
           if (startNum == 0) {
@@ -2301,20 +2344,20 @@ function backRecoveryWord() {
 function nextRecoveryWord2() {
   $("#dialogRecov2").css("display", 'none')
   $("#newClaimContent").css("display", 'block')
-  $( "#accordion" ).accordion();
-  $( "#accordion" ).accordion({
-    beforeActivate: function( event, ui ) {
-      answerMnemonic = {}
-      indexAnswerMnemonic = {}
-      lastIndexMnemonic = 0
-      let usedWord = $(".usedWord")
-      for(let i = 0; i < usedWord.length; i++) {
-        let oldDom = document.getElementById('mnemonicAnswer'+usedWord[i].text.trim())
-        oldDom.remove()
-      }
-      $(".usedWord").removeClass("usedWord").addClass("unusedWord")
-    }
-  })
+//  $( "#accordion" ).accordion();
+//  $( "#accordion" ).accordion({
+//    beforeActivate: function( event, ui ) {
+//      answerMnemonic = {}
+//      indexAnswerMnemonic = {}
+//      lastIndexMnemonic = 0
+//      let usedWord = $(".usedWord")
+//      for(let i = 0; i < usedWord.length; i++) {
+//        let oldDom = document.getElementById('mnemonicAnswer'+usedWord[i].text.trim())
+//        oldDom.remove()
+//      }
+//      $(".usedWord").removeClass("usedWord").addClass("unusedWord")
+//    }
+//  })
 }
 
 function nextFirstLedger() {
@@ -2391,5 +2434,55 @@ function addTrustLedger() {
   }).catch(err => {
     $(".dialog-ledger-trustline").addClass("show-dialog")
     $("#ledgerDialogNextBtn2").prop("disabled",false)
+  })
+}
+
+function sendCodeToEmail() {
+  if ($("#sendToEmailError").css("display") === "block") {
+    $("#sendToEmailError").slideToggle()
+  }
+  let dom = document.getElementById("sendToEmailBtn")
+  setDisable([dom])
+  let phoneNumberDOM = document.getElementById('verifyPhonePhonenumber')
+  let phoneNumber = phoneNumberDOM.value
+  sentEmail = firebase.functions().httpsCallable('sendPhoneVerficationtoEmail')
+  sentEmail({phone_number: phoneNumber }).then(data => {
+    $("#sendToEmailError").removeClass("error")
+    if ($("#sendToEmailError").css("display") === "none") {
+      $("#sendToEmailError").text("Email successfully sent")
+      $("#sendToEmailError").slideToggle()
+    }
+  }).catch(err => {
+    $("#sendToEmailError").addClass("error")
+    if ($("#sendToEmailError").css("display") === "none") {
+      $("#sendToEmailError").text("Unknow error occured.")
+      $("#sendToEmailError").slideToggle()
+    }
+  }).then(() => {
+    setEnable([dom])
+  })
+}
+
+function sendCodeToEmailClaim(id) {
+  if ($("#sendToEmailError2").css("display") === "block") {
+    $("#sendToEmailError2").slideToggle()
+  }
+  let dom = document.getElementById("sendToEmailBtn2")
+  setDisable([dom])
+  sentEmail = firebase.functions().httpsCallable('sendClaimverificationtoEmail')
+  sentEmail({claim_id: id }).then(data => {
+    $("#sendToEmailError2").removeClass("error")
+    if ($("#sendToEmailError2").css("display") === "none") {
+      $("#sendToEmailError2").text("Email successfully sent")
+      $("#sendToEmailError2").slideToggle()
+    }
+  }).catch(err => {
+    $("#sendToEmailError2").addClass("error")
+    if ($("#sendToEmailError2").css("display") === "none") {
+      $("#sendToEmailError2").text("Unknow error occured.")
+      $("#sendToEmailError2").slideToggle()
+    }
+  }).then(() => {
+    setEnable([dom])
   })
 }

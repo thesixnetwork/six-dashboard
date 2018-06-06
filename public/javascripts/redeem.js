@@ -42,6 +42,8 @@ function submitRedeem() {
         $('#refVerify').html(response.data.ref_code)
         $('#refPhoneNumber').html(response.data.phone_number)
 
+        $("#sendToEmailBtn").css("display", "none")
+        $("#sendToEmailError").css("display", "none")
         phoneNumber = response.data.phone_number
 
         clearInterval(intervalFunction)
@@ -53,6 +55,7 @@ function submitRedeem() {
           }
           let settings = Object.assign({}, defaults, options),
             startNum = settings.fromNumber,
+            firstNum = settings.fromNumber,
             block = document.querySelector(settings.cssClass)
           function appendText () {
             let countText = `<p class="countdown-number">${startNum}</p>`
@@ -63,6 +66,11 @@ function submitRedeem() {
             if (startNum < 0) {
               startNum = settings.fromNumber
             } else {
+              if (startNum < firstNum-30) {
+                $("#sendToEmailBtn").css("display", "inline-block")
+              } else {
+                $("#sendToEmailBtn").css("display", "none")
+              }
               appendText()
             }
             if (startNum == 0) {
@@ -161,6 +169,10 @@ $(document).ready(function () {
     e.preventDefault();
     nextWelcome()
   })
+  $('#sendToEmailBtn').click(function(e) {
+    e.preventDefault();
+    sendCodeToEmail()
+  })
   $('body').on('click', '.dropdown a', function() {
     var dropdown = $(this).parent(".dropdown");
     dropdown.toggleClass("show-dropdown");
@@ -189,5 +201,29 @@ function nextWelcome() {
   $("#redeemContainer0").fadeToggle(100, () => {
     $("#redeemContainer1").fadeToggle(100, () => {
     })
+  })
+}
+
+function sendCodeToEmail() {
+  if ($("#sendToEmailError").css("display") === "block") {
+    $("#sendToEmailError").slideToggle()
+  }
+  let dom = document.getElementById("sendToEmailBtn")
+  setDisable([dom])
+  sentEmail = firebase.functions().httpsCallable('sendPhoneVerficationtoEmail')
+  sentEmail({phone_number: phoneNumber, email: email }).then(data => {
+    $("#sendToEmailError").removeClass("error")
+    if ($("#sendToEmailError").css("display") === "none") {
+      $("#sendToEmailError").text("Email successfully sent")
+      $("#sendToEmailError").slideToggle()
+    }
+  }).catch(err => {
+    $("#sendToEmailError").addClass("error")
+    if ($("#sendToEmailError").css("display") === "none") {
+      $("#sendToEmailError").text("Unknow error occured.")
+      $("#sendToEmailError").slideToggle()
+    }
+  }).then(() => {
+    setEnable([dom])
   })
 }

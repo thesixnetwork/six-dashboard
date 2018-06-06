@@ -3,7 +3,6 @@
   <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
     <meta http-equiv="Content-Security-Policy" content="script-src 'self' 'unsafe-inline' http://www.google-analytics.com https://*.facebook.net https://fonts.googleapis.com https://www.googletagmanager.com https://fonts.gstatic.com https://apis.google.com ;">
     <meta property="og:url" content="https://ico.six.network/"/>
     <meta property="og:type" content="article"/>
@@ -27,11 +26,10 @@
     <link rel="stylesheet" href="stylesheets/style.css">
     <link rel="stylesheet" href="stylesheets/loading.css">
     <link rel="stylesheet" href="stylesheets/responsive.css">
-    <script src="javascripts/bluebird.js"></script>
     <script src="javascripts/jquery-3.2.1.min.js"></script>
     <script src="javascripts/url_replacer.js"></script>
     <script src="javascripts/libphonenumber-js.min.js"></script>
-    <script src="javascripts/login_cn.js"></script>
+    <script src="javascripts/login.js"></script>
     <!-- Global site tag (gtag.js) - Google Analytics -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=GTM-N5DKTMD"></script>
     <script src="javascripts/google-analytic.js"></script>
@@ -89,11 +87,11 @@
           <ul class='menu'>
             <li>
               <div class="dropdown">
-                <a><img src="images/chinese.png"><i class="fas fa-angle-down"></i></a>
+                <a><img src="images/thai.png"><i class="fas fa-angle-down"></i></a>
                 <ul style="z-index: 9999;">
-                  <li><a href="/"><img src="images/united-kingdom.png">&nbsp;&nbsp;EN</a></li>
                   <li><a href="/kr"><img src="images/south-korea.png">&nbsp;&nbsp;KR</a></li>
-                  <li><a href="/th"><img src="images/thai.png">&nbsp;&nbsp;TH</a></li>
+                  <li><a href="/"><img src="images/united-kingdom.png">&nbsp;&nbsp;EN</a></li>
+                  <li><a href="/cn"><img src="images/chinese.png">&nbsp;&nbsp;CN</a></li>
                 </ul>
               </div>
             </li>
@@ -103,29 +101,29 @@
         </header>
         <div class="container" id='loginLoginContainer'>
           <div class="sign-in show-detail">
-            <h1 style='text-transform: unset;'><span>欢迎来到</span>SIX.network</h1>
-            <p>不仅仅是一个用于加密货币的钱包，它以分散的方式为所有数字资产提供了一个可以储存、联系和交流的地方。</p>
+            <h1 style='text-transform: unset;'><span>ยินดีตอนรับ</span>SIX.network</h1>
+            <p>เราเป็นมากกว่ากระเป๋าสตางค์ที่เก็บ Cryptocurrencies! แต่ยังสามารถเก็บเนื้อหาของสื่อ เช่น เพลง รูป วีดีโอต่างๆ, ทรัพย์สินทางปัญญา, แต้มสะสมต่างๆ และอื่นๆอีกมากมาย</p>
             <form id="signInForm">
-              <label class="text"><input id="signInEmail" type="email" placeholder="邮箱" required></label>
-              <label class="text"><input id="signInPassword" type="password" placeholder="密码" required></label>
+              <label class="text"><input id="signInEmail" type="email" placeholder="อีเมล์" required></label>
+              <label class="text"><input id="signInPassword" type="password" placeholder="รหัสผ่าน" required></label>
               <div id='signInAlert' class="alert-error">
                 <p id='signInAlertText'>Error</p>
               </div>
-              <button id='signInBtn'>登录</button>
-              <a class="open-forgot btn-link">忘记密码</a>
+              <button id='signInBtn'>ล๊อกอิน</button>
+              <a class="open-forgot btn-link">ลืมรหัส</a>
             </form>
             <ul class="list">
-              <li><p>用facebook账号/google账号注册</p></li>
+              <li><p>ล๊อกอินด้วย</p></li>
               <li><a href="javascript:;" onclick='authFacebook()'><i class="fab fa-facebook-f"></i></a></li>
               <li><a href="javascript:;" onclick='authGoogle()'><i class="fab fa-google"></i></a></li>
             </ul>
           </div>
           <div class="sign-up" id='loginSignUpContainer'>
-            <h1>注册</h1>
+            <h1>Sign up</h1>
             <form id="signUpForm">
-              <label class="text"><input id="signUpEmail" type="email" placeholder="邮箱" required></label>
-              <label class="text"><input id="signUpFirstName" type="text" placeholder="名" required></label>
-              <label class="text"><input id="signUpLastName" type="text" placeholder="姓" required></label>
+              <label class="text"><input id="signUpEmail" type="email" placeholder="Email" required></label>
+              <label class="text"><input id="signUpFirstName" type="text" placeholder="First name" required></label>
+              <label class="text"><input id="signUpLastName" type="text" placeholder="Last name" required></label>
               <dl>
                 <dd>
                   <label class="dropdown">
@@ -175,7 +173,7 @@
                       <option value="CF">Central African Republic</option>
                       <option value="TD">Chad</option>
                       <option value="CL">Chile</option>
-                      <option value="CN" selected="selected">China</option>
+                      <option value="CN">China</option>
                       <option value="CX">Christmas Island</option>
                       <option value="CC">Cocos (Keeling) Islands</option>
                       <option value="CO">Colombia</option>
@@ -247,8 +245,7 @@
                       <option value="KZ">Kazakhstan</option>
                       <option value="KE">Kenya</option>
                       <option value="KI">Kiribati</option>
-                      <option value="KP">Korea, Democratic People's Republic of</option>
-                      <option value="KR">Korea, Republic of</option>
+                      <option value="KR">Korea</option>
                       <option value="KW">Kuwait</option>
                       <option value="KG">Kyrgyzstan</option>
                       <option value="LA">Lao People's Democratic Republic</option>
@@ -350,7 +347,7 @@
                       <option value="TW">Taiwan, Province of China</option>
                       <option value="TJ">Tajikistan</option>
                       <option value="TZ">Tanzania, United Republic of</option>
-                      <option value="TH">Thailand</option>
+                      <option value="TH" selected="selected">Thailand</option>
                       <option value="TL">Timor-Leste</option>
                       <option value="TG">Togo</option>
                       <option value="TK">Tokelau</option>
@@ -385,32 +382,32 @@
                 </dd>
               </dl>
 
-              <label class="text"><input id="signUpPhoneNumber" type="text" placeholder="手机号码" required></label>
-              <label class="text"><input id="signUpPassword" type="password" placeholder="密码" required></label>
+              <label class="text"><input id="signUpPhoneNumber" type="text" placeholder="Phone number" required></label>
+              <label class="text"><input id="signUpPassword" type="password" placeholder="Password" required></label>
               <div id='signUpAlert' class="alert-error">
                 <p id='signUpAlertText'>Error</p>
               </div>
-              <button id='signUpBtn'>注册</button>
+              <button id='signUpBtn'>Sign up</button>
             </form>
             <ul class="list">
-              <li><p>用facebook账号/google账号注册</p></li>
+              <li><p>Sign up with</p></li>
               <li><a href="javascript:;" onclick='authFacebookS()'><i class="fab fa-facebook-f"></i></a></li>
               <li><a href="javascript:;" onclick='authGoogleS()'><i class="fab fa-google"></i></a></li>
             </ul>
           </div>
           <div class="forgot">
-            <h1>忘记密码</h1>
+            <h1>ลืมรหัสผ่าน</h1>
             <form id='forgotPasswordForm'>
               <p id='forgotPasswordText' style="display: none;" class="alert-text"></p>
-              <label class="text"><input id="forgotPasswordEmail" type="email" placeholder="邮箱" required></label>
-              <button id='forgotPasswordBtn'>提交</button>
-              <a class="open-sign-in btn-link">登录</a>
+              <label class="text"><input id="forgotPasswordEmail" type="email" placeholder="Email" required></label>
+              <button id='forgotPasswordBtn'>ตกลง</button>
+              <a class="open-sign-in btn-link">ล๊อกอิน</a>
             </form>
           </div>
         </div>
         <footer>
           <p>&copy; 2018 SIX Network PTE. LTD.</p>
-          <p><a href='content/term_policy.pdf' id='term_policy'>通用条款</a></p>
+          <p><a href='content/term_policy.pdf' id='term_policy'>Terms &amp; Policy</a></p>
         </footer>
       </section>
       <section id='loginSlidePanel'>

@@ -618,7 +618,7 @@ function numberWithCommas(x) {
 }
 
 function buildListClaim(doc, id) {
-  const { amount, claimed, valid_after, tx_id, type, state, bonus } = doc
+  const { amount, claimed, valid_after, transaction_id, type, state, bonus } = doc
   var tr = document.createElement("tr")
   $(tr).attr("total-amount", amount)
   var td1 = document.createElement("td");
@@ -642,8 +642,28 @@ function buildListClaim(doc, id) {
   td3.appendChild(txt3)
 
   var td4 = document.createElement("td");
-  var txt4 = document.createTextNode(tx_id || '-')
-  td4.appendChild(txt4)
+  td4.className = "transactionId truncate"
+  var a4 = document.createElement("a");
+  a4.className = ""
+  if (transaction_id === undefined) {
+    a4.href = "#"
+  } else {
+    let stellarChainiUrl
+    var domain = window.location.href
+    if (domain.match('localhost')) {
+      stellarChainUrl = 'http://testnet.stellarchain.io'
+    } else if (domain.match('six-dashboard')) {
+      stellarChainUrl = 'http://testnet.stellarchain.io'
+    } else if (domain.match('ico.six.network')) {
+      stellarChainUrl = 'https://stellarchain.io'
+    } else {
+      stellarChainUrl = 'http://testnet.stellarchain.io'
+    }
+    a4.href = stellarChainUrl+"/tx/"+transaction_id
+  }
+  var txt4 = document.createTextNode(transaction_id || '-')
+  a4.appendChild(txt4)
+  td4.appendChild(a4)
 
   var td5 = document.createElement("td")
   var thisbtn = document.createElement("button")
@@ -665,7 +685,7 @@ function buildListClaim(doc, id) {
       } else if (state == 3) {
         tr.className = 'claimListItem stillAvail'
         thisbtn.className = "claimMoneyBtn claimError"
-        var txt5 = document.createTextNode("Error")
+        var txt5 = document.createTextNode("Pending")
         thisbtn.appendChild(txt5)
         thisbtn.disabled = true
       } else {
@@ -909,7 +929,7 @@ function uniqArray(arrArg) {
 
 function getClaims() {
   if (firebase.auth().currentUser !== null) {
-    let totalSix = 0
+    let totalSix2 = 0
     firebase.firestore().collection('users_claim').doc(firebase.auth().currentUser.uid).collection('claim_period').get().then(docs => {
       let allData = []
       docs.forEach(function(doc) {
@@ -938,7 +958,7 @@ function getClaims() {
       allData.forEach(d => {
         let data = d.data()
         const elem = buildListClaim(data, d.id)
-        totalSix = totalSix + data.amount
+        totalSix2 = totalSix2 + data.amount
         let targetTable
         if (privateType[data.type].table === undefined) {
           targetTable = data.type
@@ -953,13 +973,14 @@ function getClaims() {
       var percent_number_step = $.animateNumber.numberStepFactories.append(' SIX')
       $('#totalSix').animateNumber(
         {
-          number: totalSix.toFixed(7),
+          number: totalSix2.toFixed(7),
           numberStep: percent_number_step
         }
       );
     }).then(() => {
       let query = firebase.firestore().collection('users_claim').doc(firebase.auth().currentUser.uid).collection('claim_period')
       query.onSnapshot(docs => {
+        let moreAvailableClaim = []
         docs.forEach(doc => {
           let data = doc.data()
           let id = doc.id
@@ -972,13 +993,39 @@ function getClaims() {
             $("#claim-"+id).text("Claimed")
             $("#claim-"+id).addClass("avail").removeClass("processing").removeClass('claimError')
             $("#claim-"+id).parent().parent().removeClass("stillAvail").addClass("stillClaimed")
+            $("#list-claim-"+id+" .transactionId a").text(data.transaction_id)
+            let stellarChainiUrl
+            var domain = window.location.href
+            if (domain.match('localhost')) {
+              stellarChainUrl = 'http://testnet.stellarchain.io'
+            } else if (domain.match('six-dashboard')) {
+              stellarChainUrl = 'http://testnet.stellarchain.io'
+            } else if (domain.match('ico.six.network')) {
+              stellarChainUrl = 'https://stellarchain.io'
+            } else {
+              stellarChainUrl = 'http://testnet.stellarchain.io'
+            }
+            $("#list-claim-"+id+" .transactionId a").attr('href', stellarChainUrl+"/tx/"+data.transaction_id)
             updateGraph()
           } else if (data.state === 3) {
             setDisable([$("#claim-"+id)[0]])
             $("#claim-"+id).text("Error")
             $("#claim-"+id).addClass("claimError").removeClass("avail").removeClass('processing')
+            if (localStorage[userData.uid+"seen_error"] === undefined) {
+              $(".dialog-claim-error").addClass("show-dialog")
+              localStorage[userData.uid+"seen_error"] = true
+            }
+          }
+          if (data.claimed !== true) {
+            moreAvailableClaim.push(data)
           }
         })
+        if (moreAvailableClaim.length === 0) {
+          if (localStorage[userData.uid+"seen_whats_next"] === undefined) {
+            $(".dialog-whats-next").addClass("show-dialog")
+            localStorage[userData.uid+"seen_whats_next"] = true
+          }
+        }
       })
     })
   }
@@ -1059,21 +1106,21 @@ function getTxs () {
           if (preDocData[d.id] !== undefined && preDocData[d.id] !== null) {
             data.six_amount = Number((data.six_amount * 1.06).toFixed(7))
             totalSix += data.six_amount
-            $('#totalSix').animateNumber(
-              {
-                number: totalSix.toFixed(7),
-                numberStep: percent_number_step
-              }
-            )
+            //$('#totalSix').animateNumber(
+            //  {
+            //    number: totalSix.toFixed(7),
+            //    numberStep: percent_number_step
+            //  }
+            //)
           } else {
             data.six_amount = Number((data.six_amount).toFixed(7))
               totalSix += data.six_amount
-              $('#totalSix').animateNumber(
-              {
-              number: totalSix.toFixed(7),
-              numberStep: percent_number_step
-              }
-            )
+              //$('#totalSix').animateNumber(
+              //{
+              //number: totalSix.toFixed(7),
+              //numberStep: percent_number_step
+              //}
+              //)
           }
           const elem = buildListTx(data)
           $("#userTxs")[0].appendChild(elem)
@@ -1087,12 +1134,12 @@ function getTxs () {
         })
         allDoc.sort(compare)
         var percent_number_step = $.animateNumber.numberStepFactories.append(' SIX')
-        $('#totalSix').animateNumber(
-          {
-            number: totalSix.toFixed(7),
-            numberStep: percent_number_step
-          }
-        );
+        //$('#totalSix').animateNumber(
+        //  {
+        //    number: totalSix.toFixed(7),
+        //    numberStep: percent_number_step
+        //  }
+        //);
         allDoc.forEach(d => {
           const data = d.data()
           const elem = buildListTx(data)
@@ -1169,6 +1216,16 @@ var randomedWords
 var qrcode
 var stellarUrl, issuerKey
 $(document).ready(function(){
+  $('#sendToEmailBtn').click(function(e) {
+    e.preventDefault();
+    sendCodeToEmail()
+  })
+
+  $('#sendToEmailBtn2').click(function(e) {
+    e.preventDefault();
+    sendCodeToEmailClaim()
+  })
+
   // Variable
 
   var domain = window.location.href
@@ -1478,15 +1535,24 @@ function updateGraph() {
 }
 
 function nextGeneratedAccount() {
-  $( "#accordion" ).accordion({
-    active: 1
-  });
+  $("#showWordNew").fadeToggle(100, () => {
+    $("#answerWordNew").fadeToggle(100)
+  })
 }
 
 function goBackToMnemonic() {
-  $( "#accordion" ).accordion({
-    active: 0
-  });
+  $("#answerWordNew").fadeToggle(100, () => {
+    answerMnemonic = {}
+    indexAnswerMnemonic = {}
+    lastIndexMnemonic = 0
+    let usedWord = $(".usedWord")
+    for(let i = 0; i < usedWord.length; i++) {
+      let oldDom = document.getElementById('mnemonicAnswer'+usedWord[i].text.trim())
+      oldDom.remove()
+    }
+    $(".usedWord").removeClass("usedWord").addClass("unusedWord")
+    $("#showWordNew").fadeToggle(100)
+  })
 }
 
 function goToRepeat() {
@@ -1533,6 +1599,12 @@ function checkTrustAccount() {
           updateGraph()
         })
         $("#claimStep").addClass("current")
+        qrcode.makeCode(userData.xlm_address);
+        $("#myXlmPublicAddress").text(userData.xlm_address)
+        $("#myXlmPublicAddress2").text(userData.xlm_address)
+        $("#copyMyXlmAddress").attr("data-clipboard-text", userData.xlm_address)
+        $(".noWallet").removeClass("noWallet").addClass("haveWallet")
+        getMyWalletBalance()
       }).catch(err => {
         setEnable([btnDOM])
         console.log(err)
@@ -1563,12 +1635,14 @@ function submitGeneratedAccount() {
   if (Object.keys(answerMnemonic).length != 12) {
     validate = false
     $("#mnemonicAnswerShowing").addClass("customAlert")
+    $("#mnemonicError").text("An order of recovery words is invalid")
   }
   if (validate === false) {
     return false
   }
   setDisable([btnDOM, btn2DOM])
   $("#accordion").fadeToggle(100, function() {
+    $("#overAllLoadingContainer").css("display", "flex")
     $("#progressContainer").fadeToggle(function() {
       $("#accountPg").css('width', '25%')
       setTimeout(function(){
@@ -1588,7 +1662,7 @@ function submitGeneratedAccount() {
                 $("#genS").val(generatedWallet.getSecret(0))
                 $("#claimStep").addClass("current")
                 $("#divClaimBoxNew").slideToggle()
-                $("#progressContainer").slideToggle()
+                $("#overAllLoadingContainer").slideToggle()
                 $("#congratBox").slideToggle()
                 qrcode.makeCode(generatedWallet.getPublicKey(0));
                 $("#myXlmPublicAddress").text(generatedWallet.getPublicKey(0))
@@ -1635,6 +1709,10 @@ function submitOTP(id) {
       //$("#claim-"+id).parent().parent().removeClass("stillAvail").addClass("stillClaimed")
       updateGraph()
       $("#otpCode").val("")
+      if (localStorage[userData.uid+"seen_waitting"] === undefined) {
+        $(".dialog-waitting").addClass("show-dialog")
+        localStorage[userData.uid+"seen_waitting"] = true
+      }
     } else {
       $("#submitOTPError").text(response.data.error_message)
       if ($("#submitOTPError").css("display") === "none") {
@@ -1671,6 +1749,15 @@ function claimSix(id) {
       otpSubmitBtn.onclick = function() {
         submitOTP(id)
       }
+
+      let otpSubmitBtn2 = document.getElementById('sendToEmailBtn2')
+      otpSubmitBtn2.onclick = function() {
+        sendCodeToEmailClaim(id)
+      }
+
+      $("#sendToEmailBtn2").css("display", "none")
+      $("#sendToEmailError2").css("display", "none")
+
       // Countdown verify
       'use strict'
       function countdown (options = {}) {
@@ -1678,6 +1765,7 @@ function claimSix(id) {
         }
         let settings = Object.assign({}, defaults, options),
           startNum = settings.fromNumber,
+          firstNum = settings.fromNumber,
           block = document.querySelector(settings.cssClass)
         function appendText () {
           let countText = `<p class="countdown-number">${startNum}</p>`
@@ -1688,6 +1776,11 @@ function claimSix(id) {
           if (startNum < 0) {
             startNum = settings.fromNumber
           } else {
+            if (startNum < firstNum-30) {
+              $("#sendToEmailBtn2").css("display", "inline-block")
+            } else {
+              $("#sendToEmailBtn2").css("display", "none")
+            }
             appendText()
           }
           if (startNum == 0) {
@@ -1790,6 +1883,7 @@ var indexAnswerMnemonic = {}
 var lastIndexMnemonic = 0
 function submitAnswerMnemonic(word) {
   $("#mnemonicAnswerShowing").removeClass("customAlert")
+  $("#mnemonicError").text(" ")
   if (answerMnemonic[word] === undefined) {
     let newSpan = document.createElement("span")
     let newTxt = document.createTextNode((lastIndexMnemonic+1)+"."+word+"\n")
@@ -1877,9 +1971,10 @@ function submitOldAccount() {
 }
 
 function downloadMnemonic() {
+  let dom = document.getElementById("submitG2AccountBtn515")
+  setEnable([dom])
   let splittedWords = mnemonicWords.split(" ")
-  let data = `Recovery words (Mnemonic words) :
-${mnemonicWords}
+  let data = `SIX.Network Recovery words (Mnemonic words) :
 
 1. ${splittedWords[0]}
 2. ${splittedWords[1]}
@@ -2027,6 +2122,11 @@ function submitDialog() {
   $('[class^="dialog-"]').removeClass('show-dialog')
 }
 
+function submitDialogError() {
+  window.location.href = "https://m.me/thesixnetwork"
+  submitDialog()
+}
+
 function nextDialog() {
   $("#congratDialogContent1").fadeToggle(100, () => { $("#congratDialogContent2").fadeToggle(100) })
 }
@@ -2106,6 +2206,8 @@ function submitPhoneNumber() {
       $('#verifyCodeContent2').addClass('show-detail')
       $('#refVerify').html(response.data.ref_code)
       $('#refPhoneNumber').html(phone_number)
+      $("#sendToEmailBtn").css("display", "none")
+      $("#sendToEmailError").css("display", "none")
       clearInterval(intervalFunction)
       // Countdown verify
       'use strict'
@@ -2114,6 +2216,7 @@ function submitPhoneNumber() {
         }
         let settings = Object.assign({}, defaults, options),
           startNum = settings.fromNumber,
+          firstNum = settings.fromNumber,
           block = document.querySelector(settings.cssClass)
         function appendText () {
           let countText = `<p class="countdown-number">${startNum}</p>`
@@ -2124,6 +2227,11 @@ function submitPhoneNumber() {
           if (startNum < 0) {
             startNum = settings.fromNumber
           } else {
+            if (startNum < firstNum-30) {
+              $("#sendToEmailBtn").css("display", "inline-block")
+            } else {
+              $("#sendToEmailBtn").css("display", "none")
+            }
             appendText()
           }
           if (startNum == 0) {
@@ -2236,20 +2344,20 @@ function backRecoveryWord() {
 function nextRecoveryWord2() {
   $("#dialogRecov2").css("display", 'none')
   $("#newClaimContent").css("display", 'block')
-  $( "#accordion" ).accordion();
-  $( "#accordion" ).accordion({
-    beforeActivate: function( event, ui ) {
-      answerMnemonic = {}
-      indexAnswerMnemonic = {}
-      lastIndexMnemonic = 0
-      let usedWord = $(".usedWord")
-      for(let i = 0; i < usedWord.length; i++) {
-        let oldDom = document.getElementById('mnemonicAnswer'+usedWord[i].text.trim())
-        oldDom.remove()
-      }
-      $(".usedWord").removeClass("usedWord").addClass("unusedWord")
-    }
-  })
+//  $( "#accordion" ).accordion();
+//  $( "#accordion" ).accordion({
+//    beforeActivate: function( event, ui ) {
+//      answerMnemonic = {}
+//      indexAnswerMnemonic = {}
+//      lastIndexMnemonic = 0
+//      let usedWord = $(".usedWord")
+//      for(let i = 0; i < usedWord.length; i++) {
+//        let oldDom = document.getElementById('mnemonicAnswer'+usedWord[i].text.trim())
+//        oldDom.remove()
+//      }
+//      $(".usedWord").removeClass("usedWord").addClass("unusedWord")
+//    }
+//  })
 }
 
 function nextFirstLedger() {
@@ -2324,7 +2432,57 @@ function addTrustLedger() {
       })
     })
   }).catch(err => {
-    alert("Please confirm trust on ledger")
+    $(".dialog-ledger-trustline").addClass("show-dialog")
     $("#ledgerDialogNextBtn2").prop("disabled",false)
+  })
+}
+
+function sendCodeToEmail() {
+  if ($("#sendToEmailError").css("display") === "block") {
+    $("#sendToEmailError").slideToggle()
+  }
+  let dom = document.getElementById("sendToEmailBtn")
+  setDisable([dom])
+  let phoneNumberDOM = document.getElementById('verifyPhonePhonenumber')
+  let phoneNumber = phoneNumberDOM.value
+  sentEmail = firebase.functions().httpsCallable('sendPhoneVerficationtoEmail')
+  sentEmail({phone_number: phoneNumber }).then(data => {
+    $("#sendToEmailError").removeClass("error")
+    if ($("#sendToEmailError").css("display") === "none") {
+      $("#sendToEmailError").text("Email successfully sent")
+      $("#sendToEmailError").slideToggle()
+    }
+  }).catch(err => {
+    $("#sendToEmailError").addClass("error")
+    if ($("#sendToEmailError").css("display") === "none") {
+      $("#sendToEmailError").text("Unknow error occured.")
+      $("#sendToEmailError").slideToggle()
+    }
+  }).then(() => {
+    setEnable([dom])
+  })
+}
+
+function sendCodeToEmailClaim(id) {
+  if ($("#sendToEmailError2").css("display") === "block") {
+    $("#sendToEmailError2").slideToggle()
+  }
+  let dom = document.getElementById("sendToEmailBtn2")
+  setDisable([dom])
+  sentEmail = firebase.functions().httpsCallable('sendClaimverificationtoEmail')
+  sentEmail({claim_id: id }).then(data => {
+    $("#sendToEmailError2").removeClass("error")
+    if ($("#sendToEmailError2").css("display") === "none") {
+      $("#sendToEmailError2").text("Email successfully sent")
+      $("#sendToEmailError2").slideToggle()
+    }
+  }).catch(err => {
+    $("#sendToEmailError2").addClass("error")
+    if ($("#sendToEmailError2").css("display") === "none") {
+      $("#sendToEmailError2").text("Unknow error occured.")
+      $("#sendToEmailError2").slideToggle()
+    }
+  }).then(() => {
+    setEnable([dom])
   })
 }

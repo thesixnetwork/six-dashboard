@@ -1,3 +1,13 @@
+#sendToEmailBtn, #sendToEmailBtn2 {
+  display: none;
+  margin: auto;
+  padding-left: 18px;
+  padding-right: 18px;
+  margin-bottom: 10px;
+  height: 36px;
+  width: auto;
+}
+
 #progressContent {
   padding: 32px;
   margin: 0px;
@@ -209,6 +219,9 @@
 }
 
 #progressContainer {
+  margin-left: 20px;
+  margin-right: 20px;
+  margin-bottom: 40px;
 }
 
 #progressText {
@@ -253,7 +266,12 @@
   text-align: center;
 }
 
+.claimTable {
+  min-width: 970px;
+}
+
 .claimTable tbody tr {
+  display: table-row!important;
   border-bottom: 1px solid #CFCFCF;
 }
 
@@ -262,6 +280,7 @@
 }
 
 .claimTable thead tr {
+  display: table-row!important;
   background: #4a5ab5;
   color: white;
   text-align: center;
@@ -270,6 +289,11 @@
 .claimTable thead tr th {
   opacity: 1;
   text-align: center;
+  width: unset!important;
+}
+
+.claimTable tbody tr td {
+  width: unset!important;
 }
 
 #otpContent {
@@ -311,7 +335,6 @@
 #claimWelcomeBox {
   max-width: 800px;
   margin: auto;
-  margin-bottom: 150px;
 }
 
 #cwcbtn {
@@ -400,10 +423,6 @@
   margin: auto;
 }
 
-#accordion {
-  margin-bottom: 50px;
-}
-
 .accordionContent {
   padding: 20px;
   border: 1px solid rgb(210, 210, 210);
@@ -417,7 +436,6 @@ h3.accordionHeader {
   padding-left: 20px;
   padding-right: 20px;
   text-align: center;
-  cursor: pointer;
   margin-top: 1px;
 }
 
@@ -579,7 +597,8 @@ section#progressContent {
 }
 
 .dialogHeader svg {
-  height: 200px;
+  max-height: 200px;
+  width: 100%;
   margin: auto;
   position: relative;
   padding: 18px;
@@ -855,6 +874,7 @@ section#progressContent {
 
 .trustlineImage {
   max-width: 650px;
+  width: 100%;
 }
 
 #recommended {
@@ -873,7 +893,6 @@ section#progressContent {
 }
 
 #claimBox {
-  margin-bottom: 150px;
 }
 
 dialog.normalDisplay {
@@ -884,7 +903,6 @@ dialog.normalDisplay {
   border: 1px solid #BBBBBB;
   border-radius: 16px;
   margin: auto;
-  margin-bottom: 150px;
 }
 
 #instructionLedgerContainer {
@@ -932,4 +950,187 @@ dialog.normalDisplay {
 
 #walletSelection li.disable {
   opacity: 0.3;
+}
+
+.twoButton {
+  min-width: 150px;
+  margin: auto;
+  max-width: 150px;
+}
+
+#answerWordNew {
+  display: none;
+}
+
+#submitG2AccountBtn516 {
+  width: auto;
+  margin-bottom: 10px;
+  min-width: 150px;
+  margin-right: 50px;
+  background: #569E5C;
+}
+
+#submitG2AccountBtn515 {
+  width: auto;
+  margin-bottom: 10px;
+  min-width: 150px;
+}
+
+#backAccountBtn {
+  width: auto;
+  margin-bottom: 10px;
+  min-width: 150px;
+  background: #C7C7C7;
+  margin-right: 70px;
+}
+
+#submitGAccountBtn {
+  width: auto;
+  margin-bottom: 10px;
+  min-width: 150px;
+}
+
+#overAllLoadingContainer {
+  height: 100vh;
+  width: 100%;
+  display: none;
+}
+
+#DownloadGAccountBtn {
+  width: auto;
+  min-width: 150px;
+  margin: auto;
+  margin-top: 20px;
+  background: #569E5C;
+}
+
+#submitG3AccountBtn {
+  cursor: pointer;
+  width: auto;
+  min-width: 150px;
+  margin: auto;
+  margin-top: 15px;
+}
+
+dialog {
+  overflow: auto;
+  margin-top: auto;
+  margin-bottom: auto;
+}
+
+[class^="dialog-"] {
+  align-items: unset;
+}
+
+[class^="dialog-"]::before {
+  position: fixed;
+  width: 100%;
+  height: 100vh;
+}
+
+[class^="dialog-"].show-dialog {
+  overflow: auto;
+}
+
+
+@media only screen and (max-width: 1024px) {
+  .dashboard-2 section.user-detail {
+    padding: 21px 0 16px 94px !important;
+  }
+
+  #firstCharName {
+    position: absolute;
+    top: 49px;
+    left: 19px;
+  }
+
+  .dashboard-2 section {
+    padding: 24px 24px 24px 24px !important;
+  }
+
+  #claimWelcomeBox, .normalDisplay, #claimBox {
+  }
+}
+
+@media only screen and (max-width: 750px) {
+  .choiceIcon {
+    max-width: 80px;
+    margin: auto;
+  }
+
+  .choiceIcon svg {
+    width: 80px;
+    height: 80px;
+  }
+
+  #walletSelection li h2 {
+    font-size: 14px;
+  }
+}
+
+@media only screen and (max-width: 660px) {
+  #walletSelection {
+    display: block;
+  }
+
+  #walletSelection li {
+    width: unset;
+  }
+}
+
+@media only screen and (max-width: 550px) {
+  .new_wizard .step ul li {
+    width: 12% !important;
+  }
+
+  .wizard .step ul li {
+    width: 22$ !important;
+  }
+
+  #claimWelcomeBox, .normalDisplay, #claimBox {
+  }
+
+  dialog.normalDisplay {
+    width: 100%;
+  }
+
+  .twoButton {
+    min-width: 100px; 
+    margin: auto; 
+    max-width: 100px;
+  }
+
+  .twoButton button {
+    font-size: 13px;
+    height: 36px;
+  }
+
+  #submitG2AccountBtn516, #backAccountBtn, #submitG2AccountBtn515, #submitGAccountBtn, #DownloadGAccountBtn, #submitG3AccountBtn {
+    min-width: 100px; 
+    height: 36px;
+  }
+
+  #submitLedgerBtn {
+    height: 36px;
+  }
+
+  #donut-graph {
+    width: 200px;
+    height: 200px;
+  }
+
+  #ledgerContentContainer {
+    margin-left: 0px;
+    margin-right: 0px;
+  }
+}
+
+@media only screen and (max-width: 480px) {
+  #mnemonicShowing span, #mnemonicAnswerShowing span {
+    display: block;
+  }
+
+  #answerMnemonicShowing, #answerMnemonicShowing a {
+    display: block;
+  }
 }
