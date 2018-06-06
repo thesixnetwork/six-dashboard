@@ -38,13 +38,13 @@ function sendClaimedEmail (event, fireStore) {
           if (data.claimed) totalClaim += data.amount
         })
         console.log(`send email ${email} of uid: ${uid}`)
-        return sendClaimUpdateEmail(email, currentAmount, totalClaim)
+        return sendClaimUpdateEmail(email, currentAmount, totalClaim, updateData.transaction_id)
       })
   }
   return Promise.resolve()
 }
 
-function sendClaimUpdateEmail (email, amount, total) {
+function sendClaimUpdateEmail (email, amount, total, tx_id) {
   const content = `
         <table bgcolor="#fdfdfd" class="m_-5711629866739327851body" style="box-sizing:border-box;border-spacing:0;width:100%;background-color:#fdfdfd;border-collapse:separate!important"
           width="100%">
