@@ -5,17 +5,29 @@ service cloud.firestore {
       allow create, read, update: if exists(/databases/$(database)/documents/admins/$(request.auth.uid));
       allow read, update: if request.auth.token.admin == true;
     }
+    match /users_claim/{userId}{
+      allow read: if request.auth.uid == userId;
+      allow create, read, update: if request.auth.token.admin == true;
+    }
+    match /users_claim/{userId}/claim_period/{claimId}{
+      allow read: if request.auth.uid == userId;
+      allow read: if exists(/databases/$(database)/documents/admins/$(request.auth.uid))
+      allow create, read, update: if request.auth.token.admin == true;
+    }
     match /phone-numbers/{phoneNumber}{
       allow create, read, update: if request.auth.token.admin == true;
     }
     match /admins/{userId}{
-    	allow read: if exists(/databases/$(database)/documents/admins/$(request.auth.uid));
+      allow read: if exists(/databases/$(database)/documents/admins/$(request.auth.uid));
     }
     match /watch-list/{watchId} {
       allow read: if exists(/databases/$(database)/documents/admins/$(request.auth.uid));
       allow write: if exists(/databases/$(database)/documents/admins/$(request.auth.uid));
     }
     match /user-eth-wallets/{walletAddress}{
+      allow create, read, update: if request.auth.token.admin == true;
+    }
+    match /user-xlm-wallets/{walletAddress}{
       allow create, read, update: if request.auth.token.admin == true;
     }
     match /xlm_prices/{timeStamp}{
@@ -29,11 +41,17 @@ service cloud.firestore {
     }
     match /purchase_txs/{tid}{
       allow read: if request.auth.uid == resource.data.user_id;
+      allow read: if exists(/databases/$(database)/documents/admins/$(request.auth.uid));
     }
     match /presale/supply/purchased_presale_tx/{userId} {
+      allow read: if exists(/databases/$(database)/documents/admins/$(request.auth.uid));
       allow read: if request.auth.uid == userId;
     }
     match /users_log/{timeStamp}{
+      allow read: if exists(/databases/$(database)/documents/admins/$(request.auth.uid));
+    }
+    match /claim_tx_logs/{claimId}{
+      allow write, read: if request.auth.token.admin == true;
       allow read: if exists(/databases/$(database)/documents/admins/$(request.auth.uid));
     }
   }

@@ -47,12 +47,20 @@
     "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
     "rewrites": [
       {
+        "source": "/redeem",
+        "destination": "/redeem.html"
+      },
+      {
         "source": "/cn",
         "destination": "/login_cn.html"
       },
       {
         "source": "/kr",
         "destination": "/login_kr.html"
+      },
+      {
+        "source": "/th",
+        "destination": "/login_th.html"
       },
       {
         "source": "/",
@@ -81,6 +89,10 @@
       {
         "source": "/dashboard-kr",
         "destination": "/dashboard_kr.html"
+      },
+      {
+        "source": "/dashboard-th",
+        "destination": "/dashboard_th.html"
       },
       {
         "source": "/dashboard",

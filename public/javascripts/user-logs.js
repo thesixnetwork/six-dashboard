@@ -390,7 +390,7 @@ $(document).ready(function() {
         .catch(() => {
           window.location.href = "/wizard"+window.location.search
         })
-        .finally(() => {
+        .then(() => {
           initializeDatabase('all').then(() => {
             $("#preLoader").fadeToggle();
           });

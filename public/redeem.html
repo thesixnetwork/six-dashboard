@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <meta property="og:url" content="https://ico.six.network/"/>
+    <meta property="og:type" content="article"/>
+    <meta property="og:title" content="SIX | Reinventing the digital economy" />
+    <meta property="og:description" content="SIX aims to bring a better liquidity, ownership, and wealth distribution back to the digital creators."/>
+    <meta property="og:image" content="https://ico.six.network/images/logo/six-logo-property.png"/>
+
+    <!-- Include firebase : update the version number as needed -->
+    <script defer src="/__/firebase/4.12.0/firebase-app.js"></script>
+    <script defer src="/__/firebase/4.12.0/firebase-auth.js"></script>
+    <script defer src="/__/firebase/4.12.0/firebase-database.js"></script>
+    <script defer src="/__/firebase/4.12.0/firebase-firestore.js"></script>
+    <script defer src="/__/firebase/4.12.0/firebase-messaging.js"></script>
+    <script defer src="/__/firebase/4.12.0/firebase-storage.js"></script>
+    <script defer src="/__/firebase/4.12.0/firebase-functions.js"></script>
+    <script defer src="/__/firebase/init.js"></script>
+
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>SIX | Reinventing the digital economy</title>
+    <link rel="shortcut icon" href="images/logo/fav.ico" type="image/x-icon">
+    <link rel="stylesheet" href="stylesheets/style.css">
+    <link rel="stylesheet" href="stylesheets/loading.css">
+    <link rel="stylesheet" href="stylesheets/responsive.css">
+    <link rel="stylesheet" href="stylesheets/redeem.css">
+    <script src="javascripts/jquery-3.2.1.min.js"></script>
+    <script src="javascripts/url_replacer.js"></script>
+    <script src="javascripts/libphonenumber-js.min.js"></script>
+    <script src="javascripts/redeem.js"></script>
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=GTM-N5DKTMD"></script>
+    <script src="javascripts/google-analytic.js"></script>    
+    <!-- Facebook Pixel Code -->
+    <script>
+      !function(f,b,e,v,n,t,s)
+      {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+      n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+      if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+      n.queue=[];t=b.createElement(e);t.async=!0;
+      t.src=v;s=b.getElementsByTagName(e)[0];
+      s.parentNode.insertBefore(t,s)}(window, document,'script',
+      'https://connect.facebook.net/en_US/fbevents.js');
+      fbq('init', '1617914968512909');
+      fbq('track', 'PageView');
+    </script>
+    <noscript><img height="1" width="1" style="display:none"
+      src="https://www.facebook.com/tr?id=1617914968512909&ev=PageView&noscript=1"
+    /></noscript>
+    <!-- End Facebook Pixel Code -->
+  </head>
+  <body style='background: #CCCCCC;'>
+    <header class="header">
+      <a href="/redeem" class="logo"><img src="images/logo/six-logo-white.png"></a>
+      <ul class="menu">
+        <li>
+          <div class="dropdown">
+            <a><img src="images/united-kingdom.png"><i class="fas fa-angle-down"></i></a>
+            <ul style="z-index: 9999;">
+              <li><a href="/redeem-kr"><img src="images/south-korea.png">&nbsp;&nbsp;KR</a></li>
+              <li><a href="/redeem-cn"><img src="images/chinese.png">&nbsp;&nbsp;CN</a></li>
+            </ul>
+          </div>
+        </li>
+      </ul>
+    </header>
+    <main class="redeem">
+      <div id='redeemContainer0' class='redeemContainer'>
+        <img class='welcomeImage' src="images/claim_process_welcome.png">
+        <div id='redeemContent'>
+          <h3 style='padding-top: 0px;'>Welcome to SIX Network Token Distribution</h3>
+          <div id='textContainer' style='text-align: left; line-height: 19px;'>
+            <p>In order to claim SIX token, this will consist of 4 steps as follows:</p>
+            <br>
+            <p>1. Create an account</p>
+            <p>2. Choose your desire claim method</p>
+            <p>3. Create wallet or link your existing wallet to SIX network</p>
+            <p>4. Claim token to your wallet</p>
+            <br>
+            <p>On the next step is “Create new account”, please prepare your Access Code from the email we sent to you on 6 June 2018.</p>
+            <br>
+            <br>
+          </div>
+          <div class="btn">
+            <button id='nextWelcome' style='width: auto; margin-bottom: 20px; min-width: 150px;'> Submit </button>
+          </div>
+        </div>
+      </div>
+      <div id='redeemContainer1' class='redeemContainer'>
+        <div id='redeemHeader'>
+          <svg id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 710.39"><defs><style>.cls-1{fill:#e2e5e7;}.cls-2{fill:#d1d5d5;}.cls-3{fill:#c6cbcb;}.cls-4{fill:#2d404e;}.cls-5{fill:#99a2d1;}.cls-6{fill:#fff;}</style></defs><title>ICON</title><path class="cls-1" d="M136,552.66a17.84,17.84,0,0,0,17.85,17.84H824.52a17.85,17.85,0,0,0,17.85-17.84v-46H136Zm353.28-24.16a11.6,11.6,0,1,1-11.61,11.6A11.6,11.6,0,0,1,489.28,528.49Z"/><path class="cls-2" d="M408.47,578.91c.2-2.56.34-4.61.44-6.07C408.82,574.31,408.67,576.39,408.47,578.91Z"/><path class="cls-2" d="M570,580.14c.06.69.11,1.4.17,2.14C570.1,581.55,570,580.83,570,580.14Z"/><path class="cls-2" d="M407.85,586.35c.07-.78.14-1.54.2-2.29C408,584.8,407.92,585.58,407.85,586.35Z"/><path class="cls-2" d="M408.18,582.55c.09-1.1.18-2.13.25-3.12C408.35,580.41,408.27,581.46,408.18,582.55Z"/><path class="cls-2" d="M570.32,584.17q.11,1.25.23,2.57C570.47,585.86,570.4,585,570.32,584.17Z"/><path class="cls-2" d="M569.29,570.5l0,.4Z"/><path class="cls-2" d="M569.65,575.75c.06.88.14,1.86.22,2.92C569.79,577.61,569.72,576.62,569.65,575.75Z"/><path class="cls-2" d="M569.35,571.44l.06.9Z"/><path class="cls-2" d="M569.47,573.14c0,.44.07.94.1,1.49Z"/><path class="cls-2" d="M408.92,572.77c0-.7.08-1.25.11-1.63C409,571.53,409,572.08,408.92,572.77Z"/><path class="cls-2" d="M409,571.07l0-.57Z"/><path class="cls-2" d="M407.62,588.89v0c-1.54,16.63-4.29,39.55-8.29,46.53H579c-4-7-6.8-30.24-8.33-46.9l0,.39Z"/><path class="cls-3" d="M384.33,639.87c-9.73,1.21-16.23,2-16.23,6.89H610.27c0-4.87-6.49-5.68-16.23-6.89s-15-4.47-15-4.47H399.33S394.07,638.65,384.33,639.87Z"/><path class="cls-4" d="M824.52,83.87H153.85A17.85,17.85,0,0,0,136,101.72v405H842.37v-405A17.85,17.85,0,0,0,824.52,83.87ZM813.13,481.32H165.24V109.24h647.9Z"/><rect class="cls-5" x="165.24" y="109.24" width="647.9" height="372.09"/><rect class="cls-1" x="165.24" y="481.32" width="647.9"/><path class="cls-3" d="M569.57,574.63l.08,1.12Z"/><path class="cls-3" d="M569.41,572.34l.05.8Z"/><path class="cls-3" d="M569.32,570.9l0,.53Z"/><path class="cls-3" d="M569.87,578.66c0,.47.08,1,.12,1.48C570,579.65,569.91,579.13,569.87,578.66Z"/><path class="cls-3" d="M570.55,586.74c.05.59.1,1.16.16,1.76C570.65,587.9,570.6,587.32,570.55,586.74Z"/><path class="cls-3" d="M408,584.06c0-.52.09-1,.13-1.51Z"/><path class="cls-3" d="M407.62,588.87c.08-.87.15-1.69.23-2.52C407.77,587.18,407.7,588,407.62,588.87Z"/><path class="cls-3" d="M409,571.15v0Z"/><path class="cls-3" d="M408.43,579.43l0-.52Z"/><path class="cls-3" d="M570.17,582.29c.05.62.1,1.23.16,1.88Z"/><path class="cls-3" d="M408.91,572.85v0Z"/><path class="cls-3" d="M409,571.07v.07c0,.37-.06.93-.11,1.63v.08c-.1,1.46-.25,3.51-.44,6.07l0,.52c-.08,1-.16,2-.25,3.12,0,.5-.08,1-.13,1.51-.06.75-.13,1.51-.2,2.29s-.15,1.65-.23,2.52v0H570.74l0-.39c-.06-.61-.11-1.18-.16-1.76q-.12-1.32-.23-2.57c-.06-.65-.11-1.27-.16-1.88s-.12-1.45-.17-2.14c0-.5-.08-1-.12-1.48-.08-1.06-.16-2-.22-2.92l-.08-1.12c0-.54-.07-1-.1-1.49l-.05-.8-.06-.9,0-.53,0-.4H409.07Z"/><circle class="cls-4" cx="489.28" cy="540.1" r="11.6"/><path class="cls-6" d="M343.13,259.73a6.24,6.24,0,0,0-8.49-2.23l-15.55,9v-18a6.17,6.17,0,1,0-12.33,0v18l-15.55-9a6.21,6.21,0,1,0-6.25,10.72l15.64,9.12-15.64,9.12a6.21,6.21,0,0,0,6.25,10.73l15.55-9v18a6.17,6.17,0,1,0,12.33,0v-18l15.55,9a6.21,6.21,0,1,0,6.26-10.73l-15.64-9.12,15.64-9.12a6.18,6.18,0,0,0,2.23-8.49Zm0,0"/><path class="cls-6" d="M400.25,294.85a6.23,6.23,0,0,0,8.49,2.23l15.55-9v18a6.17,6.17,0,1,0,12.33,0v-18l15.55,9a6.21,6.21,0,1,0,6.25-10.72l-15.64-9.12,15.64-9.12a6.21,6.21,0,0,0-6.25-10.73l-15.55,9v-18a6.17,6.17,0,1,0-12.33,0v18l-15.55-8.94a6.21,6.21,0,1,0-6.25,10.72l15.64,9.12-15.64,9a6.24,6.24,0,0,0-2.23,8.49Zm0,0"/><path class="cls-6" d="M389.16,341.69v10.9a4.77,4.77,0,0,0,4.74,4.74h73.2a4.77,4.77,0,0,0,4.73-4.74v-10.9a4.77,4.77,0,0,0-4.73-4.74H393.9a4.71,4.71,0,0,0-4.74,4.74Zm0,0"/><path class="cls-6" d="M506.61,341.69v10.9a4.77,4.77,0,0,0,4.74,4.74h73.2a4.77,4.77,0,0,0,4.74-4.74v-10.9a4.77,4.77,0,0,0-4.74-4.74h-73.2a4.77,4.77,0,0,0-4.74,4.74Zm0,0"/><path class="cls-6" d="M517.69,294.85a6.24,6.24,0,0,0,8.49,2.23l15.55-9v18a6.17,6.17,0,1,0,12.33,0v-18l15.55,9a6.21,6.21,0,1,0,6.26-10.72l-15.64-9.12,15.64-9.12a6.21,6.21,0,0,0-6.26-10.73l-15.55,9v-18a6.17,6.17,0,1,0-12.33,0v18l-15.55-9a6.21,6.21,0,1,0-6.26,10.73l15.64,9.12-15.64,9.12a6.24,6.24,0,0,0-2.23,8.49Zm0,0"/><path class="cls-6" d="M702,336.95h-73.2a4.77,4.77,0,0,0-4.74,4.74v10.9a4.77,4.77,0,0,0,4.74,4.74H702a4.77,4.77,0,0,0,4.74-4.74v-10.9a4.77,4.77,0,0,0-4.74-4.74Zm0,0"/><path class="cls-6" d="M276.36,357.33h73.21a4.77,4.77,0,0,0,4.73-4.74v-10.9a4.77,4.77,0,0,0-4.73-4.74H276.36a4.77,4.77,0,0,0-4.73,4.74v10.9a4.77,4.77,0,0,0,4.73,4.74Zm0,0"/></svg>
+        </div>
+        <div id='redeemContent'>
+          <h3>Create new account</h3>
+          <p style='line-height: 19px;'>In order to create new account, please find the Access code from the email we sent to you on 6 June 2018.</p>
+          <div class='fdiv' style='padding-top: 25px;'>
+            <p>Access Code</p>
+            <label id='redeemCodeContainer' class="text">
+              <input placeholder="Access code" id="redeemCode" type="text">
+              <p id='alertRedeemCode'></p>
+            </label>
+          </div>
+          <div class='fdiv'>
+            <p>Email</p>
+            <label id='emailContainer' class="text">
+              <input placeholder="Email" id="email" type="email">
+              <p id='alertEmail'></p>
+            </label>
+          </div>
+          <p id='redeemError'></p>
+          <div class="btn">
+            <button id='submit' style='width: auto; margin-bottom: 20px; min-width: 150px;'> Submit </button>
+          </div>
+        </div>
+      </div>
+      <div id='redeemContainer2' class='redeemContainer'>
+        <div id='redeemHeader'>
+          <p>OTP verification</p>
+        </div>
+        <div id='redeemContentOTP'>
+          <article id='verifyCodeContent2' class="verify-code">
+            <h1>Enter the code</h1>
+            <p>An SMS message with verification code is sent to you (<span id='refPhoneNumber'></span>). Ref: <span id='refVerify'></span></p>
+            <div class="countdown-verify"></div>
+            <p id='sendToEmailError' class="alert-text error" style='display: none;'></p>
+            <button id='sendToEmailBtn'>Send code to my email</button>
+            <fieldset>
+              <dl>
+                <dd><label class="text"><input id='verifyCode' type="text" placeholder="Code" style='text-align: center;'></label></dd>
+              </dl>
+              <dl><dd><button id='verifyPhoneSubmitBtn'>Verify</button></dd></dl>
+              <p id='verifyPhoneSubmitError' class="alert-text error" style='display: none;'></p>
+            </fieldset>
+          </article>
+        </div>
+      </div>
+      <div id='redeemContainer3' class='redeemContainer'>
+        <div id='redeemHeader'>
+          <svg id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 960 561.1"><defs><style>.cls-1311{fill:none;}.cls-1312{clip-path:url(#clip-path);}.cls-1313{fill:#ccc;}.cls-1314{fill:#7a82a2;}.cls-1315{fill:#98aad7;}.cls-1316{fill:#fff;}.cls-1317{fill:#f2b83e;}.cls-1318{fill:#f8d578;}.cls-1319{fill:#d4b053;}.cls-13110{fill:#e4e7e7;}.cls-13111{fill:#324d5b;}.cls-13112{fill:#cdcfcf;}</style><clipPath id="clip-path"><rect class="cls-1311" x="163.67" y="69.52" width="651.21" height="419.29"/></clipPath></defs><title>ICON</title><g class="cls-1312"><path class="cls-1313" d="M777,322.26H201.89a38.22,38.22,0,0,0-38.22,38.22v88.18a38.22,38.22,0,0,0,38.22,38.22H777a38.22,38.22,0,0,0,38.22-38.22V360.48A38.22,38.22,0,0,0,777,322.26Zm0,0"/><path class="cls-1313" d="M777,91.47H201.89a38.21,38.21,0,0,0-38.22,38.21v88.19a38.21,38.21,0,0,0,38.22,38.21H777a38.21,38.21,0,0,0,38.22-38.21V129.68A38.21,38.21,0,0,0,777,91.47Zm0,0"/><path class="cls-1314" d="M327.77,300.47V465.09H201.89a38.21,38.21,0,0,1-38.22-38.22V338.69a38.22,38.22,0,0,1,38.22-38.22Zm0,0"/><path class="cls-1315" d="M815.17,338.69v88.18A38.21,38.21,0,0,1,777,465.09H327.77V300.47H777a38.22,38.22,0,0,1,38.22,38.22Zm0,0"/><path class="cls-1315" d="M815.17,107.9v88.18A38.22,38.22,0,0,1,777,234.3H327.77V69.68H777a38.21,38.21,0,0,1,38.22,38.22Zm0,0"/></g><path class="cls-1314" d="M327.77,69.68V234.3H201.89a38.22,38.22,0,0,1-38.22-38.22V107.9a38.21,38.21,0,0,1,38.22-38.22Zm0,0"/><path class="cls-1316" d="M414.92,405.09a22.31,22.31,0,1,1,22.31-22.31,22.34,22.34,0,0,1-22.31,22.31Zm0,0"/><path class="cls-1316" d="M621.5,405.09a22.31,22.31,0,1,1,22.32-22.31,22.33,22.33,0,0,1-22.32,22.31Zm0,0"/><path class="cls-1316" d="M724.79,174.31A22.31,22.31,0,1,1,747.1,152a22.34,22.34,0,0,1-22.31,22.32Zm0,0"/><path class="cls-1316" d="M518.21,405.09a22.31,22.31,0,1,1,22.32-22.31,22.33,22.33,0,0,1-22.32,22.31Zm0,0"/><path class="cls-1316" d="M414.92,174.31A22.31,22.31,0,1,1,437.23,152a22.34,22.34,0,0,1-22.31,22.32Zm0,0"/><path class="cls-1316" d="M621.5,174.31A22.31,22.31,0,1,1,643.81,152a22.34,22.34,0,0,1-22.32,22.32Zm0,0"/><path class="cls-1316" d="M518.21,174.31A22.31,22.31,0,1,1,540.53,152a22.34,22.34,0,0,1-22.32,22.32Zm0,0"/><path class="cls-1317" d="M205.56,131.9h80.78a6.9,6.9,0,0,1,6.88,6.88v53.28a6.9,6.9,0,0,1-6.88,6.88H205.56a6.9,6.9,0,0,1-6.88-6.88V138.78a6.9,6.9,0,0,1,6.88-6.88Zm0,0"/><path class="cls-1318" d="M205.56,128.46h80.78a6.9,6.9,0,0,1,6.88,6.88v3.44a6.9,6.9,0,0,1-6.88,6.88H205.56a6.9,6.9,0,0,1-6.88-6.88v-3.44a6.9,6.9,0,0,1,6.88-6.88Zm0,0"/><path class="cls-1319" d="M215.87,133.62c-4.3,0-7.73,1.55-7.73,3.44s3.44,3.44,7.73,3.44,7.73-1.55,7.73-3.44-3.44-3.44-7.73-3.44Zm60.16,0c-4.3,0-7.73,1.55-7.73,3.44s3.44,3.44,7.73,3.44,7.73-1.55,7.73-3.44-3.44-3.44-7.73-3.44ZM245.95,159.4a12.89,12.89,0,1,1-12.89,12.89,12.87,12.87,0,0,1,12.89-12.89Zm0,0"/><path class="cls-13110" d="M245.95,162.84a9.45,9.45,0,1,1-9.45,9.45,9.43,9.43,0,0,1,9.45-9.45Zm0,0"/><path class="cls-13111" d="M245.95,168a1.72,1.72,0,0,1,1.72,1.72v5.16a1.72,1.72,0,1,1-3.44,0v-5.16a1.72,1.72,0,0,1,1.72-1.72Zm0,0"/><path class="cls-13110" d="M245.95,88.93A36.09,36.09,0,0,0,209.85,125v10.31c0,1.89,2.66,3.44,6,3.44s6-1.55,6-3.44V125A24.06,24.06,0,1,1,270,125v10.31c0,1.89,2.66,3.44,6,3.44s6-1.55,6-3.44V125a36.09,36.09,0,0,0-36.09-36.09Zm0,0"/><path class="cls-13112" d="M245.95,95.81A29.19,29.19,0,0,0,216.73,125v13.75c2.92-.26,5.16-1.63,5.16-3.44V125A24.06,24.06,0,0,1,270,125v10.31c0,1.72,2.23,3.18,5.16,3.44V125a29.19,29.19,0,0,0-29.22-29.22Zm0,0"/><path class="cls-1317" d="M219.07,365.44H269a4.26,4.26,0,0,1,4.25,4.25v32.94a4.26,4.26,0,0,1-4.25,4.25H219.07a4.26,4.26,0,0,1-4.25-4.25V369.69a4.26,4.26,0,0,1,4.25-4.25Zm0,0"/><path class="cls-1318" d="M219.07,363.32H269a4.26,4.26,0,0,1,4.25,4.25v2.13a4.26,4.26,0,0,1-4.25,4.25H219.07a4.26,4.26,0,0,1-4.25-4.25v-2.13a4.26,4.26,0,0,1,4.25-4.25Zm0,0"/><path class="cls-1319" d="M225.44,366.51c-2.66,0-4.78,1-4.78,2.12s2.12,2.13,4.78,2.13,4.78-1,4.78-2.13-2.12-2.12-4.78-2.12Zm37.19,0c-2.66,0-4.78,1-4.78,2.12s2.13,2.13,4.78,2.13,4.78-1,4.78-2.13-2.12-2.12-4.78-2.12ZM244,382.44a8,8,0,1,1-8,8,8,8,0,0,1,8-8Zm0,0"/><path class="cls-13110" d="M244,384.57a5.84,5.84,0,1,1-5.84,5.84,5.83,5.83,0,0,1,5.84-5.84Zm0,0"/><path class="cls-13111" d="M244,387.76a1.07,1.07,0,0,1,1.06,1.06V392a1.06,1.06,0,1,1-2.12,0v-3.19a1.07,1.07,0,0,1,1.06-1.06Zm0,0"/><path class="cls-13110" d="M244,338.88a22.31,22.31,0,0,0-22.31,22.31v6.37c0,1.17,1.65,2.13,3.72,2.13s3.72-1,3.72-2.13v-6.37a14.87,14.87,0,1,1,29.75,0v6.37c0,1.17,1.65,2.13,3.72,2.13s3.72-1,3.72-2.13v-6.37A22.31,22.31,0,0,0,244,338.88Zm0,0"/><path class="cls-13112" d="M244,343.13A18,18,0,0,0,226,361.19v8.5c1.81-.16,3.19-1,3.19-2.13v-6.37a14.88,14.88,0,0,1,29.75,0v6.37c0,1.06,1.38,2,3.19,2.13v-8.5A18,18,0,0,0,244,343.13Zm0,0"/><path class="cls-1316" d="M187.45,402.77a2.82,2.82,0,0,0,.79-.13,2.32,2.32,0,0,0,1.4-3,57.82,57.82,0,0,1,94.8-60.94l.36.36-7,.08a2.32,2.32,0,0,0,0,4.64h0l12.57-.15a2.32,2.32,0,0,0,1.63-.69,2.29,2.29,0,0,0,.66-1.63l-.15-12.57a2.31,2.31,0,0,0-2.35-2.29,2.35,2.35,0,0,0-2.29,2.35l.08,7-.36-.36a62.46,62.46,0,0,0-102.4,65.81,2.37,2.37,0,0,0,2.19,1.51Zm0,0"/><path class="cls-1316" d="M285.36,420.52a57.88,57.88,0,0,1-81.75.92l-.36-.36,7-.08a2.32,2.32,0,0,0,0-4.64h0l-12.57.18a2.34,2.34,0,0,0-2.29,2.35l.15,12.57a2.32,2.32,0,0,0,2.32,2.29h0a2.34,2.34,0,0,0,2.29-2.35l-.08-7,.36.36A62.46,62.46,0,0,0,302.8,359a2.31,2.31,0,0,0-4.36,1.56,57.49,57.49,0,0,1-13.08,60Zm0,0"/></svg>
+        </div>
+        <div id='redeemContentSetPassword'>
+          <h3>New password</h3>
+          <div class='fdiv' style='padding-top: 25px;'>
+            <p>New Password</p>
+            <label id='passwordContainer' class="text">
+              <input placeholder="New Password" id="password" type="password">
+              <p id='alertPassword'></p>
+            </label>
+          </div>     
+          <div class='fdiv'>
+            <p>Confirm password</p>
+            <label id='passwordConfirmationContainer' class="text">
+              <input placeholder="Confirm Password" id="passwordConfirmation" type="password">
+              <p id='alertPasswordConfirmation'></p>
+            </label>
+          </div>
+          <p id='passwordError'></p>
+          <div class="btn">
+            <button id='submitPassword' style='width: auto; margin-bottom: 20px; min-width: 150px;'> Submit </button>
+          </div>
+        </div>
+      </div>
+    </main>
+  </body>
+</html>
