@@ -35,4 +35,5 @@ node generate_airdrop_claim.js
 echo ''
 echo '#5 (5/5) Insert all claim user into FireStore'
 sleep 3
-node insert_json_to_db.js
+#node insert_json_to_db.js
+

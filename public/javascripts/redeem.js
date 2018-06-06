@@ -66,7 +66,7 @@ function submitRedeem() {
             if (startNum < 0) {
               startNum = settings.fromNumber
             } else {
-              if (startNum < firstNum-30) {
+              if (startNum < firstNum-60) {
                 $("#sendToEmailBtn").css("display", "inline-block")
               } else {
                 $("#sendToEmailBtn").css("display", "none")

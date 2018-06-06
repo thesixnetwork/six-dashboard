@@ -6,7 +6,7 @@ const serviceAccount = require("./serviceAccountKey.json");
 
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
-  databaseURL: "https://six-dashboard.firebaseio.com"
+  databaseURL: "https://sixdashboard.firebaseio.com"
 });
 
 const fireStore = admin.firestore();
