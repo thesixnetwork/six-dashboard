@@ -18,7 +18,7 @@ const conditions = {
 
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
-  databaseURL: 'https://six-dashboard.firebaseio.com'
+  databaseURL: 'https://sixdashboard.firebaseio.com'
 })
 const db = admin.firestore()
 
@@ -26,7 +26,7 @@ async function listAllUsers (nextPageToken) {
   // List batch of users, 1000 at a time.
   admin
     .auth()
-    .listUsers(10, nextPageToken)
+    .listUsers(700, nextPageToken)
     .then(listUsersResult => {
       const promiseMap = listUsersResult
         .users
