@@ -1974,28 +1974,10 @@ exports.getPrivateUsers = functions.https.onRequest((request, response) => {
       let users = []
       snapshots.forEach(snapshot => {
         const data = snapshot.data()
-        const { email, redeem_code, country } = data
-        users.push({ email, redeem_code, country })
-      })
-      response.send(users)
-    })
-  } else {
-    response.send({
-      error: 'Password Incorrect.'
-    })
-  }
-})
-
-exports.getPublicUsers = functions.https.onRequest((request, response) => {
-  cors(request, response, () => {});
-  const { password } = request.query;
-  if (password === 'sixsendmailtoday') {
-    admin.firestore().collection('users').where("total_six", ">=", 20).get().then(snapshots => {
-      let users = []
-      snapshots.forEach(snapshot => {
-        const data = snapshot.data()
-        const { email } = data
-        users.push(email)
+        const { email, redeem_code, country, phone_number } = data
+        if (redeem_code && redeem_code !== null) {
+          users.push({ email, redeem_code, country, phone_number })
+        }
       })
       response.send(users)
     })
