@@ -2422,6 +2422,8 @@ function addTrustLedger() {
     return markTrustlineUser().then(() => {
       qrcode.makeCode(publicKey);
       userData.xlm_address = publicKey
+      $("#myXlmPublicAddress").text(publicKey)
+      $("#myXlmPublicAddress2").text(publicKey)
       $("#copyMyXlmAddress").attr("data-clipboard-text", publicKey)
       $(".noWallet").removeClass("noWallet").addClass("haveWallet")
       getMyWalletBalance()
