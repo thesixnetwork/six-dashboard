@@ -5,7 +5,7 @@ if (domain.match('localhost')) {
   googleId = 'UA-58954565-1'
 } else if (domain.match('six-dashboard')) {
   googleId = 'UA-116980354-1'
-} else if (domain.match('ico.six.network')) {
+} else if (domain.match('ico.six.network') || domain.match('sixdashboard')) {
   googleId = 'UA-116085165-1'
 }
 
