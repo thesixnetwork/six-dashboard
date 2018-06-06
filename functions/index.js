@@ -606,7 +606,9 @@ exports.updateXLMWallet = functions.https.onCall((data, context) => {
           return batch
             .commit()
             .then(() => {
-              return { success: true };
+              return handleCreateStellarAccount({ public_key: xlm_address }, context).then(response => {
+                  return { success: true }
+                })
             })
             .catch(err => {
               return { success: false, error_message: err.message };

@@ -440,7 +440,7 @@ function sendSix ({ uid, claim_id: claimId, user, claim }) {
       .addOperation(
         StellarSdk.Operation.payment({
           destination: user.public_key,
-          amount: claim.amount.toString(),
+          amount: claim.amount.toFixed(7).toString(),
           asset: sixAsset
         })
       )
