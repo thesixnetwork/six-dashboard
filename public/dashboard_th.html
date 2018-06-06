@@ -217,7 +217,7 @@
             <input type="text" value="" id='myHiddenETHWalletAddress' style="display:inline; color: rgba(255,255,255,0); width: 0px;">
           </p>
         </section>
-        <a href='javascript:;' onclick='backToDashboard()' id='backToTxHis' style='display: none;'><i class="fas fa-arrow-left"></i> Back to Dashboard</a>
+        <a href='javascript:;' onclick='backToDashboard()' id='backToTxHis' style='display: none;'><i class="fas fa-arrow-left"></i> กลับไปหน้า Dashboard</a>
         <a href='javascript:;' onclick='showXLMWallet()' id='showXLMWalletBtn' style='display: none;' class='noWallet'>
           <svg id="xlmWalletIcon" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 816.02 792"><defs><style>.cls-3{fill:#bbb;}</style></defs><title>icon</title><path class="cls-3" d="M723.59,371.89H691.94V247.49a21.69,21.69,0,0,0-22.08-22.08h-53V115A21.69,21.69,0,0,0,594.78,92.9H162.68a88.59,88.59,0,0,0-88.33,88.33v5.15h0V612.6c0,41.22,33.86,75.08,75.08,75.08H670.59a21.69,21.69,0,0,0,22.08-22.08V536.78h30.92a21.69,21.69,0,0,0,22.08-22.08V394A21.69,21.69,0,0,0,723.59,371.89ZM162.68,137.07h410v22.82H163.42a22.08,22.08,0,1,0,0,44.17H572.69V225.4h-410c-25,0-44.17-19.14-44.17-44.17S137.65,137.07,162.68,137.07ZM648.51,643.51H149.43c-17.67,0-30.92-13.25-30.92-30.92V257.79a89.94,89.94,0,0,0,44.17,11.78h485.1V371.89H556.5A21.69,21.69,0,0,0,534.41,394V514.69a21.69,21.69,0,0,0,22.08,22.08h92Zm53-150.9H578.58V416.05H701.51v76.56Z"/></svg>
           <span id='xlmWalletText'>แสดงที่อยู่กระเป่าของคุณ <i class="fas fa-caret-left fa-fw" id='xlmWalletIcon2'></i></span>
@@ -839,7 +839,7 @@
             </ul>
             <p style="text-align: center;">* เราจะไม่เก็บ Private Key ทุกวิธีการสร้างกระเป๋า.</p>
             <div class="btn">
-              <button id='submitChoiceWay2' onclick='nextWay()' style='width: auto; margin-top: 20px; margin-bottom: 20px; min-width: 150px;'> Next </button>
+              <button id='submitChoiceWay2' onclick='nextWay()' style='width: auto; margin-top: 20px; margin-bottom: 20px; min-width: 150px;'> ถัดไป </button>
             </div>
           </div>
           <div id='divClaimBoxOld' style='display: none;'>
@@ -856,7 +856,7 @@
               <p id="oldWalletAlertText"></p>
             </div>
             <div class="btn">
-              <button id='submitOldAccountBtn' onclick='submitOldAccount()' style='width: auto; margin-top: 20px; margin-bottom: 20px; min-width: 150px;'> Next </button>
+              <button id='submitOldAccountBtn' onclick='submitOldAccount()' style='width: auto; margin-top: 20px; margin-bottom: 20px; min-width: 150px;'> ถัดไป </button>
             </div>
           </div>
           <div id='divClaimBoxLedger' style='display: none'>
@@ -955,7 +955,7 @@
                       <br>
                       <p>Mnemonic word คือทางที่ง่ายในการกู้กระเป๋าในระบบ blockchain. มันสำคัญเทียบเท่ากับ Private key ดังนั้นเราจะแนะนำ <span style="color: #4a5ab5; font-weight: bold;">จดมันลงไว้ในที่ปลอดภัยและเก็บรักษาดี</span> ในที่คุณคนเดียวเข้าถึงมันได้.</p>
                       <br>
-                      <dl><dd><button id='recoveryDialogSubmitBtn' onclick='nextRecoveryWord()'>Next</button></dd></dl>
+                      <dl><dd><button id='recoveryDialogSubmitBtn' onclick='nextRecoveryWord()'>ถัดไป</button></dd></dl>
                     </div>
                   </div>
                 </dialog>
@@ -1347,8 +1347,8 @@
         <p>ขั้นตอนการรับเหรียญทำงานบนบราวเซอร์. ดังนั้น, กรุณาแน่ใจว่าคุณได้ทำการเก็บข้อมูลไว้ทางฝั่งของคุณเอง. ไม่มีการลืมรหัสผ่านบน blockchain บนโลก.</p>
         <br>
         <dl style='flex-wrap: unset;'>
-          <dd style='margin-right: 50px;'><button id='congratDialogSubmitBtn2' onclick='backDialog()'>Back</button></dd>
-          <dd><button id='congratDialogSubmitBtn3' onclick='submitDialog()'>Go</button></dd>
+          <dd style='margin-right: 50px;'><button id='congratDialogSubmitBtn2' onclick='backDialog()'>ก่อนหน้า</button></dd>
+          <dd><button id='congratDialogSubmitBtn3' onclick='submitDialog()'>ไป</button></dd>
         </dl>
       </div>
     </div>
