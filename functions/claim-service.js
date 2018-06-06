@@ -273,6 +273,7 @@ const updateState = ({ uid, claim, claim_id: claimId, user, state, tx, error }) 
   const userClaimRef = claimRef.doc(uid).collection('claim_period').doc(string(claimId))
   let public_key = ''
   let email = ''
+  let current_amount = 0
   return userClaimRef
     .update(data)
     .then(() => {
@@ -297,29 +298,22 @@ const updateState = ({ uid, claim, claim_id: claimId, user, state, tx, error }) 
     .then(snapshot => snapshot.data())
     .then(userClaimRefData => {
       const { amount } = userClaimRefData
-      var domain = window.location.href
-      const xlm_address = public_key
-      if (functions.config().campaign.is_production === 'true') {
-        stellarUrl = 'https://horizon.stellar.org'
-        StellarSdk.Network.usePublicNetwork()
-      } else {
-        stellarUrl = 'https://horizon-testnet.stellar.org'
-        StellarSdk.Network.useTestNetwork()
-      }
-      const server = new StellarSdk.Server(stellarUrl)
-      let accountCaller = server.accounts()
-      accountCaller.accountId(xlm_address)
-      return accountCaller.call().then(account => {
-        let sixAsset = account.balances.find(x => { return x.asset_code == 'SIX' })
-        if (sixAsset !== undefined) {
-          let thisAccBalance = parseFloat(sixAsset.balance)
-          return sendClaimUpdateEmail(email, amount, thisAccBalance)
-        } else {
-          // ไม่มี หรือไม่ได้ trust อื่นๆ
-          return
-        }
-      })
+      current_amount = amount
+      return amount
     })
+    .then(() => claimRef.doc(uid).collection('claim_period').get())
+    .then(snapshots => {
+      if (snapshots && snapshots.length > 0) {
+        let total_claim = 0
+        snapshots.forEach(snapshot => {
+          const data = snapshot.data()
+
+          total_claim += data.amount && data.amount !== null ? data.amount : 0
+        })
+        return sendClaimUpdateEmail(email, current_amount, total_claim)
+      }
+    })
+    .then()
     .then(() => {
       return {
         uid,
