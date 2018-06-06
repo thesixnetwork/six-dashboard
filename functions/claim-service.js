@@ -313,7 +313,6 @@ const updateState = ({ uid, claim, claim_id: claimId, user, state, tx, error }) 
         return sendClaimUpdateEmail(email, current_amount, total_claim)
       }
     })
-    .then()
     .then(() => {
       return {
         uid,
