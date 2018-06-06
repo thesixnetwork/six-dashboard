@@ -19,11 +19,11 @@ const conditions = {
 
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
-  databaseURL: 'https://six-dashboard.firebaseio.com'
+  databaseURL: 'https://sixdashboard.firebaseio.com'
 })
 const db = admin.firestore()
 const batchCount = 0
-const batch = 500
+const batch = 700
 let currentNo = 0
 const totalUser = 6916
 
@@ -84,7 +84,7 @@ function findTxByUid (uid) {
     db
       .collection('purchase_txs')
       .where('user_id', '==', uid)
-      .onSnapshot(querySnapshot => {
+      .get().then(querySnapshot => {
         var txs = []
         querySnapshot
           .forEach(function (doc) {

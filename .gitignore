@@ -3,3 +3,4 @@
 **/scripts/output/*
 **/scripts/config/*
 firebase-debug.log
+**/scripts/token_distribution.csv

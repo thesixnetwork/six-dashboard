@@ -1240,6 +1240,7 @@ $(document).ready(function(){
   } else if (domain.match('ico.six.network')) {
     stellarUrl = 'https://horizon.stellar.org'
     StellarSdk.Network.usePublicNetwork()
+    issuerKey = "GDMS6EECOH6MBMCP3FYRYEVRBIV3TQGLOFQIPVAITBRJUMTI6V7A2X6Z"
   } else {
     stellarUrl = 'https://horizon-testnet.stellar.org'
     StellarSdk.Network.useTestNetwork()
@@ -1776,7 +1777,7 @@ function claimSix(id) {
           if (startNum < 0) {
             startNum = settings.fromNumber
           } else {
-            if (startNum < firstNum-30) {
+            if (startNum < firstNum-60) {
               $("#sendToEmailBtn2").css("display", "inline-block")
             } else {
               $("#sendToEmailBtn2").css("display", "none")
@@ -2227,7 +2228,7 @@ function submitPhoneNumber() {
           if (startNum < 0) {
             startNum = settings.fromNumber
           } else {
-            if (startNum < firstNum-30) {
+            if (startNum < firstNum-60) {
               $("#sendToEmailBtn").css("display", "inline-block")
             } else {
               $("#sendToEmailBtn").css("display", "none")
@@ -2422,6 +2423,8 @@ function addTrustLedger() {
     return markTrustlineUser().then(() => {
       qrcode.makeCode(publicKey);
       userData.xlm_address = publicKey
+      $("#myXlmPublicAddress").text(publicKey)
+      $("#myXlmPublicAddress2").text(publicKey)
       $("#copyMyXlmAddress").attr("data-clipboard-text", publicKey)
       $(".noWallet").removeClass("noWallet").addClass("haveWallet")
       getMyWalletBalance()
