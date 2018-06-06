@@ -760,6 +760,10 @@
                 <h1>Enter the code</h1>
                 <p>An SMS message with verification code is sent to you (<span id='refPhoneNumber'></span>). Ref: <span id='refVerify'></span></p>
                 <div class="countdown-verify"></div>
+                <div style='width: 100%; text-align: center;'>
+                  <p id='sendToEmailError' class="alert-text error" style='display: none;'></p>
+                  <button id='sendToEmailBtn'>Send code to my email</button>
+                </div>
                 <fieldset>
                   <dl>
                     <dt>Code</dt>
@@ -1192,6 +1196,10 @@
         <article>
           <p>An SMS message with one time password is sent to you (<span id='refPhoneNumber2'></span>). Ref: <span id='refVerify2'></span></p>
           <h2 style='color: #4a5ab5; margin-bottom: 10px; margin-top: 10px;'><div class="countdown-verify-2" style='text-align: center;'></div></h2>
+          <div style='width: 100%; text-align: center'>
+            <p id='sendToEmailError2' class="alert-text error" style='display: none;'></p>
+            <button id='sendToEmailBtn2'>Send code to my email</button>
+          </div>
           <fieldset>
             <dl>
               <dd><label class="text"><input id='otpCode' type="text" placeholder="Code" style='text-align: center;'></label></dd>

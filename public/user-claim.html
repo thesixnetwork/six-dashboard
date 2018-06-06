@@ -39,6 +39,7 @@
         <link rel="stylesheet" type="text/css" href="//cdn.jsdelivr.net/bootstrap.daterangepicker/2/daterangepicker.css" />
         <script src="https://cdn.datatables.net/1.10.16/js/jquery.dataTables.min.js"></script>
         <script src="https://cdn.datatables.net/1.10.16/js/dataTables.bootstrap.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/stellar-sdk/0.8.2/stellar-sdk.js"></script>
         <script src="javascripts/user_claim.js"></script>
         <!-- <script src="javascripts/wizard.js"></script> -->
         <!-- Global site tag (gtag.js) - Google Analytics -->
@@ -71,15 +72,45 @@
       <br>
       <section class="list-user with-table">
         <div style="overflow-x: auto;width: 100%;">
+            <section class="row widget-row">
+                <div class="widget">
+                  <h3 class="value" id='total_passed' style="color: green;">0</h3>
+                  <h6 class="title">Passed</h6>
+                </div>
+                <div class="widget">
+                    <h3 class="value" id='total_not_passed' style="color: red;">0</h3>
+                    <h6 class="title">Not Passed</h6>
+                  </div>
+                  <div class="widget">
+                      <h3 class="value" id='total_not_passed' style="color: red;">0</h3>
+                      <h6 class="title">Pending</h6>
+                    </div>
+              </section>
+          <form>
+            <div class="col-md-4"></div>
+            <div class="col-md-4">
+              <div class="form-group row" style="display: flex; flex-direction: row; align-items: center;">
+                  <label class="col-sm-2 col-form-label">STATUS</label>
+                  <div class="col-md-10">
+                      <select class="form-control" id="filter-status">
+                          <option value="">All</option>
+                          <option value="3">Not Passed</option>
+                          <option value="2">Passed</option>
+                          <option value="pending">Pending</option>
+                        </select>
+                  </div>
+              </div>
+            </div>
+          </form>
           <table id='claim-table' class='display' style="width: 100%;">
             <thead>
               <tr>
                   <th width="300" id='kycColumn'>Email</th>
                 <th width="300" id='kycColumn'>User ID</th>
-                <th width="200" id='contributeColumn'>Amount</th>
-                <th width="200" id="remarkColumn">Type</th>
-                <th width="150" id="remindStatus">Valid Date</th>
-                <th width="150" id="remindStatus">Claimed</th>
+                <th width="200" id='contributeColumn'>Status</th>
+                <th width="100" id='contributeColumn'>Amount</th>
+                <th width="200" id="remarkColumn">Tx Id</th>
+                <!-- <th width="150" id="remindStatus">Action</th> -->
                 <!-- <th width="150" id="remindStatus">Trustline</th> -->
               </tr>
             </thead>
