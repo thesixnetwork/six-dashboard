@@ -424,7 +424,7 @@ columnDefs: [{
   "targets": 4,
   render: (data) => {
     if (data && data !== null && data !== '') {
-      return moment(parseInt(data)).format('DD/MM/YYYY - HH:mm:ss')
+      return moment(parseInt(data)).format('DD/MM/YYYY (HH:mm:ss)')
     } else {
       return ''
     }
