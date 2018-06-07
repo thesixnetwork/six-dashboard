@@ -2484,7 +2484,7 @@ function sendCodeToEmailClaim(id) {
   }
   let dom = document.getElementById("sendToEmailBtn2")
   setDisable([dom])
-  sentEmail = firebase.functions().httpsCallable('sendClaimverificationtoEmail')
+  sentEmail = firebase.functions().httpsCallable('sendClaimVerificationtoEmail')
   sentEmail({claim_id: id }).then(data => {
     $("#sendToEmailError2").removeClass("error")
     if ($("#sendToEmailError2").css("display") === "none") {
