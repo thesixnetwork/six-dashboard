@@ -746,7 +746,9 @@ const typeOrder = {
   'Type P2': 26,
   'Type P2 - THB': 27,
   'Type PL': 28,
-  'Type SS': 29
+  'Type SS': 29,
+  'Type RF': 30,
+  'Type SP': 31
 }
 
 const privateBonus = {
@@ -903,6 +905,16 @@ const privateType = {
     type: 'private'
   },
   'Type SS': {
+    name: 'Type AV',
+    description: '',
+    type: 'private'
+  },
+  'Type RF': {
+    name: 'Type AV',
+    description: '',
+    type: 'private'
+  },
+  'Type SP': {
     name: 'Type AV',
     description: '',
     type: 'private'
