@@ -414,8 +414,14 @@ const userId = uid && uid !== null ? `<a href="/user-dashboard.html?uid=${uid}" 
 documents.push(Object.assign(data, { status, userId, transaction_id, amount }))
 })
 current_documents = documents
-console.log(documents, 'documents')
+// documents.sort((a, b) => a.update_timestamp - b.update_timestamp).then(() => {
+//   console.log('sort success')
+// })
+// console.log(documents, 'documents...');
+
 dataTable = $('#claim-table').DataTable({
+retrieve: true,
+order: [[ 4, 'desc' ]],
 data: documents,
 columns: [
 { data: 'email' },
