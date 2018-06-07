@@ -991,13 +991,13 @@ function getClaims() {
             setDisable([$("#claim-"+id)[0]])
             $("#claim-"+id).text("Processing")
             $("#claim-"+id).addClass("processing").removeClass("avail").removeClass('claimError')
-            document.getElementById(`claim-${id}`).style.pointerEvents = 'none'
+            $('#claim-'+id).prop("disabled",true);
           } else if (data.state === 2 && data.claimed === true) {
             setDisable([$("#claim-"+id)[0]])
             $("#claim-"+id).text("Claimed")
             $("#claim-"+id).addClass("avail").removeClass("processing").removeClass('claimError')
             $("#claim-"+id).parent().parent().removeClass("stillAvail").addClass("stillClaimed")
-            document.getElementById(`claim-${id}`).style.pointerEvents = 'none'
+            $('#claim-'+id).prop("disabled",true);
             $("#list-claim-"+id+" .transactionId a").text(data.transaction_id)
             let stellarChainiUrl
             var domain = window.location.href
@@ -1016,6 +1016,7 @@ function getClaims() {
             setDisable([$("#claim-"+id)[0]])
             $("#claim-"+id).text("Error")
             $("#claim-"+id).addClass("claimError").removeClass("avail").removeClass('processing')
+            $('#claim-'+id).prop("disabled",true);
             if (localStorage[userData.uid+"seen_error"] === undefined) {
               $(".dialog-claim-error").addClass("show-dialog")
               localStorage[userData.uid+"seen_error"] = true
