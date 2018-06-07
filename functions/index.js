@@ -231,7 +231,7 @@ function generateClaimVerificationCode(user_id, claim_id, phoneNumber) {
   var http = require("https");
   var options = {
     method: "POST",
-    hostname: "xisth3qe4e.execute-api.ap-southeast-1.amazonaws.com",
+    hostname: "tm3swoarp5.execute-api.ap-southeast-1.amazonaws.com",
     port: null,
     path: "/production/sms",
     headers: {
@@ -289,7 +289,7 @@ function generatePhoneVerificationCode(phoneNumber) {
   var http = require("https");
   var options = {
     method: "POST",
-    hostname: "xisth3qe4e.execute-api.ap-southeast-1.amazonaws.com",
+    hostname: "tm3swoarp5.execute-api.ap-southeast-1.amazonaws.com",
     port: null,
     path: "/production/sms",
     headers: {
