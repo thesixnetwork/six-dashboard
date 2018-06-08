@@ -405,7 +405,7 @@ total_pending += 1
 let transaction_id = ''
 if (state === 2) {
 const { transaction_id: raw_transaction_id } = data
-transaction_id = `<a href="http://testnet.stellarchain.io/tx/${raw_transaction_id}" target="_blank">${raw_transaction_id}</a>`
+transaction_id = `<a href="https://stellarchain.io/tx/${raw_transaction_id}" target="_blank">${raw_transaction_id}</a>`
 }
 if (data.amount) {
 amount = data.amount.toLocaleString()
