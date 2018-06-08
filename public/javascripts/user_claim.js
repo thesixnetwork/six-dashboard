@@ -645,7 +645,7 @@ JSONToCSVConvertor(filteredUsers, "User Report", true)
 }
 
 $(document).ready(function() {
-document.getElementById('version').innerHTML = `version 1.1`
+document.getElementById('version').innerHTML = `version 1.1.1`
 $('#filter-status').change(e => {
 if (e.target.value !== '') {
 const target_status = parseInt(e.target.value)
