@@ -654,7 +654,7 @@ function buildListClaim(doc, id) {
       stellarChainUrl = 'http://testnet.stellarchain.io'
     } else if (domain.match('six-dashboard')) {
       stellarChainUrl = 'http://testnet.stellarchain.io'
-    } else if (domain.match('ico.six.network')) {
+    } else if (domain.match('ico.six.network') || domain.match('sixdashboard')) {
       stellarChainUrl = 'https://stellarchain.io'
     } else {
       stellarChainUrl = 'http://testnet.stellarchain.io'
@@ -746,7 +746,9 @@ const typeOrder = {
   'Type P2': 26,
   'Type P2 - THB': 27,
   'Type PL': 28,
-  'Type SS': 29
+  'Type SS': 29,
+  'Type RF': 30,
+  'Type SP': 31
 }
 
 const privateBonus = {
@@ -906,6 +908,16 @@ const privateType = {
     name: 'Type AV',
     description: '',
     type: 'private'
+  },
+  'Type RF': {
+    name: 'Type AV',
+    description: '',
+    type: 'private'
+  },
+  'Type SP': {
+    name: 'Type AV',
+    description: '',
+    type: 'private'
   }
 }
 
@@ -1000,7 +1012,7 @@ function getClaims() {
               stellarChainUrl = 'http://testnet.stellarchain.io'
             } else if (domain.match('six-dashboard')) {
               stellarChainUrl = 'http://testnet.stellarchain.io'
-            } else if (domain.match('ico.six.network')) {
+            } else if (domain.match('ico.six.network') || domain.match('sixdashboard')) {
               stellarChainUrl = 'https://stellarchain.io'
             } else {
               stellarChainUrl = 'http://testnet.stellarchain.io'
@@ -1042,7 +1054,7 @@ function getMyWalletBalance() {
   } else if (domain.match('six-dashboard')) {
     stellarUrl = 'https://horizon-testnet.stellar.org'
     StellarSdk.Network.useTestNetwork()
-  } else if (domain.match('ico.six.network')) {
+  } else if (domain.match('ico.six.network') || domain.match('sixdashboard')) {
     stellarUrl = 'https://horizon.stellar.org'
     StellarSdk.Network.usePublicNetwork()
   } else {
@@ -1237,7 +1249,7 @@ $(document).ready(function(){
     stellarUrl = 'https://horizon-testnet.stellar.org'
     StellarSdk.Network.useTestNetwork()
     issuerKey = "GBVX36SLDLLXCVMGFLKNQ5XB76Z4SIXCFKYHKMSJTLANXB6AH27LUKEP"
-  } else if (domain.match('ico.six.network')) {
+  } else if (domain.match('ico.six.network') || domain.match('sixdashboard')) {
     stellarUrl = 'https://horizon.stellar.org'
     StellarSdk.Network.usePublicNetwork()
     issuerKey = "GDMS6EECOH6MBMCP3FYRYEVRBIV3TQGLOFQIPVAITBRJUMTI6V7A2X6Z"
@@ -1579,7 +1591,7 @@ function checkTrustAccount() {
   } else if (domain.match('six-dashboard')) {
     stellarUrl = 'https://horizon-testnet.stellar.org'
     StellarSdk.Network.useTestNetwork()
-  } else if (domain.match('ico.six.network')) {
+  } else if (domain.match('ico.six.network') || domain.match('sixdashboard')) {
     stellarUrl = 'https://horizon.stellar.org'
     StellarSdk.Network.usePublicNetwork()
   } else {
@@ -2472,7 +2484,7 @@ function sendCodeToEmailClaim(id) {
   }
   let dom = document.getElementById("sendToEmailBtn2")
   setDisable([dom])
-  sentEmail = firebase.functions().httpsCallable('sendClaimverificationtoEmail')
+  sentEmail = firebase.functions().httpsCallable('sendClaimVerificationtoEmail')
   sentEmail({claim_id: id }).then(data => {
     $("#sendToEmailError2").removeClass("error")
     if ($("#sendToEmailError2").css("display") === "none") {

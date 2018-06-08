@@ -9,7 +9,7 @@ if (domain.match('localhost')) {
 } else if (domain.match('six-dashboard')) {
    appId = '213862799361066'
    pageId = '233986130671718'
-} else if (domain.match('ico.six.network')) {
+} else if (domain.match('ico.six.network') || domain.match('sixdashboard') ) {
    appId = '1182285935241952'
    pageId = '912541605588613'
 } else {

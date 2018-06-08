@@ -38,40 +38,205 @@ function sendClaimedEmail (event, fireStore) {
           if (data.claimed) totalClaim += data.amount
         })
         console.log(`send email ${email} of uid: ${uid}`)
-        return sendClaimUpdateEmail(email, currentAmount, totalClaim)
+        return sendClaimUpdateEmail(email, currentAmount, totalClaim, updateData.transaction_id)
       })
   }
   return Promise.resolve()
 }
 
-function sendClaimUpdateEmail (email, amount, total) {
+function sendClaimUpdateEmail (email, amount, total, tx_id) {
   const content = `
-<html lang="en" style="margin: 0; outline: none; padding: 0;">
-    <body>
-    <div style="font-family: &quot;Prompt&quot;, sans-serif;color: rgba(33, 33, 33, 1);margin: 0;">
-    <div className="section" style="font-family: &quot;Prompt&quot;, sans-serif;color: rgba(33, 33, 33, 1);position: relative;padding-bottom: 10px;height: 100%;z-index: 1">
-      <!-- <img className="top-header" src="https://firebasestorage.googleapis.com/v0/b/devson-f46f4.appspot.com/o/public%2Fheader.png?alt=media&token=9f32b7f1-6def-45f2-bf1a-2cea15326450"
-              alt=""> -->
-      <div className="card-content" style="font-family: &quot;Prompt&quot;, sans-serif;color: rgba(33, 33, 33, 1);padding: 5px;margin-top: -20px;transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);background: #FFF">
-        <div style="font-family: &quot;Prompt&quot;, sans-serif;color: rgba(33, 33, 33, 1);padding: 2%">
-          <!-- thai -->
-          <p style="margin-bottom: 10px;font-family: &quot;Prompt&quot;, sans-serif;color: rgba(33, 33, 33, 1);font-size: 17px">You successfully claimed the SIX token with the following details:</h2>
-            <br />
-            <p style="font-family: &quot;Prompt&quot;, sans-serif;color: rgba(33, 33, 33, 1);font-size: 14px"></p>Transaction ID (TX Hash): r23Hdk4j3k4oj4t3DFG2DFSD</p>
-          <p style="font-family: &quot;Prompt&quot;, sans-serif;color: rgba(33, 33, 33, 1);font-size: 14px"></p>Claim Amount: ${amount} SIX tokens</p>
-          <p style="font-family: &quot;Prompt&quot;, sans-serif;color: rgba(33, 33, 33, 1);font-size: 14px"></p>Your Total Balance: ${total} SIX tokens</p>
-          <p style="margin-bottom: 10px; margin-top: 10px;font-family: &quot;Prompt&quot;, sans-serif;color: rgba(33, 33, 33, 1);font-size: 14px"></p>Furthermore, you can review your transaction by logging to the system at:
-          <a href=" https://ico.six.network"> https://ico.six.network</a>
-          </p>
-          <p style=" margin-top: 10px;font-family: &quot;Prompt&quot;, sans-serif;color: rgba(33, 33, 33, 1);font-size: 14px"></p>Best regards,</p>
-          <p style="font-family: &quot;Prompt&quot;, sans-serif;color: rgba(33, 33, 33, 1);font-size: 14px"></p>SIX network team</p>
-        </div>
-      </div>
-    </div>
-  </div>
-    </body>
-</html>
-    `
+        <table bgcolor="#fdfdfd" class="m_-5711629866739327851body" style="box-sizing:border-box;border-spacing:0;width:100%;background-color:#fdfdfd;border-collapse:separate!important"
+          width="100%">
+        
+          <tbody>
+        
+            <tr>
+        
+              <td style="box-sizing:border-box;padding:0;font-family:'Open Sans','Helvetica Neue','Helvetica',Helvetica,Arial,sans-serif;font-size:16px;vertical-align:top"
+                valign="top">&nbsp;</td>
+        
+              <td class="m_-5711629866739327851container" style="box-sizing:border-box;padding:0;font-family:'Open Sans','Helvetica Neue','Helvetica',Helvetica,Arial,sans-serif;font-size:16px;vertical-align:top;display:block;width:600px;max-width:600px;margin:0 auto!important"
+                valign="top" width="600">
+        
+                <div class="m_-5711629866739327851content" style="box-sizing:border-box;display:block;max-width:600px;margin:0 auto;padding:10px">
+                  <div class="m_-5711629866739327851header" style="box-sizing:border-box;width:100%;margin-bottom:30px;margin-top:15px">
+        
+                    <table style="box-sizing:border-box;width:100%;border-spacing:0;border-collapse:separate!important" width="100%">
+        
+                      <tbody>
+        
+                        <tr>
+        
+                          <td align="left" class="m_-5711629866739327851align-left" style="box-sizing:border-box;padding:0;font-family:'Open Sans','Helvetica Neue','Helvetica',Helvetica,Arial,sans-serif;font-size:16px;vertical-align:top;text-align:left"
+                            valign="top">
+                            <span class="m_-5711629866739327851sg-image">
+                              <a href="https://sendgrid.com?utm_campaign=website&amp;utm_source=sendgrid.com&amp;utm_medium=email" style="box-sizing:border-box;color:#348eda;font-weight:400;text-decoration:none"
+                                target="_blank" data-saferedirecturl="https://www.google.com/url?hl=th&amp;q=https://sendgrid.com?utm_campaign%3Dwebsite%26utm_source%3Dsendgrid.com%26utm_medium%3Demail&amp;source=gmail&amp;ust=1528351184400000&amp;usg=AFQjCNF-tBWcvdsEZArFX4pYZ2Wl0TOKbQ">
+                                <img alt="SendGrid" height="60" src="https://firebasestorage.googleapis.com/v0/b/six-dashboard.appspot.com/o/public%2FScreen%20Shot%202561-06-06%20at%2013.25.20.png?alt=media&token=f746cd50-5c86-45b9-83e4-16c7d77195c6"
+                                  style="max-width:100%;border-style:none;width:123px;height:60px" width="123" class="CToWUd">
+                              </a>
+                            </span>
+                          </td>
+        
+                        </tr>
+        
+                      </tbody>
+        
+                    </table>
+        
+                  </div>
+        
+        
+        
+                  <div class="m_-5711629866739327851block" style="box-sizing:border-box;width:100%;margin-bottom:30px;background:#ffffff;border:1px solid #f0f0f0">
+        
+                    <table style="box-sizing:border-box;width:100%;border-spacing:0;border-collapse:separate!important" width="100%">
+        
+                      <tbody>
+        
+                        <tr>
+        
+                          <td class="m_-5711629866739327851wrapper" style="box-sizing:border-box;font-family:'Open Sans','Helvetica Neue','Helvetica',Helvetica,Arial,sans-serif;font-size:16px;vertical-align:top;padding:30px"
+                            valign="top">
+        
+                            <table style="box-sizing:border-box;width:100%;border-spacing:0;border-collapse:separate!important" width="100%">
+        
+                            <tbody>
+      
+                            <tr>
+    
+                              <td style="box-sizing:border-box;padding:0;font-family:'Open Sans','Helvetica Neue','Helvetica',Helvetica,Arial,sans-serif;font-size:16px;vertical-align:top"
+                                valign="top">
+                                <h3 style="margin:0;margin-bottom:30px;font-family:'Open Sans','Helvetica Neue','Helvetica',Helvetica,Arial,sans-serif;font-weight:300;line-height:1.5;font-size:24px;color:#294661!important">You successfully claimed the SIX token with the following details: </h3>
+                                <p style="margin:0;margin-bottom:20px;color:#294661;font-family:'Open Sans','Helvetica Neue','Helvetica',Helvetica,Arial,sans-serif;font-size:16px;font-weight:300">Transaction ID (TX Hash): ${tx_id}</p>
+                                <p style="margin:0;margin-bottom:20px;color:#294661;font-family:'Open Sans','Helvetica Neue','Helvetica',Helvetica,Arial,sans-serif;font-size:16px;font-weight:300">Claim Amount: ${amount} SIX tokens</p>
+                                <p style="margin:0;margin-bottom:20px;color:#294661;font-family:'Open Sans','Helvetica Neue','Helvetica',Helvetica,Arial,sans-serif;font-size:16px;font-weight:300">Your Total Balance: ${total} SIX tokens</p>
+                                <p style="margin:0;margin-bottom:20px;color:#294661;font-family:'Open Sans','Helvetica Neue','Helvetica',Helvetica,Arial,sans-serif;font-size:16px;font-weight:300">Furthermore, you can review your transaction by logging to the system at:
+      <a href=" https://ico.six.network"> https://ico.six.network</a></p>
+                                <p style="margin:0;margin-bottom:10px;color:#294661;font-family:'Open Sans','Helvetica Neue','Helvetica',Helvetica,Arial,sans-serif;font-size:16px;font-weight:300">Best regards,</p>
+                                <p style="margin:0;margin-bottom:20px;color:#294661;font-family:'Open Sans','Helvetica Neue','Helvetica',Helvetica,Arial,sans-serif;font-size:16px;font-weight:300">SIX network team</p>
+                              </td>
+    
+                            </tr>
+    
+                            <tr>
+    
+                              <td style="box-sizing:border-box;padding:0;font-family:'Open Sans','Helvetica Neue','Helvetica',Helvetica,Arial,sans-serif;font-size:16px;vertical-align:top"
+                                valign="top">
+    
+                                <table cellpadding="0" cellspacing="0" class="m_-5711629866739327851btn m_-5711629866739327851btn-primary" style="box-sizing:border-box;border-spacing:0;width:100%;border-collapse:separate!important"
+                                  width="100%">
+    
+                                  <tbody>
+    
+                                    <tr>
+    
+                                      <td align="center" style="box-sizing:border-box;padding:0;font-family:'Open Sans','Helvetica Neue','Helvetica',Helvetica,Arial,sans-serif;font-size:16px;vertical-align:top;padding-bottom:15px"
+                                        valign="top">
+    
+                                        <table cellpadding="0" cellspacing="0" style="box-sizing:border-box;border-spacing:0;width:auto;border-collapse:separate!important">
+    
+                                          <tbody>
+    
+                                            <tr>
+    
+                                              <td align="center" bgcolor="#348eda" style="box-sizing:border-box;padding:0;font-family:'Open Sans','Helvetica Neue','Helvetica',Helvetica,Arial,sans-serif;font-size:16px;vertical-align:top;background-color:#348eda;border-radius:2px;text-align:center"
+                                                valign="top">
+                                              </td>
+    
+                                            </tr>
+    
+                                          </tbody>
+    
+                                        </table>
+    
+                                      </td>
+    
+                                    </tr>
+    
+                                  </tbody>
+    
+                                </table>
+    
+                              </td>
+    
+                            </tr>
+    
+                          </tbody>
+        
+                            </table>
+        
+                          </td>
+        
+                        </tr>
+        
+                      </tbody>
+        
+                    </table>
+        
+                  </div>
+        
+        
+        
+                  <div class="m_-5711629866739327851footer" style="box-sizing:border-box;clear:both;width: 100% !important;">
+        
+                    <table style="box-sizing:border-box;width:100%;border-spacing:0;font-size:12px;border-collapse:separate!important" width="100%">
+        
+                      <tbody style="width: 100% !important;">
+        
+                        <tr style="font-size:12px" style="width: 100% !important;">
+        
+                          <td align="center" class="m_-5711629866739327851align-center" style="width: 100% !important;box-sizing:border-box;font-family:'Open Sans','Helvetica Neue','Helvetica',Helvetica,Arial,sans-serif;vertical-align:top;font-size:12px;text-align:center;padding:20px 0"
+                            valign="top">
+                            <span class="m_-5711629866739327851sg-image" style="float:none;display:block;text-align:center">
+                              <a href="https://sendgrid.com?utm_campaign=website&amp;utm_source=sendgrid.com&amp;utm_medium=email" style="box-sizing:border-box;color:#348eda;font-weight:400;text-decoration:none;font-size:12px"
+                                target="_blank" data-saferedirecturl="https://www.google.com/url?hl=th&amp;q=https://sendgrid.com?utm_campaign%3Dwebsite%26utm_source%3Dsendgrid.com%26utm_medium%3Demail&amp;source=gmail&amp;ust=1528351184401000&amp;usg=AFQjCNGOAsoVqskiqeWIVPGSEobWbRw45w">
+                                <img alt="SendGrid" height="40" src="https://firebasestorage.googleapis.com/v0/b/six-dashboard.appspot.com/o/public%2FScreen%20Shot%202561-06-06%20at%2013.25.20.png?alt=media&token=f746cd50-5c86-45b9-83e4-16c7d77195c6"
+                                  style="max-width:100%;border-style:none;font-size:12px;width:89px;height:40px" width="89" class="CToWUd">
+                              </a>
+                            </span>
+        
+                            <p style="margin-top: 10px; margin-bottom: 10px;color:#294661;font-family:'Open Sans','Helvetica Neue','Helvetica',Helvetica,Arial,sans-serif;font-weight:300;font-size:12px;margin-bottom:5px">©
+                              <span class="il">2018 SIX Network PTE. LTD.</span>
+                            </p>
+        
+        
+        
+                            <p style="margin:0;color:#294661;font-family:'Open Sans','Helvetica Neue','Helvetica',Helvetica,Arial,sans-serif;font-weight:300;font-size:12px;margin-bottom:5px">
+                              <a href=" https://medium.com/six-network" style="box-sizing:border-box;color:#348eda;font-weight:400;text-decoration:none;font-size:12px;padding:0 5px"
+                                target="_blank" data-saferedirecturl="https://www.google.com/url?hl=th&amp;q= https://medium.com/six-network">Medium</a>
+                              <a href=" https://t.me/SIXNetwork" style="box-sizing:border-box;color:#348eda;font-weight:400;text-decoration:none;font-size:12px;padding:0 5px"
+                                target="_blank" data-saferedirecturl="https://www.google.com/url?hl=th&amp;q=https://t.me/SIXNetwork">Telegram</a>
+                              <a href=" https://twitter.com/theSIXnetwork" style="box-sizing:border-box;color:#348eda;font-weight:400;text-decoration:none;font-size:12px;padding:0 5px"
+                                target="_blank" data-saferedirecturl="https://www.google.com/url?hl=th&amp;q=https://twitter.com/theSIXnetwork">Twitter</a>
+                              <a href="https://www.facebook.com/thesixnetwork" style="box-sizing:border-box;color:#348eda;font-weight:400;text-decoration:none;font-size:12px;padding:0 5px"
+                                target="_blank" data-saferedirecturl="https://www.google.com/url?hl=th&amp;q=https://www.facebook.com/thesixnetwork">Facebook</a>
+                            </p>
+        
+                          </td>
+        
+                        </tr>
+        
+                      </tbody>
+        
+                    </table>
+        
+                  </div>
+        
+                </div>
+        
+              </td>
+        
+              <td style="box-sizing:border-box;padding:0;font-family:'Open Sans','Helvetica Neue','Helvetica',Helvetica,Arial,sans-serif;font-size:16px;vertical-align:top"
+                valign="top">&nbsp;</td>
+        
+            </tr>
+        
+          </tbody>
+        
+        </table>
+  `
   const personalizations = [{
     to: [{ email }],
     subject: '[SIX network] Transaction completed'
