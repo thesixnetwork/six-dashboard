@@ -351,9 +351,9 @@ let struct = { email: '', transaction_id: '', status: '', amount: '', update_tim
 let claim_data = raw_doc.data()
 claim_data = Object.assign(struct, claim_data)
 
-if (claim_data.update_timestamp && claim_data.update_timestamp !== '') {
-claim_data.update_timestamp = `${moment(parseInt(claim_data.update_timestamp)).format('DD/MM/YYYY (HH:mm:ss)')}`
-}
+// if (claim_data.update_timestamp && claim_data.update_timestamp !== '') {
+// claim_data.update_timestamp = `${moment(parseInt(claim_data.update_timestamp)).format('DD/MM/YYYY (HH:mm:ss)')}`
+// }
 const { uid } = claim_data
 return firebase.firestore().collection('users').doc(uid).get().then(res => {
 const data = res.data()
@@ -405,7 +405,7 @@ total_pending += 1
 let transaction_id = ''
 if (state === 2) {
 const { transaction_id: raw_transaction_id } = data
-transaction_id = `<a href="http://testnet.stellarchain.io/tx/${raw_transaction_id}" target="_blank">${raw_transaction_id}</a>`
+transaction_id = `<a href="https://stellarchain.io/tx/${raw_transaction_id}" target="_blank">${raw_transaction_id}</a>`
 }
 if (data.amount) {
 amount = data.amount.toLocaleString()
@@ -420,6 +420,16 @@ current_documents = documents
 // console.log(documents, 'documents...');
 
 dataTable = $('#claim-table').DataTable({
+columnDefs: [{
+  "targets": 4,
+  render: (data) => {
+    if (data && data !== null && data !== '') {
+      return moment(parseInt(data)).format('DD/MM/YYYY (HH:mm:ss)')
+    } else {
+      return ''
+    }
+  }
+}],
 retrieve: true,
 order: [[ 4, 'desc' ]],
 data: documents,
@@ -635,7 +645,7 @@ JSONToCSVConvertor(filteredUsers, "User Report", true)
 }
 
 $(document).ready(function() {
-
+document.getElementById('version').innerHTML = `version 1.1.1`
 $('#filter-status').change(e => {
 if (e.target.value !== '') {
 const target_status = parseInt(e.target.value)
