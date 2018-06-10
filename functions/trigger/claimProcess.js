@@ -1,15 +1,87 @@
 const axios = require('axios')
 const path = '/users_claim/{uid}/claim_period/{claim_id}'
+const lockPoolpath = '/lock_pool/process'
 const SENDGRID_API_KEY = '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'
+const line = require('@line/bot-sdk')
+const pool = require('../claim-service').poolUtilities
 
 module.exports = function (functions, fireStore) {
   const events = functions.firestore.document(path)
+  const lockPoolEvents = functions.firestore.document(lockPoolpath)
   return [
     {
       'name': 'sendClaimedEmail',
       'module': events.onUpdate(event => sendClaimedEmail(event, fireStore))
+    },
+    {
+      'name': 'monitorClaimError',
+      'module': events.onUpdate(event => monitorClaimError(event, fireStore))
+    },
+    {
+      'name': 'monitorLockPool',
+      'module': lockPoolEvents.onUpdate(event => monitorLockPool(event, fireStore))
     }
   ]
+}
+
+const lineConfig = {
+  channelAccessToken: 'C4LsZsncr1GqIG+sq3vpoH/crHJCc+EvtGptC0zHSmcu2I1RBlspnzMGhBd81G7wHIrbVHiG+JxCROy/3tpMq5wroHMfXjePXGiRsmMZRICs8DEswKOEfxhsV6IwShOohMY5JpeFEfSui+Z50RZBngdB04t89/1O/w1cDnyilFU=',
+  channelSecret: '2d19ced6a3b7bf8fe8945591da1ab3b7',
+  groupId: 'C3e196a4b31d7dc3de626303259335ded'
+}
+const client = new line.Client(lineConfig)
+const timeoutAlert = 300000
+const sendLineAlert = (text) => {
+  client.pushMessage(lineConfig.groupId, {
+    type: 'text',
+    text
+  })
+}
+let timer
+
+function monitorLockPool (event, fireStore) {
+  console.log('monitorLockPool')
+  const previousLockPool = event.data.previous.data()
+  const currentLockPool = event.data.data()
+  if (previousLockPool.is_lock === false && currentLockPool.is_lock === true) {
+    const uid = currentLockPool.lock_id.split('_')[0]
+    const claimId = currentLockPool.lock_id.split('_')[1]
+    const lockTime = currentLockPool.lock_time
+    timer = setTimeout(() => {
+      sendLineAlert(
+        `process stuck more than ${timeoutAlert / 60000} min. \n uid: ${uid} \n claim_id: ${claimId} \n lock_time: ${lockTime}`
+      )
+      pool
+        .deleteClaimIdInPool({ uid, claim_id: claimId })
+        .then(pool.releasePool)
+        .then(pool.processNewClaimPool)
+        .then(fireStore
+          .collection('stuck_pool')
+          .doc()
+          .set({uid, claim_id: claimId, lock_time: lockTime})
+        )
+    }, timeoutAlert)
+  } else if (previousLockPool.is_lock === true && currentLockPool.is_lock === false) {
+    clearTimeout(timer)
+  }
+  return Promise.resolve()
+}
+
+function monitorClaimError (event, fireStore) {
+  const previousUserData = event.data.previous.data()
+  const updateData = event.data.data()
+  if (updateData.state === 3 && previousUserData.state === 1) {
+    const uid = event.params.uid
+    const claimId = event.params.claim_id
+    sendLineAlert(
+      `Claim Error! 
+      ${updateData.error_message}
+
+      uid: ${uid}
+      claim_id: ${claimId}
+      `)
+  }
+  return Promise.Resolve()
 }
 
 function sendClaimedEmail (event, fireStore) {

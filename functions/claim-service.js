@@ -516,6 +516,12 @@ const updateClaim = ({ uid, claim, claim_id: claimId, user, tx }) => {
     })
 }
 
+const poolUtilities = {
+  releasePool,
+  deleteClaimIdInPool,
+  processNewClaimPool
+}
+
 module.exports = {
   handleCreateStellarAccount,
   handleClaimSix,
@@ -523,7 +529,8 @@ module.exports = {
   findUser,
   findClaim,
   sendSix,
-  updateClaim
+  updateClaim,
+  poolUtilities
 }
 
 const checkBalanceForTrust = (distributorAccount) => {
