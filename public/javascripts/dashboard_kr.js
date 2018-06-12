@@ -746,7 +746,9 @@ const typeOrder = {
   'Type P2': 26,
   'Type P2 - THB': 27,
   'Type PL': 28,
-  'Type SS': 29
+  'Type SS': 29,
+  'Type RF': 30,
+  'Type SP': 31
 }
 
 const privateBonus = {
@@ -903,6 +905,16 @@ const privateType = {
     type: 'private'
   },
   'Type SS': {
+    name: 'Type AV',
+    description: '',
+    type: 'private'
+  },
+  'Type RF': {
+    name: 'Type AV',
+    description: '',
+    type: 'private'
+  },
+  'Type SP': {
     name: 'Type AV',
     description: '',
     type: 'private'
@@ -2472,7 +2484,7 @@ function sendCodeToEmailClaim(id) {
   }
   let dom = document.getElementById("sendToEmailBtn2")
   setDisable([dom])
-  sentEmail = firebase.functions().httpsCallable('sendClaimverificationtoEmail')
+  sentEmail = firebase.functions().httpsCallable('sendClaimVerificationtoEmail')
   sentEmail({claim_id: id }).then(data => {
     $("#sendToEmailError2").removeClass("error")
     if ($("#sendToEmailError2").css("display") === "none") {
