@@ -74,14 +74,14 @@ function monitorClaimError (event, fireStore) {
     const uid = event.params.uid
     const claimId = event.params.claim_id
     sendLineAlert(
-      `Claim Error! 
+      `Claim Error!
       ${updateData.error_message}
 
       uid: ${uid}
       claim_id: ${claimId}
       `)
   }
-  return Promise.Resolve()
+  return Promise.resolve()
 }
 
 function sendClaimedEmail (event, fireStore) {
@@ -120,26 +120,26 @@ function sendClaimUpdateEmail (email, amount, total, tx_id) {
   const content = `
         <table bgcolor="#fdfdfd" class="m_-5711629866739327851body" style="box-sizing:border-box;border-spacing:0;width:100%;background-color:#fdfdfd;border-collapse:separate!important"
           width="100%">
-        
+
           <tbody>
-        
+
             <tr>
-        
+
               <td style="box-sizing:border-box;padding:0;font-family:'Open Sans','Helvetica Neue','Helvetica',Helvetica,Arial,sans-serif;font-size:16px;vertical-align:top"
                 valign="top">&nbsp;</td>
-        
+
               <td class="m_-5711629866739327851container" style="box-sizing:border-box;padding:0;font-family:'Open Sans','Helvetica Neue','Helvetica',Helvetica,Arial,sans-serif;font-size:16px;vertical-align:top;display:block;width:600px;max-width:600px;margin:0 auto!important"
                 valign="top" width="600">
-        
+
                 <div class="m_-5711629866739327851content" style="box-sizing:border-box;display:block;max-width:600px;margin:0 auto;padding:10px">
                   <div class="m_-5711629866739327851header" style="box-sizing:border-box;width:100%;margin-bottom:30px;margin-top:15px">
-        
+
                     <table style="box-sizing:border-box;width:100%;border-spacing:0;border-collapse:separate!important" width="100%">
-        
+
                       <tbody>
-        
+
                         <tr>
-        
+
                           <td align="left" class="m_-5711629866739327851align-left" style="box-sizing:border-box;padding:0;font-family:'Open Sans','Helvetica Neue','Helvetica',Helvetica,Arial,sans-serif;font-size:16px;vertical-align:top;text-align:left"
                             valign="top">
                             <span class="m_-5711629866739327851sg-image">
@@ -150,34 +150,34 @@ function sendClaimUpdateEmail (email, amount, total, tx_id) {
                               </a>
                             </span>
                           </td>
-        
+
                         </tr>
-        
+
                       </tbody>
-        
+
                     </table>
-        
+
                   </div>
-        
-        
-        
+
+
+
                   <div class="m_-5711629866739327851block" style="box-sizing:border-box;width:100%;margin-bottom:30px;background:#ffffff;border:1px solid #f0f0f0">
-        
+
                     <table style="box-sizing:border-box;width:100%;border-spacing:0;border-collapse:separate!important" width="100%">
-        
+
                       <tbody>
-        
+
                         <tr>
-        
+
                           <td class="m_-5711629866739327851wrapper" style="box-sizing:border-box;font-family:'Open Sans','Helvetica Neue','Helvetica',Helvetica,Arial,sans-serif;font-size:16px;vertical-align:top;padding:30px"
                             valign="top">
-        
+
                             <table style="box-sizing:border-box;width:100%;border-spacing:0;border-collapse:separate!important" width="100%">
-        
+
                             <tbody>
-      
+
                             <tr>
-    
+
                               <td style="box-sizing:border-box;padding:0;font-family:'Open Sans','Helvetica Neue','Helvetica',Helvetica,Arial,sans-serif;font-size:16px;vertical-align:top"
                                 valign="top">
                                 <h3 style="margin:0;margin-bottom:30px;font-family:'Open Sans','Helvetica Neue','Helvetica',Helvetica,Arial,sans-serif;font-weight:300;line-height:1.5;font-size:24px;color:#294661!important">You successfully claimed the SIX token with the following details: </h3>
@@ -189,76 +189,76 @@ function sendClaimUpdateEmail (email, amount, total, tx_id) {
                                 <p style="margin:0;margin-bottom:10px;color:#294661;font-family:'Open Sans','Helvetica Neue','Helvetica',Helvetica,Arial,sans-serif;font-size:16px;font-weight:300">Best regards,</p>
                                 <p style="margin:0;margin-bottom:20px;color:#294661;font-family:'Open Sans','Helvetica Neue','Helvetica',Helvetica,Arial,sans-serif;font-size:16px;font-weight:300">SIX network team</p>
                               </td>
-    
+
                             </tr>
-    
+
                             <tr>
-    
+
                               <td style="box-sizing:border-box;padding:0;font-family:'Open Sans','Helvetica Neue','Helvetica',Helvetica,Arial,sans-serif;font-size:16px;vertical-align:top"
                                 valign="top">
-    
+
                                 <table cellpadding="0" cellspacing="0" class="m_-5711629866739327851btn m_-5711629866739327851btn-primary" style="box-sizing:border-box;border-spacing:0;width:100%;border-collapse:separate!important"
                                   width="100%">
-    
+
                                   <tbody>
-    
+
                                     <tr>
-    
+
                                       <td align="center" style="box-sizing:border-box;padding:0;font-family:'Open Sans','Helvetica Neue','Helvetica',Helvetica,Arial,sans-serif;font-size:16px;vertical-align:top;padding-bottom:15px"
                                         valign="top">
-    
+
                                         <table cellpadding="0" cellspacing="0" style="box-sizing:border-box;border-spacing:0;width:auto;border-collapse:separate!important">
-    
+
                                           <tbody>
-    
+
                                             <tr>
-    
+
                                               <td align="center" bgcolor="#348eda" style="box-sizing:border-box;padding:0;font-family:'Open Sans','Helvetica Neue','Helvetica',Helvetica,Arial,sans-serif;font-size:16px;vertical-align:top;background-color:#348eda;border-radius:2px;text-align:center"
                                                 valign="top">
                                               </td>
-    
+
                                             </tr>
-    
+
                                           </tbody>
-    
+
                                         </table>
-    
+
                                       </td>
-    
+
                                     </tr>
-    
+
                                   </tbody>
-    
+
                                 </table>
-    
+
                               </td>
-    
+
                             </tr>
-    
+
                           </tbody>
-        
+
                             </table>
-        
+
                           </td>
-        
+
                         </tr>
-        
+
                       </tbody>
-        
+
                     </table>
-        
+
                   </div>
-        
-        
-        
+
+
+
                   <div class="m_-5711629866739327851footer" style="box-sizing:border-box;clear:both;width: 100% !important;">
-        
+
                     <table style="box-sizing:border-box;width:100%;border-spacing:0;font-size:12px;border-collapse:separate!important" width="100%">
-        
+
                       <tbody style="width: 100% !important;">
-        
+
                         <tr style="font-size:12px" style="width: 100% !important;">
-        
+
                           <td align="center" class="m_-5711629866739327851align-center" style="width: 100% !important;box-sizing:border-box;font-family:'Open Sans','Helvetica Neue','Helvetica',Helvetica,Arial,sans-serif;vertical-align:top;font-size:12px;text-align:center;padding:20px 0"
                             valign="top">
                             <span class="m_-5711629866739327851sg-image" style="float:none;display:block;text-align:center">
@@ -268,13 +268,13 @@ function sendClaimUpdateEmail (email, amount, total, tx_id) {
                                   style="max-width:100%;border-style:none;font-size:12px;width:89px;height:40px" width="89" class="CToWUd">
                               </a>
                             </span>
-        
+
                             <p style="margin-top: 10px; margin-bottom: 10px;color:#294661;font-family:'Open Sans','Helvetica Neue','Helvetica',Helvetica,Arial,sans-serif;font-weight:300;font-size:12px;margin-bottom:5px">©
                               <span class="il">2018 SIX Network PTE. LTD.</span>
                             </p>
-        
-        
-        
+
+
+
                             <p style="margin:0;color:#294661;font-family:'Open Sans','Helvetica Neue','Helvetica',Helvetica,Arial,sans-serif;font-weight:300;font-size:12px;margin-bottom:5px">
                               <a href=" https://medium.com/six-network" style="box-sizing:border-box;color:#348eda;font-weight:400;text-decoration:none;font-size:12px;padding:0 5px"
                                 target="_blank" data-saferedirecturl="https://www.google.com/url?hl=th&amp;q= https://medium.com/six-network">Medium</a>
@@ -285,28 +285,28 @@ function sendClaimUpdateEmail (email, amount, total, tx_id) {
                               <a href="https://www.facebook.com/thesixnetwork" style="box-sizing:border-box;color:#348eda;font-weight:400;text-decoration:none;font-size:12px;padding:0 5px"
                                 target="_blank" data-saferedirecturl="https://www.google.com/url?hl=th&amp;q=https://www.facebook.com/thesixnetwork">Facebook</a>
                             </p>
-        
+
                           </td>
-        
+
                         </tr>
-        
+
                       </tbody>
-        
+
                     </table>
-        
+
                   </div>
-        
+
                 </div>
-        
+
               </td>
-        
+
               <td style="box-sizing:border-box;padding:0;font-family:'Open Sans','Helvetica Neue','Helvetica',Helvetica,Arial,sans-serif;font-size:16px;vertical-align:top"
                 valign="top">&nbsp;</td>
-        
+
             </tr>
-        
+
           </tbody>
-        
+
         </table>
   `
   const personalizations = [{
