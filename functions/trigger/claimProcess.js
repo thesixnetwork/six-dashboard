@@ -74,14 +74,14 @@ function monitorClaimError (event, fireStore) {
     const uid = event.params.uid
     const claimId = event.params.claim_id
     sendLineAlert(
-      `Claim Error! 
+      `Claim Error!
       ${updateData.error_message}
 
       uid: ${uid}
       claim_id: ${claimId}
       `)
   }
-  return Promise.Resolve()
+  return Promise.resolve()
 }
 
 function sendClaimedEmail (event, fireStore) {
