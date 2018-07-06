@@ -2501,3 +2501,9 @@ function sendCodeToEmailClaim(id) {
     setEnable([dom])
   })
 }
+
+function showWhatNext() {
+  $(".dialog-whats-next").addClass("show-dialog")
+  localStorage[userData.uid+"seen_whats_next"] = true
+}
+
