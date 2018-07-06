@@ -2506,3 +2506,10 @@ function showWhatNext() {
   $(".dialog-whats-next").addClass("show-dialog")
   localStorage[userData.uid+"seen_whats_next"] = true
 }
+
+function backToWalletSelection() {
+  $("#walletSelectBox").css("display", "block")
+  $("#divClaimBoxOld").css("display", "none")
+  $("#divClaimBoxNew").css("display", "none")
+  $("#divClaimBoxLedger").css("display", "none")
+}
