@@ -2002,3 +2002,16 @@ exports.getPrivateUsers = functions.https.onRequest((request, response) => {
     })
   }
 })
+
+exports.processNewClaimPool = functions.https.onRequest((request, response) => {
+  cors(request, response, () => { })
+  const { password } = request.query
+  if (password === 'this should not occur nonono') {
+    claimService.poolUtilities.processNewClaimPool()
+    response.send('ok')
+  } else {
+    response.send({
+      error: 'Password Incorrect.'
+    })
+  }
+})
