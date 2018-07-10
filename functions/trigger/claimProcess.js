@@ -1,6 +1,5 @@
 const axios = require('axios')
 const path = '/users_claim/{uid}/claim_period/{claim_id}'
-const lockPoolpath = '/lock_pool/process'
 const SENDGRID_API_KEY = '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'
 const line = require('@line/bot-sdk')
 const pool = require('../claim-service').poolUtilities
@@ -17,8 +16,8 @@ module.exports = function (functions, fireStore) {
       'module': events.onUpdate(event => monitorClaimError(event, fireStore))
     },
     {
-      'name': 'monitorIntervalLockPool',
-      'module': functions.pubsub.topic('monitorIntervalLockPool').onPublish(event => monitorLockPool(event, fireStore))
+      'name': 'monitorLockPool',
+      'module': functions.pubsub.topic('monitorLockPool').onPublish(event => monitorLockPool(event, fireStore))
     }
   ]
 }
@@ -39,9 +38,11 @@ const sendLineAlert = (text) => {
 
 function monitorLockPool (event, fireStore) {
   return fireStore
-    .collection(lockPoolpath)
+    .collection('lock_pool')
+    .doc('process')
     .get()
-    .then(pool => {
+    .then(snapshot => {
+      const pool = snapshot.data()
       if (pool.is_lock === false) {
         return Promise.resolve()
       }

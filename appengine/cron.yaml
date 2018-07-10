@@ -18,5 +18,5 @@ cron:
   url: /publish/check-kyc-astemis
   schedule: every 30 minutes
 - description: Push a "tick" onto pubsub every minute
-  url: /publish/monitorIntervalLockPool
+  url: /publish/monitorLockPool
   schedule: every 1 minutes from 00:00 to 23:59
