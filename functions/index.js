@@ -1,28 +1,30 @@
-const admin = require("firebase-admin");
+const admin = require('firebase-admin')
 const StellarSdk = require('stellar-sdk')
-const functions = require("firebase-functions");
-const request = require("request-promise");
-const moment = require("moment-timezone");
-const nodemailer = require("nodemailer");
-const cors = require("cors")({ origin: true });
-const regeneratorRuntime = require("regenerator-runtime");
-const sgTransport = require("nodemailer-sendgrid-transport");
+const functions = require('firebase-functions')
+const request = require('request-promise')
+const moment = require('moment-timezone')
+const nodemailer = require('nodemailer')
+const cors = require('cors')({ origin: true })
+const regeneratorRuntime = require('regenerator-runtime')
+const sgTransport = require('nodemailer-sendgrid-transport')
 const axios = require('axios')
 
-admin.initializeApp(functions.config().firebase);
+admin.initializeApp(functions.config().firebase)
+const fireStore = admin.firestore()
 
-const EthereumService = require("./service-ethereum");
-const stellarService = require("./stellar-service");
-const claimService= require('./claim-service')
+exports.functions = functions
+exports.fireStore = fireStore
+
+const EthereumService = require('./service-ethereum')
+const stellarService = require('./stellar-service')
+const claimService = require('./claim-service')
 const activecampaign_subscriber = require('./activecampaign_subscriber')
 
 const handleCreateStellarAccount = claimService.handleCreateStellarAccount
 const handleClaimSix = claimService.handleClaimSix
 const claimSixByCreatePool = claimService.claimSixByCreatePool
 
-const fireStore = admin.firestore();
-
-require("./initialFireStoreData")(fireStore);
+require('./initialFireStoreData')(fireStore)
 
 const SENDGRID_API_KEY = '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'
 
@@ -30,52 +32,51 @@ const sgOptions = {
   auth: {
     api_key: SENDGRID_API_KEY
   }
-};
-
-const mailTransport = nodemailer.createTransport(sgTransport(sgOptions));
-
-const triggers = require("./trigger")(admin, functions, fireStore)
-for (let trigger of triggers) {
-  exports[trigger.name] = trigger.module;
 }
 
-const userModels = require("./model/user")(functions, fireStore)
+const mailTransport = nodemailer.createTransport(sgTransport(sgOptions))
+
+const triggers = require('./trigger')(admin, functions, fireStore)
+for (let trigger of triggers) {
+  exports[trigger.name] = trigger.module
+}
+
+const userModels = require('./model/user')(functions, fireStore)
 for (let trigger of userModels) {
-  exports[trigger.name] = trigger.module;
+  exports[trigger.name] = trigger.module
 }
 
 const getBasePriceURI = coin =>
-  `https://min-api.cryptocompare.com/data/price?fsym=${coin}&tsyms=USD`;
+  `https://min-api.cryptocompare.com/data/price?fsym=${coin}&tsyms=USD`
 
 exports.incrementTotalAsset = functions.firestore
-  .document("/purchase_txs/{txId}")
+  .document('/purchase_txs/{txId}')
   .onCreate(event => {
-    const data = event.data.data();
+    const data = event.data.data()
     console.log(
-      "Create Transaction:",
+      'Create Transaction:',
       event.params.txId,
       data.type,
       data.native_amount
-    );
-    const assetCol = fireStore.collection("total_asset");
+    )
+    const assetCol = fireStore.collection('total_asset')
     return fireStore.runTransaction(tx =>
       Promise.all(
         [
-          { type: data.type, key: "native_amount" },
-          { type: "usd", key: "total_usd_price" },
-          { type: "six", key: "six_amount" }
+          { type: data.type, key: 'native_amount' },
+          { type: 'usd', key: 'total_usd_price' },
+          { type: 'six', key: 'six_amount' }
         ].map(asset => {
-          const ref = assetCol.doc(asset.type);
+          const ref = assetCol.doc(asset.type)
           return tx
             .get(ref)
             .then(assetDoc =>
               tx.update(ref, { total: assetDoc.data().total + data[asset.key] })
-            );
+            )
         })
       )
-    );
-  });
-
+    )
+  })
 
 const issuerKey = StellarSdk.Keypair.fromSecret(
   functions.config().xlm.issuer_low_secret
@@ -87,11 +88,11 @@ const distKey = StellarSdk.Keypair.fromSecret(
 const secondaryClaimUrl = functions.config().secondary_signer.url + '/setPublicKey'
 
 exports.claimOTPSubmit = functions.https.onCall((data, context) => {
-  let ref = admin.firestore().collection("users_claim");
-  let claimId = String(data.claim_id);
-  let refCode = data.ref_code;
-  let code = data.code;
-  const uid = context.auth.uid;
+  let ref = admin.firestore().collection('users_claim')
+  let claimId = String(data.claim_id)
+  let refCode = data.ref_code
+  let code = data.code
+  const uid = context.auth.uid
   return ref
     .doc(uid)
     .collection('claim_period')
@@ -102,14 +103,13 @@ exports.claimOTPSubmit = functions.https.onCall((data, context) => {
         if (doc.data().claimed === true) {
           return {
             success: false,
-            error_message: "Claimed"
-          };
+            error_message: 'Claimed'
+          }
         } else {
           if (
             doc.data().valid_until > Math.round(new Date().getTime() / 1000)
           ) {
             if (doc.data().ref_code === refCode && doc.data().code === code) {
-
               if (!issuerKey || !distKey) {
                 return {
                   success: false,
@@ -125,38 +125,37 @@ exports.claimOTPSubmit = functions.https.onCall((data, context) => {
               }
 
               return claimSixByCreatePool(uid, claimId)
-
             } else {
               return {
                 success: false,
-                error_message: "Invalid verification code"
-              };
+                error_message: 'Invalid verification code'
+              }
             }
           } else {
             return {
               success: false,
-              error_message: "Verification session expired"
-            };
+              error_message: 'Verification session expired'
+            }
           }
         }
       } else {
         return {
           success: false,
-          error_message: "Unexpected error, please try again"
-        };
+          error_message: 'Unexpected error, please try again'
+        }
       }
     })
     .catch(err => {
-      console.log(err);
-      return { success: false, error_message: err.message };
-    });
+      console.log(err)
+      return { success: false, error_message: err.message }
+    })
 })
 
 exports.claimVerificationRequest = functions.https.onCall((data, context) => {
-  let ref = admin.firestore().collection("users_claim");
-  let userref = admin.firestore().collection("users");
-  let user_id = context.auth.uid;
-  let claim_id = data.claim_id;
+  let ref = admin.firestore().collection('users_claim')
+  let userref = admin.firestore().collection('users')
+  let user_id = context.auth.uid
+  let claim_id = data.claim_id
   return userref
     .doc(user_id)
     .get()
@@ -164,245 +163,245 @@ exports.claimVerificationRequest = functions.https.onCall((data, context) => {
       return doc.data().phone_number
     }).then(phone_number => {
       return ref
-      .doc(user_id)
-      .collection('claim_period')
-      .doc(String(claim_id))
-      .get()
-      .then(doc => {
-        if (doc.exists) {
-          if (doc.data().claimed === true) {
-            return {
-              success: false,
-              error_message: "Claimed"
-            };
-          } else {
-            return generateClaimVerificationCode(user_id, claim_id, phone_number)
-              .then(data => {
-                if (data.success === true) {
-                  let refCode = data.refCode;
-                  let validUntil = data.validUntil;
-                  return {
-                    success: true,
-                    ref_code: refCode,
-                    valid_until: validUntil,
-                    phone_number: phone_number
-                  };
-                } else {
+        .doc(user_id)
+        .collection('claim_period')
+        .doc(String(claim_id))
+        .get()
+        .then(doc => {
+          if (doc.exists) {
+            if (doc.data().claimed === true) {
+              return {
+                success: false,
+                error_message: 'Claimed'
+              }
+            } else {
+              return generateClaimVerificationCode(user_id, claim_id, phone_number)
+                .then(data => {
+                  if (data.success === true) {
+                    let refCode = data.refCode
+                    let validUntil = data.validUntil
+                    return {
+                      success: true,
+                      ref_code: refCode,
+                      valid_until: validUntil,
+                      phone_number: phone_number
+                    }
+                  } else {
+                    return {
+                      success: false,
+                      error_message: 'Unexpected error, please try again'
+                    }
+                  }
+                })
+                .catch(() => {
                   return {
                     success: false,
-                    error_message: "Unexpected error, please try again"
-                  };
-                }
-              })
-              .catch(() => {
-                return {
-                  success: false,
-                  error_message: "Unexpected error, please try again"
-                };
-              });
-          }
-        } else {
-          return {
-              success: false,
-              error_message: "Not found"
+                    error_message: 'Unexpected error, please try again'
+                  }
+                })
             }
-        }
-      })
-      .catch(err => {
-        console.log(err);
-        return { success: false, error_message: err.message };
-      });
+          } else {
+            return {
+              success: false,
+              error_message: 'Not found'
+            }
+          }
+        })
+        .catch(err => {
+          console.log(err)
+          return { success: false, error_message: err.message }
+        })
     })
     .catch(err => {
-      console.log(err);
-      return { success: false, error_message: err.message };
-    });
-});
+      console.log(err)
+      return { success: false, error_message: err.message }
+    })
+})
 
 function generateClaimVerificationCode(user_id, claim_id, phoneNumber) {
   let refCode = Math.random()
     .toString(36)
-    .replace(/[^a-z]+/g, "")
+    .replace(/[^a-z]+/g, '')
     .substr(0, 5)
-    .toUpperCase();
+    .toUpperCase()
   let code = Math.random()
     .toString()
-    .substr(2, 6);
-  let validUntil = Math.round(new Date().getTime() / 1000) + (5*60);
-  var http = require("https");
+    .substr(2, 6)
+  let validUntil = Math.round(new Date().getTime() / 1000) + (5 * 60)
+  var http = require('https')
   var options = {
-    method: "POST",
-    hostname: "tm3swoarp5.execute-api.ap-southeast-1.amazonaws.com",
+    method: 'POST',
+    hostname: 'tm3swoarp5.execute-api.ap-southeast-1.amazonaws.com',
     port: null,
-    path: "/production/sms",
+    path: '/production/sms',
     headers: {
-      "content-type": "application/x-www-form-urlencoded",
-      "cache-control": "no-cache"
+      'content-type': 'application/x-www-form-urlencoded',
+      'cache-control': 'no-cache'
     }
-  };
+  }
 
   var req = http.request(options, res => {
-    var chunks = [];
+    var chunks = []
 
-    res.on("data", chunk => {
-      chunks.push(chunk);
-    });
+    res.on('data', chunk => {
+      chunks.push(chunk)
+    })
 
-    res.on("end", () => {
-      var body = Buffer.concat(chunks);
-      console.log(body.toString());
-    });
-  });
+    res.on('end', () => {
+      var body = Buffer.concat(chunks)
+      console.log(body.toString())
+    })
+  })
   req.write(
     '{"message": "Your code is ' +
-      code +
-      " (Ref: " +
-      refCode +
-      ')", "phone_number": "' +
-      phoneNumber +
-      '"}'
-  );
-  req.end();
-  let ref = admin.firestore().collection("users_claim");
+    code +
+    ' (Ref: ' +
+    refCode +
+    ')", "phone_number": "' +
+    phoneNumber +
+    '"}'
+  )
+  req.end()
+  let ref = admin.firestore().collection('users_claim')
   return ref
     .doc(user_id)
     .collection('claim_period')
     .doc(String(claim_id))
     .update({ ref_code: refCode, code: code, valid_until: validUntil })
     .then(() => {
-      return { success: true, refCode: refCode, validUntil: validUntil };
+      return { success: true, refCode: refCode, validUntil: validUntil }
     })
     .catch(err => {
-      return { success: false, message: err.message };
-    });
+      return { success: false, message: err.message }
+    })
 }
 
 function generatePhoneVerificationCode(phoneNumber) {
   let refCode = Math.random()
     .toString(36)
-    .replace(/[^a-z]+/g, "")
+    .replace(/[^a-z]+/g, '')
     .substr(0, 5)
-    .toUpperCase();
+    .toUpperCase()
   let code = Math.random()
     .toString()
-    .substr(2, 6);
-  let validUntil = Math.round(new Date().getTime() / 1000) + 300;
-  var http = require("https");
+    .substr(2, 6)
+  let validUntil = Math.round(new Date().getTime() / 1000) + 300
+  var http = require('https')
   var options = {
-    method: "POST",
-    hostname: "tm3swoarp5.execute-api.ap-southeast-1.amazonaws.com",
+    method: 'POST',
+    hostname: 'tm3swoarp5.execute-api.ap-southeast-1.amazonaws.com',
     port: null,
-    path: "/production/sms",
+    path: '/production/sms',
     headers: {
-      "content-type": "application/x-www-form-urlencoded",
-      "cache-control": "no-cache"
+      'content-type': 'application/x-www-form-urlencoded',
+      'cache-control': 'no-cache'
     }
-  };
+  }
 
   var req = http.request(options, res => {
-    var chunks = [];
+    var chunks = []
 
-    res.on("data", chunk => {
-      chunks.push(chunk);
-    });
+    res.on('data', chunk => {
+      chunks.push(chunk)
+    })
 
-    res.on("end", () => {
-      var body = Buffer.concat(chunks);
-      console.log(body.toString());
-    });
-  });
+    res.on('end', () => {
+      var body = Buffer.concat(chunks)
+      console.log(body.toString())
+    })
+  })
   req.write(
     '{"message": "Your code is ' +
-      code +
-      " (Ref: " +
-      refCode +
-      ')", "phone_number": "' +
-      phoneNumber +
-      '"}'
-  );
-  req.end();
-  let ref = admin.firestore().collection("phone-verifications");
+    code +
+    ' (Ref: ' +
+    refCode +
+    ')", "phone_number": "' +
+    phoneNumber +
+    '"}'
+  )
+  req.end()
+  let ref = admin.firestore().collection('phone-verifications')
   return ref
     .doc(phoneNumber)
     .set({ ref_code: refCode, code: code, valid_until: validUntil })
     .then(() => {
-      return { success: true, refCode: refCode, validUntil: validUntil };
+      return { success: true, refCode: refCode, validUntil: validUntil }
     })
     .catch(err => {
-      return { success: false, message: err.message };
-    });
+      return { success: false, message: err.message }
+    })
 }
 
 exports.phoneVerificationRequest = functions.https.onCall((data, context) => {
-  let ref = admin.firestore().collection("phone-verifications");
-  let phoneNumber = data.phone_number;
+  let ref = admin.firestore().collection('phone-verifications')
+  let phoneNumber = data.phone_number
   return ref
     .doc(phoneNumber)
     .get()
     .then(doc => {
       if (doc.exists) {
-        //if (doc.data().is_verified === true) {
+        // if (doc.data().is_verified === true) {
         //  return {
         //    success: false,
         //    error_message: 'Phone number has already been used',
         //    error_code: 100
         //  }
-        //} else {
-          return generatePhoneVerificationCode(phoneNumber)
-            .then(data => {
-              if (data.success === true) {
-                let refCode = data.refCode;
-                let validUntil = data.validUntil;
-                return {
-                  success: true,
-                  ref_code: refCode,
-                  valid_until: validUntil
-                };
-              } else {
-                return {
-                  success: false,
-                  error_message: "Unexpected error, please try again"
-                };
-              }
-            })
-            .catch(() => {
-              return {
-                success: false,
-                error_message: "Unexpected error, please try again"
-              };
-            });
-        //}
-      } else {
+        // } else {
         return generatePhoneVerificationCode(phoneNumber)
           .then(data => {
             if (data.success === true) {
-              let refCode = data.refCode;
-              let validUntil = data.validUntil;
+              let refCode = data.refCode
+              let validUntil = data.validUntil
               return {
                 success: true,
                 ref_code: refCode,
                 valid_until: validUntil
-              };
+              }
             } else {
               return {
                 success: false,
-                error_message: "Unexpected error, please try again"
-              };
+                error_message: 'Unexpected error, please try again'
+              }
             }
           })
           .catch(() => {
             return {
               success: false,
-              error_message: "Unexpected error, please try again"
-            };
-          });
+              error_message: 'Unexpected error, please try again'
+            }
+          })
+        // }
+      } else {
+        return generatePhoneVerificationCode(phoneNumber)
+          .then(data => {
+            if (data.success === true) {
+              let refCode = data.refCode
+              let validUntil = data.validUntil
+              return {
+                success: true,
+                ref_code: refCode,
+                valid_until: validUntil
+              }
+            } else {
+              return {
+                success: false,
+                error_message: 'Unexpected error, please try again'
+              }
+            }
+          })
+          .catch(() => {
+            return {
+              success: false,
+              error_message: 'Unexpected error, please try again'
+            }
+          })
       }
     })
     .catch(err => {
-      console.log(err);
-      return { success: false, error_message: err.message };
-    });
-});
+      console.log(err)
+      return { success: false, error_message: err.message }
+    })
+})
 
 exports.phoneVerificationSubmitRedeem = functions.https.onCall((data, context) => {
   let ref = admin.firestore().collection('phone-verifications')
@@ -413,75 +412,12 @@ exports.phoneVerificationSubmitRedeem = functions.https.onCall((data, context) =
   let code = data.code
   let thisEmail = data.email
   return admin.auth().getUserByEmail(thisEmail).then(userRecord => {
-      const uid = userRecord.uid
-      return ref
-        .doc(phoneNumber)
-        .get()
-        .then(doc => {
-          if (doc.exists) {
-            if (
-              doc.data().valid_until > Math.round(new Date().getTime() / 1000)
-            ) {
-              if (doc.data().ref_code === refCode && doc.data().code === code) {
-                let batch = admin.firestore().batch()
-                batch.set(ref.doc(phoneNumber), { is_verified: true })
-                let dataToUpdate = {
-                  phone_number: phoneNumber,
-                  phone_verified: true,
-                }
-                if (country !== undefined) {
-                  dataToUpdate.country = country
-                }
-                batch.update(userRef.doc(uid), dataToUpdate)
-                return batch
-                  .commit()
-                  .then(() => {
-                    return { success: true }
-                  })
-                  .catch(err => {
-                    return { success: false, error_message: err.message }
-                  })
-              } else {
-                return {
-                  success: false,
-                  error_message: 'Invalid verification code',
-                  error_code: 200
-                }
-              }
-            } else {
-              return {
-                success: false,
-                error_message: "Verification session expired",
-                error_code: 300
-              };
-            }
-        } else {
-          return {
-            success: false,
-            error_message: "Unexpected error, please try again"
-          };
-        }
-      })
-      .catch(err => {
-        console.log(err);
-        return { success: false, error_message: err.message };
-      });
-    })
-});
-
-exports.phoneVerificationSubmit = functions.https.onCall((data, context) => {
-  let ref = admin.firestore().collection('phone-verifications')
-  let userRef = admin.firestore().collection('users')
-  let phoneNumber = data.phone_number
-  let country = data.country
-  let refCode = data.ref_code
-  let code = data.code
-  const uid = context.auth.uid
-  return ref
-    .doc(phoneNumber)
-    .get()
-    .then(doc => {
-      if (doc.exists) {
+    const uid = userRecord.uid
+    return ref
+      .doc(phoneNumber)
+      .get()
+      .then(doc => {
+        if (doc.exists) {
           if (
             doc.data().valid_until > Math.round(new Date().getTime() / 1000)
           ) {
@@ -490,7 +426,7 @@ exports.phoneVerificationSubmit = functions.https.onCall((data, context) => {
               batch.set(ref.doc(phoneNumber), { is_verified: true })
               let dataToUpdate = {
                 phone_number: phoneNumber,
-                phone_verified: true,
+                phone_verified: true
               }
               if (country !== undefined) {
                 dataToUpdate.country = country
@@ -514,28 +450,91 @@ exports.phoneVerificationSubmit = functions.https.onCall((data, context) => {
           } else {
             return {
               success: false,
-              error_message: "Verification session expired",
+              error_message: 'Verification session expired',
               error_code: 300
-            };
+            }
           }
+        } else {
+          return {
+            success: false,
+            error_message: 'Unexpected error, please try again'
+          }
+        }
+      })
+      .catch(err => {
+        console.log(err)
+        return { success: false, error_message: err.message }
+      })
+  })
+})
+
+exports.phoneVerificationSubmit = functions.https.onCall((data, context) => {
+  let ref = admin.firestore().collection('phone-verifications')
+  let userRef = admin.firestore().collection('users')
+  let phoneNumber = data.phone_number
+  let country = data.country
+  let refCode = data.ref_code
+  let code = data.code
+  const uid = context.auth.uid
+  return ref
+    .doc(phoneNumber)
+    .get()
+    .then(doc => {
+      if (doc.exists) {
+        if (
+          doc.data().valid_until > Math.round(new Date().getTime() / 1000)
+        ) {
+          if (doc.data().ref_code === refCode && doc.data().code === code) {
+            let batch = admin.firestore().batch()
+            batch.set(ref.doc(phoneNumber), { is_verified: true })
+            let dataToUpdate = {
+              phone_number: phoneNumber,
+              phone_verified: true
+            }
+            if (country !== undefined) {
+              dataToUpdate.country = country
+            }
+            batch.update(userRef.doc(uid), dataToUpdate)
+            return batch
+              .commit()
+              .then(() => {
+                return { success: true }
+              })
+              .catch(err => {
+                return { success: false, error_message: err.message }
+              })
+          } else {
+            return {
+              success: false,
+              error_message: 'Invalid verification code',
+              error_code: 200
+            }
+          }
+        } else {
+          return {
+            success: false,
+            error_message: 'Verification session expired',
+            error_code: 300
+          }
+        }
       } else {
         return {
           success: false,
-          error_message: "Unexpected error, please try again"
-        };
+          error_message: 'Unexpected error, please try again'
+        }
       }
     })
     .catch(err => {
-      console.log(err);
-      return { success: false, error_message: err.message };
-    });
-});
+      console.log(err)
+      return { success: false, error_message: err.message }
+    })
+})
 
 exports.updateETHWallet = functions.https.onCall((data, context) => {
-  const uid = context.auth.uid;
-  const eth_address = data.eth_address;
-  const ref = admin.firestore().collection("user-eth-wallets");
-  const userRef = admin.firestore().collection("users");
+  const uid = context.auth.uid
+  const eth_address = data.eth_address
+  const ref = admin.firestore().collection('user-eth-wallets')
+  const userRef = admin.firestore().collection('users')
   if (eth_address !== undefined && eth_address !== null) {
     return ref
       .doc(eth_address)
@@ -544,47 +543,47 @@ exports.updateETHWallet = functions.https.onCall((data, context) => {
         if (doc.exists) {
           return {
             success: false,
-            error_message: "ETH address have been used"
-          };
+            error_message: 'ETH address have been used'
+          }
         } else {
-          let batch = admin.firestore().batch();
-          batch.set(ref.doc(eth_address), { uid: uid });
+          let batch = admin.firestore().batch()
+          batch.set(ref.doc(eth_address), { uid: uid })
           batch.update(userRef.doc(uid), {
             eth_address: eth_address,
             submit_wallet: true
-          });
+          })
           return batch
             .commit()
             .then(() => {
-              return { success: true };
+              return { success: true }
             })
             .catch(err => {
-              return { success: false, error_message: err.message };
-            });
+              return { success: false, error_message: err.message }
+            })
         }
-      });
+      })
   } else {
-    return { success: false, error_message: "ETH address could not be blank" };
+    return { success: false, error_message: 'ETH address could not be blank' }
   }
-});
+})
 
 exports.updateTrustline = functions.https.onCall((data, context) => {
   const uid = context.auth.uid
   const public_key = data.public_key
   return admin.firestore().collection('users').doc(uid).update({
-      add_trust_line: true
-    }).then(admin.firestore().collection('users_claim').doc(uid).update({
-      trustline: true
-    })).then(() => {
-      return {
-        uid,
-        public_key,
-      }
-    }).then(setPublicKeyToSecondaryServer).then(() => {
-      return {
-        success: true
-      }
-    })
+    add_trust_line: true
+  }).then(admin.firestore().collection('users_claim').doc(uid).update({
+    trustline: true
+  })).then(() => {
+    return {
+      uid,
+      public_key
+    }
+  }).then(setPublicKeyToSecondaryServer).then(() => {
+    return {
+      success: true
+    }
+  })
 })
 
 const setPublicKeyToSecondaryServer = ({ uid, public_key: publicKey }) => {
@@ -602,10 +601,10 @@ const setPublicKeyToSecondaryServer = ({ uid, public_key: publicKey }) => {
 }
 
 exports.updateXLMWallet = functions.https.onCall((data, context) => {
-  const uid = context.auth.uid;
-  const xlm_address = data.xlm_address;
-  const ref = admin.firestore().collection("user-xlm-wallets");
-  const userRef = admin.firestore().collection("users");
+  const uid = context.auth.uid
+  const xlm_address = data.xlm_address
+  const ref = admin.firestore().collection('user-xlm-wallets')
+  const userRef = admin.firestore().collection('users')
   if (xlm_address !== undefined && xlm_address !== null) {
     return ref
       .doc(xlm_address)
@@ -614,32 +613,32 @@ exports.updateXLMWallet = functions.https.onCall((data, context) => {
         if (doc.exists) {
           return {
             success: false,
-            error_message: "XLM address have been used"
-          };
+            error_message: 'XLM address have been used'
+          }
         } else {
-          let batch = admin.firestore().batch();
-          batch.set(ref.doc(xlm_address), { uid: uid });
+          let batch = admin.firestore().batch()
+          batch.set(ref.doc(xlm_address), { uid: uid })
           batch.update(userRef.doc(uid), {
             xlm_address: xlm_address,
             submit_xlm_wallet: true,
             use_old_account: true
-          });
+          })
           return batch
             .commit()
             .then(() => {
               return handleCreateStellarAccount({ public_key: xlm_address }, context).then(response => {
-                  return { success: true }
-                })
+                return { success: true }
+              })
             })
             .catch(err => {
-              return { success: false, error_message: err.message };
-            });
+              return { success: false, error_message: err.message }
+            })
         }
-      });
+      })
   } else {
-    return { success: false, error_message: "XLM address could not be blank" };
+    return { success: false, error_message: 'XLM address could not be blank' }
   }
-});
+})
 
 exports.reworkInitializeUserDoc = functions.https.onCall((data, context) => {
   const email = context.auth.token.email
@@ -647,8 +646,8 @@ exports.reworkInitializeUserDoc = functions.https.onCall((data, context) => {
   const uid = context.auth.uid
   let ref = admin
     .firestore()
-    .collection("users")
-    .doc(uid);
+    .collection('users')
+    .doc(uid)
   return ref.set({ email: email, registration_time: registration_time, kyc_status: 'not_complete' }, { merge: true }).then(() => {
     return { success: true }
   }).catch(err => {
@@ -656,10 +655,9 @@ exports.reworkInitializeUserDoc = functions.https.onCall((data, context) => {
   })
 })
 
-
 exports.initializeUserDoc = functions.auth.user().onCreate(event => {
-  const user = event.data;
-  const uid = user.uid;
+  const user = event.data
+  const uid = user.uid
   console.log(user)
   const setUser = {
     email: user.email,
@@ -674,60 +672,60 @@ exports.initializeUserDoc = functions.auth.user().onCreate(event => {
   }
   let ref = admin
     .firestore()
-    .collection("users")
-    .doc(user.uid);
+    .collection('users')
+    .doc(user.uid)
   return ref.set({ email: email, registration_time: user.metadata.a, kyc_status: 'not_complete' }, { merge: true }).then(() => {
-    return true;
-  });
-});
+    return true
+  })
+})
 
 function getTime() {
-  const time = new Date();
+  const time = new Date()
 
   if (time.getMinutes > 55) {
-    time.setHours(time.getHours() + 1);
+    time.setHours(time.getHours() + 1)
   }
 
-  time.setMinutes(0, 0, 0);
+  time.setMinutes(0, 0, 0)
 
-  const timeString = moment.tz(time, "Asia/Bangkok").toString();
+  const timeString = moment.tz(time, 'Asia/Bangkok').toString()
 
   return {
     unix: time.getTime(),
     string: timeString
-  };
+  }
 }
 
-exports.hourly_xlm = functions.pubsub.topic("hourly-xlm").onPublish(event => {
-  const baseToken = "xlm";
-  return handleHourlyEvent(event, baseToken);
-});
+exports.hourly_xlm = functions.pubsub.topic('hourly-xlm').onPublish(event => {
+  const baseToken = 'xlm'
+  return handleHourlyEvent(event, baseToken)
+})
 
-exports.hourly_eth = functions.pubsub.topic("hourly-eth").onPublish(event => {
-  const baseToken = "eth";
-  return handleHourlyEvent(event, baseToken);
-});
+exports.hourly_eth = functions.pubsub.topic('hourly-eth').onPublish(event => {
+  const baseToken = 'eth'
+  return handleHourlyEvent(event, baseToken)
+})
 
-exports.hourly_btc = functions.pubsub.topic("hourly-btc").onPublish(event => {
-  const baseToken = "btc";
-  return handleHourlyEvent(event, baseToken);
-});
+exports.hourly_btc = functions.pubsub.topic('hourly-btc').onPublish(event => {
+  const baseToken = 'btc'
+  return handleHourlyEvent(event, baseToken)
+})
 
 function handleHourlyEvent(event, baseToken) {
-  const time = getTime();
-  const uri = getBasePriceURI(baseToken.toUpperCase());
+  const time = getTime()
+  const uri = getBasePriceURI(baseToken.toUpperCase())
 
   return request({
     uri,
-    method: "GET",
+    method: 'GET',
     json: true
   }).then(body => {
-    return updateHourlyPrice(body, baseToken, time);
-  });
+    return updateHourlyPrice(body, baseToken, time)
+  })
 }
 
 function updateHourlyPrice(body, baseToken, time) {
-  const price = body.USD / 0.1;
+  const price = body.USD / 0.1
   return fireStore
     .collection(`${baseToken}_prices`)
     .doc(time.unix.toString())
@@ -736,47 +734,46 @@ function updateHourlyPrice(body, baseToken, time) {
       price: body.USD,
       [`six_per_${baseToken}`]: price,
       time_string: time.string
-    });
+    })
 }
 
 exports.monitorETH = functions.pubsub
-  .topic("monitor-eth")
-  .onPublish(() => Promise.resolve(EthereumService.monitor()));
+  .topic('monitor-eth')
+  .onPublish(() => Promise.resolve(EthereumService.monitor()))
 
 exports.monitorXLM = functions.pubsub
-  .topic("monitor-xlm")
-  .onPublish(stellarService);
+  .topic('monitor-xlm')
+  .onPublish(stellarService)
 
 exports.logsUserTable = functions.firestore
-  .document("users/{userId}")
+  .document('users/{userId}')
   .onWrite(event => {
-    const document = event.data.exists ? event.data.data() : null;
-    const timestamp = Date.now();
-    const oldDocument = event.data.previous.data();
+    const document = event.data.exists ? event.data.data() : null
+    const timestamp = Date.now()
+    const oldDocument = event.data.previous.data()
     return admin
       .database()
       .ref(`logs/${timestamp}`)
-      .set({ document, oldDocument });
-  });
-
+      .set({ document, oldDocument })
+  })
 
 var _extends =
   Object.assign ||
-  function(target) {
+  function (target) {
     for (var i = 1; i < arguments.length; i++) {
-      var source = arguments[i];
+      var source = arguments[i]
       for (var key in source) {
         if (Object.prototype.hasOwnProperty.call(source, key)) {
-          target[key] = source[key];
+          target[key] = source[key]
         }
       }
     }
-    return target;
-  };
+    return target
+  }
 
-var sendEmail = (function() {
+var sendEmail = (function () {
   var _ref = _asyncToGenerator(
-    /*#__PURE__*/ regeneratorRuntime.mark(function _callee(emails) {
+    /* #__PURE__ */ regeneratorRuntime.mark(function _callee(emails) {
       var _iteratorNormalCompletion,
         _didIteratorError,
         _iteratorError,
@@ -785,112 +782,112 @@ var sendEmail = (function() {
         email,
         mailOptions,
         result,
-        path;
+        path
 
       return regeneratorRuntime.wrap(
         function _callee$(_context) {
           while (1) {
             switch ((_context.prev = _context.next)) {
               case 0:
-                _iteratorNormalCompletion = true;
-                _didIteratorError = false;
-                _iteratorError = undefined;
-                _context.prev = 3;
-                _iterator = emails[Symbol.iterator]();
+                _iteratorNormalCompletion = true
+                _didIteratorError = false
+                _iteratorError = undefined
+                _context.prev = 3
+                _iterator = emails[Symbol.iterator]()
 
               case 5:
                 if (
                   (_iteratorNormalCompletion = (_step = _iterator.next()).done)
                 ) {
-                  _context.next = 20;
-                  break;
+                  _context.next = 20
+                  break
                 }
 
-                email = _step.value;
-                _context.next = 9;
-                 break
+                email = _step.value
+                _context.next = 9
+                break
 
               case 9:
-                mailOptions = _context.sent;
-                _context.next = 12;
-                return mailTransport.sendMail(mailOptions);
+                mailOptions = _context.sent
+                _context.next = 12
+                return mailTransport.sendMail(mailOptions)
 
               case 12:
-                result = _context.sent;
-                _context.next = 15;
-                return Date.now();
+                result = _context.sent
+                _context.next = 15
+                return Date.now()
 
               case 15:
-                path = _context.sent;
+                path = _context.sent
 
                 admin
                   .firestore()
-                  .collection("send_email_logs")
+                  .collection('send_email_logs')
                   .doc(path.toString())
                   .set(
                     _extends({ to: email }, result, { timestamp: Date.now() })
-                  );
+                  )
 
               case 17:
-                _iteratorNormalCompletion = true;
-                _context.next = 5;
-                break;
+                _iteratorNormalCompletion = true
+                _context.next = 5
+                break
 
               case 20:
-                _context.next = 26;
-                break;
+                _context.next = 26
+                break
 
               case 22:
-                _context.prev = 22;
-                _context.t0 = _context["catch"](3);
-                _didIteratorError = true;
-                _iteratorError = _context.t0;
+                _context.prev = 22
+                _context.t0 = _context['catch'](3)
+                _didIteratorError = true
+                _iteratorError = _context.t0
 
               case 26:
-                _context.prev = 26;
-                _context.prev = 27;
+                _context.prev = 26
+                _context.prev = 27
 
                 if (!_iteratorNormalCompletion && _iterator.return) {
-                  _iterator.return();
+                  _iterator.return()
                 }
 
               case 29:
-                _context.prev = 29;
+                _context.prev = 29
 
                 if (!_didIteratorError) {
-                  _context.next = 32;
-                  break;
+                  _context.next = 32
+                  break
                 }
 
-                throw _iteratorError;
+                throw _iteratorError
 
               case 32:
-                return _context.finish(29);
+                return _context.finish(29)
 
               case 33:
-                return _context.finish(26);
+                return _context.finish(26)
 
               case 34:
-              case "end":
-                return _context.stop();
+              case 'end':
+                return _context.stop()
             }
           }
         },
         _callee,
         this,
         [[3, 22, 26, 34], [27, , 29, 33]]
-      );
+      )
     })
-  );
+  )
 
   return function sendEmail(_x) {
-    return _ref.apply(this, arguments);
-  };
-})();
+    return _ref.apply(this, arguments)
+  }
+})()
 
 // f_toConsumableArrayunction (arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
 
-function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, arguments); return new Promise(function (resolve, reject) { function step(key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { return Promise.resolve(value).then(function (value) { step("next", value); }, function (err) { step("throw", err); }); } } return step("next"); }); }; }
+function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, arguments); return new Promise(function (resolve, reject) { function step(key, arg) { try { var info = gen[key](arg); var value = info.value } catch (error) { reject(error); return } if (info.done) { resolve(value) } else { return Promise.resolve(value).then(function (value) { step('next', value) }, function (err) { step('throw', err) }) } } return step('next') }) } }
 
 // function _asyncToGenerator(fn) {
 //   return function() {
@@ -933,36 +930,36 @@ function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, a
 // }
 
 exports.sendKycReadyEmail = functions.https.onRequest((req, res) => {
-  cors(req, res, () => {});
-  console.log(req.body, "req.body....");
-  const { emails, password } = req.body;
-  let finish = [];
-  let fail = [];
-  if (password === "ineedtosendemail") {
-    sendEmail(emails);
-    res.json({ success: true });
+  cors(req, res, () => { })
+  console.log(req.body, 'req.body....')
+  const { emails, password } = req.body
+  let finish = []
+  let fail = []
+  if (password === 'ineedtosendemail') {
+    sendEmail(emails)
+    res.json({ success: true })
   } else {
-    return res.status(400).json(new Error("Password not match"));
+    return res.status(400).json(new Error('Password not match'))
   }
-});
+})
 
-  function genReminderEmail(emails) {
-    return new Promise((resolve, reject) => {
-      let personalizations = []
-      emails.forEach(email => {
-        if (email && email.email !== null) {
-          personalizations.push({
-            "to": [{ email: email.email }],
-            "subject": "SIX.network - Don't forget to submit your document"
-          })
-        }
-      })
-      const mailOptions = {
-        personalizations,
-        from: {email: 'no-reply@six.network'},
-        content: [{
-          type: 'text/html',
-          value: `<div style="font-family: &quot;Prompt&quot;, sans-serif;color: rgba(33, 33, 33, 1);margin: 0;background: #F6F6F6">
+function genReminderEmail(emails) {
+  return new Promise((resolve, reject) => {
+    let personalizations = []
+    emails.forEach(email => {
+      if (email && email.email !== null) {
+        personalizations.push({
+          'to': [{ email: email.email }],
+          'subject': "SIX.network - Don't forget to submit your document"
+        })
+      }
+    })
+    const mailOptions = {
+      personalizations,
+      from: { email: 'no-reply@six.network' },
+      content: [{
+        type: 'text/html',
+        value: `<div style="font-family: &quot;Prompt&quot;, sans-serif;color: rgba(33, 33, 33, 1);margin: 0;background: #F6F6F6">
           <div class="section" style="font-family: &quot;Prompt&quot;, sans-serif;color: rgba(33, 33, 33, 1);position: relative;background: #F6F6F6;padding-bottom: 10px;height: 100%;z-index: 1">
           <!-- <img class="top-header" src="https://firebasestorage.googleapis.com/v0/b/devson-f46f4.appspot.com/o/public%2Fheader.png?alt=media&token=9f32b7f1-6def-45f2-bf1a-2cea15326450"
             alt=""> -->
@@ -1031,27 +1028,27 @@ exports.sendKycReadyEmail = functions.https.onRequest((req, res) => {
       `
       }]
     }
-      resolve(mailOptions);
-    });
-  }
+    resolve(mailOptions)
+  })
+}
 
-  function genRemindBonusExpireEmail(emails) {
-    return new Promise((resolve, reject) => {
-      let personalizations = []
-      emails.forEach(email => {
-        if (email && email.email !== null) {
-          personalizations.push({
-            "to": [{ email: email.email }],
-            "subject": "SIX.network - Remind Customer to contribute"
-          })
-        }
-      })
-      const mailOptions = {
-        personalizations,
-        from: {email: 'no-reply@six.network'},
-        content: [{
-          type: 'text/html',
-          value: `<div style="font-family: &quot;Prompt&quot;, sans-serif;color: rgba(33, 33, 33, 1);margin: 0;background: #F6F6F6">
+function genRemindBonusExpireEmail(emails) {
+  return new Promise((resolve, reject) => {
+    let personalizations = []
+    emails.forEach(email => {
+      if (email && email.email !== null) {
+        personalizations.push({
+          'to': [{ email: email.email }],
+          'subject': 'SIX.network - Remind Customer to contribute'
+        })
+      }
+    })
+    const mailOptions = {
+      personalizations,
+      from: { email: 'no-reply@six.network' },
+      content: [{
+        type: 'text/html',
+        value: `<div style="font-family: &quot;Prompt&quot;, sans-serif;color: rgba(33, 33, 33, 1);margin: 0;background: #F6F6F6">
           <div class="section" style="font-family: &quot;Prompt&quot;, sans-serif;color: rgba(33, 33, 33, 1);position: relative;background: #F6F6F6;padding-bottom: 10px;height: 100%;z-index: 1">
           <!-- <img class="top-header" src="https://firebasestorage.googleapis.com/v0/b/devson-f46f4.appspot.com/o/public%2Fheader.png?alt=media&token=9f32b7f1-6def-45f2-bf1a-2cea15326450"
             alt=""> -->
@@ -1082,27 +1079,27 @@ exports.sendKycReadyEmail = functions.https.onRequest((req, res) => {
       `
       }]
     }
-      resolve(mailOptions);
-    });
-  }
+    resolve(mailOptions)
+  })
+}
 
-  function genRemindBonusExpireEmailEN(emails) {
-    return new Promise((resolve, reject) => {
-      let personalizations = []
-      emails.forEach(email => {
-        if (email && email.email !== null) {
-          personalizations.push({
-            "to": [{ email: email.email }],
-            "subject": "SIX.network - Remind Customer to contribute"
-          })
-        }
-      })
-      const mailOptions = {
-        personalizations,
-        from: {email: 'no-reply@six.network'},
-        content: [{
-          type: 'text/html',
-          value: `<div style="font-family: &quot;Prompt&quot;, sans-serif;color: rgba(33, 33, 33, 1);margin: 0;background: #F6F6F6">
+function genRemindBonusExpireEmailEN(emails) {
+  return new Promise((resolve, reject) => {
+    let personalizations = []
+    emails.forEach(email => {
+      if (email && email.email !== null) {
+        personalizations.push({
+          'to': [{ email: email.email }],
+          'subject': 'SIX.network - Remind Customer to contribute'
+        })
+      }
+    })
+    const mailOptions = {
+      personalizations,
+      from: { email: 'no-reply@six.network' },
+      content: [{
+        type: 'text/html',
+        value: `<div style="font-family: &quot;Prompt&quot;, sans-serif;color: rgba(33, 33, 33, 1);margin: 0;background: #F6F6F6">
           <div class="section" style="font-family: &quot;Prompt&quot;, sans-serif;color: rgba(33, 33, 33, 1);position: relative;background: #F6F6F6;padding-bottom: 10px;height: 100%;z-index: 1">
           <!-- <img class="top-header" src="https://firebasestorage.googleapis.com/v0/b/devson-f46f4.appspot.com/o/public%2Fheader.png?alt=media&token=9f32b7f1-6def-45f2-bf1a-2cea15326450"
             alt=""> -->
@@ -1135,29 +1132,27 @@ exports.sendKycReadyEmail = functions.https.onRequest((req, res) => {
       `
       }]
     }
-      resolve(mailOptions);
-    });
-  }
-
-
-function sendRemindEmails ({ remind_status, email, doc, db, new_remind_status }) {
-  genReminderEmail({ email: email })
-  .then(mailOptions => {
-    console.log(`PENDING: Sending email to: ${email}, from status: ${remind_status} to ${new_remind_status}`)
-    return mailTransport.sendMail(mailOptions)
-  })
-  .then(result => {
-    console.log(`SUCCESS: sent email to: ${email}, from status: ${remind_status} to ${new_remind_status}`)
-    return db.doc(doc.id).update({ remind_status: new_remind_status, last_send_remind: Date.now() })
-  })
-  .catch(err => {
-    console.log(`FAILURE: sent email to: ${email}, from status: ${remind_status} to ${new_remind_status}`)
-    console.log(err, 'error send remind email')
+    resolve(mailOptions)
   })
 }
 
+function sendRemindEmails({ remind_status, email, doc, db, new_remind_status }) {
+  genReminderEmail({ email: email })
+    .then(mailOptions => {
+      console.log(`PENDING: Sending email to: ${email}, from status: ${remind_status} to ${new_remind_status}`)
+      return mailTransport.sendMail(mailOptions)
+    })
+    .then(result => {
+      console.log(`SUCCESS: sent email to: ${email}, from status: ${remind_status} to ${new_remind_status}`)
+      return db.doc(doc.id).update({ remind_status: new_remind_status, last_send_remind: Date.now() })
+    })
+    .catch(err => {
+      console.log(`FAILURE: sent email to: ${email}, from status: ${remind_status} to ${new_remind_status}`)
+      console.log(err, 'error send remind email')
+    })
+}
 
-function updateRemindStatus (users) {
+function updateRemindStatus(users) {
   const db = admin.firestore().collection('users')
   users.forEach(user => {
     const { id, new_remind_status, status, email } = user
@@ -1173,148 +1168,147 @@ function updateRemindStatus (users) {
 }
 
 exports.remindEmails = functions.https.onRequest((request, response) => {
-  cors(request, response, () => {});
-  const db = admin.firestore().collection("users");
+  cors(request, response, () => { })
+  const db = admin.firestore().collection('users')
   const { password } = request.query
-  if (password === "ineedtosendemail") {
+  if (password === 'ineedtosendemail') {
     db.get().then(docs => {
       let emailsList = []
       let sendList = []
       docs.forEach(doc => {
-        const user = doc.data();
-        const { remind_status, email, kyc_status, last_send_remind } = user;
+        const user = doc.data()
+        const { remind_status, email, kyc_status, last_send_remind } = user
         if (kyc_status === 'not_complete') {
           if (remind_status && last_send_remind) {
             const diff = moment(new Date()).diff(moment(new Date(parseInt(last_send_remind))), 'days')
             switch (remind_status) {
               case 'd1':
                 if (diff >= 4) sendList.push({ email, remind_status, new_remind_status: 'd4', id: doc.id })
-                break;
+                break
               case 'd4':
                 if (diff >= 4) sendList.push({ email, remind_status, new_remind_status: 'd8', id: doc.id })
-                break;
+                break
               case 'd8':
                 if (diff >= 7) sendList.push({ email, remind_status, new_remind_status: 'd8+7', id: doc.id })
-                break;
+                break
               case 'd8+7':
                 if (diff >= 14) sendList.push({ email, remind_status, new_remind_status: 'd8+7(2)', id: doc.id })
-                break;
+                break
               case 'd8+7(2)':
                 if (diff >= 21) sendList.push({ email, remind_status, new_remind_status: 'd8+7(3)', id: doc.id })
-                break;
+                break
               default:
-                break;
+                break
             }
           } else {
             sendList.push({ email, remind_status, new_remind_status: 'd1', id: doc.id })
           }
         }
-      });
+      })
       if (sendList && sendList.length > 0) {
         updateRemindStatus(sendList, db)
         return genReminderEmail(sendList)
-        .then(mailOptions => {
-          return axios.post('https://api.sendgrid.com/v3/mail/send', mailOptions, { headers: { Authorization: 'Bearer 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'}})
-        })
-        .then(res => {
-          return response.json({ success: true, sendList })
-        })
-        .catch(err => {
-          console.log((err.response || {}).data, 'err')
-          console.log(err.message, 'err.message')
-          return response.status(400).json({ error: (err.reponse || {}).data })
-        })
+          .then(mailOptions => {
+            return axios.post('https://api.sendgrid.com/v3/mail/send', mailOptions, { headers: { Authorization: 'Bearer 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' } })
+          })
+          .then(res => {
+            return response.json({ success: true, sendList })
+          })
+          .catch(err => {
+            console.log((err.response || {}).data, 'err')
+            console.log(err.message, 'err.message')
+            return response.status(400).json({ error: (err.reponse || {}).data })
+          })
       } else {
         return response.send({ success: true, sendList })
       }
-    });
+    })
   } else {
-    return response.status(400).json(new Error("Password not match"));
+    return response.status(400).json(new Error('Password not match'))
   }
-});
+})
 
 exports.remindBonusExpireEmail = functions.https.onRequest((request, response) => {
-  cors(request, response, () => {});
-  const db = admin.firestore().collection("users");
+  cors(request, response, () => { })
+  const db = admin.firestore().collection('users')
   const { password } = request.query
-  if (password === "ineedtosendemail") {
+  if (password === 'ineedtosendemail') {
     db.get().then(docs => {
       let emailsList = []
       let sendList = []
       docs.forEach(doc => {
-        const user = doc.data();
-        const { remind_status, email, kyc_status, last_send_remind, eth_address, estimate, country } = user;
+        const user = doc.data()
+        const { remind_status, email, kyc_status, last_send_remind, eth_address, estimate, country } = user
         const notFoundEstimate = !estimate || estimate === null || estimate === ''
         const isTH = country === 'TH'
         if (isTH && eth_address && eth_address !== null && notFoundEstimate) {
           sendList.push({ email })
         }
-      });
+      })
       if (sendList && sendList.length > 0) {
         return genRemindBonusExpireEmail(sendList)
-        .then(mailOptions => {
-          return axios.post('https://api.sendgrid.com/v3/mail/send', mailOptions, { headers: { Authorization: `Bearer ${SENDGRID_API_KEY}`}})
-        })
-        .then(res => {
-          return response.json({ success: true, sendList })
-        })
-        .catch(err => {
-          console.log((err.response || {}).data, 'err')
-          console.log(err.message, 'err.message')
-          return response.status(400).json({ error: (err.reponse || {}).data })
-        })
+          .then(mailOptions => {
+            return axios.post('https://api.sendgrid.com/v3/mail/send', mailOptions, { headers: { Authorization: `Bearer ${SENDGRID_API_KEY}` } })
+          })
+          .then(res => {
+            return response.json({ success: true, sendList })
+          })
+          .catch(err => {
+            console.log((err.response || {}).data, 'err')
+            console.log(err.message, 'err.message')
+            return response.status(400).json({ error: (err.reponse || {}).data })
+          })
       } else {
         return response.send({ success: true, sendList })
       }
-    });
+    })
   } else {
-    return response.status(400).json(new Error("Password not match"));
+    return response.status(400).json(new Error('Password not match'))
   }
-});
+})
 
 exports.remindBonusExpireEmailEN = functions.https.onRequest((request, response) => {
-  cors(request, response, () => {});
-  const db = admin.firestore().collection("users")
+  cors(request, response, () => { })
+  const db = admin.firestore().collection('users')
   const { password } = request.query
-  if (password === "ineedtosendemail") {
+  if (password === 'ineedtosendemail') {
     db.get().then(docs => {
       let emailsList = []
       let sendList = []
       console.log(sendList, 'sendList...')
       docs.forEach(doc => {
-        const user = doc.data();
-        const { remind_status, email, kyc_status, last_send_remind, eth_address, estimate, country } = user;
+        const user = doc.data()
+        const { remind_status, email, kyc_status, last_send_remind, eth_address, estimate, country } = user
         const notFoundEstimate = !estimate || estimate === null || estimate === ''
         const notThandKr = country !== 'TH' && country !== 'KR'
         if (notThandKr && eth_address && eth_address !== null && notFoundEstimate) {
           sendList.push({ email })
         }
-      });
+      })
       if (sendList && sendList.length > 0) {
         return genRemindBonusExpireEmailEN(sendList)
-        .then(mailOptions => {
-          return axios.post('https://api.sendgrid.com/v3/mail/send', mailOptions, { headers: { Authorization: `Bearer ${SENDGRID_API_KEY}`}})
-        })
-        .then(res => {
-          return response.json({ success: true, sendList })
-        })
-        .catch(err => {
-          console.log((err.response || {}).data, 'err')
-          console.log(err.message, 'err.message')
-          return response.status(400).json({ error: (err.reponse || {}).data })
-        })
+          .then(mailOptions => {
+            return axios.post('https://api.sendgrid.com/v3/mail/send', mailOptions, { headers: { Authorization: `Bearer ${SENDGRID_API_KEY}` } })
+          })
+          .then(res => {
+            return response.json({ success: true, sendList })
+          })
+          .catch(err => {
+            console.log((err.response || {}).data, 'err')
+            console.log(err.message, 'err.message')
+            return response.status(400).json({ error: (err.reponse || {}).data })
+          })
       } else {
         return response.send({ success: true, sendList })
       }
-    });
+    })
   } else {
-    return response.status(400).json(new Error("Password not match"));
+    return response.status(400).json(new Error('Password not match'))
   }
-});
+})
 
 exports.createClaim = functions.https.onRequest(handleCreateStellarAccount)
 exports.claimSix = functions.https.onRequest(handleClaimSix)
-
 
 function genLastBonusEmail(emails) {
   return new Promise((resolve, reject) => {
@@ -1323,14 +1317,14 @@ function genLastBonusEmail(emails) {
     emails.forEach(email => {
       if (email && email !== null) {
         personalizations.push({
-          "to": [{ email }],
-          "subject": "[SIX network] - Our 6% bonus campaign has been closed!"
+          'to': [{ email }],
+          'subject': '[SIX network] - Our 6% bonus campaign has been closed!'
         })
       }
     })
     const mailOptions = {
       personalizations,
-      from: {email: 'no-reply@six.network'},
+      from: { email: 'no-reply@six.network' },
       content: [{
         type: 'text/html',
         value: `
@@ -1388,107 +1382,106 @@ function genLastBonusEmail(emails) {
         </div>
       </div>
     `
-    }]
-  }
-    resolve(mailOptions);
-  });
+      }]
+    }
+    resolve(mailOptions)
+  })
 }
 
-
 exports.sendLastBonusToSubscriber = functions.https.onRequest(function () {
-  var _ref = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee(request, response) {
-    var password, emailsList, sendList, initial, list_send, i, from, to, t, mailOptions;
+  var _ref = _asyncToGenerator(/* #__PURE__ */regeneratorRuntime.mark(function _callee(request, response) {
+    var password, emailsList, sendList, initial, list_send, i, from, to, t, mailOptions
     return regeneratorRuntime.wrap(function _callee$(_context) {
       while (1) {
         switch (_context.prev = _context.next) {
           case 0:
-            _context.prev = 0;
+            _context.prev = 0
 
-            cors(request, response, function () {});
-            password = request.query.password;
+            cors(request, response, function () { })
+            password = request.query.password
 
-            if (!(password === "ineedtosendemail")) {
-              _context.next = 28;
-              break;
+            if (!(password === 'ineedtosendemail')) {
+              _context.next = 28
+              break
             }
 
-            emailsList = [];
-            sendList = activecampaign_subscriber;
+            emailsList = []
+            sendList = activecampaign_subscriber
 
             if (!(sendList && sendList.length > 0)) {
-              _context.next = 26;
-              break;
+              _context.next = 26
+              break
             }
 
-            initial = 0;
-            list_send = [];
-            i = 1;
+            initial = 0
+            list_send = []
+            i = 1
 
           case 10:
             if (!(i <= sendList.length / 1000)) {
-              _context.next = 25;
-              break;
+              _context.next = 25
+              break
             }
 
-            from = initial;
-            to = i * 1000;
-            t = sendList.slice(from, to);
+            from = initial
+            to = i * 1000
+            t = sendList.slice(from, to)
 
-            console.log(t, 't....');
-            _context.next = 17;
-            return genLastBonusEmail(t);
+            console.log(t, 't....')
+            _context.next = 17
+            return genLastBonusEmail(t)
 
           case 17:
-            mailOptions = _context.sent;
-            _context.next = 20;
-            return axios.post('https://api.sendgrid.com/v3/mail/send', mailOptions, { headers: { Authorization: 'Bearer ' + SENDGRID_API_KEY } });
+            mailOptions = _context.sent
+            _context.next = 20
+            return axios.post('https://api.sendgrid.com/v3/mail/send', mailOptions, { headers: { Authorization: 'Bearer ' + SENDGRID_API_KEY } })
 
           case 20:
-            list_send.push(t);
-            initial = to;
+            list_send.push(t)
+            initial = to
 
           case 22:
-            i++;
-            _context.next = 10;
-            break;
+            i++
+            _context.next = 10
+            break
 
           case 25:
-            return _context.abrupt('return', response.send({ success: true, list_send: list_send }));
+            return _context.abrupt('return', response.send({ success: true, list_send: list_send }))
 
           case 26:
-            _context.next = 29;
-            break;
+            _context.next = 29
+            break
 
           case 28:
-            return _context.abrupt('return', response.status(400).json(new Error("Password not match")));
+            return _context.abrupt('return', response.status(400).json(new Error('Password not match')))
 
           case 29:
-            _context.next = 34;
-            break;
+            _context.next = 34
+            break
 
           case 31:
-            _context.prev = 31;
-            _context.t0 = _context['catch'](0);
-            return _context.abrupt('return', response.status(400).json(_context.t0));
+            _context.prev = 31
+            _context.t0 = _context['catch'](0)
+            return _context.abrupt('return', response.status(400).json(_context.t0))
 
           case 34:
           case 'end':
-            return _context.stop();
+            return _context.stop()
         }
       }
-    }, _callee, undefined, [[0, 31]]);
-  }));
+    }, _callee, undefined, [[0, 31]])
+  }))
 
   return function (_x, _x2) {
-    return _ref.apply(this, arguments);
-  };
-}());
+    return _ref.apply(this, arguments)
+  }
+}())
 
 exports.sendLastBonusToUser = functions.https.onRequest((request, response) => {
-  cors(request, response, () => {});
-  const db = admin.firestore().collection("users");
+  cors(request, response, () => { })
+  const db = admin.firestore().collection('users')
   const { password } = request.query
-  if (password === "ineedtosendemail") {
+  if (password === 'ineedtosendemail') {
     db.get().then(docs => {
       let emailsList = []
       let sendList = []
@@ -1496,28 +1489,28 @@ exports.sendLastBonusToUser = functions.https.onRequest((request, response) => {
         if (email && email !== null) {
           sendList.push({ email })
         }
-      });
+      })
       if (sendList && sendList.length > 0) {
         return genLastBonusEmail(sendList)
-        .then(mailOptions => {
-          return axios.post('https://api.sendgrid.com/v3/mail/send', mailOptions, { headers: { Authorization: `Bearer ${SENDGRID_API_KEY}`}})
-        })
-        .then(res => {
-          return response.json({ success: true, sendList })
-        })
-        .catch(err => {
-          console.log((err.response || {}).data, 'err')
-          console.log(err.message, 'err.message')
-          return response.status(400).json({ error: (err.reponse || {}).data })
-        })
+          .then(mailOptions => {
+            return axios.post('https://api.sendgrid.com/v3/mail/send', mailOptions, { headers: { Authorization: `Bearer ${SENDGRID_API_KEY}` } })
+          })
+          .then(res => {
+            return response.json({ success: true, sendList })
+          })
+          .catch(err => {
+            console.log((err.response || {}).data, 'err')
+            console.log(err.message, 'err.message')
+            return response.status(400).json({ error: (err.reponse || {}).data })
+          })
       } else {
         return response.send({ success: true, sendList })
       }
-    });
+    })
   } else {
-    return response.status(400).json(new Error("Password not match"));
+    return response.status(400).json(new Error('Password not match'))
   }
-});
+})
 
 // ico close
 function genICOCloseEmail(emails) {
@@ -1529,21 +1522,21 @@ function genICOCloseEmail(emails) {
         if (typeof email === 'string') {
           console.log(email, 'email...')
           personalizations.push({
-            "to": [{ email: email }],
-            "subject": "[SIX network] Free 20 SIX token for those who passed the KYC process by this Saturday"
+            'to': [{ email: email }],
+            'subject': '[SIX network] Free 20 SIX token for those who passed the KYC process by this Saturday'
           })
         } else {
           console.log(email, 'email...')
           personalizations.push({
-            "to": [{ email: email.email }],
-            "subject": "[SIX network] Free 20 SIX token for those who passed the KYC process by this Saturday"
+            'to': [{ email: email.email }],
+            'subject': '[SIX network] Free 20 SIX token for those who passed the KYC process by this Saturday'
           })
         }
       }
     })
     const mailOptions = {
       personalizations,
-      from: {email: 'no-reply@six.network'},
+      from: { email: 'no-reply@six.network' },
       content: [{
         type: 'text/html',
         value: `
@@ -1612,175 +1605,175 @@ function genICOCloseEmail(emails) {
         </div>
       </div>
     `
-    }]
-  }
-    resolve(mailOptions);
-  });
+      }]
+    }
+    resolve(mailOptions)
+  })
 }
 
 exports.sendICOCloseToSubscribers = functions.https.onRequest(function () {
-  var _ref = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee(request, response) {
-    var password, emailsList, sendList, initial, list_send, i, from, to, t, mailOptions;
+  var _ref = _asyncToGenerator(/* #__PURE__ */regeneratorRuntime.mark(function _callee(request, response) {
+    var password, emailsList, sendList, initial, list_send, i, from, to, t, mailOptions
     return regeneratorRuntime.wrap(function _callee$(_context) {
       while (1) {
         switch (_context.prev = _context.next) {
           case 0:
-            _context.prev = 0;
+            _context.prev = 0
 
-            cors(request, response, function () {});
-            password = request.query.password;
+            cors(request, response, function () { })
+            password = request.query.password
 
-            if (!(password === "ineedtosendemail")) {
-              _context.next = 28;
-              break;
+            if (!(password === 'ineedtosendemail')) {
+              _context.next = 28
+              break
             }
 
-            emailsList = [];
-            sendList = activecampaign_subscriber;
+            emailsList = []
+            sendList = activecampaign_subscriber
 
             if (!(sendList && sendList.length > 0)) {
-              _context.next = 26;
-              break;
+              _context.next = 26
+              break
             }
 
-            initial = 0;
-            list_send = [];
-            i = 1;
+            initial = 0
+            list_send = []
+            i = 1
 
           case 10:
             if (!(i <= sendList.length / 1000)) {
-              _context.next = 25;
-              break;
+              _context.next = 25
+              break
             }
 
-            from = initial;
-            to = i * 1000;
-            t = sendList.slice(from, to);
+            from = initial
+            to = i * 1000
+            t = sendList.slice(from, to)
 
-            console.log(t, 't....');
-            _context.next = 17;
-            return genICOCloseEmail(t);
+            console.log(t, 't....')
+            _context.next = 17
+            return genICOCloseEmail(t)
 
           case 17:
-            mailOptions = _context.sent;
-            _context.next = 20;
-            return axios.post('https://api.sendgrid.com/v3/mail/send', mailOptions, { headers: { Authorization: 'Bearer ' + SENDGRID_API_KEY } });
+            mailOptions = _context.sent
+            _context.next = 20
+            return axios.post('https://api.sendgrid.com/v3/mail/send', mailOptions, { headers: { Authorization: 'Bearer ' + SENDGRID_API_KEY } })
 
           case 20:
-            list_send.push(t);
-            initial = to;
+            list_send.push(t)
+            initial = to
 
           case 22:
-            i++;
-            _context.next = 10;
-            break;
+            i++
+            _context.next = 10
+            break
 
           case 25:
-            return _context.abrupt('return', response.send({ success: true, list_send: list_send }));
+            return _context.abrupt('return', response.send({ success: true, list_send: list_send }))
 
           case 26:
-            _context.next = 29;
-            break;
+            _context.next = 29
+            break
 
           case 28:
-            return _context.abrupt('return', response.status(400).json(new Error("Password not match")));
+            return _context.abrupt('return', response.status(400).json(new Error('Password not match')))
 
           case 29:
-            _context.next = 34;
-            break;
+            _context.next = 34
+            break
 
           case 31:
-            _context.prev = 31;
-            _context.t0 = _context['catch'](0);
-            return _context.abrupt('return', response.status(400).json(_context.t0));
+            _context.prev = 31
+            _context.t0 = _context['catch'](0)
+            return _context.abrupt('return', response.status(400).json(_context.t0))
 
           case 34:
           case 'end':
-            return _context.stop();
+            return _context.stop()
         }
       }
-    }, _callee, undefined, [[0, 31]]);
-  }));
+    }, _callee, undefined, [[0, 31]])
+  }))
 
   return function (_x, _x2) {
-    return _ref.apply(this, arguments);
-  };
-}());
+    return _ref.apply(this, arguments)
+  }
+}())
 
 exports.sendICOCloseToUser = functions.https.onRequest((request, response) => {
-  cors(request, response, () => {});
-  const db = admin.firestore().collection("users")
+  cors(request, response, () => { })
+  const db = admin.firestore().collection('users')
   const { password } = request.query
   try {
-    if (password === "ineedtosendemail") {
+    if (password === 'ineedtosendemail') {
       db.get().then(docs => {
         let emailsList = []
         let sendList = []
         docs.forEach(doc => {
-          const user = doc.data();
+          const user = doc.data()
           if (user.email && user.email !== null) {
-            const { remind_status, email, kyc_status, last_send_remind } = user;
+            const { remind_status, email, kyc_status, last_send_remind } = user
             if (kyc_status) {
               if (kyc_status === 'not_complete' || kyc_status === 'pending' || kyc_status === 'rejected') {
                 sendList.push({ email: email })
               }
             }
           }
-        });
+        })
         console.log(sendList, 'sendList...')
         if (sendList && sendList.length > 0) {
           if (sendList && sendList.length > 1000) {
             const new_send_list = sendList.slice(0, 1000)
             const last_send_list = sendList.slice(1000, sendList.length - 1)
             return genICOCloseEmail(new_send_list)
-            .then(mailOptions => {
-              return axios.post('https://api.sendgrid.com/v3/mail/send', mailOptions, { headers: { Authorization: `Bearer ${SENDGRID_API_KEY}`}})
-            })
-            .then(res => {
-              return genICOCloseEmail(last_send_list)
-            })
-            .then(mailOptions_two => {
-              return axios.post('https://api.sendgrid.com/v3/mail/send', mailOptions_two, { headers: { Authorization: `Bearer ${SENDGRID_API_KEY}`}})
-            })
-            .then(res => {
-              return response.json({ success: true, sendList: [ ...new_send_list, ...last_send_list ],  })
-            })
-            .catch(err => {
-              console.log(err, 'error')
-              return response.status(400).json({ error: err })
-            })
+              .then(mailOptions => {
+                return axios.post('https://api.sendgrid.com/v3/mail/send', mailOptions, { headers: { Authorization: `Bearer ${SENDGRID_API_KEY}` } })
+              })
+              .then(res => {
+                return genICOCloseEmail(last_send_list)
+              })
+              .then(mailOptions_two => {
+                return axios.post('https://api.sendgrid.com/v3/mail/send', mailOptions_two, { headers: { Authorization: `Bearer ${SENDGRID_API_KEY}` } })
+              })
+              .then(res => {
+                return response.json({ success: true, sendList: [...new_send_list, ...last_send_list] })
+              })
+              .catch(err => {
+                console.log(err, 'error')
+                return response.status(400).json({ error: err })
+              })
           } else {
             return genICOCloseEmail(sendList)
-            .then(mailOptions => {
-              console.log(mailOptions)
-              return axios.post('https://api.sendgrid.com/v3/mail/send', mailOptions, { headers: { Authorization: `Bearer ${SENDGRID_API_KEY}`}})
-            })
-            .then(res => {
-              console.log(res, 'res...')
-              return response.json({ success: true, sendList })
-            })
-            .catch(err => {
-              console.log(err, 'error sendgrid')
-              return response.status(400).json({ error: err.response })
-            })
+              .then(mailOptions => {
+                console.log(mailOptions)
+                return axios.post('https://api.sendgrid.com/v3/mail/send', mailOptions, { headers: { Authorization: `Bearer ${SENDGRID_API_KEY}` } })
+              })
+              .then(res => {
+                console.log(res, 'res...')
+                return response.json({ success: true, sendList })
+              })
+              .catch(err => {
+                console.log(err, 'error sendgrid')
+                return response.status(400).json({ error: err.response })
+              })
           }
         } else {
           return response.send({ success: true, sendList })
         }
-      });
+      })
     } else {
-      return response.status(400).json(new Error("Password not match"));
+      return response.status(400).json(new Error('Password not match'))
     }
-  }catch (err) {
-    return response.status(400).json(err);
+  } catch (err) {
+    return response.status(400).json(err)
   }
-});
+})
 
 exports.getPurchasedUser = functions.https.onRequest((request, response) => {
-  cors(request, response, () => {});
-  const { password } = request.query;
+  cors(request, response, () => { })
+  const { password } = request.query
   if (password === 'sixsendmailtoday') {
-    admin.firestore().collection('users').where("total_six", ">", 20).get().then(snapshots => {
+    admin.firestore().collection('users').where('total_six', '>', 20).get().then(snapshots => {
       let users = []
       snapshots.forEach(snapshot => {
         const data = snapshot.data()
@@ -1796,10 +1789,9 @@ exports.getPurchasedUser = functions.https.onRequest((request, response) => {
   }
 })
 
-
 exports.getNotPurchasedUser = functions.https.onRequest((request, response) => {
-  cors(request, response, () => {});
-  const { password } = request.query;
+  cors(request, response, () => { })
+  const { password } = request.query
   if (password === 'sixsendmailtoday') {
     admin.firestore().collection('users').get().then(snapshots => {
       let users = []
@@ -1828,8 +1820,8 @@ exports.getNotPurchasedUser = functions.https.onRequest((request, response) => {
 })
 
 exports.getUserByCountry = functions.https.onRequest((request, response) => {
-  cors(request, response, () => {});
-  const { password } = request.query;
+  cors(request, response, () => { })
+  const { password } = request.query
   if (password === 'sixsendmailtoday') {
     const { country, without } = request.query
     let query = admin.firestore().collection('users')
@@ -1866,10 +1858,10 @@ exports.getUserByCountry = functions.https.onRequest((request, response) => {
 })
 
 exports.getTwentySixUser = functions.https.onRequest((request, response) => {
-  cors(request, response, () => {});
-  const { password } = request.query;
+  cors(request, response, () => { })
+  const { password } = request.query
   if (password === 'sixsendmailtoday') {
-    admin.firestore().collection('users').where("total_six", "==", 20).get().then(snapshots => {
+    admin.firestore().collection('users').where('total_six', '==', 20).get().then(snapshots => {
       let users = []
       snapshots.forEach(snapshot => {
         const data = snapshot.data()
@@ -1891,109 +1883,109 @@ exports.claimSix = functions.https.onCall(handleClaimSix)
 exports.claim4TestHandle = functions.https.onRequest((req, res) => {
   const uid = req.body.uid
   const claim_id = req.body.claim_id
-  handleClaimSix({ claim_id}, { auth: { uid} }).then(r => {
+  handleClaimSix({ claim_id }, { auth: { uid } }).then(r => {
     res.json(r)
   })
 })
 
 exports.submitRedeemCode = functions.https.onCall((data, context) => {
-  let ref = admin.firestore().collection("users")
+  let ref = admin.firestore().collection('users')
   let redeemCode = data.redeem_code
   let thisEmail = data.email
   if (redeemCode === undefined || thisEmail === undefined) return { success: false }
   return ref.where('redeem_code', '==', redeemCode).get().then(docs => {
-      let found = false
-      let foundPhone = false
-      let verifiedPhone = false
-      let foundCounter = 0
-      let phoneNumber
-      docs.forEach(doc => {
-        if (doc.data().email === thisEmail) {
-          found = true
-          foundCounter++
-        }
-        if (doc.data().phone_number !== undefined) {
-          foundPhone = true
-          phoneNumber = doc.data().phone_number
-        }
-        if (doc.data().phone_verified === true) {
-          verifiedPhone = true
-        }
-      })
-      if (found && foundCounter === 1) {
-        if (foundPhone && verifiedPhone !== true) {
-          return generatePhoneVerificationCode(phoneNumber)
-            .then(data => {
-              if (data.success === true) {
-                let refCode = data.refCode;
-                let validUntil = data.validUntil;
-                return {
-                  success: true,
-                  type: 1,
-                  ref_code: refCode,
-                  valid_until: validUntil,
-                  phone_number: phoneNumber
-                };
-              } else {
-                return {
-                  success: false,
-                  message: "Unexpected error, please try again"
-                };
-              }
-            })
-            .catch(() => {
-              return {
-                success: false,
-                message: "Unexpected error, please try again"
-              };
-            });
-        } else {
-          return { success: true, type: 0 }
-        }
-      } else {
-        return { success: false, message: 'Invalid redeem code' }
+    let found = false
+    let foundPhone = false
+    let verifiedPhone = false
+    let foundCounter = 0
+    let phoneNumber
+    docs.forEach(doc => {
+      if (doc.data().email === thisEmail) {
+        found = true
+        foundCounter++
+      }
+      if (doc.data().phone_number !== undefined) {
+        foundPhone = true
+        phoneNumber = doc.data().phone_number
+      }
+      if (doc.data().phone_verified === true) {
+        verifiedPhone = true
       }
     })
+    if (found && foundCounter === 1) {
+      if (foundPhone && verifiedPhone !== true) {
+        return generatePhoneVerificationCode(phoneNumber)
+          .then(data => {
+            if (data.success === true) {
+              let refCode = data.refCode
+              let validUntil = data.validUntil
+              return {
+                success: true,
+                type: 1,
+                ref_code: refCode,
+                valid_until: validUntil,
+                phone_number: phoneNumber
+              }
+            } else {
+              return {
+                success: false,
+                message: 'Unexpected error, please try again'
+              }
+            }
+          })
+          .catch(() => {
+            return {
+              success: false,
+              message: 'Unexpected error, please try again'
+            }
+          })
+      } else {
+        return { success: true, type: 0 }
+      }
+    } else {
+      return { success: false, message: 'Invalid redeem code' }
+    }
+  })
 })
 
 exports.changeRedeemPassword = functions.https.onCall((data, context) => {
-  let ref = admin.firestore().collection("users")
+  let ref = admin.firestore().collection('users')
   let redeemCode = data.redeem_code
   let thisEmail = data.email
   let newPassword = data.password
   if (redeemCode === undefined || thisEmail === undefined) return { success: false }
   return ref.where('redeem_code', '==', redeemCode).get().then(docs => {
-      let found = false
-      let foundCounter = 0
-      docs.forEach(doc => {
-        if (doc.data().email === thisEmail) {
-          found = true
-          foundCounter++
-        }
-      })
-      if (found && foundCounter === 1) {
-        return admin.auth().getUserByEmail(thisEmail).then(userRecord => {
-            return admin.auth().updateUser(userRecord.uid, {
-                password: newPassword
-              }).then(() => {
-                ref.doc(userRecord.uid).update({ redeem_code: admin.firestore.FieldValue.delete(), is_redeem_account: true }).then(() => {
-                  return { success: true }
-                }).catch(() => {
-                  return { success: false, message: 'Unexpected Error occured' }
-                })
-              })
-          })
-      } else {
-        return { success: false, message: 'Invalid redeem code' }
+    let found = false
+    let foundCounter = 0
+    docs.forEach(doc => {
+      if (doc.data().email === thisEmail) {
+        found = true
+        foundCounter++
       }
     })
+    if (found && foundCounter === 1) {
+      return admin.auth().getUserByEmail(thisEmail).then(userRecord => {
+        return admin.auth().updateUser(userRecord.uid, {
+          password: newPassword
+        }).then(() => {
+          ref.doc(userRecord.uid).update({ redeem_code: admin.firestore.FieldValue.delete(), is_redeem_account: true }).then(() => {
+            return { success: true }
+          }).catch(() => {
+            return { success: false, message: 'Unexpected Error occured' }
+          })
+        })
+      })
+    } else {
+      return { success: false, message: 'Invalid redeem code' }
+    }
+  })
 })
 
 exports.getPrivateUsers = functions.https.onRequest((request, response) => {
-  cors(request, response, () => {});
-  const { password, type } = request.query;
+  cors(request, response, () => { })
+  const { password, type } = request.query
   if (password === 'sixsendmailtoday') {
-    admin.firestore().collection('users').where("private_user", "==", true).get().then(snapshots => {
+    admin.firestore().collection('users').where('private_user', '==', true).get().then(snapshots => {
       let users = []
       snapshots.forEach(snapshot => {
         const data = snapshot.data()

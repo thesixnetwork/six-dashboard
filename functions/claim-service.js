@@ -1,9 +1,8 @@
-const functions = require('firebase-functions')
 const StellarSdk = require('stellar-sdk')
 const request = require('request-promise')
-const admin = require('firebase-admin')
+const { functions, fireStore } = require('./index')
 
-const db = admin.firestore()
+const db = fireStore
 const claimRef = db.collection('users_claim')
 const userRef = db.collection('users')
 const claimPoolsRef = db.collection('claim_pools')
@@ -250,7 +249,7 @@ const updateState = ({ uid, claim, claim_id: claimId, user, state, tx, error }) 
     })
 }
 
-const releasePool = () => lockPoolsRef.set({is_lock: false})
+const releasePool = () => lockPoolsRef.set({ is_lock: false })
 
 const lockPool = ({ uid, claim_id: claimId }) => {
   return db.runTransaction(t => {
@@ -259,19 +258,19 @@ const lockPool = ({ uid, claim_id: claimId }) => {
       if (doc.exists) {
         const lockStatus = doc.data()
         if (lockStatus.is_lock) {
-          return {
+          return Promise.resolve({
             uid,
             claim_id: claimId,
             lock_successful: false
-          }
+          })
         }
       }
       t.update(lockPoolsRef, { is_lock: true, lock_id: `${uid}_${claimId}`, lock_time: new Date().toString() })
-      return {
+      return Promise.resolve({
         uid,
         claim_id: claimId,
         lock_successful: true
-      }
+      })
     })
   })
 }
