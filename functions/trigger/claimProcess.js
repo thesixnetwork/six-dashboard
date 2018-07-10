@@ -7,7 +7,6 @@ const pool = require('../claim-service').poolUtilities
 
 module.exports = function (functions, fireStore) {
   const events = functions.firestore.document(path)
-  const lockPoolEvents = functions.firestore.document(lockPoolpath)
   return [
     {
       'name': 'sendClaimedEmail',
@@ -18,8 +17,8 @@ module.exports = function (functions, fireStore) {
       'module': events.onUpdate(event => monitorClaimError(event, fireStore))
     },
     {
-      'name': 'monitorLockPool',
-      'module': lockPoolEvents.onUpdate(event => monitorLockPool(event, fireStore))
+      'name': 'monitorIntervalLockPool',
+      'module': functions.pubsub.topic('monitorIntervalLockPool').onPublish(event => monitorLockPool(event, fireStore))
     }
   ]
 }
@@ -30,41 +29,45 @@ const lineConfig = {
   groupId: 'C3e196a4b31d7dc3de626303259335ded'
 }
 const client = new line.Client(lineConfig)
-const timeoutAlert = 300000
+const timeoutAlert = 120000 // 2 minute
 const sendLineAlert = (text) => {
   client.pushMessage(lineConfig.groupId, {
     type: 'text',
     text
   })
 }
-let timer
 
 function monitorLockPool (event, fireStore) {
-  console.log('monitorLockPool')
-  const previousLockPool = event.data.previous.data()
-  const currentLockPool = event.data.data()
-  if (previousLockPool.is_lock === false && currentLockPool.is_lock === true) {
-    const uid = currentLockPool.lock_id.split('_')[0]
-    const claimId = currentLockPool.lock_id.split('_')[1]
-    const lockTime = currentLockPool.lock_time
-    timer = setTimeout(() => {
-      sendLineAlert(
-        `process stuck more than ${timeoutAlert / 60000} min. \n uid: ${uid} \n claim_id: ${claimId} \n lock_time: ${lockTime}`
-      )
-      pool
-        .deleteClaimIdInPool({ uid, claim_id: claimId })
-        .then(pool.releasePool)
-        .then(pool.processNewClaimPool)
-        .then(fireStore
-          .collection('stuck_pool')
-          .doc()
-          .set({uid, claim_id: claimId, lock_time: lockTime})
-        )
-    }, timeoutAlert)
-  } else if (previousLockPool.is_lock === true && currentLockPool.is_lock === false) {
-    clearTimeout(timer)
-  }
-  return Promise.resolve()
+  return fireStore
+    .collection(lockPoolpath)
+    .get()
+    .then(pool => {
+      if (pool.is_lock === false) {
+        return Promise.resolve()
+      }
+      const lockTime = new Date(pool.lock_time).getTime()
+      const now = new Date().getTime()
+      const isTimeout = (now - lockTime) > timeoutAlert
+      return isTimeout ? handleLockPoolStuck(fireStore, pool) : Promise.resolve()
+    })
+}
+
+function handleLockPoolStuck (fireStore, lockPool) {
+  const uid = lockPool.lock_id.split('_')[0]
+  const claimId = lockPool.lock_id.split('_')[1]
+  const lockTime = lockPool.lock_time
+  sendLineAlert(
+    `process stuck more than ${timeoutAlert / 60000} min. \n uid: ${uid} \n claim_id: ${claimId} \n lock_time: ${lockTime}`
+  )
+  return pool
+    .deleteClaimIdInPool({ uid, claim_id: claimId })
+    .then(pool.releasePool)
+    .then(pool.processNewClaimPool)
+    .then(fireStore
+      .collection('stuck_pool')
+      .doc()
+      .set({uid, claim_id: claimId, lock_time: lockTime})
+    )
 }
 
 function monitorClaimError (event, fireStore) {
