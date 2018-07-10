@@ -1606,7 +1606,7 @@ function checkTrustAccount() {
   accountCaller.call().then(account => {
     let sixAsset = account.balances.find(x => { return x.asset_code == 'SIX' })
     if (sixAsset !== undefined) {
-      markTrustlineUser().then(() => {
+      markTrustlineUser(userData.xlm_address).then(() => {
         $("#manualTrustlineBox").slideToggle(100)
         $("#rewardClaimBox").slideToggle(100, function() {
           updateGraph()
@@ -1667,7 +1667,7 @@ function submitGeneratedAccount() {
           $("#trustlineStep").addClass("current")
           $("#progressText").html("Changing trustline")
           automatedChangeTrustToSix().then(response => {
-            markTrustlineUser().then(() => {
+            markTrustlineUser(generatedWallet.getPublicKey(0)).then(() => {
               $("#accountPg").css('width', '100%')
               $("#progressText").html("Yay ! Your address is now ready")
               setTimeout(function(){
@@ -1699,9 +1699,9 @@ function submitGeneratedAccount() {
   })
 }
 
-function markTrustlineUser() {
+function markTrustlineUser(public_key) {
   const requestFunction = firebase.functions().httpsCallable('updateTrustline')
-  return requestFunction({})
+  return requestFunction({public_key})
 }
 
 function submitOTP(id) {
@@ -2432,7 +2432,7 @@ function addTrustLedger() {
   let publicKey = $("#assetContent span").text().trim()
   $("#ledgerDialogNextBtn2").prop("disabled",true)
   return trustSix(publicKey, issuerKey,function(data){
-    return markTrustlineUser().then(() => {
+    return markTrustlineUser(publicKey).then(() => {
       qrcode.makeCode(publicKey);
       userData.xlm_address = publicKey
       $("#myXlmPublicAddress").text(publicKey)
@@ -2500,4 +2500,16 @@ function sendCodeToEmailClaim(id) {
   }).then(() => {
     setEnable([dom])
   })
+}
+
+function showWhatNext() {
+  $(".dialog-whats-next").addClass("show-dialog")
+  localStorage[userData.uid+"seen_whats_next"] = true
+}
+
+function backToWalletSelection() {
+  $("#walletSelectBox").css("display", "block")
+  $("#divClaimBoxOld").css("display", "none")
+  $("#divClaimBoxNew").css("display", "none")
+  $("#divClaimBoxLedger").css("display", "none")
 }

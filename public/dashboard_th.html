@@ -245,8 +245,7 @@
           </div>
         </section>
         <section class="static-link" style='margin-top: 7px;'>
-          <a href="https://six.network/faq.html" class='faqMenu'><strong>คำถาม</strong></a>
-          <a href="https://six.network/faq.html#howtobuy" class='faqMenu'><strong>ที่พบบ่อย</strong></a>
+          <a href="https://six.network/faq.php" class='faqMenu'><strong>คำถาม</strong></a>
         </section>
       </aside>
       <div class="content">
@@ -856,6 +855,7 @@
               <p id="oldWalletAlertText"></p>
             </div>
             <div class="btn">
+              <button id="submitOldAccountBtn22" onclick="backToWalletSelection()" style="width: auto;margin-top: 20px;margin-bottom: 20px;min-width: 150px;margin-right: 15px;"> ย้อนกลับ </button>
               <button id='submitOldAccountBtn' onclick='submitOldAccount()' style='width: auto; margin-top: 20px; margin-bottom: 20px; min-width: 150px;'> ถัดไป </button>
             </div>
           </div>
@@ -874,7 +874,9 @@
                       <br>
                       <p>สำหรับการต่อ Ledger Nano S กรุณาเสียบสายเข้ากับคอมพิวเตอร์และใส่รหัส</p>
                       <br>
-                      <dl><dd><button id="ledgerDialogNextBtn" onclick="nextFirstLedger()">ถัดไป</button></dd></dl>
+                      <dl style="flex-wrap: unset;">
+                        <dd style='margin-right: 15px;'><button id="ledgerDialogNextBtn22" onclick="backToWalletSelection()">Back</button></dd>
+                        <dd><button id="ledgerDialogNextBtn" onclick="nextFirstLedger()">ถัดไป</button></dd></dl>
                     </div>
                   </div>
                 </dialog>
@@ -955,7 +957,10 @@
                       <br>
                       <p>Mnemonic word คือทางที่ง่ายในการกู้กระเป๋าในระบบ blockchain. มันสำคัญเทียบเท่ากับ Private key ดังนั้นเราจะแนะนำ <span style="color: #4a5ab5; font-weight: bold;">จดมันลงไว้ในที่ปลอดภัยและเก็บรักษาดี</span> ในที่คุณคนเดียวเข้าถึงมันได้.</p>
                       <br>
-                      <dl><dd><button id='recoveryDialogSubmitBtn' onclick='nextRecoveryWord()'>ถัดไป</button></dd></dl>
+                      <dl style="flex-wrap: unset;">
+                        <dd style='margin-right: 15px;'><button id='recoveryDialogSubmitBtn22' onclick='backToWalletSelection()'>ย้อนกลับ</button></dd>
+                        <dd><button id='recoveryDialogSubmitBtn' onclick='nextRecoveryWord()'>ถัดไป</button></dd>
+                      </dl>
                     </div>
                   </div>
                 </dialog>
@@ -1162,6 +1167,7 @@
                 </tbody>
               </table>
             </div>
+            <a href='javascript:;' onclick='showWhatNext()' style='text-align: center; display: block; text-decoration: underline;'>What's next</a>
           </div>
         </section>
         <div id='overAllLoadingContainer'>

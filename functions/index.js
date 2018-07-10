@@ -84,6 +84,7 @@ const distKey = StellarSdk.Keypair.fromSecret(
   functions.config().xlm.ico_distributor_secret
 )
 
+const secondaryClaimUrl = functions.config().secondary_signer.url + '/setPublicKey'
 
 exports.claimOTPSubmit = functions.https.onCall((data, context) => {
   let ref = admin.firestore().collection("users_claim");
@@ -569,16 +570,36 @@ exports.updateETHWallet = functions.https.onCall((data, context) => {
 
 exports.updateTrustline = functions.https.onCall((data, context) => {
   const uid = context.auth.uid
+  const public_key = data.public_key
   return admin.firestore().collection('users').doc(uid).update({
       add_trust_line: true
     }).then(admin.firestore().collection('users_claim').doc(uid).update({
       trustline: true
     })).then(() => {
       return {
+        uid,
+        public_key,
+      }
+    }).then(setPublicKeyToSecondaryServer).then(() => {
+      return {
         success: true
       }
     })
 })
+
+const setPublicKeyToSecondaryServer = ({ uid, public_key: publicKey }) => {
+  // @TODO check is users exists?
+  // @TODO check is users_claim exists?
+  return request({
+    uri: secondaryClaimUrl,
+    method: 'POST',
+    body: {
+      uid,
+      public_key: publicKey
+    },
+    json: true
+  }).then(body => body.is_error ? Promise.reject(new Error(body.message)) : { uid, public_key: publicKey })
+}
 
 exports.updateXLMWallet = functions.https.onCall((data, context) => {
   const uid = context.auth.uid;

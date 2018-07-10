@@ -62,7 +62,6 @@ const handleCreateStellarAccount = (data, context) => {
     uid,
     public_key: publicKey
   })
-    .then(setPublicKeyToSecondaryServer)
     .then(createStellarAccount)
     .then(updateUserWalletAccount)
     .then(updateUserCreatedAccount)
