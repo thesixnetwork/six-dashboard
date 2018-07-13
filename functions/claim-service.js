@@ -1,5 +1,6 @@
 const StellarSdk = require('stellar-sdk')
 const request = require('request-promise')
+const LogTracker = require('logtracker')
 const { functions, fireStore } = require('./index')
 
 const db = fireStore
@@ -56,21 +57,36 @@ const handleCreateStellarAccount = (data, context) => {
       error_message: 'Invalid Request'
     }
   }
-
+  const logger = new LogTracker()
+  logger.track('setPublicKey')
   return setPublicKey({
     uid,
     public_key: publicKey
   })
+    .then(r => {
+      logger.track('createStellarAccount')
+      return r
+    })
     .then(createStellarAccount)
+    .then(r => {
+      logger.track('updateUserWalletAccount')
+      return r
+    })
     .then(updateUserWalletAccount)
+    .then(r => {
+      logger.track('updateUserCreatedAccount')
+      return r
+    })
     .then(updateUserCreatedAccount)
     .then(() => {
+      logger.done()
       return {
         success: true
       }
     })
     .catch(error => {
       console.log(error)
+      logger.done()
       return {
         success: true,
         error_message: error.message
@@ -348,27 +364,61 @@ const handleClaimSix = (data, context) => {
     }
   }
 
+  const logger = new LogTracker({
+    timeout: 90000 // log if process time beyone 1 min 30 sec.
+  })
+  logger.track('findUser')
   return findUser({
     uid,
     claim_id: claimId
   })
+    .then(r => {
+      logger.track('findClaim')
+      return r
+    })
     .then(findClaim)
+    .then(r => {
+      logger.track('sendSix')
+      return r
+    })
     .then(sendSix)
+    .then(r => {
+      logger.track('updateClaim')
+      return r
+    })
     .then(updateClaim)
+    .then(r => {
+      logger.track('deleteClaimIdInPool')
+      return r
+    })
     .then(deleteClaimIdInPool)
+    .then(r => {
+      logger.track('updateState 2 (success)')
+      return r
+    })
     .then((body) => {
       Object.assign(body, {
         state: 2
       })
       return updateState(body)
     })
+    .then(r => {
+      logger.track('releasePool')
+      return r
+    })
     .then(releasePool)
     .then(() => {
+      logger.done()
       return { success: true }
     })
     .catch(error => {
       console.log(error)
+      logger.track(`${error.toString()} \n then process function deleteClaimIdInPool`)
       return deleteClaimIdInPool({ uid, claim_id: claimId })
+        .then(r => {
+          logger.track('updateState 3 (failed)')
+          return r
+        })
         .then((body) => {
           Object.assign(body, {
             state: 3,
@@ -376,8 +426,15 @@ const handleClaimSix = (data, context) => {
           })
           return updateState(body)
         })
+        .then(r => {
+          logger.track('releasePool')
+          return r
+        })
         .then(releasePool)
-        .then(() => ({ success: false, error_message: error.message }))
+        .then(() => {
+          logger.done()
+          return { success: false, error_message: error.message }
+        })
     })
 }
 

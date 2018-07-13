@@ -1,5 +1,6 @@
 {
   "dependencies": {
+    "logtracker": "^1.0.0",
     "stellar-sdk": "^0.8.0"
   }
 }
