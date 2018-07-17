@@ -79,6 +79,7 @@ const handleCreateStellarAccount = (data, context) => {
     })
     .then(updateUserCreatedAccount)
     .then(() => {
+      console.log(JSON.stringify(logger.trace(), null, 2))
       logger.done()
       return {
         success: true
@@ -86,6 +87,7 @@ const handleCreateStellarAccount = (data, context) => {
     })
     .catch(error => {
       console.log(error)
+      console.log(JSON.stringify(logger.trace(), null, 2))
       logger.done()
       return {
         success: true,
@@ -408,6 +410,7 @@ const handleClaimSix = (data, context) => {
     })
     .then(releasePool)
     .then(() => {
+      console.log(JSON.stringify(logger.trace(), null, 2))
       logger.done()
       return { success: true }
     })
@@ -432,6 +435,7 @@ const handleClaimSix = (data, context) => {
         })
         .then(releasePool)
         .then(() => {
+          console.log(JSON.stringify(logger.trace(), null, 2))
           logger.done()
           return { success: false, error_message: error.message }
         })

@@ -28,7 +28,7 @@ const lineConfig = {
   groupId: 'C3e196a4b31d7dc3de626303259335ded'
 }
 const client = new line.Client(lineConfig)
-const timeoutAlert = 120000 // 2 minute
+const timeoutAlert = 180000 // 3 minute
 const sendLineAlert = (text) => {
   client.pushMessage(lineConfig.groupId, {
     type: 'text',
