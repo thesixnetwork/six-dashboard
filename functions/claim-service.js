@@ -549,10 +549,35 @@ function sendSix ({ uid, claim_id: claimId, user, claim }) {
     })
   }
 
+  const logger = new LogTracker({
+    timeout: 30000 // log if process time beyone 30 sec.
+  })
+  console.log('load multisix account')
+  logger.track('load multisix account')
   return server.loadAccount(multiSigAddress)
+    .then(r => {
+      console.log('createTransaction')
+      logger.track('createTransaction')
+      return r
+    })
     .then(createTransaction)
+    .then(r => {
+      console.log('sendTxToSecondarySigner')
+      logger.track('sendTxToSecondarySigner')
+      return r
+    })
     .then(sendTxToSecondarySigner)
+    .then(r => {
+      console.log('submitTransaction')
+      logger.track('submitTransaction')
+      return r
+    })
     .then(submitTransaction)
+    .then(r => {
+      console.log(JSON.stringify(logger.trace(), null, 2))
+      logger.done()
+      return r
+    })
 }
 
 const updateClaim = ({ uid, claim, claim_id: claimId, user, tx }) => {
