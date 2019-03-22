@@ -97,6 +97,10 @@
       {
         "source": "/dashboard",
         "destination": "/dashboard.html"
+      },
+      {
+        "source": "/recovery",
+        "destination": "/recovery.html"
       }
     ]
   },

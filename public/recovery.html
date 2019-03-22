@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <meta property="og:url" content="https://ico.six.network/"/>
+    <meta property="og:type" content="article"/>
+    <meta property="og:title" content="SIX | Reinventing the digital economy" />
+    <meta property="og:description" content="SIX aims to bring a better liquidity, ownership, and wealth distribution back to the digital creators."/>
+    <meta property="og:image" content="https://ico.six.network/images/logo/six-logo-property.png"/>
+
+    <!-- Include firebase : update the version number as needed -->
+    <script defer src="/__/firebase/4.12.0/firebase-app.js"></script>
+    <script defer src="/__/firebase/4.12.0/firebase-auth.js"></script>
+    <script defer src="/__/firebase/4.12.0/firebase-database.js"></script>
+    <script defer src="/__/firebase/4.12.0/firebase-firestore.js"></script>
+    <script defer src="/__/firebase/4.12.0/firebase-messaging.js"></script>
+    <script defer src="/__/firebase/4.12.0/firebase-storage.js"></script>
+    <script defer src="/__/firebase/4.12.0/firebase-functions.js"></script>
+    <script defer src="/__/firebase/init.js"></script>
+
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>SIX | Reinventing the digital economy</title>
+    <link rel="shortcut icon" href="images/logo/fav.ico" type="image/x-icon">
+    <link rel="stylesheet" href="stylesheets/style.css">
+    <link rel="stylesheet" href="stylesheets/loading.css">
+    <link rel="stylesheet" href="stylesheets/responsive2.css">
+    <script src="javascripts/jquery-3.2.1.min.js"></script>
+    <script src="javascripts/url_replacer.js"></script>
+    <script src="javascripts/config.js"></script>
+    <script src="javascripts/recovery.js"></script>
+    <script src="javascripts/stellar-hd-wallet.js"></script>
+    <script src="javascripts/jspdf.min.js"></script>
+  </head>
+  <body>
+    <div id='sampleFader' style='display: none;'>
+      <a href='javascript:;' onclick='closeSample()'>
+        <div id='sampleWrapper'>
+          <div id='popUpMessage' style="padding: 20px;
+            background: white;
+            border-radius: 5px;
+            text-align: center;
+          ">
+            <h1 id='alertHead'></h1>
+            <p id='alertSub'></p>
+          </div>
+        </div>
+      </a>
+    </div>
+    <header class="header">
+      <a href="" class="logo"><img src="images/logo/six-logo-white.png"></a>
+    </header>
+    <div id='recoveryContainer'>
+      <div id='recoverWrapper'>
+        <section id='verifyEmailContent' class="verify-email show-detail">
+          <h1 style="margin: auto; text-align: center; margin-bottom: 20px;">Recovery</h1>
+        </section>
+        <dl style="margin-bottom: 20px;">
+          <dd class="combine">
+            <label class="text kycinput" id='kycFirstNameAlert'>
+              <input type="text" id='1word'/>
+              <p id='kycFirstNameError' style='display: none;'></p>
+            </label>
+            <label class="text kycinput" id='kycLastNameAlert'>
+              <input type="text" id='2word'/>
+              <p id='kycLastNameError' style='display: none;'></p>
+            </label>
+          </dd>
+        </dl>
+        <dl style="margin-bottom: 20px;">
+          <dd class="combine">
+            <label class="text kycinput" id='kycFirstNameAlert'>
+              <input type="text" id='3word'/>
+              <p id='kycFirstNameError' style='display: none;'></p>
+            </label>
+            <label class="text kycinput" id='kycLastNameAlert'>
+              <input type="text" id='4word'/>
+              <p id='kycLastNameError' style='display: none;'></p>
+            </label>
+          </dd>
+        </dl>
+        <dl style="margin-bottom: 20px;">
+          <dd class="combine">
+            <label class="text kycinput" id='kycFirstNameAlert'>
+              <input type="text" id='5word'/>
+              <p id='kycFirstNameError' style='display: none;'></p>
+            </label>
+            <label class="text kycinput" id='kycLastNameAlert'>
+              <input type="text" id='6word'/>
+              <p id='kycLastNameError' style='display: none;'></p>
+            </label>
+          </dd>
+        </dl>
+        <dl style="margin-bottom: 20px;">
+          <dd class="combine">
+            <label class="text kycinput" id='kycFirstNameAlert'>
+              <input type="text" id='7word'/>
+              <p id='kycFirstNameError' style='display: none;'></p>
+            </label>
+            <label class="text kycinput" id='kycLastNameAlert'>
+              <input type="text" id='8word'/>
+              <p id='kycLastNameError' style='display: none;'></p>
+            </label>
+          </dd>
+        </dl>
+        <dl style="margin-bottom: 20px;">
+          <dd class="combine">
+            <label class="text kycinput" id='kycFirstNameAlert'>
+              <input type="text" id='9word'/>
+              <p id='kycFirstNameError' style='display: none;'></p>
+            </label>
+            <label class="text kycinput" id='kycLastNameAlert'>
+              <input type="text" id='10word'/>
+              <p id='kycLastNameError' style='display: none;'></p>
+            </label>
+          </dd>
+        </dl>
+        <dl style="margin-bottom: 20px;">
+          <dd class="combine">
+            <label class="text kycinput" id='kycFirstNameAlert'>
+              <input type="text" id='11word'/>
+              <p id='kycFirstNameError' style='display: none;'></p>
+            </label>
+            <label class="text kycinput" id='kycLastNameAlert'>
+              <input type="text" id='12word'/>
+              <p id='kycLastNameError' style='display: none;'></p>
+            </label>
+          </dd>
+        </dl>
+        <dl style="margin-bottom: 100px;"><dd><button id='verifyResendBtn' onclick='recovery()'>Submit</button></dd></dl>
+      </div>
+    </div>
+  </body>
+
+</html>

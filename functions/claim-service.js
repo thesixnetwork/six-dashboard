@@ -15,7 +15,7 @@ const secondaryClaimUrl = functions.config().secondary_signer.url + '/setPublicK
 const secondarySignerUrl = functions.config().secondary_signer.url + '/handleSignSix'
 
 if (functions.config().campaign.is_production === 'true') {
-  stellarUrl = 'https://horizon.six.th'
+  stellarUrl = 'https://horizon.stellar.org'
   StellarSdk.Network.usePublicNetwork()
 } else {
   stellarUrl = 'https://horizon-testnet.stellar.org'

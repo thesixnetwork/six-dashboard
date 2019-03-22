@@ -8,7 +8,7 @@ const closeICO = new Date('2018-05-31T22:00:00+07:00')
 
 function StellarService(event) {
   this.stellarUrl = functions.config().campaign.is_production === 'true'
-    ? 'https://horizon.six.th'
+    ? 'https://horizon.stellar.org'
     : 'https://horizon-testnet.stellar.org'
   this.address = functions.config().xlm.address
 

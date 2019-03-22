@@ -410,3 +410,9 @@ ul.social-list li a:hover .kakao-logo:before {
 ul.social-list li:last-of-type {
   margin-right: 0;
 }
+
+div#recoverWrapper {
+  width: 400px;
+  margin: auto;
+  margin-top: 40px;
+}
